@@ -246,7 +246,53 @@ func (p *pyTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.Toke
 	}, p.main
 }
 
+func numberWithGrouping(t *parser.Tokeniser, digits string) bool {
+	for t.Accept("_") {
+		if !t.Accept(digits) {
+			return false
+		}
+
+		t.AcceptRun(digits)
+	}
+
+	return true
+}
+
 func (p *pyTokeniser) baseNumber(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+	digits := "0"
+
+	if t.Accept("xX") {
+		digits = hexDigit
+	} else if t.Accept("oO") {
+		digits = octalDigit
+	} else if t.Accept("bB") {
+		digits = binaryDigit
+	}
+
+	if !t.Accept(digits) && digits != "0" {
+		t.Err = ErrInvalidNumber
+
+		return t.Error()
+	}
+	t.AcceptRun(digits)
+
+	if !numberWithGrouping(t, digits) {
+		t.Err = ErrInvalidNumber
+
+		return t.Error()
+	}
+
+	if digits == "0" {
+		return p.floatOrImaginary(t)
+	}
+
+	return parser.Token{
+		Type: TokenNumericLiteral,
+		Data: t.Get(),
+	}, p.main
+}
+
+func (p *pyTokeniser) floatOrImaginary(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	return parser.Token{}, nil
 }
 
@@ -262,4 +308,7 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 	return parser.Token{}, nil
 }
 
-var ErrInvalidCharacter = errors.New("invalid character")
+var (
+	ErrInvalidCharacter = errors.New("invalid character")
+	ErrInvalidNumber    = errors.New("invalid number")
+)
