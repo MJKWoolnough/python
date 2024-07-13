@@ -1,6 +1,7 @@
 package python
 
 import (
+	"errors"
 	"io"
 	"strings"
 	"unicode"
@@ -163,7 +164,57 @@ func (p *pyTokeniser) stringOrIdentifier(t *parser.Tokeniser) (parser.Token, par
 }
 
 func (p *pyTokeniser) string(t *parser.Tokeniser, raw bool) (parser.Token, parser.TokenFunc) {
-	return parser.Token{}, nil
+	m := string(t.Peek())
+	triple := false
+
+	t.Except("")
+
+	if t.Accept(m) {
+		if !t.Accept(m) {
+			return parser.Token{
+				Type: TokenStringLiteral,
+				Data: t.Get(),
+			}, p.main
+		}
+
+		triple = true
+	}
+
+	except := "\n" + m
+
+	if !raw {
+		except += "\\"
+	}
+
+Loop:
+	for {
+		switch t.ExceptRun(except) {
+		default:
+			t.Err = io.ErrUnexpectedEOF
+
+			return t.Error()
+		case '\\':
+			t.Except("")
+			t.Except("")
+		case '\n':
+			if !triple {
+				t.Err = ErrInvalidCharacter
+
+				return t.Error()
+			}
+		case '\'', '"':
+			t.Except("")
+
+			if !triple || t.Accept(m) && t.Accept(m) {
+				break Loop
+			}
+		}
+	}
+
+	return parser.Token{
+		Type: TokenStringLiteral,
+		Data: t.Get(),
+	}, p.main
 }
 
 func (p *pyTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
@@ -185,3 +236,5 @@ func (p *pyTokeniser) floatOrDelimiter(t *parser.Tokeniser) (parser.Token, parse
 func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	return parser.Token{}, nil
 }
+
+var ErrInvalidCharacter = errors.New("invalid character")
