@@ -116,7 +116,7 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 	}
 
 	if strings.ContainsRune(stringStart, pk) {
-		return p.string(t)
+		return p.string(t, false)
 	}
 
 	if isIDStart(pk) {
@@ -139,10 +139,30 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 }
 
 func (p *pyTokeniser) stringOrIdentifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	return parser.Token{}, nil
+	var raw bool
+
+	switch t.Peek() {
+	case 'r', 'R':
+		t.Except("")
+		t.Accept("fFbB")
+
+		raw = true
+	case 'b', 'B', 'f', 'F':
+		t.Except("")
+
+		raw = t.Accept("rR")
+	case 'u', 'U':
+		t.Except("")
+	}
+
+	if strings.ContainsRune(stringStart, t.Peek()) {
+		return p.string(t, raw)
+	}
+
+	return p.identifier(t)
 }
 
-func (p *pyTokeniser) string(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+func (p *pyTokeniser) string(t *parser.Tokeniser, raw bool) (parser.Token, parser.TokenFunc) {
 	return parser.Token{}, nil
 }
 
