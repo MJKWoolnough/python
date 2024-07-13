@@ -3,6 +3,7 @@ package python
 import (
 	"errors"
 	"io"
+	"slices"
 	"strings"
 	"unicode"
 
@@ -23,7 +24,9 @@ const (
 )
 
 var (
-	keywords = [...]string{"await", "else", "import", "pass", "None", "break", "except", "in", "raise", "class", "finally", "is", "return", "and", "continue", "for", "lambda", "try", "as", "def", "from", "nonlocal", "while", "assert", "del", "global", "not", "with", "async", "elif", "if", "or", "yield"}
+	keywords = [...]string{"await", "else", "import", "pass", "break", "except", "in", "raise", "class", "finally", "is", "return", "and", "continue", "for", "lambda", "try", "as", "def", "from", "nonlocal", "while", "assert", "del", "global", "not", "with", "async", "elif", "if", "or", "yield"}
+	booleans = [...]string{"True", "False"}
+	null     = "None"
 
 	idContinue = []*unicode.RangeTable{
 		unicode.L,
@@ -218,7 +221,29 @@ Loop:
 }
 
 func (p *pyTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	return parser.Token{}, nil
+	for isIDContinue(t.Peek()) {
+		t.Except("")
+	}
+
+	ident := t.Get()
+	typ := TokenIdentifier
+
+	if slices.Contains(booleans[:], ident) {
+		typ = TokenBooleanLiteral
+	}
+
+	if slices.Contains(keywords[:], ident) {
+		typ = TokenKeyword
+	}
+
+	if ident == "None" {
+		typ = TokenNullLiteral
+	}
+
+	return parser.Token{
+		Type: typ,
+		Data: ident,
+	}, p.main
 }
 
 func (p *pyTokeniser) baseNumber(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
