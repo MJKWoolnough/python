@@ -305,7 +305,17 @@ func (p *pyTokeniser) floatOrImaginary(t *parser.Tokeniser) (parser.Token, parse
 }
 
 func (p *pyTokeniser) float(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	return parser.Token{}, nil
+	if !t.Accept(decimalDigit) || !numberWithGrouping(t, decimalDigit) {
+		t.Err = ErrInvalidNumber
+
+		return t.Error()
+	}
+
+	if t.Accept("eE") {
+		return p.exponential(t)
+	}
+
+	return p.imaginary(t)
 }
 
 func (p *pyTokeniser) exponential(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
