@@ -334,11 +334,24 @@ func (p *pyTokeniser) exponential(t *parser.Tokeniser) (parser.Token, parser.Tok
 }
 
 func (p *pyTokeniser) imaginary(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	return parser.Token{}, nil
+	t.Accept("jJ")
+
+	return parser.Token{
+		Type: TokenNumericLiteral,
+		Data: t.Get(),
+	}, p.main
 }
 
 func (p *pyTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	return parser.Token{}, nil
+	t.AcceptRun(decimalDigit)
+
+	if !t.Accept(decimalDigit) {
+		t.Err = ErrInvalidNumber
+
+		return t.Error()
+	}
+
+	return p.floatOrImaginary(t)
 }
 
 func (p *pyTokeniser) floatOrDelimiter(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
