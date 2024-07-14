@@ -355,7 +355,16 @@ func (p *pyTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 }
 
 func (p *pyTokeniser) floatOrDelimiter(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	return parser.Token{}, nil
+	if t.Accept(decimalDigit) {
+		t.AcceptRun(decimalDigit)
+
+		return p.imaginary(t)
+	}
+
+	return parser.Token{
+		Type: TokenDelimiter,
+		Data: t.Get(),
+	}, p.main
 }
 
 func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
