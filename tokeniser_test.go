@@ -316,6 +316,20 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
+		{ // 44
+			"None",
+			[]parser.Token{
+				{Type: TokenNullLiteral, Data: "None"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 45
+			"none",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "none"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
