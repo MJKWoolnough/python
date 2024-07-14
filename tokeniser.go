@@ -368,7 +368,73 @@ func (p *pyTokeniser) floatOrDelimiter(t *parser.Tokeniser) (parser.Token, parse
 }
 
 func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	return parser.Token{}, nil
+	typ := TokenOperator
+	bracket := 0
+
+	const brackets = "}])"
+
+	switch c := t.Peek(); c {
+	case '+', '%', '@', '|', '^', ':', '=':
+		t.Except("")
+		t.Accept("=")
+
+		if c != '=' && c != ':' {
+			typ = TokenDelimiter
+		}
+	case '-':
+		t.Except("")
+
+		if t.Accept("=>") {
+			typ = TokenDelimiter
+		}
+	case '*', '/', '<', '>':
+		t.Except("")
+
+		d := t.Accept(string(c))
+
+		if t.Accept("=") && (!d || c == '*' || c == '/') {
+			typ = TokenDelimiter
+		}
+	case '!':
+		if !t.Accept("=") {
+			t.Err = ErrInvalidCharacter
+
+			return t.Error()
+		}
+	case ')', '}', ']':
+		if len(p.tokenDepth) == 0 || p.tokenDepth[len(p.tokenDepth)-1] != byte(c) {
+			t.Err = ErrInvalidCharacter
+
+			return t.Error()
+		}
+
+		t.Except("")
+
+		typ = TokenDelimiter
+	case '(':
+		bracket++
+
+		fallthrough
+	case '[':
+		bracket++
+
+		fallthrough
+	case '{':
+		p.tokenDepth = append(p.tokenDepth, brackets[bracket])
+
+		fallthrough
+	case ',', '.', ';':
+		typ = TokenDelimiter
+
+		fallthrough
+	case '~':
+		t.Except("")
+	}
+
+	return parser.Token{
+		Type: typ,
+		Data: t.Get(),
+	}, p.main
 }
 
 var (
