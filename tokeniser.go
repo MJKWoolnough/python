@@ -82,7 +82,7 @@ func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser {
 }
 
 func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	if t.Peek() == 0 {
+	if t.Peek() == -1 {
 		if len(p.tokenDepth) > 0 {
 			t.Err = io.ErrUnexpectedEOF
 
