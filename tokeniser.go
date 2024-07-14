@@ -75,6 +75,12 @@ type pyTokeniser struct {
 	tokenDepth []byte
 }
 
+func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser {
+	t.TokeniserState(new(pyTokeniser).main)
+
+	return t
+}
+
 func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Peek() == 0 {
 		if len(p.tokenDepth) > 0 {
