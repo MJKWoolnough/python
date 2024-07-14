@@ -88,6 +88,206 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
+		{ // 12
+			"b\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "b\"abc123\\\"\\'\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 13
+			"B\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "B\"abc123\\\"\\'\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 14
+			"f\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "f\"abc123\\\"\\'\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 15
+			"F\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "F\"abc123\\\"\\'\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 16
+			"r\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "r\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 17
+			"R\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "R\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 18
+			"fR\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "fR\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 19
+			"Fr\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "Fr\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 20
+			"RF\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "RF\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 21
+			"rf\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "rf\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 22
+			"Br\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "Br\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 23
+			"bR\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "bR\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 24
+			"rb\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "rb\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 25
+			"RB\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "RB\"abc123\\\""},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 26
+			"\"\"\"abc123\"'456\"\"\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "\"\"\"abc123\"'456\"\"\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 27
+			"'''abc123\"'456'''",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "'''abc123\"'456'''"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 28
+			"b\"\"\"abc123\"'456\"\"\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "b\"\"\"abc123\"'456\"\"\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 29
+			"b'''abc123\"'456'''",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "b'''abc123\"'456'''"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 30
+			"f\"\"\"abc123\"'456\"\"\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "f\"\"\"abc123\"'456\"\"\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 31
+			"f'''abc123\"'456'''",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "f'''abc123\"'456'''"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 32
+			"r\"\"\"abc123\"'456\"\"\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "r\"\"\"abc123\"'456\"\"\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 33
+			"r'''abc123\"'456'''",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "r'''abc123\"'456'''"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 34
+			"u\"abc123\\\"\\'\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "u\"abc123\\\"\\'\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 35
+			"u'abc123\\\"\\''",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "u'abc123\\\"\\''"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 36
+			"o\"abc123\\\"'456\"",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "o"},
+				{Type: TokenStringLiteral, Data: "\"abc123\\\"'456\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 37
+			"o'abc123\"\\'456'",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "o"},
+				{Type: TokenStringLiteral, Data: "'abc123\"\\'456'"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 38
+			"o\"\"\"abc123\"'456\"\"\"",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "o"},
+				{Type: TokenStringLiteral, Data: "\"\"\"abc123\"'456\"\"\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 39
+			"o'''abc123\"'456'''",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "o"},
+				{Type: TokenStringLiteral, Data: "'''abc123\"'456'''"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
