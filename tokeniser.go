@@ -380,6 +380,10 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 	const brackets = "}])"
 
 	switch c := t.Peek(); c {
+	default:
+		t.Err = ErrInvalidCharacter
+
+		return t.Error()
 	case '+', '%', '@', '|', '^', ':', '=':
 		t.Except("")
 		t.Accept("=")
