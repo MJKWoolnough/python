@@ -288,6 +288,34 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
+		{ // 40
+			"False",
+			[]parser.Token{
+				{Type: TokenBooleanLiteral, Data: "False"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 41
+			"True",
+			[]parser.Token{
+				{Type: TokenBooleanLiteral, Data: "True"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 42
+			"false",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "false"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 43
+			"true",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "true"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
