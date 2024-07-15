@@ -289,41 +289,55 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{ // 40
+			"\"\"\"abc123\n456\"\"\"",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "\"\"\"abc123\n456\"\"\""},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 41
+			"'''abc123\n456'''",
+			[]parser.Token{
+				{Type: TokenStringLiteral, Data: "'''abc123\n456'''"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 42
 			"False",
 			[]parser.Token{
 				{Type: TokenBooleanLiteral, Data: "False"},
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 41
+		{ // 43
 			"True",
 			[]parser.Token{
 				{Type: TokenBooleanLiteral, Data: "True"},
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 42
+		{ // 44
 			"false",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "false"},
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 43
+		{ // 45
 			"true",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "true"},
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 44
+		{ // 46
 			"None",
 			[]parser.Token{
 				{Type: TokenNullLiteral, Data: "None"},
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 45
+		{ // 47
 			"none",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "none"},
