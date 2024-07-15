@@ -173,7 +173,14 @@ func (p *pyTokeniser) stringOrIdentifier(t *parser.Tokeniser) (parser.Token, par
 }
 
 func (p *pyTokeniser) string(t *parser.Tokeniser, raw bool) (parser.Token, parser.TokenFunc) {
-	m := string(t.Peek())
+	var m string
+
+	if t.Peek() == '"' {
+		m = "\""
+	} else {
+		m = "'"
+	}
+
 	triple := false
 
 	t.Except("")
