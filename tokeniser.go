@@ -218,6 +218,8 @@ Loop:
 
 				return t.Error()
 			}
+
+			t.Except("")
 		case '\'', '"':
 			t.Except("")
 
