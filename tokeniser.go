@@ -426,6 +426,7 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 		}
 
 		t.Except("")
+		p.tokenDepth = p.tokenDepth[:len(p.tokenDepth)-1]
 
 		typ = TokenDelimiter
 	case '(':
