@@ -148,22 +148,26 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 	return p.operatorOrDelimiter(t)
 }
 
-func (p *pyTokeniser) stringOrIdentifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	var raw bool
-
+func parseStringRaw(t *parser.Tokeniser) bool {
 	switch t.Peek() {
 	case 'r', 'R':
 		t.Except("")
 		t.Accept("fFbB")
 
-		raw = true
+		return true
 	case 'b', 'B', 'f', 'F':
 		t.Except("")
 
-		raw = t.Accept("rR")
+		return t.Accept("rR")
 	case 'u', 'U':
 		t.Except("")
 	}
+
+	return false
+}
+
+func (p *pyTokeniser) stringOrIdentifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+	raw := parseStringRaw(t)
 
 	if strings.ContainsRune(stringStart, t.Peek()) {
 		return p.string(t, raw)
@@ -172,31 +176,73 @@ func (p *pyTokeniser) stringOrIdentifier(t *parser.Tokeniser) (parser.Token, par
 	return p.identifier(t)
 }
 
-func (p *pyTokeniser) string(t *parser.Tokeniser, raw bool) (parser.Token, parser.TokenFunc) {
-	var m string
+type stringOpening byte
+
+const (
+	stringError stringOpening = iota
+	stringSingle
+	stringDouble
+	stringTripleSingle
+	stringTripleDouble
+	stringEmpty
+)
+
+func (s stringOpening) Quote() string {
+	if s == stringSingle || s == stringTripleSingle {
+		return "'"
+	} else if s == stringDouble || s == stringTripleDouble {
+		return "\""
+	}
+
+	return ""
+}
+
+func (s stringOpening) IsTriple() bool {
+	return s == stringTripleSingle || s == stringTripleDouble
+}
+
+func parseStringOpening(t *parser.Tokeniser) stringOpening {
+	var (
+		m       string
+		opening stringOpening
+	)
 
 	if t.Peek() == '"' {
 		m = "\""
-	} else {
+		opening = stringDouble
+	} else if t.Peek() == '\'' {
 		m = "'"
+		opening = stringSingle
+	} else {
+		return opening
 	}
-
-	triple := false
 
 	t.Except("")
 
 	if t.Accept(m) {
 		if !t.Accept(m) {
-			return parser.Token{
-				Type: TokenStringLiteral,
-				Data: t.Get(),
-			}, p.main
+			return stringEmpty
 		}
 
-		triple = true
+		opening += 2
 	}
 
+	return opening
+}
+
+func (p *pyTokeniser) string(t *parser.Tokeniser, raw bool) (parser.Token, parser.TokenFunc) {
+	so := parseStringOpening(t)
+
+	if so == stringEmpty {
+		return parser.Token{
+			Type: TokenStringLiteral,
+			Data: t.Get(),
+		}, p.main
+	}
+
+	m := so.Quote()
 	except := "\n" + m
+	triple := so.IsTriple()
 
 	if !raw {
 		except += "\\"
