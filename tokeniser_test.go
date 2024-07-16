@@ -14,7 +14,7 @@ func TestTokeniser(t *testing.T) {
 		{ // 1
 			"",
 			[]parser.Token{
-				{parser.TokenDone, ""},
+				{Type: parser.TokenDone, Data: ""},
 			},
 		},
 		{ // 2
@@ -341,6 +341,20 @@ func TestTokeniser(t *testing.T) {
 			"none",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "none"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 48
+			"# A Comment\n\"A string\"\n\"another string\"# Another Comment\n\"\"",
+			[]parser.Token{
+				{Type: TokenComment, Data: "# A Comment"},
+				{Type: TokenLineTerminator, Data: "\n"},
+				{Type: TokenStringLiteral, Data: "\"A string\""},
+				{Type: TokenLineTerminator, Data: "\n"},
+				{Type: TokenStringLiteral, Data: "\"another string\""},
+				{Type: TokenComment, Data: "# Another Comment"},
+				{Type: TokenLineTerminator, Data: "\n"},
+				{Type: TokenStringLiteral, Data: "\"\""},
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
