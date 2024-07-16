@@ -391,6 +391,27 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
+		{ // 52
+			"await if for else global not yield from",
+			[]parser.Token{
+				{Type: TokenKeyword, Data: "await"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenKeyword, Data: "if"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenKeyword, Data: "for"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenKeyword, Data: "else"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenKeyword, Data: "global"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenKeyword, Data: "not"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenKeyword, Data: "yield"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenKeyword, Data: "from"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
