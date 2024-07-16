@@ -358,6 +358,39 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
+		{ // 49
+			"identifier",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "identifier"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 50
+			"another identifier",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "another"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenIdentifier, Data: "identifier"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 51
+			"f r u fR rB farm",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "f"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenIdentifier, Data: "r"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenIdentifier, Data: "u"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenIdentifier, Data: "fR"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenIdentifier, Data: "rB"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenIdentifier, Data: "farm"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
