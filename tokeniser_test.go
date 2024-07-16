@@ -479,6 +479,12 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{ // 55
+			"!",
+			[]parser.Token{
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 56
 			"( )",
 			[]parser.Token{
 				{Type: TokenDelimiter, Data: "("},
@@ -487,7 +493,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 56
+		{ // 57
 			"( ",
 			[]parser.Token{
 				{Type: TokenDelimiter, Data: "("},
@@ -495,7 +501,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenError, Data: "unexpected EOF"},
 			},
 		},
-		{ // 57
+		{ // 58
 			"[ ]",
 			[]parser.Token{
 				{Type: TokenDelimiter, Data: "["},
@@ -504,7 +510,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 58
+		{ // 59
 			"[ )",
 			[]parser.Token{
 				{Type: TokenDelimiter, Data: "["},
@@ -512,7 +518,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenError, Data: "invalid character"},
 			},
 		},
-		{ // 59
+		{ // 60
 			"{ ( [ ] ) }",
 			[]parser.Token{
 				{Type: TokenDelimiter, Data: "{"},
@@ -529,7 +535,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 60
+		{ // 61
 			"{ ( [ ] ) )",
 			[]parser.Token{
 				{Type: TokenDelimiter, Data: "{"},
