@@ -478,6 +478,73 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
+		{ // 55
+			"( )",
+			[]parser.Token{
+				{Type: TokenDelimiter, Data: "("},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: ")"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 56
+			"( ",
+			[]parser.Token{
+				{Type: TokenDelimiter, Data: "("},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: parser.TokenError, Data: "unexpected EOF"},
+			},
+		},
+		{ // 57
+			"[ ]",
+			[]parser.Token{
+				{Type: TokenDelimiter, Data: "["},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "]"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 58
+			"[ )",
+			[]parser.Token{
+				{Type: TokenDelimiter, Data: "["},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
+		{ // 59
+			"{ ( [ ] ) }",
+			[]parser.Token{
+				{Type: TokenDelimiter, Data: "{"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "("},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "["},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "]"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: ")"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "}"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
+		{ // 60
+			"{ ( [ ] ) )",
+			[]parser.Token{
+				{Type: TokenDelimiter, Data: "{"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "("},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "["},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "]"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: ")"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
