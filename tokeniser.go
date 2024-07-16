@@ -441,9 +441,8 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 		return t.Error()
 	case '+', '%', '@', '|', '^', ':', '=':
 		t.Except("")
-		t.Accept("=")
 
-		if c != '=' && c != ':' {
+		if t.Accept("=") && c != '=' && c != ':' {
 			typ = TokenDelimiter
 		}
 	case '-':
@@ -457,10 +456,12 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 
 		d := t.Accept(string(c))
 
-		if t.Accept("=") && (!d || c == '*' || c == '/') {
+		if t.Accept("=") && (d || c == '*' || c == '/') {
 			typ = TokenDelimiter
 		}
 	case '!':
+		t.Except("")
+
 		if !t.Accept("=") {
 			t.Err = ErrInvalidCharacter
 
