@@ -575,6 +575,31 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenError, Data: "invalid character"},
 			},
 		},
+		{ // 66
+			"7 2147483647 0o177 0b100110111 3 79228162514264337593543950336 0o377 0xdeadbeef 100_000_000_000 0b_1110_0101",
+			[]parser.Token{
+				{Type: TokenNumericLiteral, Data: "7"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "2147483647"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "0o177"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "0b100110111"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "3"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "79228162514264337593543950336"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "0o377"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "0xdeadbeef"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "100_000_000_000"},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenNumericLiteral, Data: "0b_1110_0101"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
