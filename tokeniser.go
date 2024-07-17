@@ -21,6 +21,9 @@ const (
 	hexDigit         = "0123456789abcdefABCDEF"
 	stringPrefix     = "rRuUfFbB"
 	stringStart      = "\"'"
+
+	singleQuotedExcept = "\\\n'"
+	doubleQuotedExcept = "\\\n\""
 )
 
 var (
@@ -197,6 +200,22 @@ func (s stringOpening) Quote() string {
 	return ""
 }
 
+func (s stringOpening) Except(raw bool) string {
+	var except string
+
+	if s == stringSingle || s == stringTripleSingle {
+		except = singleQuotedExcept
+	} else {
+		except = doubleQuotedExcept
+	}
+
+	if raw {
+		except = except[1:]
+	}
+
+	return except
+}
+
 func (s stringOpening) IsTriple() bool {
 	return s == stringTripleSingle || s == stringTripleDouble
 }
@@ -241,12 +260,8 @@ func (p *pyTokeniser) string(t *parser.Tokeniser, raw bool) (parser.Token, parse
 	}
 
 	m := so.Quote()
-	except := "\n" + m
 	triple := so.IsTriple()
-
-	if !raw {
-		except += "\\"
-	}
+	except := so.Except(raw)
 
 Loop:
 	for {
