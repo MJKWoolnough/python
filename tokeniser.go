@@ -371,6 +371,13 @@ func (p *pyTokeniser) baseNumber(t *parser.Tokeniser) (parser.Token, parser.Toke
 
 func (p *pyTokeniser) floatOrImaginary(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Accept(".") {
+		if !strings.ContainsRune(decimalDigit, t.Peek()) {
+			return parser.Token{
+				Type: TokenNumericLiteral,
+				Data: t.Get(),
+			}, p.main
+		}
+
 		return p.float(t)
 	}
 
