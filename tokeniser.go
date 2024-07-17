@@ -421,7 +421,7 @@ func (p *pyTokeniser) imaginary(t *parser.Tokeniser) (parser.Token, parser.Token
 func (p *pyTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	t.AcceptRun(decimalDigit)
 
-	if !t.Accept(decimalDigit) {
+	if !numberWithGrouping(t, decimalDigit) {
 		t.Err = ErrInvalidNumber
 
 		return t.Error()
