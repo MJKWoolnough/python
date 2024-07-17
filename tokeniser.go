@@ -345,11 +345,6 @@ func (p *pyTokeniser) baseNumber(t *parser.Tokeniser) (parser.Token, parser.Toke
 		digits = binaryDigit
 	}
 
-	if !t.Accept(digits) && digits != "0" {
-		t.Err = ErrInvalidNumber
-
-		return t.Error()
-	}
 	t.AcceptRun(digits)
 
 	if !numberWithGrouping(t, digits) {
@@ -360,6 +355,12 @@ func (p *pyTokeniser) baseNumber(t *parser.Tokeniser) (parser.Token, parser.Toke
 
 	if digits == "0" {
 		return p.floatOrImaginary(t)
+	}
+
+	if t.Len() == 2 {
+		t.Err = ErrInvalidNumber
+
+		return t.Error()
 	}
 
 	return parser.Token{
