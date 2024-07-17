@@ -2,10 +2,11 @@ package python
 
 import (
 	"errors"
+	"strconv"
 	"testing"
 )
 
-func TestUnescape(t *testing.T) {
+func TestUnquote(t *testing.T) {
 	for n, test := range [...]struct {
 		Input, Output string
 		Err           error
@@ -28,7 +29,7 @@ func TestUnescape(t *testing.T) {
 		},
 		{
 			Input: "\"ab\nc\"",
-			Err:   ErrInvalidQuoted,
+			Err:   strconv.ErrSyntax,
 		},
 		{
 			Input:  "\"\"\"ab\nc\"\"\"",
@@ -36,7 +37,7 @@ func TestUnescape(t *testing.T) {
 		},
 		{
 			Input: "'ab\nc'",
-			Err:   ErrInvalidQuoted,
+			Err:   strconv.ErrSyntax,
 		},
 		{
 			Input:  "'''ab\nc'''",
@@ -44,7 +45,7 @@ func TestUnescape(t *testing.T) {
 		},
 		{
 			Input: "\"abc\\\"",
-			Err:   ErrInvalidQuoted,
+			Err:   strconv.ErrSyntax,
 		},
 		{
 			Input:  "r\"abc\\\"",
@@ -55,7 +56,7 @@ func TestUnescape(t *testing.T) {
 			Output: "abc\\",
 		},
 	} {
-		output, err := Unescape(test.Input)
+		output, err := Unquote(test.Input)
 
 		if !errors.Is(test.Err, err) {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Err, err)

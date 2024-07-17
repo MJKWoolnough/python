@@ -1,14 +1,13 @@
 package python
 
 import (
-	"errors"
 	"strconv"
 	"strings"
 
 	"vimagination.zapto.org/parser"
 )
 
-func Unescape(str string) (string, error) {
+func Unquote(str string) (string, error) {
 	t := parser.NewStringTokeniser(str)
 
 	raw := parseStringRaw(&t)
@@ -35,14 +34,14 @@ func Unescape(str string) (string, error) {
 	for {
 		switch t.ExceptRun(except) {
 		default:
-			return "", ErrInvalidQuoted
+			return "", strconv.ErrSyntax
 		case '\\':
 			ret.WriteString(t.Get())
 
 			r := unescapeEscaped(&t)
 
 			if r < 0 {
-				return "", ErrInvalidQuoted
+				return "", strconv.ErrSyntax
 			}
 
 			ret.WriteRune(r)
@@ -50,7 +49,7 @@ func Unescape(str string) (string, error) {
 			t.Get()
 		case '\n':
 			if !triple {
-				return "", ErrInvalidQuoted
+				return "", strconv.ErrSyntax
 			}
 
 			t.Except("")
@@ -124,5 +123,3 @@ func readEscapedDigits(t *parser.Tokeniser, digits string, base, num int) rune {
 
 	return rune(n)
 }
-
-var ErrInvalidQuoted = errors.New("invalid quoted string")
