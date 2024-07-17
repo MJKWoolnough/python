@@ -413,7 +413,15 @@ func (p *pyTokeniser) float(t *parser.Tokeniser) (parser.Token, parser.TokenFunc
 func (p *pyTokeniser) exponential(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	t.Accept("+-")
 
-	if !t.Accept(decimalDigit) || !numberWithGrouping(t, decimalDigit) {
+	if !t.Accept(decimalDigit) {
+		t.Err = ErrInvalidNumber
+
+		return t.Error()
+	}
+
+	t.AcceptRun(decimalDigit)
+
+	if !numberWithGrouping(t, decimalDigit) {
 		t.Err = ErrInvalidNumber
 
 		return t.Error()
