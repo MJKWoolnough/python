@@ -49,6 +49,10 @@ func newPyParser(t Tokeniser) (pyParser, error) {
 	}
 }
 
+func (p pyParser) NewGoal() pyParser {
+	return p[len(p):]
+}
+
 func (p *pyParser) Score(k pyParser) {
 	*p = (*p)[:len(*p)+len(k)]
 }
