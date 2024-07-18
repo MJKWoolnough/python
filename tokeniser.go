@@ -371,17 +371,10 @@ func (p *pyTokeniser) baseNumber(t *parser.Tokeniser) (parser.Token, parser.Toke
 
 func (p *pyTokeniser) floatOrImaginary(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Accept(".") {
-		if !strings.ContainsRune(decimalDigit, t.Peek()) {
-			return parser.Token{
-				Type: TokenNumericLiteral,
-				Data: t.Get(),
-			}, p.main
+		if strings.ContainsRune(decimalDigit, t.Peek()) {
+			return p.float(t)
 		}
-
-		return p.float(t)
-	}
-
-	if t.Accept("eE") {
+	} else if t.Accept("eE") {
 		return p.exponential(t)
 	}
 
@@ -427,10 +420,7 @@ func (p *pyTokeniser) exponential(t *parser.Tokeniser) (parser.Token, parser.Tok
 		return t.Error()
 	}
 
-	return parser.Token{
-		Type: TokenNumericLiteral,
-		Data: t.Get(),
-	}, p.main
+	return p.imaginary(t)
 }
 
 func (p *pyTokeniser) imaginary(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
