@@ -33,5 +33,7 @@ func (f *File) parse(p *pyParser) error {
 		p.Score(q)
 	}
 
+	f.Tokens = p.ToTokens()
+
 	return nil
 }
