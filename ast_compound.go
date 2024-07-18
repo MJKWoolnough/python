@@ -1,6 +1,10 @@
 package python
 
-import "errors"
+import (
+	"errors"
+
+	"vimagination.zapto.org/parser"
+)
 
 var compounds = [...]string{"if", "while", "for", "try", "with", "func", "class", "async", "def"}
 
@@ -92,6 +96,34 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 	return nil
 }
 
+type Decorators struct {
+	Decorators []AssignmentExpression
+	Tokens
+}
+
+func (d *Decorators) parse(p *pyParser) error {
+	for p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "@"}) {
+		var ae AssignmentExpression
+
+		q := p.NewGoal()
+
+		if err := ae.parse(q); err != nil {
+			return p.Error("Decorator", err)
+		}
+
+		q.AcceptRun(TokenWhitespace)
+		p.Score(q)
+
+		if !q.Accept(TokenLineTerminator) {
+			return p.Error("Decorator", ErrMissingNewline)
+		}
+	}
+
+	d.Tokens = p.ToTokens()
+
+	return nil
+}
+
 type IfStatement struct{}
 
 func (i *IfStatement) parse(_ *pyParser) error {
@@ -134,10 +166,7 @@ func (c *ClassDefinition) parse(_ *pyParser, _ *Decorators) error {
 	return nil
 }
 
-type Decorators struct{}
-
-func (d *Decorators) parse(_ *pyParser) error {
-	return nil
-}
-
-var ErrInvalidCompound = errors.New("invalid compound statement")
+var (
+	ErrInvalidCompound = errors.New("invalid compound statement")
+	ErrMissingNewline  = errors.New("missing newline")
+)
