@@ -14,7 +14,7 @@ func Parse(t Tokeniser) (*File, error) {
 	}
 
 	f := new(File)
-	if err = f.parse(&p); err != nil {
+	if err = f.parse(p); err != nil {
 		return nil, err
 	}
 
@@ -26,7 +26,7 @@ func (f *File) parse(p *pyParser) error {
 		var s Statement
 
 		q := p.NewGoal()
-		if err := s.parse(&q); err != nil {
+		if err := s.parse(q); err != nil {
 			return p.Error("File", err)
 		}
 

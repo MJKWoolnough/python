@@ -23,7 +23,7 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 
 		q := p.NewGoal()
 
-		if err := decorators.parse(&q); err != nil {
+		if err := decorators.parse(q); err != nil {
 			return p.Error("CompoundStatement", err)
 		}
 
@@ -41,25 +41,25 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 	switch tk := p.Peek(); tk.Data {
 	case "if":
 		c.If = new(IfStatement)
-		err = c.If.parse(&q)
+		err = c.If.parse(q)
 	case "while":
 		c.While = new(WhileStatement)
-		err = c.While.parse(&q)
+		err = c.While.parse(q)
 	case "for":
 		c.For = new(ForStatement)
-		err = c.For.parse(&q, false)
+		err = c.For.parse(q, false)
 	case "try":
 		c.Try = new(TryStatement)
-		err = c.Try.parse(&q)
+		err = c.Try.parse(q)
 	case "with":
 		c.With = new(WithStatement)
-		err = c.With.parse(&q, false)
+		err = c.With.parse(q, false)
 	case "def":
 		c.Func = new(FuncDefinition)
-		err = c.Func.parse(&q, false, decorators)
+		err = c.Func.parse(q, false, decorators)
 	case "class":
 		c.Class = new(ClassDefinition)
-		err = c.Class.parse(&q, decorators)
+		err = c.Class.parse(q, decorators)
 	case "async":
 		p.next()
 		p.AcceptRun(TokenWhitespace)
@@ -67,13 +67,13 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 		switch tk := p.Peek(); tk.Data {
 		case "for":
 			c.For = new(ForStatement)
-			err = c.For.parse(&q, true)
+			err = c.For.parse(q, true)
 		case "with":
 			c.With = new(WithStatement)
-			err = c.With.parse(&q, true)
+			err = c.With.parse(q, true)
 		case "def":
 			c.Func = new(FuncDefinition)
-			err = c.Func.parse(&q, true, decorators)
+			err = c.Func.parse(q, true, decorators)
 		default:
 			err = ErrInvalidCompound
 		}

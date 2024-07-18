@@ -33,7 +33,7 @@ func (s *Statement) parse(p *pyParser) error {
 	if isCompound {
 		var c CompoundStatement
 
-		if err := c.parser(&q); err != nil {
+		if err := c.parser(q); err != nil {
 			if !isSoftCompound {
 				return p.Error("Statement", err)
 			}
@@ -47,7 +47,7 @@ func (s *Statement) parse(p *pyParser) error {
 		}
 	}
 
-	if err := s.StatementList.parse(&q); err != nil {
+	if err := s.StatementList.parse(q); err != nil {
 		return p.Error("Statement", err)
 	}
 
@@ -65,7 +65,7 @@ func (s *StatementList) parse(p *pyParser) error {
 
 		q := p.NewGoal()
 
-		if err := ss.parse(&q); err != nil {
+		if err := ss.parse(q); err != nil {
 			return p.Error("StatementList", err)
 		}
 

@@ -13,7 +13,11 @@ type Token struct {
 
 type Tokens []Token
 
-type pyParser Tokens
+type pyParser struct {
+	indent      string
+	indentCount int
+	Tokens
+}
 
 type Tokeniser interface {
 	GetToken() (parser.Token, error)
@@ -21,11 +25,11 @@ type Tokeniser interface {
 	TokeniserState(parser.TokenFunc)
 }
 
-func newPyParser(t Tokeniser) (pyParser, error) {
+func newPyParser(t Tokeniser) (*pyParser, error) {
 	t.TokeniserState(new(pyTokeniser).main)
 
 	var (
-		tokens             pyParser
+		tokens             Tokens
 		pos, line, linePos uint64
 	)
 
@@ -35,7 +39,7 @@ func newPyParser(t Tokeniser) (pyParser, error) {
 
 		switch tk.Type {
 		case parser.TokenDone:
-			return tokens[0:0:len(tokens)], nil
+			return &pyParser{Tokens: tokens[0:0:len(tokens)]}, nil
 		case parser.TokenError:
 			return nil, Error{Err: t.GetError(), Parsing: "Tokens", Token: tokens[len(tokens)-1]}
 		case TokenLineTerminator:
@@ -49,28 +53,32 @@ func newPyParser(t Tokeniser) (pyParser, error) {
 	}
 }
 
-func (p pyParser) NewGoal() pyParser {
-	return p[len(p):]
+func (p pyParser) NewGoal() *pyParser {
+	return &pyParser{
+		indent:      p.indent,
+		indentCount: p.indentCount,
+		Tokens:      p.Tokens[len(p.Tokens):],
+	}
 }
 
-func (p *pyParser) Score(k pyParser) {
-	*p = (*p)[:len(*p)+len(k)]
+func (p *pyParser) Score(k *pyParser) {
+	p.Tokens = p.Tokens[:len(p.Tokens)+len(k.Tokens)]
 }
 
 func (p *pyParser) next() Token {
-	l := len(*p)
-	if l == cap(*p) {
-		return (*p)[l-1]
+	l := len(p.Tokens)
+	if l == cap(p.Tokens) {
+		return (p.Tokens)[l-1]
 	}
 
-	*p = (*p)[:l+1]
-	tk := (*p)[l]
+	p.Tokens = p.Tokens[:l+1]
+	tk := p.Tokens[l]
 
 	return tk
 }
 
 func (p *pyParser) backup() {
-	*p = (*p)[:len(*p)-1]
+	p.Tokens = p.Tokens[:len(p.Tokens)-1]
 }
 
 func (j *pyParser) Peek() parser.Token {
@@ -141,11 +149,11 @@ func (p *pyParser) AcceptToken(tk parser.Token) bool {
 }
 
 func (p *pyParser) ToTokens() Tokens {
-	return Tokens((*p)[:len(*p):len(*p)])
+	return p.Tokens[:len(p.Tokens):len(p.Tokens)]
 }
 
 func (p *pyParser) GetLastToken() *Token {
-	return &(*p)[len(*p)-1]
+	return &p.Tokens[len(p.Tokens)-1]
 }
 
 type Error struct {
