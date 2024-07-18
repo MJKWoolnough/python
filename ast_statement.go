@@ -1,6 +1,10 @@
 package python
 
-import "slices"
+import (
+	"slices"
+
+	"vimagination.zapto.org/parser"
+)
 
 type Statement struct {
 	StatementList     StatementList
@@ -55,7 +59,33 @@ type StatementList struct {
 	Tokens
 }
 
-func (s *StatementList) parse(_ *pyParser) error {
+func (s *StatementList) parse(p *pyParser) error {
+	for {
+		var ss SimpleStatement
+
+		q := p.NewGoal()
+
+		if err := ss.parse(&q); err != nil {
+			return p.Error("StatementList", err)
+		}
+
+		p.Score(q)
+
+		s.Statements = append(s.Statements, ss)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ";"}) {
+			break
+		}
+
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
 	return nil
 }
 
