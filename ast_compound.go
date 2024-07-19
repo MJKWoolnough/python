@@ -124,9 +124,74 @@ func (d *Decorators) parse(p *pyParser) error {
 	return nil
 }
 
-type IfStatement struct{}
+type IfStatement struct {
+	If     AssignmentExpressionAndSuite
+	Elif   []AssignmentExpressionAndSuite
+	Else   *AssignmentExpression
+	Tokens Tokens
+}
 
-func (i *IfStatement) parse(_ *pyParser) error {
+func (i *IfStatement) parse(p *pyParser) error {
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"})
+	p.AcceptRun(TokenWhitespace)
+
+	q := p.NewGoal()
+
+	if err := i.If.parse(q); err != nil {
+		return p.Error("IfStatement", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(TokenLineTerminator)
+
+	for q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "elif"}) {
+		q.AcceptRun(TokenWhitespace)
+		p.Score(q)
+
+		q := p.NewGoal()
+
+		var as AssignmentExpressionAndSuite
+
+		if err := as.parse(q); err != nil {
+			return p.Error("IfStatement", err)
+		}
+
+		i.Elif = append(i.Elif, as)
+
+		p.Score(q)
+		p.AcceptRun(TokenWhitespace)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenLineTerminator)
+	}
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
+		p.Score(q)
+		p.AcceptRun(TokenWhitespace)
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			return p.Error("IfStatement", ErrMissingColon)
+		}
+
+		p.AcceptRun(TokenWhitespace)
+
+		q = p.NewGoal()
+
+		i.Else = new(AssignmentExpression)
+
+		if err := i.Else.parse(q); err != nil {
+			return p.Error("IfStatement", err)
+		}
+	}
+
+	p.Score(q)
+
+	i.Tokens = p.ToTokens()
+
 	return nil
 }
 
@@ -166,7 +231,24 @@ func (c *ClassDefinition) parse(_ *pyParser, _ *Decorators) error {
 	return nil
 }
 
+type AssignmentExpressionAndSuite struct {
+	AssignmentExpression AssignmentExpression
+	Suite                Suite
+	Tokens               Tokens
+}
+
+func (a *AssignmentExpressionAndSuite) parse(_ *pyParser) error {
+	return nil
+}
+
+type Suite struct{}
+
+func (s *Suite) parse(_ *pyParser) error {
+	return nil
+}
+
 var (
 	ErrInvalidCompound = errors.New("invalid compound statement")
 	ErrMissingNewline  = errors.New("missing newline")
+	ErrMissingColon    = errors.New("missing colon")
 )

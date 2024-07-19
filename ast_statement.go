@@ -94,3 +94,9 @@ type SimpleStatement struct{}
 func (s *SimpleStatement) parse(_ *pyParser) error {
 	return nil
 }
+
+type AssignmentExpression struct{}
+
+func (s *AssignmentExpression) parse(_ *pyParser) error {
+	return nil
+}
