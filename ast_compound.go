@@ -246,9 +246,88 @@ func (w *WhileStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type ForStatement struct{}
+type ForStatement struct {
+	Async       bool
+	TargetList  TargetList
+	StarredList StarredList
+	Suite       Suite
+	Else        *Suite
+	Tokens
+}
 
-func (f *ForStatement) parse(_ *pyParser, _ bool) error {
+func (f *ForStatement) parse(p *pyParser, async bool) error {
+	f.Async = async
+
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "while"})
+	p.AcceptRun(TokenWhitespace)
+
+	q := p.NewGoal()
+
+	if err := f.TargetList.parse(p); err != nil {
+		return p.Error("ForStatement", err)
+	}
+
+	p.Score(q)
+
+	p.AcceptRun(TokenWhitespace)
+
+	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
+		return p.Error("ForStatement", ErrMissingIn)
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	q = p.NewGoal()
+
+	if err := f.StarredList.parse(p); err != nil {
+		return p.Error("ForStatement", err)
+	}
+
+	p.Score(q)
+
+	p.AcceptRun(TokenWhitespace)
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("ForStatement", ErrMissingIn)
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	q = p.NewGoal()
+
+	if err := f.Suite.parse(q); err != nil {
+		return p.Error("ForStatement", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(TokenLineTerminator)
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
+		p.Score(q)
+		p.AcceptRun(TokenWhitespace)
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			return p.Error("ForStatement", ErrMissingColon)
+		}
+
+		p.AcceptRun(TokenWhitespace)
+
+		q = p.NewGoal()
+
+		f.Else = new(Suite)
+
+		if err := f.Else.parse(q); err != nil {
+			return p.Error("ForStatement", err)
+		}
+
+		p.Score(q)
+	}
+
+	f.Tokens = p.ToTokens()
+
 	return nil
 }
 
@@ -292,8 +371,21 @@ func (s *Suite) parse(_ *pyParser) error {
 	return nil
 }
 
+type TargetList struct{}
+
+func (t *TargetList) parse(_ *pyParser) error {
+	return nil
+}
+
+type StarredList struct{}
+
+func (s *StarredList) parse(_ *pyParser) error {
+	return nil
+}
+
 var (
 	ErrInvalidCompound = errors.New("invalid compound statement")
 	ErrMissingNewline  = errors.New("missing newline")
 	ErrMissingColon    = errors.New("missing colon")
+	ErrMissingIn       = errors.New("missing in")
 )
