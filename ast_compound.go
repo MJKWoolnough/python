@@ -436,9 +436,54 @@ func (t *TryStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type Except struct{}
+type Except struct {
+	Expression Expression
+	Identifier *string
+	Suite      Suite
+	Tokens     Tokens
+}
 
-func (e *Except) parse(_ *pyParser) error {
+func (e *Except) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := e.Expression.parse(q); err != nil {
+		return p.Error("Except", err)
+	}
+
+	p.Score(q)
+
+	p.AcceptRun(TokenWhitespace)
+
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
+		p.AcceptRun(TokenWhitespace)
+
+		token := p.next()
+
+		if token.Type != TokenIdentifier {
+			return p.Error("Except", ErrMissingIdentifier)
+		}
+
+		e.Identifier = &token.Data
+
+		p.AcceptRun(TokenWhitespace)
+	}
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("Except", ErrMissingColon)
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	q = p.NewGoal()
+
+	if err := e.Suite.parse(q); err != nil {
+		return p.Error("Except", err)
+	}
+
+	p.Score(q)
+
+	e.Tokens = p.ToTokens()
+
 	return nil
 }
 
@@ -489,10 +534,11 @@ func (s *StarredList) parse(_ *pyParser) error {
 }
 
 var (
-	ErrInvalidCompound  = errors.New("invalid compound statement")
-	ErrMissingNewline   = errors.New("missing newline")
-	ErrMissingColon     = errors.New("missing colon")
-	ErrMissingIn        = errors.New("missing in")
-	ErrMissingFinally   = errors.New("missing finally")
-	ErrMismatchedGroups = errors.New("mismatched groups in except")
+	ErrInvalidCompound   = errors.New("invalid compound statement")
+	ErrMissingNewline    = errors.New("missing newline")
+	ErrMissingColon      = errors.New("missing colon")
+	ErrMissingIn         = errors.New("missing in")
+	ErrMissingFinally    = errors.New("missing finally")
+	ErrMissingIdentifier = errors.New("missing identifier")
+	ErrMismatchedGroups  = errors.New("mismatched groups in except")
 )
