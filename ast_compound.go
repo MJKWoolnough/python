@@ -487,9 +487,59 @@ func (e *Except) parse(p *pyParser) error {
 	return nil
 }
 
-type WithStatement struct{}
+type WithStatement struct {
+	Async    bool
+	Contents WithStatementContents
+	Suite    Suite
+	Tokens   Tokens
+}
 
-func (w *WithStatement) parse(_ *pyParser, _ bool) error {
+func (w *WithStatement) parse(p *pyParser, async bool) error {
+	w.Async = async
+
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "while"})
+	p.AcceptRun(TokenWhitespace)
+
+	parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
+
+	p.AcceptRun(TokenWhitespace)
+
+	q := p.NewGoal()
+
+	if err := w.Contents.parse(q); err != nil {
+		return p.Error("WithStatement", err)
+	}
+
+	p.Score(q)
+
+	p.AcceptRun(TokenWhitespace)
+
+	if parens {
+		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			p.AcceptRun(TokenWhitespace)
+		}
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			return p.Error("WithStatement", ErrMissingClosingParen)
+		}
+
+		p.AcceptRun(TokenWhitespace)
+	}
+
+	q = p.NewGoal()
+
+	if err := w.Suite.parse(q); err != nil {
+		return p.Error("WithStatement", err)
+	}
+
+	w.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type WithStatementContents struct{}
+
+func (w *WithStatementContents) parse(_ *pyParser) error {
 	return nil
 }
 
@@ -534,11 +584,12 @@ func (s *StarredList) parse(_ *pyParser) error {
 }
 
 var (
-	ErrInvalidCompound   = errors.New("invalid compound statement")
-	ErrMissingNewline    = errors.New("missing newline")
-	ErrMissingColon      = errors.New("missing colon")
-	ErrMissingIn         = errors.New("missing in")
-	ErrMissingFinally    = errors.New("missing finally")
-	ErrMissingIdentifier = errors.New("missing identifier")
-	ErrMismatchedGroups  = errors.New("mismatched groups in except")
+	ErrInvalidCompound     = errors.New("invalid compound statement")
+	ErrMissingNewline      = errors.New("missing newline")
+	ErrMissingColon        = errors.New("missing colon")
+	ErrMissingIn           = errors.New("missing in")
+	ErrMissingFinally      = errors.New("missing finally")
+	ErrMissingIdentifier   = errors.New("missing identifier")
+	ErrMismatchedGroups    = errors.New("mismatched groups in except")
+	ErrMissingClosingParen = errors.New("missing closing paren")
 )
