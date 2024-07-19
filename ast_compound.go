@@ -331,9 +331,114 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 	return nil
 }
 
-type TryStatement struct{}
+type TryStatement struct {
+	Try     Suite
+	Groups  bool
+	Except  []Except
+	Else    *Suite
+	Finally *Suite
+	Tokens  Tokens
+}
 
-func (t *TryStatement) parse(_ *pyParser) error {
+func (t *TryStatement) parse(p *pyParser) error {
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "try"})
+	p.AcceptRun(TokenWhitespace)
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("TryStatement", ErrMissingColon)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRun(TokenLineTerminator)
+
+	for p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "except"}) {
+		p.Score(q)
+		p.AcceptRun(TokenWhitespace)
+
+		group := p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"})
+
+		if len(t.Except) > 0 && t.Groups != group {
+			return p.Error("TryStatement", ErrMismatchedGroups)
+		}
+
+		t.Groups = group
+
+		p.AcceptRun(TokenWhitespace)
+
+		q = p.NewGoal()
+
+		var except Except
+
+		if err := except.parse(q); err != nil {
+			return p.Error("TryStatement", err)
+		}
+
+		t.Except = append(t.Except, except)
+
+		q.Score(p)
+	}
+
+	q = p.NewGoal()
+
+	q.AcceptRun(TokenLineTerminator)
+
+	if len(t.Except) > 0 && p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
+		p.Score(q)
+		p.AcceptRun(TokenWhitespace)
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			return p.Error("TryStatement", ErrMissingColon)
+		}
+
+		p.AcceptRun(TokenWhitespace)
+
+		q := p.NewGoal()
+
+		t.Else = new(Suite)
+
+		if err := t.Else.parse(q); err != nil {
+			return p.Error("TryStatement", err)
+		}
+
+		p.Score(q)
+	}
+
+	q = p.NewGoal()
+
+	q.AcceptRun(TokenLineTerminator)
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "finally"}) {
+		p.Score(q)
+		p.AcceptRun(TokenWhitespace)
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			return p.Error("TryStatement", ErrMissingColon)
+		}
+
+		p.AcceptRun(TokenWhitespace)
+
+		q := p.NewGoal()
+
+		t.Finally = new(Suite)
+
+		if err := t.Finally.parse(q); err != nil {
+			return p.Error("TryStatement", err)
+		}
+
+		p.Score(q)
+	} else if len(t.Except) == 0 {
+		return p.Error("TryStatement", ErrMissingFinally)
+	}
+
+	t.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type Except struct{}
+
+func (e *Except) parse(_ *pyParser) error {
 	return nil
 }
 
@@ -384,8 +489,10 @@ func (s *StarredList) parse(_ *pyParser) error {
 }
 
 var (
-	ErrInvalidCompound = errors.New("invalid compound statement")
-	ErrMissingNewline  = errors.New("missing newline")
-	ErrMissingColon    = errors.New("missing colon")
-	ErrMissingIn       = errors.New("missing in")
+	ErrInvalidCompound  = errors.New("invalid compound statement")
+	ErrMissingNewline   = errors.New("missing newline")
+	ErrMissingColon     = errors.New("missing colon")
+	ErrMissingIn        = errors.New("missing in")
+	ErrMissingFinally   = errors.New("missing finally")
+	ErrMismatchedGroups = errors.New("mismatched groups in except")
 )

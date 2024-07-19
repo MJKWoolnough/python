@@ -100,3 +100,9 @@ type AssignmentExpression struct{}
 func (s *AssignmentExpression) parse(_ *pyParser) error {
 	return nil
 }
+
+type Expression struct{}
+
+func (s *Expression) parse(_ *pyParser) error {
+	return nil
+}
