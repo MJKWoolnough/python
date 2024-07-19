@@ -615,9 +615,112 @@ func (w *WithItem) parse(p *pyParser) error {
 	return nil
 }
 
-type FuncDefinition struct{}
+type FuncDefinition struct {
+	Decorators    *Decorators
+	Async         bool
+	FuncName      *Token
+	TypeParams    []TypeParam
+	ParameterList ParameterList
+	Expression    *Expression
+	Suite         Suite
+	Tokens        Tokens
+}
 
-func (f *FuncDefinition) parse(_ *pyParser, _ bool, _ *Decorators) error {
+func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) error {
+	f.Decorators = decorators
+	f.Async = async
+
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "def"})
+	p.AcceptRun(TokenWhitespace)
+
+	if !p.Accept(TokenIdentifier) {
+		return p.Error("FuncDefinition", ErrMissingIdentifier)
+	}
+
+	f.FuncName = p.GetLastToken()
+
+	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+		for {
+			p.AcceptRun(TokenWhitespace)
+
+			q := p.NewGoal()
+
+			var t TypeParam
+
+			if err := t.parse(q); err != nil {
+				return p.Error("FuncDefinition", err)
+			}
+
+			p.Score(q)
+
+			f.TypeParams = append(f.TypeParams, t)
+
+			p.AcceptRun(TokenWhitespace)
+
+			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+					return p.Error("FuncDefinition", ErrMissingClosingBracket)
+				}
+
+				break
+			}
+		}
+
+		p.AcceptRun(TokenWhitespace)
+	}
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
+		return p.Error("FuncDefinition", ErrMissingOpeningParen)
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		q := p.NewGoal()
+
+		if err := f.ParameterList.parse(q); err != nil {
+			return p.Error("FuncDefinition", err)
+		}
+
+		p.AcceptRun(TokenWhitespace)
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			return p.Error("FuncDefinition", ErrMissingClosingParen)
+		}
+
+		p.AcceptRun(TokenWhitespace)
+	}
+
+	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "->"}) {
+		p.AcceptRun(TokenWhitespace)
+
+		q := p.NewGoal()
+
+		f.Expression = new(Expression)
+
+		if err := f.Expression.parse(q); err != nil {
+			return p.Error("FuncDefinition", err)
+		}
+
+		p.AcceptRun(TokenWhitespace)
+	}
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("FuncDefinition", ErrMissingColon)
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	q := p.NewGoal()
+
+	if err := f.Suite.parse(q); err != nil {
+		return p.Error("FuncDefinition", err)
+	}
+
+	p.Score(q)
+
+	f.Tokens = p.ToTokens()
+
 	return nil
 }
 
@@ -661,13 +764,27 @@ func (t *Target) parse(_ *pyParser) error {
 	return nil
 }
 
+type TypeParam struct{}
+
+func (t *TypeParam) parse(_ *pyParser) error {
+	return nil
+}
+
+type ParameterList struct{}
+
+func (l *ParameterList) parse(_ *pyParser) error {
+	return nil
+}
+
 var (
-	ErrInvalidCompound     = errors.New("invalid compound statement")
-	ErrMissingNewline      = errors.New("missing newline")
-	ErrMissingColon        = errors.New("missing colon")
-	ErrMissingIn           = errors.New("missing in")
-	ErrMissingFinally      = errors.New("missing finally")
-	ErrMissingIdentifier   = errors.New("missing identifier")
-	ErrMismatchedGroups    = errors.New("mismatched groups in except")
-	ErrMissingClosingParen = errors.New("missing closing paren")
+	ErrInvalidCompound       = errors.New("invalid compound statement")
+	ErrMissingNewline        = errors.New("missing newline")
+	ErrMissingColon          = errors.New("missing colon")
+	ErrMissingIn             = errors.New("missing in")
+	ErrMissingFinally        = errors.New("missing finally")
+	ErrMissingIdentifier     = errors.New("missing identifier")
+	ErrMismatchedGroups      = errors.New("mismatched groups in except")
+	ErrMissingOpeningParen   = errors.New("missing opening paren")
+	ErrMissingClosingParen   = errors.New("missing closing paren")
+	ErrMissingClosingBracket = errors.New("missing closing bracket")
 )
