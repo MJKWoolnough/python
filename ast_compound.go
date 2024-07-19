@@ -724,9 +724,94 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 	return nil
 }
 
-type ClassDefinition struct{}
+type ClassDefinition struct {
+	Decorators  *Decorators
+	ClassName   *Token
+	TypeParams  []TypeParam
+	Inheritance ArgumentList
+	Suite       Suite
+	Tokens      Tokens
+}
 
-func (c *ClassDefinition) parse(_ *pyParser, _ *Decorators) error {
+func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
+	c.Decorators = decorators
+
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "class"})
+	p.AcceptRun(TokenWhitespace)
+
+	if !p.Accept(TokenIdentifier) {
+		return p.Error("ClassDefinition", ErrMissingIdentifier)
+	}
+
+	c.ClassName = p.GetLastToken()
+
+	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+		for {
+			p.AcceptRun(TokenWhitespace)
+
+			q := p.NewGoal()
+
+			var t TypeParam
+
+			if err := t.parse(q); err != nil {
+				return p.Error("ClassDefinition", err)
+			}
+
+			p.Score(q)
+
+			c.TypeParams = append(c.TypeParams, t)
+
+			p.AcceptRun(TokenWhitespace)
+
+			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+					return p.Error("ClassDefinition", ErrMissingClosingBracket)
+				}
+
+				break
+			}
+		}
+
+		p.AcceptRun(TokenWhitespace)
+	}
+
+	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
+		p.AcceptRun(TokenWhitespace)
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			q := p.NewGoal()
+
+			if err := c.Inheritance.parse(q); err != nil {
+				return p.Error("ClassDefinition", err)
+			}
+
+			p.AcceptRun(TokenWhitespace)
+
+			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+				return p.Error("ClassDefinition", ErrMissingClosingParen)
+			}
+
+			p.AcceptRun(TokenWhitespace)
+		}
+	}
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("ClassDefinition", ErrMissingColon)
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	q := p.NewGoal()
+
+	if err := c.Suite.parse(q); err != nil {
+		return p.Error("ClassDefinition", err)
+	}
+
+	p.Score(q)
+
+	c.Tokens = p.ToTokens()
+
+	return nil
 	return nil
 }
 
@@ -773,6 +858,12 @@ func (t *TypeParam) parse(_ *pyParser) error {
 type ParameterList struct{}
 
 func (l *ParameterList) parse(_ *pyParser) error {
+	return nil
+}
+
+type ArgumentList struct{}
+
+func (a *ArgumentList) parse(_ *pyParser) error {
 	return nil
 }
 
