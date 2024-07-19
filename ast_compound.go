@@ -537,9 +537,49 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 	return nil
 }
 
-type WithStatementContents struct{}
+type WithStatementContents struct {
+	Items  []WithItem
+	Tokens Tokens
+}
 
-func (w *WithStatementContents) parse(_ *pyParser) error {
+func (w *WithStatementContents) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	another := true
+
+	for another {
+		var wi WithItem
+
+		r := q.NewGoal()
+
+		if err := wi.parse(r); err != nil {
+			return p.Error("WithStatementContents", err)
+		}
+
+		q.Score(r)
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		another = q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
+
+		q.AcceptRun(TokenWhitespace)
+
+		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			break
+		}
+	}
+
+	w.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type WithItem struct{}
+
+func (w *WithItem) parse(_ *pyParser) error {
 	return nil
 }
 
