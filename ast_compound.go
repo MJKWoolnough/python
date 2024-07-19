@@ -577,9 +577,41 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 	return nil
 }
 
-type WithItem struct{}
+type WithItem struct {
+	Expression Expression
+	Target     *Target
+	Tokens     Tokens
+}
 
-func (w *WithItem) parse(_ *pyParser) error {
+func (w *WithItem) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := w.Expression.parse(q); err != nil {
+		return p.Error("WithItem", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(TokenWhitespace)
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
+		q.AcceptRun(TokenWhitespace)
+		p.Score(q)
+
+		q = p.NewGoal()
+		w.Target = new(Target)
+
+		if err := w.Target.parse(q); err != nil {
+			return p.Error("WithItem", err)
+		}
+
+		p.Score(q)
+	}
+
+	w.Tokens = p.ToTokens()
+
 	return nil
 }
 
@@ -620,6 +652,12 @@ func (t *TargetList) parse(_ *pyParser) error {
 type StarredList struct{}
 
 func (s *StarredList) parse(_ *pyParser) error {
+	return nil
+}
+
+type Target struct{}
+
+func (t *Target) parse(_ *pyParser) error {
 	return nil
 }
 
