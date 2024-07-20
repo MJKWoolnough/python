@@ -812,7 +812,6 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 	c.Tokens = p.ToTokens()
 
 	return nil
-	return nil
 }
 
 type AssignmentExpressionAndSuite struct {
@@ -821,7 +820,33 @@ type AssignmentExpressionAndSuite struct {
 	Tokens               Tokens
 }
 
-func (a *AssignmentExpressionAndSuite) parse(_ *pyParser) error {
+func (a *AssignmentExpressionAndSuite) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := a.AssignmentExpression.parse(q); err != nil {
+		return p.Error("AssignmentExpressionAndSuite", err)
+	}
+
+	p.Score(q)
+
+	p.AcceptRun(TokenWhitespace)
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("AssignmentExpressionAndSuite", ErrMissingColon)
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	q = p.NewGoal()
+
+	if err := a.Suite.parse(q); err != nil {
+		return p.Error("AssignmentExpressionAndSuite", err)
+	}
+
+	p.Score(q)
+
+	a.Tokens = p.ToTokens()
+
 	return nil
 }
 
