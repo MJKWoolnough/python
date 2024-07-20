@@ -120,6 +120,19 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 		}, p.main
 	}
 
+	if t.Accept("\\") {
+		if !t.Accept(lineTerminator) {
+			t.Err = ErrInvalidCharacter
+
+			return t.Error()
+		}
+
+		return parser.Token{
+			Type: TokenWhitespace,
+			Data: t.Get(),
+		}, p.main
+	}
+
 	if t.Accept(comment) {
 		t.ExceptRun(lineTerminator)
 
