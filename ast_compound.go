@@ -446,7 +446,7 @@ type Except struct {
 func (e *Except) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := e.Expression.parse(q); err != nil {
+	if err := e.Expression.parse(q, whitespaceToken); err != nil {
 		return p.Error("Except", err)
 	}
 
@@ -502,21 +502,21 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 
 	parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRun(TokenWhitespace, TokenComment)
 
 	q := p.NewGoal()
 
-	if err := w.Contents.parse(q); err != nil {
+	if err := w.Contents.parse(q, parens); err != nil {
 		return p.Error("WithStatement", err)
 	}
 
 	p.Score(q)
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRun(TokenWhitespace, TokenComment)
 
 	if parens {
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			p.AcceptRun(TokenWhitespace)
+			p.AcceptRun(TokenWhitespace, TokenComment)
 		}
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
@@ -542,17 +542,27 @@ type WithStatementContents struct {
 	Tokens Tokens
 }
 
-func (w *WithStatementContents) parse(p *pyParser) error {
+var (
+	whitespaceCommentTokens = []parser.TokenType{TokenWhitespace, TokenComment}
+	whitespaceToken         = whitespaceCommentTokens[:1]
+)
+
+func (w *WithStatementContents) parse(p *pyParser, inParen bool) error {
 	q := p.NewGoal()
 
 	another := true
+	ws := whitespaceToken
+
+	if inParen {
+		ws = whitespaceCommentTokens
+	}
 
 	for another {
 		var wi WithItem
 
 		r := q.NewGoal()
 
-		if err := wi.parse(r); err != nil {
+		if err := wi.parse(r, ws); err != nil {
 			return p.Error("WithStatementContents", err)
 		}
 
@@ -561,11 +571,11 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 
 		q = p.NewGoal()
 
-		q.AcceptRun(TokenWhitespace)
+		q.AcceptRun(ws...)
 
 		another = q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
 
-		q.AcceptRun(TokenWhitespace)
+		q.AcceptRun(ws...)
 
 		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			break
@@ -583,10 +593,10 @@ type WithItem struct {
 	Tokens     Tokens
 }
 
-func (w *WithItem) parse(p *pyParser) error {
+func (w *WithItem) parse(p *pyParser, ws []parser.TokenType) error {
 	q := p.NewGoal()
 
-	if err := w.Expression.parse(q); err != nil {
+	if err := w.Expression.parse(q, ws); err != nil {
 		return p.Error("WithItem", err)
 	}
 
@@ -594,16 +604,16 @@ func (w *WithItem) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(TokenWhitespace)
+	q.AcceptRun(ws...)
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
-		q.AcceptRun(TokenWhitespace)
+		q.AcceptRun(ws...)
 		p.Score(q)
 
 		q = p.NewGoal()
 		w.Target = new(Target)
 
-		if err := w.Target.parse(q); err != nil {
+		if err := w.Target.parse(q, ws); err != nil {
 			return p.Error("WithItem", err)
 		}
 
@@ -641,7 +651,7 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 		for {
-			p.AcceptRun(TokenWhitespace)
+			p.AcceptRun(TokenWhitespace, TokenComment)
 
 			q := p.NewGoal()
 
@@ -655,7 +665,7 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 
 			f.TypeParams = append(f.TypeParams, t)
 
-			p.AcceptRun(TokenWhitespace)
+			p.AcceptRun(TokenWhitespace, TokenComment)
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
@@ -666,14 +676,14 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 			}
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRun(TokenWhitespace, TokenComment)
 	}
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 		return p.Error("FuncDefinition", ErrMissingOpeningParen)
 	}
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRun(TokenWhitespace, TokenComment)
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 		q := p.NewGoal()
@@ -698,7 +708,7 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 
 		f.Expression = new(Expression)
 
-		if err := f.Expression.parse(q); err != nil {
+		if err := f.Expression.parse(q, whitespaceToken); err != nil {
 			return p.Error("FuncDefinition", err)
 		}
 
@@ -747,7 +757,7 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 		for {
-			p.AcceptRun(TokenWhitespace)
+			p.AcceptRun(TokenWhitespace, TokenComment)
 
 			q := p.NewGoal()
 
@@ -761,7 +771,7 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 
 			c.TypeParams = append(c.TypeParams, t)
 
-			p.AcceptRun(TokenWhitespace)
+			p.AcceptRun(TokenWhitespace, TokenComment)
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
@@ -772,11 +782,11 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 			}
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRun(TokenWhitespace, TokenComment)
 	}
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRun(TokenWhitespace, TokenComment)
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			q := p.NewGoal()
@@ -785,13 +795,13 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 				return p.Error("ClassDefinition", err)
 			}
 
-			p.AcceptRun(TokenWhitespace)
+			p.AcceptRun(TokenWhitespace, TokenComment)
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 				return p.Error("ClassDefinition", ErrMissingClosingParen)
 			}
 
-			p.AcceptRun(TokenWhitespace)
+			p.AcceptRun(TokenWhitespace, TokenComment)
 		}
 	}
 
@@ -870,7 +880,7 @@ func (s *StarredList) parse(_ *pyParser) error {
 
 type Target struct{}
 
-func (t *Target) parse(_ *pyParser) error {
+func (t *Target) parse(_ *pyParser, _ws []parser.TokenType) error {
 	return nil
 }
 

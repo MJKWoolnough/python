@@ -103,6 +103,6 @@ func (s *AssignmentExpression) parse(_ *pyParser) error {
 
 type Expression struct{}
 
-func (s *Expression) parse(_ *pyParser) error {
+func (s *Expression) parse(_ *pyParser, _ws []parser.TokenType) error {
 	return nil
 }
