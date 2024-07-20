@@ -11,16 +11,17 @@ import (
 )
 
 const (
-	whitespace       = " \t"
-	lineTerminator   = "\n"
-	comment          = "#"
-	singleEscapeChar = "'\"\\bfnrtv"
-	binaryDigit      = "01"
-	octalDigit       = "01234567"
-	decimalDigit     = "0123456789"
-	hexDigit         = "0123456789abcdefABCDEF"
-	stringPrefix     = "rRuUfFbB"
-	stringStart      = "\"'"
+	whitespaceWithLineTerminator = " \t\n"
+	whitespace                   = " \t"
+	lineTerminator               = "\n"
+	comment                      = "#"
+	singleEscapeChar             = "'\"\\bfnrtv"
+	binaryDigit                  = "01"
+	octalDigit                   = "01234567"
+	decimalDigit                 = "0123456789"
+	hexDigit                     = "0123456789abcdefABCDEF"
+	stringPrefix                 = "rRuUfFbB"
+	stringStart                  = "\"'"
 
 	singleQuotedExcept = "\\\n'"
 	doubleQuotedExcept = "\\\n\""
@@ -95,8 +96,14 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 		return t.Done()
 	}
 
-	if t.Accept(whitespace) {
-		t.AcceptRun(whitespace)
+	ws := whitespace
+
+	if len(p.tokenDepth) > 0 {
+		ws = whitespaceWithLineTerminator
+	}
+
+	if t.Accept(ws) {
+		t.AcceptRun(ws)
 
 		return parser.Token{
 			Type: TokenWhitespace,
