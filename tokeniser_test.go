@@ -677,6 +677,15 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
+		{ // 70
+			"a\\\nb",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "a"},
+				{Type: TokenWhitespace, Data: "\\\n"},
+				{Type: TokenIdentifier, Data: "b"},
+				{Type: parser.TokenDone, Data: ""},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
