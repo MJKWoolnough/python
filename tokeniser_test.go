@@ -850,6 +850,17 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
+		{ // 80
+			"a\n\tb\n  c",
+			[]parser.Token{
+				{Type: TokenIdentifier, Data: "a"},
+				{Type: TokenLineTerminator, Data: "\n"},
+				{Type: TokenIndent, Data: "\t"},
+				{Type: TokenIdentifier, Data: "b"},
+				{Type: TokenLineTerminator, Data: "\n"},
+				{Type: parser.TokenError, Data: "invalid indent"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
