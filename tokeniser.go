@@ -14,6 +14,7 @@ const (
 	whitespaceWithLineTerminator = " \t\n"
 	whitespace                   = " \t"
 	lineTerminator               = "\n"
+	notIndent                    = "\\\n#"
 	comment                      = "#"
 	singleEscapeChar             = "'\"\\bfnrtv"
 	binaryDigit                  = "01"
@@ -65,6 +66,8 @@ const (
 	TokenNumericLiteral
 	TokenStringLiteral
 	TokenNullLiteral
+	TokenIndent
+	TokenDedent
 )
 
 func isIDStart(c rune) bool {
@@ -77,10 +80,16 @@ func isIDContinue(c rune) bool {
 
 type pyTokeniser struct {
 	tokenDepth []byte
+	indents    []string
+	dedents    int
 }
 
 func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser {
-	t.TokeniserState(new(pyTokeniser).main)
+	p := &pyTokeniser{
+		indents: []string{""},
+	}
+
+	t.TokeniserState(p.main)
 
 	return t
 }
@@ -117,7 +126,7 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 		return parser.Token{
 			Type: TokenLineTerminator,
 			Data: t.Get(),
-		}, p.main
+		}, p.indent
 	}
 
 	if t.Accept("\\") {
@@ -169,6 +178,67 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 	}
 
 	return p.operatorOrDelimiter(t)
+}
+
+func (p *pyTokeniser) indent(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+	t.AcceptRun(whitespace)
+
+	indent := t.Get()
+	current := p.indents[0]
+
+	if current == indent || strings.ContainsRune(notIndent, t.Peek()) {
+		if indent == "" {
+			return p.main(t)
+		}
+
+		return parser.Token{
+			Type: TokenWhitespace,
+			Data: indent,
+		}, p.main
+	}
+
+	if len(indent) > len(current) {
+		if strings.HasPrefix(indent, current) {
+			p.indents = slices.Insert(p.indents, 0, indent)
+
+			return parser.Token{
+				Type: TokenIndent,
+				Data: indent,
+			}, p.main
+		}
+		t.Err = ErrInvalidIndent
+
+		return t.Error()
+	}
+
+	for n, i := range p.indents[1:] {
+		if indent == i {
+			p.indents = slices.Delete(p.indents, 0, n+1)
+			p.dedents = n
+
+			return parser.Token{
+				Type: TokenDedent,
+				Data: indent,
+			}, p.dedent
+		}
+	}
+
+	t.Err = ErrInvalidIndent
+
+	return t.Error()
+}
+
+func (p *pyTokeniser) dedent(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
+	if p.dedents == 0 {
+		return p.main(t)
+	}
+
+	p.dedents--
+
+	return parser.Token{
+		Type: TokenDedent,
+		Data: "",
+	}, p.dedent
 }
 
 func parseStringRaw(t *parser.Tokeniser) bool {
@@ -556,4 +626,5 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 var (
 	ErrInvalidCharacter = errors.New("invalid character")
 	ErrInvalidNumber    = errors.New("invalid number")
+	ErrInvalidIndent    = errors.New("invalid indent")
 )
