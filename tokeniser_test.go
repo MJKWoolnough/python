@@ -32,11 +32,11 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{ // 4
-			" \n ",
+			"{ \n }",
 			[]parser.Token{
-				{Type: TokenWhitespace, Data: " "},
-				{Type: TokenLineTerminator, Data: "\n"},
-				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "{"},
+				{Type: TokenWhitespace, Data: " \n "},
+				{Type: TokenDelimiter, Data: "}"},
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
@@ -677,7 +677,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 70
+		{ // 71
 			"a\\\nb",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
