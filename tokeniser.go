@@ -114,19 +114,13 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 	if t.Accept(ws) {
 		t.AcceptRun(ws)
 
-		return parser.Token{
-			Type: TokenWhitespace,
-			Data: t.Get(),
-		}, p.main
+		return t.Return(TokenWhitespace, p.main)
 	}
 
 	if t.Accept(lineTerminator) {
 		t.AcceptRun(lineTerminator)
 
-		return parser.Token{
-			Type: TokenLineTerminator,
-			Data: t.Get(),
-		}, p.indent
+		return t.Return(TokenLineTerminator, p.indent)
 	}
 
 	if t.Accept("\\") {
@@ -136,19 +130,13 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 			return t.Error()
 		}
 
-		return parser.Token{
-			Type: TokenWhitespace,
-			Data: t.Get(),
-		}, p.main
+		return t.Return(TokenWhitespace, p.main)
 	}
 
 	if t.Accept(comment) {
 		t.ExceptRun(lineTerminator)
 
-		return parser.Token{
-			Type: TokenComment,
-			Data: t.Get(),
-		}, p.main
+		return t.Return(TokenComment, p.main)
 	}
 
 	pk := t.Peek()
@@ -235,10 +223,7 @@ func (p *pyTokeniser) dedent(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 
 	p.dedents--
 
-	return parser.Token{
-		Type: TokenDedent,
-		Data: "",
-	}, p.dedent
+	return t.Return(TokenDedent, p.dedent)
 }
 
 func parseStringRaw(t *parser.Tokeniser) bool {
@@ -380,10 +365,7 @@ Loop:
 		}
 	}
 
-	return parser.Token{
-		Type: TokenStringLiteral,
-		Data: t.Get(),
-	}, p.main
+	return t.Return(TokenStringLiteral, p.main)
 }
 
 func (p *pyTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
@@ -453,10 +435,7 @@ func (p *pyTokeniser) baseNumber(t *parser.Tokeniser) (parser.Token, parser.Toke
 		return t.Error()
 	}
 
-	return parser.Token{
-		Type: TokenNumericLiteral,
-		Data: t.Get(),
-	}, p.main
+	return t.Return(TokenNumericLiteral, p.main)
 }
 
 func (p *pyTokeniser) floatOrImaginary(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
@@ -516,10 +495,7 @@ func (p *pyTokeniser) exponential(t *parser.Tokeniser) (parser.Token, parser.Tok
 func (p *pyTokeniser) imaginary(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	t.Accept("jJ")
 
-	return parser.Token{
-		Type: TokenNumericLiteral,
-		Data: t.Get(),
-	}, p.main
+	return t.Return(TokenNumericLiteral, p.main)
 }
 
 func (p *pyTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
@@ -541,10 +517,7 @@ func (p *pyTokeniser) floatOrDelimiter(t *parser.Tokeniser) (parser.Token, parse
 		return p.imaginary(t)
 	}
 
-	return parser.Token{
-		Type: TokenDelimiter,
-		Data: t.Get(),
-	}, p.main
+	return t.Return(TokenDelimiter, p.main)
 }
 
 func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
@@ -617,10 +590,7 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 		t.Except("")
 	}
 
-	return parser.Token{
-		Type: typ,
-		Data: t.Get(),
-	}, p.main
+	return t.Return(typ, p.main)
 }
 
 var (
