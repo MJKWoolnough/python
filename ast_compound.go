@@ -1156,9 +1156,59 @@ func (s *StarredItem) parse(p *pyParser) error {
 	return nil
 }
 
-type TypeParam struct{}
+type TypeParamType byte
 
-func (t *TypeParam) parse(_ *pyParser) error {
+const (
+	TypeParamIdentifer TypeParamType = iota
+	TypeParamVar
+	TypeParamVarTuple
+)
+
+type TypeParam struct {
+	Type       TypeParamType
+	Identifier *Token
+	Expression *Expression
+	Tokens     Tokens
+}
+
+func (t *TypeParam) parse(p *pyParser) error {
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		t.Type = TypeParamVar
+
+		p.AcceptRun(whitespaceCommentTokens...)
+	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+		t.Type = TypeParamVarTuple
+
+		p.AcceptRun(whitespaceCommentTokens...)
+	}
+
+	if !p.Accept(TokenIdentifier) {
+		return p.Error("TypeParam", ErrMissingIdentifier)
+	}
+
+	if t.Type == TypeParamIdentifer {
+		q := p.NewGoal()
+
+		q.AcceptRun(whitespaceCommentTokens...)
+
+		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			q.AcceptRun(whitespaceCommentTokens...)
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			t.Expression = new(Expression)
+
+			if err := t.Expression.parse(q, whitespaceCommentTokens); err != nil {
+				return p.Error("TypeParam", err)
+			}
+
+			p.Score(q)
+		}
+	}
+
+	t.Tokens = p.ToTokens()
+
 	return nil
 }
 
