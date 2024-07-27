@@ -860,9 +860,57 @@ func (a *AssignmentExpressionAndSuite) parse(p *pyParser) error {
 	return nil
 }
 
-type Suite struct{}
+type Suite struct {
+	StatementList *StatementList
+	Statements    []Statement
+	Tokens        Tokens
+}
 
-func (s *Suite) parse(_ *pyParser) error {
+func (s *Suite) parse(p *pyParser) error {
+	if p.Accept(TokenLineTerminator) {
+		p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
+
+		if !p.Accept(TokenIndent) {
+			return p.Error("Suite", ErrMissingIndent)
+		}
+
+		p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
+
+		for {
+			q := p.NewGoal()
+
+			var stmt Statement
+
+			if err := stmt.parse(q); err != nil {
+				return p.Error("Suite", err)
+			}
+
+			s.Statements = append(s.Statements, stmt)
+
+			p.Score(q)
+
+			p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
+
+			if p.Accept(TokenDedent) {
+				break
+			}
+
+			p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
+		}
+	} else {
+		s.StatementList = new(StatementList)
+
+		q := p.NewGoal()
+
+		if err := s.StatementList.parse(p); err != nil {
+			return p.Error("Suite", err)
+		}
+
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
 	return nil
 }
 
@@ -913,4 +961,5 @@ var (
 	ErrMissingOpeningParen   = errors.New("missing opening paren")
 	ErrMissingClosingParen   = errors.New("missing closing paren")
 	ErrMissingClosingBracket = errors.New("missing closing bracket")
+	ErrMissingIndent         = errors.New("missing indent")
 )
