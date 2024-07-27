@@ -1077,9 +1077,54 @@ func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type StarredList struct{}
+type StarredList struct {
+	StarredItems []StarredItem
+	Tokens       Tokens
+}
 
-func (s *StarredList) parse(_ *pyParser) error {
+func (s *StarredList) parse(p *pyParser) error {
+Loop:
+	for {
+		q := p.NewGoal()
+
+		var si StarredItem
+
+		if err := si.parse(q); err != nil {
+			return p.Error("StarredList", err)
+		}
+
+		s.StarredItems = append(s.StarredItems, si)
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			break
+		}
+
+		switch q.Peek() {
+		case parser.Token{Type: TokenDelimiter, Data: "]"}:
+		case parser.Token{Type: TokenDelimiter, Data: "}"}:
+		case parser.Token{Type: TokenDelimiter, Data: ":"}:
+			break Loop
+		}
+
+		q.AcceptRun(TokenWhitespace)
+
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type StarredItem struct{}
+
+func (s *StarredItem) parse(_ *pyParser) error {
 	return nil
 }
 
