@@ -263,7 +263,7 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 
 	q := p.NewGoal()
 
-	if err := f.TargetList.parse(p); err != nil {
+	if err := f.TargetList.parse(p, whitespaceToken); err != nil {
 		return p.Error("ForStatement", err)
 	}
 
@@ -914,9 +914,52 @@ func (s *Suite) parse(p *pyParser) error {
 	return nil
 }
 
-type TargetList struct{}
+type TargetList struct {
+	Targets []Target
+	Tokens  Tokens
+}
 
-func (t *TargetList) parse(_ *pyParser) error {
+func (t *TargetList) parse(p *pyParser, ws []parser.TokenType) error {
+Loop:
+	for {
+		q := p.NewGoal()
+
+		var tg Target
+
+		if err := tg.parse(q, ws); err != nil {
+			return p.Error("TargetList", err)
+		}
+
+		t.Targets = append(t.Targets, tg)
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(ws...)
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			break
+		}
+
+		switch tk := q.Peek(); tk {
+		case parser.Token{Type: TokenDelimiter, Data: ";"}:
+		case parser.Token{Type: TokenDelimiter, Data: "="}:
+		case parser.Token{Type: TokenDelimiter, Data: "]"}:
+		case parser.Token{Type: TokenDelimiter, Data: ")"}:
+		case parser.Token{Type: TokenKeyword, Data: "in"}:
+		default:
+			if tk.Type != TokenLineTerminator {
+				break Loop
+			}
+		}
+
+		q.AcceptRun(ws...)
+		p.Score(q)
+	}
+
+	t.Tokens = p.ToTokens()
+
 	return nil
 }
 
