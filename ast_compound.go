@@ -963,15 +963,123 @@ Loop:
 	return nil
 }
 
-type StarredList struct{}
+type Target struct {
+	Primary      *Primary
+	Tuple        *TargetList
+	Array        *TargetList
+	AttributeRef *Token
+	Slicing      *SliceList
+	Star         *Target
+	Tokens       Tokens
+}
 
-func (s *StarredList) parse(_ *pyParser) error {
+func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
+	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
+		p.AcceptRun(whitespaceCommentTokens...)
+
+		q := p.NewGoal()
+
+		t.Tuple = new(TargetList)
+
+		if err := t.Tuple.parse(p, whitespaceCommentTokens); err != nil {
+			return p.Error("Target", err)
+		}
+
+		p.Score(q)
+
+		p.AcceptRun(whitespaceCommentTokens...)
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			return p.Error("Target", ErrMissingClosingParen)
+		}
+	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+		p.AcceptRun(whitespaceCommentTokens...)
+
+		q := p.NewGoal()
+
+		t.Array = new(TargetList)
+
+		if err := t.Array.parse(p, whitespaceCommentTokens); err != nil {
+			return p.Error("Target", err)
+		}
+
+		p.Score(q)
+
+		p.AcceptRun(whitespaceCommentTokens...)
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			return p.Error("Target", ErrMissingClosingBracket)
+		}
+	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		p.AcceptRun(ws...)
+
+		q := p.NewGoal()
+
+		t.Star = new(Target)
+
+		if err := t.Star.parse(q, ws); err != nil {
+			return p.Error("Target", err)
+		}
+
+		p.Score(q)
+	} else {
+		t.Primary = new(Primary)
+
+		q := p.NewGoal()
+
+		if err := t.Primary.parse(q); err != nil {
+			return err
+		}
+
+		r := q.NewGoal()
+
+		r.AcceptRun(ws...)
+
+		switch r.Peek() {
+		case parser.Token{Type: TokenDelimiter, Data: "."}:
+			q.Score(r)
+			p.Score(q)
+
+			p.AcceptRun(ws...)
+
+			if !p.Accept(TokenIdentifier) {
+				return p.Error("Target", ErrMissingIdentifier)
+			}
+
+			t.AttributeRef = p.GetLastToken()
+		case parser.Token{Type: TokenDelimiter, Data: "["}:
+			p.AcceptRun(whitespaceCommentTokens...)
+
+			t.Slicing = new(SliceList)
+
+			q := p.NewGoal()
+
+			if err := t.Slicing.parse(q); err != nil {
+				return p.Error("Target", err)
+			}
+
+			p.Score(q)
+
+			p.AcceptRun(whitespaceCommentTokens...)
+
+			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+				return p.Error("Target", ErrMissingClosingBracket)
+			}
+		default:
+			if !t.Primary.IsIdentifier() {
+				return p.Error("Target", ErrMissingIdentifier)
+			}
+		}
+	}
+
+	t.Tokens = p.ToTokens()
+
 	return nil
 }
 
-type Target struct{}
+type StarredList struct{}
 
-func (t *Target) parse(_ *pyParser, _ws []parser.TokenType) error {
+func (s *StarredList) parse(_ *pyParser) error {
 	return nil
 }
 
