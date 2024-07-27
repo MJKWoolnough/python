@@ -21,3 +21,9 @@ type SliceList struct{}
 func (s *SliceList) parse(_ *pyParser) error {
 	return nil
 }
+
+type OrExpr struct{}
+
+func (o *OrExpr) parse(_ *pyParser) error {
+	return nil
+}

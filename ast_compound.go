@@ -1122,9 +1122,37 @@ Loop:
 	return nil
 }
 
-type StarredItem struct{}
+type StarredItem struct {
+	AssignmentExpression *AssignmentExpression
+	OrExpr               *OrExpr
+	Tokens               Tokens
+}
 
-func (s *StarredItem) parse(_ *pyParser) error {
+func (s *StarredItem) parse(p *pyParser) error {
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		p.AcceptRun(TokenWhitespace)
+
+		q := p.NewGoal()
+		s.OrExpr = new(OrExpr)
+
+		if err := s.OrExpr.parse(q); err != nil {
+			return p.Error("StarredItem", err)
+		}
+
+		p.Score(q)
+	} else {
+		q := p.NewGoal()
+		s.AssignmentExpression = new(AssignmentExpression)
+
+		if err := s.AssignmentExpression.parse(q); err != nil {
+			return p.Error("StarredItem", err)
+		}
+
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
 	return nil
 }
 
