@@ -52,10 +52,10 @@ func Unquote(str string) (string, error) {
 				return "", strconv.ErrSyntax
 			}
 
-			t.Except("")
+			t.Next()
 		case '\'', '"':
 			ret.WriteString(t.Get())
-			t.Except("")
+			t.Next()
 
 			if !triple || t.Accept(m) && t.Accept(m) {
 				return ret.String(), nil
@@ -65,7 +65,7 @@ func Unquote(str string) (string, error) {
 }
 
 func unescapeEscaped(t *parser.Tokeniser) rune {
-	t.Except("")
+	t.Next()
 	t.Get()
 
 	c := t.Peek()
@@ -74,7 +74,7 @@ func unescapeEscaped(t *parser.Tokeniser) rune {
 		return readEscapedDigits(t, octalDigit, 8, 2)
 	}
 
-	t.Except("")
+	t.Next()
 
 	switch c {
 	case '\\', '\'', '"':
@@ -94,17 +94,17 @@ func unescapeEscaped(t *parser.Tokeniser) rune {
 	case 'v':
 		return 11
 	case 'x':
-		t.Except("")
+		t.Next()
 
 		return readEscapedDigits(t, hexDigit, 16, 2)
 	case 'N':
 		return -1 // currently unsupported
 	case 'u':
-		t.Except("")
+		t.Next()
 
 		return readEscapedDigits(t, hexDigit, 16, 4)
 	case 'U':
-		t.Except("")
+		t.Next()
 
 		return readEscapedDigits(t, hexDigit, 16, 8)
 	}

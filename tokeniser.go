@@ -229,16 +229,16 @@ func (p *pyTokeniser) dedent(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 func parseStringRaw(t *parser.Tokeniser) bool {
 	switch t.Peek() {
 	case 'r', 'R':
-		t.Except("")
+		t.Next()
 		t.Accept("fFbB")
 
 		return true
 	case 'b', 'B', 'f', 'F':
-		t.Except("")
+		t.Next()
 
 		return t.Accept("rR")
 	case 'u', 'U':
-		t.Except("")
+		t.Next()
 	}
 
 	return false
@@ -301,17 +301,15 @@ func parseStringOpening(t *parser.Tokeniser) stringOpening {
 		opening stringOpening
 	)
 
-	if t.Peek() == '"' {
+	if t.Accept("\"") {
 		m = "\""
 		opening = stringDouble
-	} else if t.Peek() == '\'' {
+	} else if t.Accept("'") {
 		m = "'"
 		opening = stringSingle
 	} else {
 		return opening
 	}
-
-	t.Except("")
 
 	if t.Accept(m) {
 		if !t.Accept(m) {
@@ -346,8 +344,8 @@ Loop:
 
 			return t.Error()
 		case '\\':
-			t.Except("")
-			t.Except("")
+			t.Next()
+			t.Next()
 		case '\n':
 			if !triple {
 				t.Err = ErrInvalidCharacter
@@ -355,9 +353,9 @@ Loop:
 				return t.Error()
 			}
 
-			t.Except("")
+			t.Next()
 		case '\'', '"':
-			t.Except("")
+			t.Next()
 
 			if !triple || t.Accept(m) && t.Accept(m) {
 				break Loop
@@ -370,7 +368,7 @@ Loop:
 
 func (p *pyTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	for isIDContinue(t.Peek()) {
-		t.Except("")
+		t.Next()
 	}
 
 	ident := t.Get()
@@ -532,19 +530,19 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 
 		return t.Error()
 	case '+', '%', '@', '|', '^', ':', '=':
-		t.Except("")
+		t.Next()
 
 		if t.Accept("=") && c != '=' && c != ':' {
 			typ = TokenDelimiter
 		}
 	case '-':
-		t.Except("")
+		t.Next()
 
 		if t.Accept("=>") {
 			typ = TokenDelimiter
 		}
 	case '*', '/', '<', '>':
-		t.Except("")
+		t.Next()
 
 		d := t.Accept(string(c))
 
@@ -552,7 +550,7 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 			typ = TokenDelimiter
 		}
 	case '!':
-		t.Except("")
+		t.Next()
 
 		if !t.Accept("=") {
 			t.Err = ErrInvalidCharacter
@@ -566,7 +564,7 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 			return t.Error()
 		}
 
-		t.Except("")
+		t.Next()
 		p.tokenDepth = p.tokenDepth[:len(p.tokenDepth)-1]
 
 		typ = TokenDelimiter
@@ -587,7 +585,7 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 
 		fallthrough
 	case '~':
-		t.Except("")
+		t.Next()
 	}
 
 	return t.Return(typ, p.main)
