@@ -255,9 +255,41 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type AssertStatement struct{}
+type AssertStatement struct {
+	Expressions []Expression
+	Tokens      Tokens
+}
 
-func (a *AssertStatement) parse(_ *pyParser) error {
+func (a *AssertStatement) parse(p *pyParser) error {
+	p.Skip()
+
+	for {
+		p.AcceptRun(TokenWhitespace)
+
+		var e Expression
+
+		q := p.NewGoal()
+
+		if err := e.parse(q, whitespaceToken); err != nil {
+			return p.Error("AssertStatement", err)
+		}
+
+		a.Expressions = append(a.Expressions, e)
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			break
+		}
+
+		p.Score(q)
+	}
+
+	a.Tokens = p.ToTokens()
 	return nil
 }
 
