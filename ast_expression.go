@@ -38,6 +38,29 @@ func (pr *Primary) parse(p *pyParser) error {
 				AttributeRef: q.GetLastToken(),
 			}
 		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+			var sl SliceList
+
+			q.AcceptRun(TokenWhitespace, TokenComment)
+
+			r := q.NewGoal()
+
+			if err := sl.parse(r); err != nil {
+				return q.Error("Primary", err)
+			}
+
+			q.Score(r)
+
+			pr.Tokens = p.ToTokens()
+			pr = &Primary{
+				Primary: pr,
+				Slicing: &sl,
+			}
+
+			q.AcceptRun(TokenWhitespace, TokenComment)
+
+			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+				return q.Error("Primary", ErrMissingClosingBracket)
+			}
 		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 			var call ArgumentListOrComprehension
 
