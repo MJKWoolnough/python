@@ -305,6 +305,10 @@ type DelStatement struct {
 }
 
 func (d *DelStatement) parse(p *pyParser) error {
+	p.Skip()
+
+	p.AcceptRun(TokenWhitespace)
+
 	q := p.NewGoal()
 
 	if err := d.TargetList.parse(q, whitespaceToken); err != nil {
@@ -325,6 +329,10 @@ type ReturnStatement struct {
 }
 
 func (r *ReturnStatement) parse(p *pyParser) error {
+	p.Skip()
+
+	p.AcceptRun(TokenWhitespace)
+
 	q := p.NewGoal()
 
 	if err := r.Expression.parse(q, whitespaceToken); err != nil {
@@ -356,9 +364,45 @@ func (r *ReturnStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type YieldStatement struct{}
+type YieldStatement struct {
+	Expression *Expression
+	From       *ExpressionList
+	Tokens     Tokens
+}
 
-func (y *YieldStatement) parse(_ *pyParser) error {
+func (y *YieldStatement) parse(p *pyParser) error {
+	p.Skip()
+
+	p.AcceptRun(TokenWhitespace)
+
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
+		y.From = new(ExpressionList)
+
+		p.AcceptRun(TokenWhitespace)
+
+		q := p.NewGoal()
+
+		if err := y.From.parse(q); err != nil {
+			return p.Error("YieldStatement", err)
+		}
+
+		p.Score(p)
+	} else {
+		y.Expression = new(Expression)
+
+		p.AcceptRun(TokenWhitespace)
+
+		q := p.NewGoal()
+
+		if err := y.Expression.parse(q, whitespaceToken); err != nil {
+			return p.Error("YieldStatement", err)
+		}
+
+		p.Score(p)
+	}
+
+	y.Tokens = p.ToTokens()
+
 	return nil
 }
 
