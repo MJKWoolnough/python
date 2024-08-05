@@ -88,14 +88,43 @@ func (pr *Primary) IsIdentifier() bool {
 	return false
 }
 
-type Atom struct{}
+type Atom struct {
+	Identifier *Token
+	Literal    *Token
+	Enclosure  *Enclosure
+	Tokens     Tokens
+}
 
-func (a *Atom) parse(_ *pyParser) error {
+func (a *Atom) parse(p *pyParser) error {
+	if p.Accept(TokenIdentifier) {
+		a.Identifier = p.GetLastToken()
+	} else if p.Accept(TokenNumericLiteral, TokenStringLiteral) {
+		a.Literal = p.GetLastToken()
+	} else {
+		a.Enclosure = new(Enclosure)
+
+		q := p.NewGoal()
+
+		if err := a.Enclosure.parse(q); err != nil {
+			return p.Error("Atom", err)
+		}
+
+		p.Score(q)
+	}
+
+	a.Tokens = p.ToTokens()
+
 	return nil
 }
 
 func (a *Atom) IsIdentifier() bool {
 	return false
+}
+
+type Enclosure struct{}
+
+func (e *Enclosure) parse(_ *pyParser) error {
+	return nil
 }
 
 type ArgumentListOrComprehension struct{}
