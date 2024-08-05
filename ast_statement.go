@@ -318,9 +318,41 @@ func (d *DelStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type ReturnStatement struct{}
+type ReturnStatement struct {
+	Expression Expression
+	From       *Expression
+	Tokens     Tokens
+}
 
-func (r *ReturnStatement) parse(_ *pyParser) error {
+func (r *ReturnStatement) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := r.Expression.parse(q, whitespaceToken); err != nil {
+		return p.Error("ReturnStatement", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(TokenWhitespace)
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
+		q.AcceptRun(TokenWhitespace)
+		p.Score(q)
+
+		q = p.NewGoal()
+		r.From = new(Expression)
+
+		if err := r.From.parse(q, whitespaceToken); err != nil {
+			return p.Error("ReturnStatement", err)
+		}
+
+		p.Score(q)
+	}
+
+	r.Tokens = p.ToTokens()
+
 	return nil
 }
 
