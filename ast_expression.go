@@ -77,6 +77,14 @@ func (pr *Primary) parse(p *pyParser) error {
 }
 
 func (pr *Primary) IsIdentifier() bool {
+	if pr.Atom != nil {
+		return pr.Atom.IsIdentifier()
+	}
+
+	if pr.Primary != nil {
+		return pr.Primary.IsIdentifier()
+	}
+
 	return false
 }
 
@@ -84,6 +92,10 @@ type Atom struct{}
 
 func (a *Atom) parse(_ *pyParser) error {
 	return nil
+}
+
+func (a *Atom) IsIdentifier() bool {
+	return false
 }
 
 type ArgumentListOrComprehension struct{}
