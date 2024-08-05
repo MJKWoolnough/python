@@ -299,9 +299,22 @@ func (a *AssignmentStatement) parse(_ *pyParser) error {
 	return nil
 }
 
-type DelStatement struct{}
+type DelStatement struct {
+	TargetList TargetList
+	Tokens     Tokens
+}
 
-func (d *DelStatement) parse(_ *pyParser) error {
+func (d *DelStatement) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := d.TargetList.parse(q, whitespaceToken); err != nil {
+		return p.Error("DelStatement", err)
+	}
+
+	p.Score(q)
+
+	d.Tokens = p.ToTokens()
+
 	return nil
 }
 
