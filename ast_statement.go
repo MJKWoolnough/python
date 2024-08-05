@@ -89,9 +89,229 @@ func (s *StatementList) parse(p *pyParser) error {
 	return nil
 }
 
-type SimpleStatement struct{}
+type StatementType uint8
 
-func (s *SimpleStatement) parse(_ *pyParser) error {
+const (
+	StatementAssert StatementType = iota
+	StatementAssignment
+	StatementAugmentedAssignment
+	StatementAnnotatedAssignment
+	StatementPass
+	StatementDel
+	StatementReturn
+	StatementYield
+	StatementRaise
+	StatementBreak
+	StatementContinue
+	StatementImport
+	StatementGlobal
+	StatementNonLocal
+	StatementTyp
+)
+
+type SimpleStatement struct {
+	Type                StatementType
+	AssertStatement     *AssertStatement
+	AssignmentStatement *AssignmentStatement
+	DelStatement        *DelStatement
+	ReturnStatement     *ReturnStatement
+	YieldStatement      *YieldStatement
+	RaiseStatement      *RaiseStatement
+	ImportStatement     *ImportStatement
+	GlobalStatement     *GlobalStatement
+	NonLocalStatement   *NonLocalStatement
+	TypeStatement       *TypeStatement
+	Tokens              Tokens
+}
+
+func (s *SimpleStatement) parse(p *pyParser) error {
+	switch p.Peek() {
+	case parser.Token{Type: TokenKeyword, Data: "assert"}:
+		s.AssertStatement = new(AssertStatement)
+		s.Type = StatementAssert
+
+		q := p.NewGoal()
+
+		if err := s.AssertStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	case parser.Token{Type: TokenKeyword, Data: "pass"}:
+		p.Skip()
+
+		s.Type = StatementPass
+	case parser.Token{Type: TokenKeyword, Data: "del"}:
+		s.DelStatement = new(DelStatement)
+		s.Type = StatementDel
+
+		q := p.NewGoal()
+
+		if err := s.DelStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	case parser.Token{Type: TokenKeyword, Data: "return"}:
+		s.ReturnStatement = new(ReturnStatement)
+		s.Type = StatementReturn
+
+		q := p.NewGoal()
+
+		if err := s.ReturnStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	case parser.Token{Type: TokenKeyword, Data: "yield"}:
+		s.YieldStatement = new(YieldStatement)
+		s.Type = StatementYield
+
+		q := p.NewGoal()
+
+		if err := s.YieldStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	case parser.Token{Type: TokenKeyword, Data: "raise"}:
+		s.RaiseStatement = new(RaiseStatement)
+		s.Type = StatementRaise
+
+		q := p.NewGoal()
+
+		if err := s.RaiseStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	case parser.Token{Type: TokenKeyword, Data: "break"}:
+		p.Skip()
+
+		s.Type = StatementBreak
+	case parser.Token{Type: TokenKeyword, Data: "continue"}:
+		p.Skip()
+
+		s.Type = StatementContinue
+	case parser.Token{Type: TokenKeyword, Data: "import"}, parser.Token{Type: TokenKeyword, Data: "from"}:
+		s.ImportStatement = new(ImportStatement)
+		s.Type = StatementImport
+
+		q := p.NewGoal()
+
+		if err := s.ImportStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	case parser.Token{Type: TokenKeyword, Data: "global"}:
+		s.GlobalStatement = new(GlobalStatement)
+		s.Type = StatementGlobal
+
+		q := p.NewGoal()
+
+		if err := s.GlobalStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	case parser.Token{Type: TokenKeyword, Data: "nonlocal"}:
+		s.NonLocalStatement = new(NonLocalStatement)
+		s.Type = StatementNonLocal
+
+		q := p.NewGoal()
+
+		if err := s.NonLocalStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	case parser.Token{Type: TokenKeyword, Data: "type"}:
+		s.TypeStatement = new(TypeStatement)
+		s.Type = StatementTyp
+
+		q := p.NewGoal()
+
+		if err := s.TypeStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	default:
+		s.AssignmentStatement = new(AssignmentStatement)
+		s.Type = StatementAssignment
+
+		q := p.NewGoal()
+
+		if err := s.AssignmentStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type AssertStatement struct{}
+
+func (a *AssertStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type AssignmentStatement struct{}
+
+func (a *AssignmentStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type DelStatement struct{}
+
+func (d *DelStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type ReturnStatement struct{}
+
+func (r *ReturnStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type YieldStatement struct{}
+
+func (y *YieldStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type RaiseStatement struct{}
+
+func (r *RaiseStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type ImportStatement struct{}
+
+func (i *ImportStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type GlobalStatement struct{}
+
+func (g *GlobalStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type NonLocalStatement struct{}
+
+func (n *NonLocalStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type TypeStatement struct{}
+
+func (t *TypeStatement) parse(_ *pyParser) error {
 	return nil
 }
 
