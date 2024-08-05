@@ -118,7 +118,7 @@ func (a *Atom) parse(p *pyParser) error {
 }
 
 func (a *Atom) IsIdentifier() bool {
-	return false
+	return a.Identifier != nil
 }
 
 type Enclosure struct{}
