@@ -669,9 +669,36 @@ func (g *GlobalStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type NonLocalStatement struct{}
+type NonLocalStatement struct {
+	Identifiers []*Token
+	Tokens      Tokens
+}
 
-func (n *NonLocalStatement) parse(_ *pyParser) error {
+func (n *NonLocalStatement) parse(p *pyParser) error {
+	p.Skip()
+	p.AcceptRun(TokenWhitespace)
+
+	for {
+		if !p.Accept(TokenIdentifier) {
+			return p.Error("NonLocalStatement", ErrMissingIdentifier)
+		}
+
+		n.Identifiers = append(n.Identifiers, p.GetLastToken())
+
+		q := p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			break
+		}
+
+		q.AcceptRun(TokenWhitespace)
+		p.Score(q)
+	}
+
+	n.Tokens = p.ToTokens()
+
 	return nil
 }
 
