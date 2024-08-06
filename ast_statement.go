@@ -227,7 +227,7 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
-	case parser.Token{Type: TokenKeyword, Data: "type"}:
+	case parser.Token{Type: TokenIdentifier, Data: "type"}:
 		s.TypeStatement = new(TypeStatement)
 		s.Type = StatementTyp
 
