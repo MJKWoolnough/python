@@ -702,9 +702,57 @@ func (n *NonLocalStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type TypeStatement struct{}
+type TypeStatement struct {
+	Identifier *Token
+	TypeParams *TypeParams
+	Expression Expression
+	Tokens     Tokens
+}
 
-func (t *TypeStatement) parse(_ *pyParser) error {
+func (t *TypeStatement) parse(p *pyParser) error {
+	p.Skip()
+	p.AcceptRun(TokenWhitespace)
+
+	if !p.Accept(TokenIdentifier) {
+		return p.Error("TypeStatement", ErrMissingIdentifier)
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	if p.Peek() == (parser.Token{Type: TokenDelimiter, Data: "["}) {
+		q := p.NewGoal()
+		t.TypeParams = new(TypeParams)
+
+		if err := t.TypeParams.parse(q); err != nil {
+			return p.Error("TypeStatement", err)
+		}
+
+		p.Score(q)
+		p.AcceptRun(TokenWhitespace)
+	}
+
+	if !p.AcceptToken(parser.Token{Type: TokenOperator, Data: "="}) {
+		return p.Error("TypeStatement", ErrMissingEquals)
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	q := p.NewGoal()
+
+	if err := t.Expression.parse(q, whitespaceToken); err != nil {
+		return p.Error("TypeStatement", err)
+	}
+
+	p.Score(q)
+
+	t.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type TypeParams struct{}
+
+func (t *TypeParams) parse(_ *pyParser) error {
 	return nil
 }
 
@@ -723,4 +771,5 @@ func (s *Expression) parse(_ *pyParser, _ws []parser.TokenType) error {
 var (
 	ErrMissingImport = errors.New("missing import keyword")
 	ErrMissingModule = errors.New("missing module")
+	ErrMissingEquals = errors.New("missing equals")
 )
