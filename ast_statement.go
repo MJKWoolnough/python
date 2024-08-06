@@ -502,7 +502,7 @@ func (i *ImportStatement) parse(p *pyParser) error {
 
 			var module ModuleAs
 
-			if err := module.parse(q); err != nil {
+			if err := module.parse(q, ws); err != nil {
 				return p.Error("ImportStatement", err)
 			}
 
@@ -559,7 +559,7 @@ func (r *RelativeModule) parse(p *pyParser) error {
 		q = p.NewGoal()
 		r.Module = new(Module)
 
-		if err := r.Module.parse(q); err != nil {
+		if err := r.Module.parse(q, whitespaceToken); err != nil {
 			return p.Error("RelativeModule", err)
 		}
 
@@ -571,15 +571,44 @@ func (r *RelativeModule) parse(p *pyParser) error {
 	return nil
 }
 
-type ModuleAs struct{}
+type ModuleAs struct {
+	Module Module
+	As     *Token
+	Tokens Tokens
+}
 
-func (m *ModuleAs) parse(_ *pyParser) error {
+func (m *ModuleAs) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := m.Module.parse(q, ws); err != nil {
+		return p.Error("ModuleAs", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
+		q.AcceptRun(ws...)
+		p.Score(q)
+
+		if !p.Accept(TokenIdentifier) {
+			return p.Error("ModuleAs", ErrMissingIdentifier)
+		}
+
+		m.As = p.GetLastToken()
+	}
+
+	m.Tokens = p.ToTokens()
+
 	return nil
 }
 
 type Module struct{}
 
-func (m *Module) parse(_ *pyParser) error {
+func (m *Module) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
 
