@@ -531,15 +531,55 @@ func (i *ImportStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type RelativeModule struct{}
+type RelativeModule struct {
+	Dots   int
+	Module *Module
+	Tokens Tokens
+}
 
-func (r *RelativeModule) parse(_ *pyParser) error {
+func (r *RelativeModule) parse(p *pyParser) error {
+	dots := 0
+
+	for p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
+		dots++
+	}
+
+	r.Dots = dots
+
+	q := p.NewGoal()
+
+	switch q.AcceptRun(TokenWhitespace) {
+	case TokenLineTerminator, TokenComment:
+		if dots == 0 {
+			return q.Error("RelativeModule", ErrMissingModule)
+		}
+	default:
+		p.Score(q)
+
+		q = p.NewGoal()
+		r.Module = new(Module)
+
+		if err := r.Module.parse(q); err != nil {
+			return p.Error("RelativeModule", err)
+		}
+
+		p.Score(q)
+	}
+
+	r.Tokens = p.ToTokens()
+
 	return nil
 }
 
 type ModuleAs struct{}
 
 func (m *ModuleAs) parse(_ *pyParser) error {
+	return nil
+}
+
+type Module struct{}
+
+func (m *Module) parse(_ *pyParser) error {
 	return nil
 }
 
@@ -573,4 +613,7 @@ func (s *Expression) parse(_ *pyParser, _ws []parser.TokenType) error {
 	return nil
 }
 
-var ErrMissingImport = errors.New("missing import keyword")
+var (
+	ErrMissingImport = errors.New("missing import keyword")
+	ErrMissingModule = errors.New("missing module")
+)
