@@ -750,9 +750,36 @@ func (t *TypeStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type TypeParams struct{}
+type TypeParams struct {
+	TypeParams []TypeParam
+	Tokens     Tokens
+}
 
-func (t *TypeParams) parse(_ *pyParser) error {
+func (t *TypeParams) parse(p *pyParser) error {
+	p.Skip()
+	p.AcceptRun(TokenWhitespace, TokenComment)
+
+	for {
+		q := p.NewGoal()
+
+		var tp TypeParam
+
+		if err := tp.parse(q); err != nil {
+			return p.Error("TypeParams", err)
+		}
+
+		t.TypeParams = append(t.TypeParams, tp)
+
+		p.Score(q)
+
+		p.AcceptRun(TokenWhitespace, TokenComment)
+
+		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			break
+		}
+	}
+
+	t.Tokens = p.ToTokens()
 	return nil
 }
 
@@ -764,7 +791,7 @@ func (s *AssignmentExpression) parse(_ *pyParser) error {
 
 type Expression struct{}
 
-func (s *Expression) parse(_ *pyParser, _ws []parser.TokenType) error {
+func (s *Expression) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
 
