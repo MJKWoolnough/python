@@ -636,9 +636,36 @@ func (m *Module) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type GlobalStatement struct{}
+type GlobalStatement struct {
+	Identifiers []*Token
+	Tokens      Tokens
+}
 
-func (g *GlobalStatement) parse(_ *pyParser) error {
+func (g *GlobalStatement) parse(p *pyParser) error {
+	p.Skip()
+	p.AcceptRun(TokenWhitespace)
+
+	for {
+		if !p.Accept(TokenIdentifier) {
+			return p.Error("GlobalStatement", ErrMissingIdentifier)
+		}
+
+		g.Identifiers = append(g.Identifiers, p.GetLastToken())
+
+		q := p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			break
+		}
+
+		q.AcceptRun(TokenWhitespace)
+		p.Score(q)
+	}
+
+	g.Tokens = p.ToTokens()
+
 	return nil
 }
 
