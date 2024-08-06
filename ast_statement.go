@@ -406,9 +406,54 @@ func (y *YieldStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type RaiseStatement struct{}
+type RaiseStatement struct {
+	Expression *Expression
+	From       *ExpressionList
+	Tokens     Tokens
+}
 
-func (r *RaiseStatement) parse(_ *pyParser) error {
+func (r *RaiseStatement) parse(p *pyParser) error {
+	p.Skip()
+
+	p.AcceptRun(TokenWhitespace)
+
+	q := p.NewGoal()
+
+	switch q.AcceptRun(TokenWhitespace) {
+	case TokenLineTerminator, TokenComment:
+	default:
+		p.Score(q)
+
+		q = p.NewGoal()
+		r.Expression = new(Expression)
+
+		if err := r.Expression.parse(q, whitespaceToken); err != nil {
+			return p.Error("RaiseStatement", err)
+		}
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
+			q.AcceptRun(TokenWhitespace)
+			p.Score(q)
+
+			q = p.NewGoal()
+			r.From = new(ExpressionList)
+
+			if err := r.From.parse(q); err != nil {
+				return p.Error("RaiseStatement", err)
+			}
+
+			p.Score(q)
+		}
+	}
+
+	r.Tokens = p.ToTokens()
+
 	return nil
 }
 
