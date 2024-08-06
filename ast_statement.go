@@ -606,9 +606,33 @@ func (m *ModuleAs) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type Module struct{}
+type Module struct {
+	Identifiers []*Token
+	Tokens      Tokens
+}
 
-func (m *Module) parse(_ *pyParser, _ []parser.TokenType) error {
+func (m *Module) parse(p *pyParser, ws []parser.TokenType) error {
+	for {
+		if !p.Accept(TokenIdentifier) {
+			return p.Error("Module", ErrMissingIdentifier)
+		}
+
+		m.Identifiers = append(m.Identifiers, p.GetLastToken())
+
+		q := p.NewGoal()
+
+		q.AcceptRun(ws...)
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
+			break
+		}
+
+		q.AcceptRun(ws...)
+		p.Score(q)
+	}
+
+	m.Tokens = p.ToTokens()
+
 	return nil
 }
 
