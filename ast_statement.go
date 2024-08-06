@@ -1,6 +1,7 @@
 package python
 
 import (
+	"errors"
 	"slices"
 
 	"vimagination.zapto.org/parser"
@@ -457,9 +458,88 @@ func (r *RaiseStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type ImportStatement struct{}
+type ImportStatement struct {
+	RelativeModule *RelativeModule
+	Modules        []ModuleAs
+	Tokens         Tokens
+}
 
-func (i *ImportStatement) parse(_ *pyParser) error {
+func (i *ImportStatement) parse(p *pyParser) error {
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
+		p.AcceptRun(TokenWhitespace)
+
+		q := p.NewGoal()
+		i.RelativeModule = new(RelativeModule)
+
+		if err := i.RelativeModule.parse(q); err != nil {
+			return p.Error("ImportStatement", err)
+		}
+
+		p.Score(q)
+		p.AcceptRun(TokenWhitespace)
+
+		if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "import"}) {
+			return p.Error("ImportStatement", ErrMissingImport)
+		}
+	} else {
+		p.Skip()
+	}
+
+	p.AcceptRun(TokenWhitespace)
+
+	if i.RelativeModule == nil || !p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
+
+		ws := whitespaceToken
+		if parens {
+			ws = whitespaceCommentTokens
+			p.AcceptRun(ws...)
+		}
+
+		for {
+
+			q := p.NewGoal()
+
+			var module ModuleAs
+
+			if err := module.parse(q); err != nil {
+				return p.Error("ImportStatement", err)
+			}
+
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.AcceptRun(ws...)
+
+			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) && !parens {
+				break
+			}
+
+			q.AcceptRun(ws...)
+
+			if parens && q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+				p.Score(q)
+
+				break
+			}
+		}
+	}
+
+	i.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type RelativeModule struct{}
+
+func (r *RelativeModule) parse(_ *pyParser) error {
+	return nil
+}
+
+type ModuleAs struct{}
+
+func (m *ModuleAs) parse(_ *pyParser) error {
 	return nil
 }
 
@@ -492,3 +572,5 @@ type Expression struct{}
 func (s *Expression) parse(_ *pyParser, _ws []parser.TokenType) error {
 	return nil
 }
+
+var ErrMissingImport = errors.New("missing import keyword")
