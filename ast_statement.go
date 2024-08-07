@@ -731,7 +731,7 @@ func (t *TypeStatement) parse(p *pyParser) error {
 		p.AcceptRun(TokenWhitespace)
 	}
 
-	if !p.AcceptToken(parser.Token{Type: TokenOperator, Data: "="}) {
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
 		return p.Error("TypeStatement", ErrMissingEquals)
 	}
 
