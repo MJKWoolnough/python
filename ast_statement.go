@@ -792,14 +792,8 @@ type AssignmentExpression struct {
 func (a *AssignmentExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := a.Expression.parse(q, whitespaceToken); err != nil {
-		return p.Error("AssignmentExpression", err)
-	}
-
-	p.Score(q)
-
-	if identifier := a.Expression.asIdentifier(); identifier != nil {
-		q := p.NewGoal()
+	if q.Accept(TokenIdentifier) {
+		identifier := q.GetLastToken()
 
 		q.AcceptRun(TokenWhitespace)
 
@@ -807,17 +801,16 @@ func (a *AssignmentExpression) parse(p *pyParser) error {
 			q.AcceptRun(TokenWhitespace)
 			p.Score(q)
 
-			q = p.NewGoal()
 			a.Identifier = identifier
-			a.Expression = Expression{}
-
-			if err := a.Expression.parse(q, whitespaceToken); err != nil {
-				return p.Error("AssignmentExpression", err)
-			}
-
-			p.Score(q)
 		}
+		q = p.NewGoal()
 	}
+
+	if err := a.Expression.parse(q, whitespaceToken); err != nil {
+		return p.Error("AssignmentExpression", err)
+	}
+
+	p.Score(q)
 
 	a.Tokens = p.ToTokens()
 
@@ -854,14 +847,6 @@ func (e *Expression) parse(p *pyParser, ws []parser.TokenType) error {
 	e.Tokens = p.ToTokens()
 
 	return nil
-}
-
-func (e *Expression) AsIdentifier() *Token {
-	if e.ConditionalExpression == nil {
-		return nil
-	}
-
-	return e.ConditionalExpression.asIdentifier()
 }
 
 type ConditionalExpression struct {
@@ -919,14 +904,6 @@ func (c *ConditionalExpression) parse(p *pyParser, ws []parser.TokenType) error 
 	return nil
 }
 
-func (c *ConditionalExpression) asIdentifier() *Token {
-	if c.If != nil {
-		return nil
-	}
-
-	return c.OrTest.asIdentifier()
-}
-
 type LambdaExpression struct{}
 
 func (l *LambdaExpression) parse(_ *pyParser, _ []parser.TokenType) error {
@@ -936,10 +913,6 @@ func (l *LambdaExpression) parse(_ *pyParser, _ []parser.TokenType) error {
 type OrTest struct{}
 
 func (o *OrTest) parse(_ *pyParser, _ []parser.TokenType) error {
-	return nil
-}
-
-func (o *OrTest) asIdentifier() *Token {
 	return nil
 }
 
