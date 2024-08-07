@@ -783,15 +783,54 @@ func (t *TypeParams) parse(p *pyParser) error {
 	return nil
 }
 
-type AssignmentExpression struct{}
+type AssignmentExpression struct {
+	Identifier *Token
+	Expression Expression
+	Tokens
+}
 
-func (s *AssignmentExpression) parse(_ *pyParser) error {
+func (a *AssignmentExpression) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := a.Expression.parse(q, whitespaceToken); err != nil {
+		return p.Error("AssignmentExpression", err)
+	}
+
+	p.Score(q)
+
+	if identifier := a.Expression.AsIdentifier(); identifier != nil {
+		q := p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: ":="}) {
+			q.AcceptRun(TokenWhitespace)
+			p.Score(q)
+
+			q = p.NewGoal()
+			a.Identifier = identifier
+			a.Expression = Expression{}
+
+			if err := a.Expression.parse(q, whitespaceToken); err != nil {
+				return p.Error("AssignmentExpression", err)
+			}
+
+			p.Score(q)
+		}
+	}
+
+	a.Tokens = p.ToTokens()
+
 	return nil
 }
 
 type Expression struct{}
 
 func (s *Expression) parse(_ *pyParser, _ []parser.TokenType) error {
+	return nil
+}
+
+func (e *Expression) AsIdentifier() *Token {
 	return nil
 }
 
