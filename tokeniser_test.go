@@ -437,7 +437,7 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{ // 57
-			"+ % | = == : := - * ** < >= != ~",
+			"+ % | == := - * ** < >= != ~",
 			[]parser.Token{
 				{Type: TokenOperator, Data: "+"},
 				{Type: TokenWhitespace, Data: " "},
@@ -445,11 +445,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenWhitespace, Data: " "},
 				{Type: TokenOperator, Data: "|"},
 				{Type: TokenWhitespace, Data: " "},
-				{Type: TokenOperator, Data: "="},
-				{Type: TokenWhitespace, Data: " "},
 				{Type: TokenOperator, Data: "=="},
-				{Type: TokenWhitespace, Data: " "},
-				{Type: TokenOperator, Data: ":"},
 				{Type: TokenWhitespace, Data: " "},
 				{Type: TokenOperator, Data: ":="},
 				{Type: TokenWhitespace, Data: " "},
@@ -470,9 +466,13 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{ // 58
-			"+= %= |= -= -> *= **= /= //= <<= >>= , . ;",
+			"+= = : %= |= -= -> *= **= /= //= <<= >>= , . ;",
 			[]parser.Token{
 				{Type: TokenDelimiter, Data: "+="},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: "="},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: TokenDelimiter, Data: ":"},
 				{Type: TokenWhitespace, Data: " "},
 				{Type: TokenDelimiter, Data: "%="},
 				{Type: TokenWhitespace, Data: " "},
