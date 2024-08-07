@@ -1024,9 +1024,39 @@ func (a *AndTest) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type NotTest struct{}
+type NotTest struct {
+	Nots       uint
+	Comparison Comparison
+	Tokens     Tokens
+}
 
-func (n *NotTest) parse(_ *pyParser, _ []parser.TokenType) error {
+func (n *NotTest) parse(p *pyParser, ws []parser.TokenType) error {
+	for {
+		if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
+			break
+		}
+
+		p.AcceptRun(ws...)
+
+		n.Nots++
+	}
+
+	q := p.NewGoal()
+
+	if err := n.Comparison.parse(q, ws); err != nil {
+		return p.Error("NotTest", err)
+	}
+
+	p.Score(q)
+
+	n.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type Comparison struct{}
+
+func (c *Comparison) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
 
