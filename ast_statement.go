@@ -904,9 +904,47 @@ func (c *ConditionalExpression) parse(p *pyParser, ws []parser.TokenType) error 
 	return nil
 }
 
-type LambdaExpression struct{}
+type LambdaExpression struct {
+	ParameterList *ParameterList
+	Expression    Expression
+	Tokens        Tokens
+}
 
-func (l *LambdaExpression) parse(_ *pyParser, _ []parser.TokenType) error {
+func (l *LambdaExpression) parse(p *pyParser, ws []parser.TokenType) error {
+	p.Skip()
+
+	p.AcceptRun(ws...)
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		p.AcceptRun(ws...)
+
+		q := p.NewGoal()
+		l.ParameterList = new(ParameterList)
+
+		if err := l.ParameterList.parse(q, ws); err != nil {
+			return p.Error("LambdaExpression", err)
+		}
+
+		p.Score(q)
+		p.AcceptRun(ws...)
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			return p.Error("LambdaExpression", ErrMissingColon)
+		}
+	}
+
+	p.AcceptRun(ws...)
+
+	q := p.NewGoal()
+
+	if err := l.Expression.parse(q, ws); err != nil {
+		return p.Error("LambdaExpression", err)
+	}
+
+	p.Score(q)
+
+	l.Tokens = p.ToTokens()
+
 	return nil
 }
 
