@@ -986,9 +986,47 @@ func (o *OrTest) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type AndTest struct{}
+type AndTest struct {
+	NotTest NotTest
+	AndTest *AndTest
+	Tokens  Tokens
+}
 
-func (a *AndTest) parse(_ *pyParser, _ []parser.TokenType) error {
+func (a *AndTest) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := a.NotTest.parse(q, ws); err != nil {
+		return p.Error("AndTest", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "or"}) {
+		q.AcceptRun(ws...)
+		p.Score(q)
+
+		q = p.NewGoal()
+		a.AndTest = new(AndTest)
+
+		if err := a.AndTest.parse(q, ws); err != nil {
+			return p.Error("AndTest", err)
+		}
+
+		p.Score(q)
+	}
+
+	a.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type NotTest struct{}
+
+func (n *NotTest) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
 
