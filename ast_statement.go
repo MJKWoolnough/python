@@ -798,7 +798,7 @@ func (a *AssignmentExpression) parse(p *pyParser) error {
 
 	p.Score(q)
 
-	if identifier := a.Expression.AsIdentifier(); identifier != nil {
+	if identifier := a.Expression.asIdentifier(); identifier != nil {
 		q := p.NewGoal()
 
 		q.AcceptRun(TokenWhitespace)
@@ -824,13 +824,59 @@ func (a *AssignmentExpression) parse(p *pyParser) error {
 	return nil
 }
 
-type Expression struct{}
+type Expression struct {
+	ConditionalExpression *ConditionalExpression
+	LambdaExpression      *LambdaExpression
+	Tokens                Tokens
+}
 
-func (s *Expression) parse(_ *pyParser, _ []parser.TokenType) error {
+func (e *Expression) parse(p *pyParser, ws []parser.TokenType) error {
+	if p.Peek() == (parser.Token{Type: TokenKeyword, Data: "lambda"}) {
+		e.LambdaExpression = new(LambdaExpression)
+		q := p.NewGoal()
+
+		if err := e.LambdaExpression.parse(q); err != nil {
+			return p.Error("Expression", err)
+		}
+
+		p.Score(q)
+	} else {
+		e.ConditionalExpression = new(ConditionalExpression)
+		q := p.NewGoal()
+
+		if err := e.ConditionalExpression.parse(q); err != nil {
+			return p.Error("Expression", err)
+		}
+
+		p.Score(q)
+	}
+
+	e.Tokens = p.ToTokens()
+
 	return nil
 }
 
 func (e *Expression) AsIdentifier() *Token {
+	if e.ConditionalExpression == nil {
+		return nil
+	}
+
+	return e.ConditionalExpression.asIdentifier()
+}
+
+type ConditionalExpression struct{}
+
+func (c *ConditionalExpression) parse(_ *pyParser) error {
+	return nil
+}
+
+func (c *ConditionalExpression) asIdentifier() *Token {
+	return nil
+}
+
+type LambdaExpression struct{}
+
+func (l *LambdaExpression) parse(_ *pyParser) error {
 	return nil
 }
 
