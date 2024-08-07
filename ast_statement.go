@@ -835,7 +835,7 @@ func (e *Expression) parse(p *pyParser, ws []parser.TokenType) error {
 		e.LambdaExpression = new(LambdaExpression)
 		q := p.NewGoal()
 
-		if err := e.LambdaExpression.parse(q); err != nil {
+		if err := e.LambdaExpression.parse(q, ws); err != nil {
 			return p.Error("Expression", err)
 		}
 
@@ -844,7 +844,7 @@ func (e *Expression) parse(p *pyParser, ws []parser.TokenType) error {
 		e.ConditionalExpression = new(ConditionalExpression)
 		q := p.NewGoal()
 
-		if err := e.ConditionalExpression.parse(q); err != nil {
+		if err := e.ConditionalExpression.parse(q, ws); err != nil {
 			return p.Error("Expression", err)
 		}
 
@@ -864,19 +864,82 @@ func (e *Expression) AsIdentifier() *Token {
 	return e.ConditionalExpression.asIdentifier()
 }
 
-type ConditionalExpression struct{}
+type ConditionalExpression struct {
+	OrTest OrTest
+	If     *OrTest
+	Else   *Expression
+	Tokens Tokens
+}
 
-func (c *ConditionalExpression) parse(_ *pyParser) error {
+func (c *ConditionalExpression) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := c.OrTest.parse(q, ws); err != nil {
+		return p.Error("ConditionalExpression", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
+		q.AcceptRun(ws...)
+		p.Score(q)
+
+		q = p.NewGoal()
+		c.If = new(OrTest)
+
+		if err := c.If.parse(q, ws); err != nil {
+			return p.Error("ConditionalExpression", err)
+		}
+
+		p.Score(q)
+		p.AcceptRun(ws...)
+
+		if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
+			return p.Error("ConditionalExpression", ErrMissingElse)
+		}
+
+		p.AcceptRun(ws...)
+
+		q = p.NewGoal()
+		c.Else = new(Expression)
+
+		if err := c.Else.parse(q, ws); err != nil {
+			return p.Error("ConditionalExpression", err)
+		}
+
+		p.Score(q)
+	}
+
+	c.Tokens = p.ToTokens()
+
 	return nil
 }
 
 func (c *ConditionalExpression) asIdentifier() *Token {
-	return nil
+	if c.If != nil {
+		return nil
+	}
+
+	return c.OrTest.asIdentifier()
 }
 
 type LambdaExpression struct{}
 
-func (l *LambdaExpression) parse(_ *pyParser) error {
+func (l *LambdaExpression) parse(_ *pyParser, _ []parser.TokenType) error {
+	return nil
+}
+
+type OrTest struct{}
+
+func (o *OrTest) parse(_ *pyParser, _ []parser.TokenType) error {
+	return nil
+}
+
+func (o *OrTest) asIdentifier() *Token {
 	return nil
 }
 
@@ -884,4 +947,5 @@ var (
 	ErrMissingImport = errors.New("missing import keyword")
 	ErrMissingModule = errors.New("missing module")
 	ErrMissingEquals = errors.New("missing equals")
+	ErrMissingElse   = errors.New("missing else")
 )
