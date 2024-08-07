@@ -948,9 +948,47 @@ func (l *LambdaExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type OrTest struct{}
+type OrTest struct {
+	AndTest AndTest
+	OrTest  *OrTest
+	Tokens  Tokens
+}
 
-func (o *OrTest) parse(_ *pyParser, _ []parser.TokenType) error {
+func (o *OrTest) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := o.AndTest.parse(q, ws); err != nil {
+		return p.Error("OrTest", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "or"}) {
+		q.AcceptRun(ws...)
+		p.Score(q)
+
+		q = p.NewGoal()
+		o.OrTest = new(OrTest)
+
+		if err := o.OrTest.parse(q, ws); err != nil {
+			return p.Error("OrTest", err)
+		}
+
+		p.Score(q)
+	}
+
+	o.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type AndTest struct{}
+
+func (a *AndTest) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
 
