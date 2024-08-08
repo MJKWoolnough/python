@@ -285,8 +285,50 @@ func (a *AndExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type ShiftExpression struct{}
+type ShiftExpression struct {
+	AddExpression   AddExpression
+	Shift           *Token
+	ShiftExpression *ShiftExpression
+	Tokens          Tokens
+}
 
-func (s *ShiftExpression) parse(_ *pyParser, _ []parser.TokenType) error {
+func (s *ShiftExpression) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := s.AddExpression.parse(p, ws); err != nil {
+		return p.Error("ShiftExpression", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "<<"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: ">>"}) {
+		s.Shift = q.GetLastToken()
+
+		q.AcceptRun(ws...)
+
+		p.Score(q)
+
+		q = p.NewGoal()
+		s.ShiftExpression = new(ShiftExpression)
+
+		if err := s.ShiftExpression.parse(q, ws); err != nil {
+			return p.Error("AndExpression", err)
+		}
+
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type AddExpression struct{}
+
+func (a *AddExpression) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
