@@ -316,7 +316,7 @@ func (s *ShiftExpression) parse(p *pyParser, ws []parser.TokenType) error {
 		s.ShiftExpression = new(ShiftExpression)
 
 		if err := s.ShiftExpression.parse(q, ws); err != nil {
-			return p.Error("AndExpression", err)
+			return p.Error("ShiftExpression", err)
 		}
 
 		p.Score(q)
@@ -327,8 +327,50 @@ func (s *ShiftExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type AddExpression struct{}
+type AddExpression struct {
+	MultiplyExpression MultiplyExpression
+	Add                *Token
+	AddExpression      *AddExpression
+	Tokens             Tokens
+}
 
-func (a *AddExpression) parse(_ *pyParser, _ []parser.TokenType) error {
+func (a *AddExpression) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := a.MultiplyExpression.parse(p, ws); err != nil {
+		return p.Error("AddExpression", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "+"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: "-"}) {
+		a.Add = q.GetLastToken()
+
+		q.AcceptRun(ws...)
+
+		p.Score(q)
+
+		q = p.NewGoal()
+		a.AddExpression = new(AddExpression)
+
+		if err := a.AddExpression.parse(q, ws); err != nil {
+			return p.Error("AddExpression", err)
+		}
+
+		p.Score(q)
+	}
+
+	a.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type MultiplyExpression struct{}
+
+func (m *MultiplyExpression) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
