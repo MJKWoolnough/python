@@ -1027,7 +1027,7 @@ func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
 
 		q := p.NewGoal()
 
-		if err := t.Primary.parse(q); err != nil {
+		if err := t.Primary.parse(q, whitespaceToken); err != nil {
 			return err
 		}
 

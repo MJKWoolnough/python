@@ -11,7 +11,7 @@ type Primary struct {
 	Tokens       Tokens
 }
 
-func (pr *Primary) parse(p *pyParser) error {
+func (pr *Primary) parse(p *pyParser, ws []parser.TokenType) error {
 	pr.Atom = new(Atom)
 
 	q := p.NewGoal()
@@ -25,7 +25,7 @@ func (pr *Primary) parse(p *pyParser) error {
 	q = p.NewGoal()
 
 	for {
-		q.AcceptRun(TokenWhitespace)
+		q.AcceptRun(ws...)
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
 			if !q.Accept(TokenIdentifier) {
@@ -452,8 +452,47 @@ func (u *UnaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type PowerExpression struct{}
+type PowerExpression struct {
+	AwaitExpression bool
+	Primary         Primary
+	UnaryExpression *UnaryExpression
+	Tokens          Tokens
+}
 
-func (p *PowerExpression) parse(_ *pyParser, _ []parser.TokenType) error {
+func (pe *PowerExpression) parse(p *pyParser, ws []parser.TokenType) error {
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "await"}) {
+		pe.AwaitExpression = true
+
+		p.AcceptRun(ws...)
+	}
+
+	q := p.NewGoal()
+
+	if err := pe.Primary.parse(q, ws); err != nil {
+		return p.Error("PowerExpression", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+		q.AcceptRun(ws...)
+		p.Score(q)
+
+		q = p.NewGoal()
+		pe.UnaryExpression = new(UnaryExpression)
+
+		if err := pe.UnaryExpression.parse(q, ws); err != nil {
+			return p.Error("PowerExpression", err)
+		}
+
+		p.Score(q)
+	}
+
+	pe.Tokens = p.ToTokens()
+
 	return nil
 }
