@@ -207,8 +207,47 @@ func (o *OrExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type XorExpression struct{}
+type XorExpression struct {
+	AndExpressions AndExpression
+	XorExpression  *XorExpression
+	Tokens         Tokens
+}
 
-func (x *XorExpression) parse(_ *pyParser, _ []parser.TokenType) error {
+func (x *XorExpression) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := x.AndExpressions.parse(p, ws); err != nil {
+		return p.Error("XorExpression", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "^"}) {
+		q.AcceptRun(ws...)
+
+		p.Score(q)
+
+		q = p.NewGoal()
+		x.XorExpression = new(XorExpression)
+
+		if err := x.XorExpression.parse(q, ws); err != nil {
+			return p.Error("XorExpression", err)
+		}
+
+		p.Score(q)
+	}
+
+	x.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type AndExpression struct{}
+
+func (a *AndExpression) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
