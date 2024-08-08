@@ -1054,10 +1054,113 @@ func (n *NotTest) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type Comparison struct{}
+type Comparison struct {
+	OrExpr
+	Comparisons []ComparisonExpression
+	Tokens      Tokens
+}
 
-func (c *Comparison) parse(_ *pyParser, _ []parser.TokenType) error {
+func (c *Comparison) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := c.OrExpr.parse(q, ws); err != nil {
+		return p.Error("Comparison", err)
+	}
+
+	p.Score(q)
+
+Loop:
+	for {
+		q = p.NewGoal()
+
+		q.AcceptRun(ws...)
+
+		var ce ComparisonExpression
+
+		switch q.Peek() {
+		case parser.Token{Type: TokenOperator, Data: "<"},
+			parser.Token{Type: TokenOperator, Data: ">"},
+			parser.Token{Type: TokenOperator, Data: "=="},
+			parser.Token{Type: TokenOperator, Data: ">="},
+			parser.Token{Type: TokenOperator, Data: "<="},
+			parser.Token{Type: TokenOperator, Data: "!="}:
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.Skip()
+
+			ce.ComparisonOperator = q.ToTokens()
+
+			p.Score(q)
+		case parser.Token{Type: TokenKeyword, Data: "is"}:
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.Skip()
+
+			r := q.NewGoal()
+
+			r.AcceptRun(ws...)
+
+			if r.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
+				q.Score(r)
+			}
+
+			ce.ComparisonOperator = q.ToTokens()
+
+			p.Score(q)
+		case parser.Token{Type: TokenKeyword, Data: "not"}:
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.Skip()
+			q.AcceptRun(ws...)
+
+			if !q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
+				return q.Error("Comparison", ErrMissingIn)
+			}
+
+			ce.ComparisonOperator = q.ToTokens()
+
+			p.Score(q)
+		case parser.Token{Type: TokenKeyword, Data: "in"}:
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.Skip()
+
+			ce.ComparisonOperator = q.ToTokens()
+
+			p.Score(q)
+		default:
+			break Loop
+		}
+
+		p.AcceptRun(ws...)
+
+		q = p.NewGoal()
+
+		if err := ce.OrExpr.parse(q, ws); err != nil {
+			return p.Error("Comparison", err)
+		}
+
+		p.Score(q)
+
+		c.Comparisons = append(c.Comparisons, ce)
+	}
+
+	c.Tokens = p.ToTokens()
+
 	return nil
+}
+
+type ComparisonExpression struct {
+	ComparisonOperator []Token
+	OrExpr             OrExpr
 }
 
 var (

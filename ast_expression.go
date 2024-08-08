@@ -170,6 +170,6 @@ func (s *SliceList) parse(_ *pyParser) error {
 
 type OrExpr struct{}
 
-func (o *OrExpr) parse(_ *pyParser) error {
+func (o *OrExpr) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }

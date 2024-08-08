@@ -688,11 +688,11 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 		q := p.NewGoal()
 
-		if err := f.ParameterList.parse(q); err != nil {
+		if err := f.ParameterList.parse(q, whitespaceCommentTokens); err != nil {
 			return p.Error("FuncDefinition", err)
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRun(TokenWhitespace, TokenComment)
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			return p.Error("FuncDefinition", ErrMissingClosingParen)
@@ -1135,7 +1135,7 @@ func (s *StarredItem) parse(p *pyParser) error {
 		q := p.NewGoal()
 		s.OrExpr = new(OrExpr)
 
-		if err := s.OrExpr.parse(q); err != nil {
+		if err := s.OrExpr.parse(q, whitespaceToken); err != nil {
 			return p.Error("StarredItem", err)
 		}
 
@@ -1214,7 +1214,7 @@ func (t *TypeParam) parse(p *pyParser) error {
 
 type ParameterList struct{}
 
-func (l *ParameterList) parse(_ *pyParser) error {
+func (l *ParameterList) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
 
