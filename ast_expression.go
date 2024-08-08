@@ -413,8 +413,47 @@ func (m *MultiplyExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type UnaryExpression struct{}
+type UnaryExpression struct {
+	PowerExpression *PowerExpression
+	Unary           *Token
+	UnaryExpression *UnaryExpression
+	Tokens          Tokens
+}
 
-func (u *UnaryExpression) parse(_ *pyParser, _ []parser.TokenType) error {
+func (u *UnaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "-"}) ||
+		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "+"}) ||
+		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "~"}) {
+		u.Unary = p.GetLastToken()
+
+		p.AcceptRun(ws...)
+
+		q := p.NewGoal()
+		u.UnaryExpression = new(UnaryExpression)
+
+		if err := u.UnaryExpression.parse(q, ws); err != nil {
+			return p.Error("UnaryExpression", err)
+		}
+
+		p.Score(q)
+	} else {
+		q := p.NewGoal()
+		u.PowerExpression = new(PowerExpression)
+
+		if err := u.PowerExpression.parse(q, ws); err != nil {
+			return p.Error("UnaryExpression", err)
+		}
+
+		p.Score(q)
+	}
+
+	u.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type PowerExpression struct{}
+
+func (p *PowerExpression) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
