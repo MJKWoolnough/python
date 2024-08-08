@@ -369,8 +369,52 @@ func (a *AddExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type MultiplyExpression struct{}
+type MultiplyExpression struct {
+	UnaryExpression    UnaryExpression
+	Multiply           *Token
+	MultiplyExpression *MultiplyExpression
+	Tokens             Tokens
+}
 
-func (m *MultiplyExpression) parse(_ *pyParser, _ []parser.TokenType) error {
+func (m *MultiplyExpression) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := m.UnaryExpression.parse(p, ws); err != nil {
+		return p.Error("MultiplyExpression", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) ||
+		q.AcceptToken(parser.Token{Type: TokenOperator, Data: "//"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) ||
+		q.AcceptToken(parser.Token{Type: TokenOperator, Data: "%"}) {
+		m.Multiply = q.GetLastToken()
+
+		q.AcceptRun(ws...)
+
+		p.Score(q)
+
+		q = p.NewGoal()
+		m.MultiplyExpression = new(MultiplyExpression)
+
+		if err := m.MultiplyExpression.parse(q, ws); err != nil {
+			return p.Error("MultiplyExpression", err)
+		}
+
+		p.Score(q)
+	}
+
+	m.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type UnaryExpression struct{}
+
+func (u *UnaryExpression) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
