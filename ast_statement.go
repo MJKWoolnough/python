@@ -1055,7 +1055,7 @@ func (n *NotTest) parse(p *pyParser, ws []parser.TokenType) error {
 }
 
 type Comparison struct {
-	OrExpr
+	OrExpression
 	Comparisons []ComparisonExpression
 	Tokens      Tokens
 }
@@ -1063,7 +1063,7 @@ type Comparison struct {
 func (c *Comparison) parse(p *pyParser, ws []parser.TokenType) error {
 	q := p.NewGoal()
 
-	if err := c.OrExpr.parse(q, ws); err != nil {
+	if err := c.OrExpression.parse(q, ws); err != nil {
 		return p.Error("Comparison", err)
 	}
 
@@ -1144,7 +1144,7 @@ Loop:
 
 		q = p.NewGoal()
 
-		if err := ce.OrExpr.parse(q, ws); err != nil {
+		if err := ce.OrExpression.parse(q, ws); err != nil {
 			return p.Error("Comparison", err)
 		}
 
@@ -1160,7 +1160,7 @@ Loop:
 
 type ComparisonExpression struct {
 	ComparisonOperator []Token
-	OrExpr             OrExpr
+	OrExpression       OrExpression
 }
 
 var (

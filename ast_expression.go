@@ -168,8 +168,47 @@ func (s *SliceList) parse(_ *pyParser) error {
 	return nil
 }
 
-type OrExpr struct{}
+type OrExpression struct {
+	XorExpressions XorExpression
+	OrExpression   *OrExpression
+	Tokens         Tokens
+}
 
-func (o *OrExpr) parse(_ *pyParser, _ []parser.TokenType) error {
+func (o *OrExpression) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := o.XorExpressions.parse(p, ws); err != nil {
+		return p.Error("OrExpression", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "|"}) {
+		q.AcceptRun(ws...)
+
+		p.Score(q)
+
+		q = p.NewGoal()
+		o.OrExpression = new(OrExpression)
+
+		if err := o.OrExpression.parse(q, ws); err != nil {
+			return p.Error("OrExpression", err)
+		}
+
+		p.Score(q)
+	}
+
+	o.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type XorExpression struct{}
+
+func (x *XorExpression) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }

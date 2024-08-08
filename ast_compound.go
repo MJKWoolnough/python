@@ -1124,7 +1124,7 @@ Loop:
 
 type StarredItem struct {
 	AssignmentExpression *AssignmentExpression
-	OrExpr               *OrExpr
+	OrExpr               *OrExpression
 	Tokens               Tokens
 }
 
@@ -1133,7 +1133,7 @@ func (s *StarredItem) parse(p *pyParser) error {
 		p.AcceptRun(TokenWhitespace)
 
 		q := p.NewGoal()
-		s.OrExpr = new(OrExpr)
+		s.OrExpr = new(OrExpression)
 
 		if err := s.OrExpr.parse(q, whitespaceToken); err != nil {
 			return p.Error("StarredItem", err)
