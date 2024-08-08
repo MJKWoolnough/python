@@ -964,13 +964,13 @@ Loop:
 }
 
 type Target struct {
-	Primary      *Primary
-	Tuple        *TargetList
-	Array        *TargetList
-	AttributeRef *Token
-	Slicing      *SliceList
-	Star         *Target
-	Tokens       Tokens
+	PrimaryExpression *PrimaryExpression
+	Tuple             *TargetList
+	Array             *TargetList
+	AttributeRef      *Token
+	Slicing           *SliceList
+	Star              *Target
+	Tokens            Tokens
 }
 
 func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
@@ -1023,11 +1023,11 @@ func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
 
 		p.Score(q)
 	} else {
-		t.Primary = new(Primary)
+		t.PrimaryExpression = new(PrimaryExpression)
 
 		q := p.NewGoal()
 
-		if err := t.Primary.parse(q, whitespaceToken); err != nil {
+		if err := t.PrimaryExpression.parse(q, whitespaceToken); err != nil {
 			return err
 		}
 
@@ -1066,7 +1066,7 @@ func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
 				return p.Error("Target", ErrMissingClosingBracket)
 			}
 		default:
-			if !t.Primary.IsIdentifier() {
+			if !t.PrimaryExpression.IsIdentifier() {
 				return p.Error("Target", ErrMissingIdentifier)
 			}
 		}

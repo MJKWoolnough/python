@@ -2,16 +2,16 @@ package python
 
 import "vimagination.zapto.org/parser"
 
-type Primary struct {
-	Primary      *Primary
-	Atom         *Atom
-	AttributeRef *Token
-	Slicing      *SliceList
-	Call         *ArgumentListOrComprehension
-	Tokens       Tokens
+type PrimaryExpression struct {
+	PrimaryExpression *PrimaryExpression
+	Atom              *Atom
+	AttributeRef      *Token
+	Slicing           *SliceList
+	Call              *ArgumentListOrComprehension
+	Tokens            Tokens
 }
 
-func (pr *Primary) parse(p *pyParser, ws []parser.TokenType) error {
+func (pr *PrimaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	pr.Atom = new(Atom)
 
 	q := p.NewGoal()
@@ -33,9 +33,9 @@ func (pr *Primary) parse(p *pyParser, ws []parser.TokenType) error {
 			}
 
 			pr.Tokens = p.ToTokens()
-			pr = &Primary{
-				Primary:      pr,
-				AttributeRef: q.GetLastToken(),
+			pr = &PrimaryExpression{
+				PrimaryExpression: pr,
+				AttributeRef:      q.GetLastToken(),
 			}
 		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 			var sl SliceList
@@ -51,9 +51,9 @@ func (pr *Primary) parse(p *pyParser, ws []parser.TokenType) error {
 			q.Score(r)
 
 			pr.Tokens = p.ToTokens()
-			pr = &Primary{
-				Primary: pr,
-				Slicing: &sl,
+			pr = &PrimaryExpression{
+				PrimaryExpression: pr,
+				Slicing:           &sl,
 			}
 
 			q.AcceptRun(TokenWhitespace, TokenComment)
@@ -75,9 +75,9 @@ func (pr *Primary) parse(p *pyParser, ws []parser.TokenType) error {
 			q.Score(r)
 
 			pr.Tokens = p.ToTokens()
-			pr = &Primary{
-				Primary: pr,
-				Call:    &call,
+			pr = &PrimaryExpression{
+				PrimaryExpression: pr,
+				Call:              &call,
 			}
 
 			q.AcceptRun(TokenWhitespace, TokenComment)
@@ -99,13 +99,13 @@ func (pr *Primary) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-func (pr *Primary) IsIdentifier() bool {
+func (pr *PrimaryExpression) IsIdentifier() bool {
 	if pr.Atom != nil {
 		return pr.Atom.IsIdentifier()
 	}
 
-	if pr.Primary != nil {
-		return pr.Primary.IsIdentifier()
+	if pr.PrimaryExpression != nil {
+		return pr.PrimaryExpression.IsIdentifier()
 	}
 
 	return false
@@ -453,10 +453,10 @@ func (u *UnaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
 }
 
 type PowerExpression struct {
-	AwaitExpression bool
-	Primary         Primary
-	UnaryExpression *UnaryExpression
-	Tokens          Tokens
+	AwaitExpression   bool
+	PrimaryExpression PrimaryExpression
+	UnaryExpression   *UnaryExpression
+	Tokens            Tokens
 }
 
 func (pe *PowerExpression) parse(p *pyParser, ws []parser.TokenType) error {
@@ -468,7 +468,7 @@ func (pe *PowerExpression) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q := p.NewGoal()
 
-	if err := pe.Primary.parse(q, ws); err != nil {
+	if err := pe.PrimaryExpression.parse(q, ws); err != nil {
 		return p.Error("PowerExpression", err)
 	}
 
