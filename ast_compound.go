@@ -1212,9 +1212,179 @@ func (t *TypeParam) parse(p *pyParser) error {
 	return nil
 }
 
-type ParameterList struct{}
+type ParameterList struct {
+	DefParameters []DefParameter
+	NoPosOnly     []DefParameter
+	StarArg       *Parameter
+	StarArgs      []DefParameter
+	StarStarArg   *Parameter
+	Tokens        Tokens
+}
 
-func (l *ParameterList) parse(_ *pyParser, _ []parser.TokenType) error {
+func (l *ParameterList) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	dps, err := paramList(q, ws)
+	if err != nil {
+		return p.Error("ParameterList", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		q.AcceptRun(ws...)
+
+		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) {
+			l.DefParameters = dps
+			dps = nil
+
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.AcceptRun(ws...)
+
+			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				q.AcceptRun(ws...)
+
+				if q.Peek().Type == TokenIdentifier {
+					dps, err = paramList(q, ws)
+					if err != nil {
+						return p.Error("ParameterList", err)
+					}
+
+					p.Score(q)
+				}
+			}
+		}
+	}
+
+	if dps != nil {
+		l.NoPosOnly = dps
+
+		q = p.NewGoal()
+
+		q.AcceptRun(ws...)
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			q.AcceptRun(ws...)
+
+			tryStarStar := true
+
+			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+				q.AcceptRun(ws...)
+				p.Score(q)
+
+				q = p.NewGoal()
+				l.StarArg = new(Parameter)
+
+				if err := l.StarArg.parse(q, ws); err != nil {
+					return p.Error("ParameterList", err)
+				}
+
+				p.Score(q)
+
+				q = p.NewGoal()
+
+				q.AcceptRun(ws...)
+
+				if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+					q.AcceptRun(ws...)
+
+					if q.Peek().Type == TokenIdentifier {
+						p.Score(q)
+
+						q = p.NewGoal()
+
+						dps, err := paramList(q, ws)
+						if err != nil {
+							return p.Error("ParameterList", err)
+						}
+
+						p.Score(q)
+
+						l.StarArgs = dps
+						q = p.NewGoal()
+
+						q.AcceptRun(ws...)
+
+						if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+							q.AcceptRun(ws...)
+						} else {
+							tryStarStar = false
+						}
+					}
+				}
+			}
+
+			if tryStarStar && q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "**"}) {
+				q.AcceptRun(ws...)
+
+				p.Score(q)
+
+				q = p.NewGoal()
+				l.StarStarArg = new(Parameter)
+
+				if err := l.StarStarArg.parse(q, ws); err != nil {
+					return p.Error("ParameterList", err)
+				}
+			}
+		}
+	}
+
+	l.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func paramList(p *pyParser, ws []parser.TokenType) ([]DefParameter, error) {
+	var defParameters []DefParameter
+
+	for {
+		q := p.NewGoal()
+
+		var dp DefParameter
+
+		if err := dp.parse(q, ws); err != nil {
+			return nil, err
+		}
+
+		p.Score(q)
+
+		defParameters = append(defParameters, dp)
+		q = p.NewGoal()
+
+		q.AcceptRun(ws...)
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			break
+		}
+
+		q.AcceptRun(ws...)
+
+		if q.Peek().Type != TokenIdentifier {
+			break
+		}
+
+		p.Score(q)
+	}
+
+	return defParameters, nil
+}
+
+type DefParameter struct{}
+
+func (d *DefParameter) parse(_ *pyParser, _ []parser.TokenType) error {
+	return nil
+}
+
+type Parameter struct{}
+
+func (pr *Parameter) parse(_ *pyParser, _ []parser.TokenType) error {
 	return nil
 }
 
