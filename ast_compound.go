@@ -1376,9 +1376,41 @@ func paramList(p *pyParser, ws []parser.TokenType) ([]DefParameter, error) {
 	return defParameters, nil
 }
 
-type DefParameter struct{}
+type DefParameter struct {
+	Parameter Parameter
+	Value     *Expression
+	Tokens    Tokens
+}
 
-func (d *DefParameter) parse(_ *pyParser, _ []parser.TokenType) error {
+func (d *DefParameter) parse(p *pyParser, ws []parser.TokenType) error {
+	q := p.NewGoal()
+
+	if err := d.Parameter.parse(q, ws); err != nil {
+		return p.Error("DefParameter", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		q.AcceptRun(ws...)
+		p.Score(q)
+
+		q = p.NewGoal()
+		d.Value = new(Expression)
+
+		if err := d.Value.parse(q, ws); err != nil {
+			return p.Error("DefParameter", err)
+		}
+
+		p.Score(q)
+	}
+
+	d.Tokens = p.ToTokens()
+
 	return nil
 }
 
