@@ -1395,7 +1395,7 @@ func (d *DefParameter) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q.AcceptRun(ws...)
 
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
 		q.AcceptRun(ws...)
 		p.Score(q)
 
@@ -1414,9 +1414,39 @@ func (d *DefParameter) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type Parameter struct{}
+type Parameter struct {
+	Identifier *Token
+	Type       *Expression
+	Tokens     Tokens
+}
 
-func (pr *Parameter) parse(_ *pyParser, _ []parser.TokenType) error {
+func (pr *Parameter) parse(p *pyParser, ws []parser.TokenType) error {
+	if !p.Accept(TokenIdentifier) {
+		return p.Error("Parameter", ErrMissingIdentifier)
+	}
+
+	pr.Identifier = p.GetLastToken()
+
+	q := p.NewGoal()
+
+	q.AcceptRun(ws...)
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		q.AcceptRun(ws...)
+		p.Score(q)
+
+		q = p.NewGoal()
+		pr.Type = new(Expression)
+
+		if err := pr.Type.parse(q, ws); err != nil {
+			return p.Error("Parameter", err)
+		}
+
+		p.Score(q)
+	}
+
+	pr.Tokens = p.ToTokens()
+
 	return nil
 }
 
