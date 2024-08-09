@@ -867,7 +867,7 @@ type Suite struct {
 }
 
 func (s *Suite) parse(p *pyParser) error {
-	if p.Accept(TokenLineTerminator) {
+	if p.Accept(TokenLineTerminator, TokenComment) {
 		p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
 
 		if !p.Accept(TokenIndent) {
