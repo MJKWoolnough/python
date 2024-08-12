@@ -1499,6 +1499,11 @@ func (a *ArgumentList) parse(p *pyParser) error {
 		}
 
 		q.AcceptRun(TokenWhitespace, TokenComment)
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			break
+		}
+
 		p.Score(q)
 	}
 
@@ -1532,6 +1537,11 @@ func (a *ArgumentList) parse(p *pyParser) error {
 			}
 
 			q.AcceptRun(TokenWhitespace, TokenComment)
+
+			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+				break
+			}
+
 			p.Score(q)
 		}
 	}
@@ -1560,6 +1570,11 @@ func (a *ArgumentList) parse(p *pyParser) error {
 			}
 
 			q.AcceptRun(TokenWhitespace, TokenComment)
+
+			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+				break
+			}
+
 			p.Score(q)
 		}
 	}
