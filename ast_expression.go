@@ -198,9 +198,51 @@ func (e *ExpressionList) parse(p *pyParser) error {
 	return nil
 }
 
-type SliceList struct{}
+type SliceList struct {
+	SliceItems []SliceItem
+	Tokens     Tokens
+}
 
-func (s *SliceList) parse(_ *pyParser) error {
+func (s *SliceList) parse(p *pyParser) error {
+	for {
+		q := p.NewGoal()
+
+		var si SliceItem
+
+		if err := si.parse(q); err != nil {
+			return p.Error("ExpressionList", err)
+		}
+
+		p.Score(q)
+
+		s.SliceItems = append(s.SliceItems, si)
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace, TokenComment)
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			break
+		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			return p.Error("SliceList", ErrMissingComma)
+		}
+
+		q.AcceptRun(TokenWhitespace, TokenComment)
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			break
+		}
+
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type SliceItem struct{}
+
+func (s *SliceItem) parse(_ *pyParser) error {
 	return nil
 }
 
