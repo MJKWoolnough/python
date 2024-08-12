@@ -1603,15 +1603,49 @@ func (pa *PositionalArgument) parse(p *pyParser) error {
 	return nil
 }
 
-type StarredOrKeywordArgument struct{}
+type StarredOrKeywordArgument struct {
+	Expression  *Expression
+	KeywordItem *KeywordItem
+	Tokens      Tokens
+}
 
-func (s *StarredOrKeywordArgument) parse(_ *pyParser) error {
+func (s *StarredOrKeywordArgument) parse(p *pyParser) error {
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		p.AcceptRun(TokenWhitespace, TokenComment)
+
+		q := p.NewGoal()
+		s.Expression = new(Expression)
+
+		if err := s.Expression.parse(q, whitespaceCommentTokens); err != nil {
+			return p.Error("StarredOrKeywordArgument", err)
+		}
+
+		p.Score(q)
+	} else {
+		q := p.NewGoal()
+		s.KeywordItem = new(KeywordItem)
+
+		if err := s.KeywordItem.parse(q); err != nil {
+			return p.Error("StarredOrKeywordArgument", err)
+		}
+
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type KeywordItem struct{}
+
+func (k *KeywordItem) parse(_ *pyParser) error {
 	return nil
 }
 
 type KeywordArgument struct{}
 
-func (s *KeywordArgument) parse(_ *pyParser) error {
+func (k *KeywordArgument) parse(_ *pyParser) error {
 	return nil
 }
 
