@@ -1671,9 +1671,37 @@ func (k *KeywordItem) parse(p *pyParser) error {
 	return nil
 }
 
-type KeywordArgument struct{}
+type KeywordArgument struct {
+	KeywordItem *KeywordItem
+	Expression  *Expression
+	Tokens      Tokens
+}
 
-func (k *KeywordArgument) parse(_ *pyParser) error {
+func (k *KeywordArgument) parse(p *pyParser) error {
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+		p.AcceptRun(TokenWhitespace, TokenComment)
+
+		q := p.NewGoal()
+		k.Expression = new(Expression)
+
+		if err := k.Expression.parse(q, whitespaceCommentTokens); err != nil {
+			return p.Error("KeywordArgument", err)
+		}
+
+		p.Score(q)
+	} else {
+		q := p.NewGoal()
+		k.KeywordItem = new(KeywordItem)
+
+		if err := k.KeywordItem.parse(q); err != nil {
+			return p.Error("KeywordArgument", err)
+		}
+
+		p.Score(q)
+	}
+
+	k.Tokens = p.ToTokens()
+
 	return nil
 }
 
