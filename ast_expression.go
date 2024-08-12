@@ -240,9 +240,66 @@ func (s *SliceList) parse(p *pyParser) error {
 	return nil
 }
 
-type SliceItem struct{}
+type SliceItem struct {
+	Expression *Expression
+	LowerBound *Expression
+	UpperBound *Expression
+	Stride     *Expression
+	Tokens     Tokens
+}
 
-func (s *SliceItem) parse(_ *pyParser) error {
+func (s *SliceItem) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	s.Expression = new(Expression)
+
+	if err := s.Expression.parse(q, whitespaceCommentTokens); err != nil {
+		return p.Error("SliceItem", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRun(TokenWhitespace, TokenComment)
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		q.AcceptRun(TokenWhitespace, TokenComment)
+		p.Score(q)
+
+		q = p.NewGoal()
+		s.LowerBound = s.Expression
+		s.Expression = nil
+		s.UpperBound = new(Expression)
+
+		if err := s.UpperBound.parse(q, whitespaceCommentTokens); err != nil {
+			return p.Error("SliceItem", err)
+		}
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace, TokenComment)
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			q.AcceptRun(TokenWhitespace, TokenComment)
+			p.Score(q)
+
+			q = p.NewGoal()
+			s.Stride = new(Expression)
+
+			if err := s.Stride.parse(q, whitespaceCommentTokens); err != nil {
+				return p.Error("SliceItem", err)
+			}
+
+			p.Score(q)
+		}
+
+	}
+
+	s.Tokens = p.ToTokens()
+
 	return nil
 }
 
