@@ -1450,9 +1450,140 @@ func (pr *Parameter) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-type ArgumentList struct{}
+type ArgumentList struct {
+	PositionalArguments        []PositionalArgument
+	StarredAndKeywordArguments []StarredOrKeywordArgument
+	KeywordArguments           []KeywordArgument
+	Tokens                     Tokens
+}
 
-func (a *ArgumentList) parse(_ *pyParser) error {
+func (a *ArgumentList) parse(p *pyParser) error {
+	var nextIsKeywordItem, nextIsDoubleStarred bool
+
+	for {
+		q := p.NewGoal()
+
+		if next := q.Peek(); next == (parser.Token{Type: TokenOperator, Data: "**"}) {
+			nextIsDoubleStarred = true
+
+			break
+		} else if next.Type == TokenIdentifier {
+			q.Skip()
+			q.AcceptRun(TokenWhitespace, TokenComment)
+			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "="}) {
+				nextIsKeywordItem = true
+
+				break
+			}
+
+			q = p.NewGoal()
+		}
+
+		var pa PositionalArgument
+
+		if err := pa.parse(q); err != nil {
+			return p.Error("ArgumentList", err)
+		}
+
+		p.Score(q)
+
+		a.PositionalArguments = append(a.PositionalArguments, pa)
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace, TokenComment)
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			break
+		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			return p.Error("ArgumentList", ErrMissingComma)
+		}
+
+		q.AcceptRun(TokenWhitespace, TokenComment)
+		p.Score(q)
+	}
+
+	if nextIsKeywordItem {
+		for {
+			q := p.NewGoal()
+
+			if next := q.Peek(); next == (parser.Token{Type: TokenOperator, Data: "**"}) {
+				nextIsDoubleStarred = true
+
+				break
+			}
+
+			var sk StarredOrKeywordArgument
+
+			if err := sk.parse(q); err != nil {
+				return p.Error("ArgumentList", err)
+			}
+
+			p.Score(q)
+
+			a.StarredAndKeywordArguments = append(a.StarredAndKeywordArguments, sk)
+			q = p.NewGoal()
+
+			q.AcceptRun(TokenWhitespace, TokenComment)
+
+			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+				break
+			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				return p.Error("ArgumentList", ErrMissingComma)
+			}
+
+			q.AcceptRun(TokenWhitespace, TokenComment)
+			p.Score(q)
+		}
+	}
+
+	if nextIsDoubleStarred {
+		for {
+			q := p.NewGoal()
+
+			var ka KeywordArgument
+
+			if err := ka.parse(q); err != nil {
+				return p.Error("ArgumentList", err)
+			}
+
+			p.Score(q)
+
+			a.KeywordArguments = append(a.KeywordArguments, ka)
+			q = p.NewGoal()
+
+			q.AcceptRun(TokenWhitespace, TokenComment)
+
+			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+				break
+			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				return p.Error("ArgumentList", ErrMissingComma)
+			}
+
+			q.AcceptRun(TokenWhitespace, TokenComment)
+			p.Score(q)
+		}
+	}
+
+	a.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type PositionalArgument struct{}
+
+func (p *PositionalArgument) parse(_ *pyParser) error {
+	return nil
+}
+
+type StarredOrKeywordArgument struct{}
+
+func (s *StarredOrKeywordArgument) parse(_ *pyParser) error {
+	return nil
+}
+
+type KeywordArgument struct{}
+
+func (s *KeywordArgument) parse(_ *pyParser) error {
 	return nil
 }
 
@@ -1468,4 +1599,5 @@ var (
 	ErrMissingClosingParen   = errors.New("missing closing paren")
 	ErrMissingClosingBracket = errors.New("missing closing bracket")
 	ErrMissingIndent         = errors.New("missing indent")
+	ErrMissingComma          = errors.New("missing comma")
 )
