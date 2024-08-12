@@ -1637,9 +1637,37 @@ func (s *StarredOrKeywordArgument) parse(p *pyParser) error {
 	return nil
 }
 
-type KeywordItem struct{}
+type KeywordItem struct {
+	Identifier *Token
+	Expression Expression
+	Tokens     Tokens
+}
 
-func (k *KeywordItem) parse(_ *pyParser) error {
+func (k *KeywordItem) parse(p *pyParser) error {
+	if !p.Accept(TokenIdentifier) {
+		return p.Error("KeywordItem", ErrMissingIdentifier)
+	}
+
+	k.Identifier = p.GetLastToken()
+
+	p.AcceptRun(TokenWhitespace, TokenComment)
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
+		return p.Error("KeywordItem", ErrMissingEquals)
+	}
+
+	p.AcceptRun(TokenWhitespace, TokenComment)
+
+	q := p.NewGoal()
+
+	if err := k.Expression.parse(q, whitespaceCommentTokens); err != nil {
+		return p.Error("KeywordItem", err)
+	}
+
+	p.Score(q)
+
+	k.Tokens = p.ToTokens()
+
 	return nil
 }
 
