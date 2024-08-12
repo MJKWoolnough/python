@@ -156,9 +156,45 @@ func (a *ArgumentListOrComprehension) parse(_ *pyParser) error {
 	return nil
 }
 
-type ExpressionList struct{}
+type ExpressionList struct {
+	Expressions []Expression
+	Tokens      Tokens
+}
 
-func (e *ExpressionList) parse(_ *pyParser) error {
+func (e *ExpressionList) parse(p *pyParser) error {
+	for {
+		q := p.NewGoal()
+
+		var ex Expression
+
+		if err := ex.parse(q, whitespaceCommentTokens); err != nil {
+			return p.Error("ExpressionList", err)
+		}
+
+		p.Score(q)
+
+		e.Expressions = append(e.Expressions, ex)
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace, TokenComment)
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			break
+		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			return p.Error("ExpressionList", ErrMissingComma)
+		}
+
+		q.AcceptRun(TokenWhitespace, TokenComment)
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			break
+		}
+
+		p.Score(q)
+	}
+
+	e.Tokens = p.ToTokens()
+
 	return nil
 }
 
