@@ -789,16 +789,16 @@ type AssignmentExpression struct {
 	Tokens
 }
 
-func (a *AssignmentExpression) parse(p *pyParser) error {
+func (a *AssignmentExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	q := p.NewGoal()
 
 	if q.Accept(TokenIdentifier) {
 		identifier := q.GetLastToken()
 
-		q.AcceptRun(TokenWhitespace)
+		q.AcceptRun(ws...)
 
 		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: ":="}) {
-			q.AcceptRun(TokenWhitespace)
+			q.AcceptRun(ws...)
 			p.Score(q)
 
 			a.Identifier = identifier
@@ -806,7 +806,7 @@ func (a *AssignmentExpression) parse(p *pyParser) error {
 		q = p.NewGoal()
 	}
 
-	if err := a.Expression.parse(q, whitespaceToken); err != nil {
+	if err := a.Expression.parse(q, ws); err != nil {
 		return p.Error("AssignmentExpression", err)
 	}
 

@@ -107,7 +107,7 @@ func (d *Decorators) parse(p *pyParser) error {
 
 		q := p.NewGoal()
 
-		if err := ae.parse(q); err != nil {
+		if err := ae.parse(q, whitespaceToken); err != nil {
 			return p.Error("Decorator", err)
 		}
 
@@ -833,7 +833,7 @@ type AssignmentExpressionAndSuite struct {
 func (a *AssignmentExpressionAndSuite) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := a.AssignmentExpression.parse(q); err != nil {
+	if err := a.AssignmentExpression.parse(q, whitespaceToken); err != nil {
 		return p.Error("AssignmentExpressionAndSuite", err)
 	}
 
@@ -1591,7 +1591,7 @@ func (pa *PositionalArgument) parse(p *pyParser) error {
 		q := p.NewGoal()
 		pa.AssignmentExpression = new(AssignmentExpression)
 
-		if err := pa.AssignmentExpression.parse(q); err != nil {
+		if err := pa.AssignmentExpression.parse(q, whitespaceCommentTokens); err != nil {
 			return p.Error("PositionalArgument", err)
 		}
 
