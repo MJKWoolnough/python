@@ -1569,9 +1569,37 @@ func (a *ArgumentList) parse(p *pyParser) error {
 	return nil
 }
 
-type PositionalArgument struct{}
+type PositionalArgument struct {
+	AssignmentExpression *AssignmentExpression
+	Expression           *Expression
+	Tokens               Tokens
+}
 
-func (p *PositionalArgument) parse(_ *pyParser) error {
+func (pa *PositionalArgument) parse(p *pyParser) error {
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		p.AcceptRun(TokenWhitespace, TokenComment)
+
+		q := p.NewGoal()
+		pa.Expression = new(Expression)
+
+		if err := pa.Expression.parse(q, whitespaceCommentTokens); err != nil {
+			return p.Error("PositionalArgument", err)
+		}
+
+		p.Score(q)
+	} else {
+		q := p.NewGoal()
+		pa.AssignmentExpression = new(AssignmentExpression)
+
+		if err := pa.AssignmentExpression.parse(q); err != nil {
+			return p.Error("PositionalArgument", err)
+		}
+
+		p.Score(q)
+	}
+
+	pa.Tokens = p.ToTokens()
+
 	return nil
 }
 
