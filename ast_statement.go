@@ -117,7 +117,7 @@ type SimpleStatement struct {
 	AssignmentStatement *AssignmentStatement
 	DelStatement        *DelStatement
 	ReturnStatement     *ReturnStatement
-	YieldStatement      *YieldStatement
+	YieldStatement      *YieldExpression
 	RaiseStatement      *RaiseStatement
 	ImportStatement     *ImportStatement
 	GlobalStatement     *GlobalStatement
@@ -166,7 +166,7 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 
 		p.Score(q)
 	case parser.Token{Type: TokenKeyword, Data: "yield"}:
-		s.YieldStatement = new(YieldStatement)
+		s.YieldStatement = new(YieldExpression)
 		s.Type = StatementYield
 
 		q := p.NewGoal()
@@ -412,12 +412,6 @@ func (s *StarredExpression) asTargetList() TargetList {
 	return TargetList{}
 }
 
-type YieldExpression struct{}
-
-func (y *YieldExpression) parse(_ *pyParser) error {
-	return nil
-}
-
 type DelStatement struct {
 	TargetList TargetList
 	Tokens     Tokens
@@ -483,13 +477,13 @@ func (r *ReturnStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type YieldStatement struct {
+type YieldExpression struct {
 	Expression *Expression
 	From       *ExpressionList
 	Tokens     Tokens
 }
 
-func (y *YieldStatement) parse(p *pyParser) error {
+func (y *YieldExpression) parse(p *pyParser) error {
 	p.Skip()
 
 	p.AcceptRun(TokenWhitespace)
@@ -502,7 +496,7 @@ func (y *YieldStatement) parse(p *pyParser) error {
 		q := p.NewGoal()
 
 		if err := y.From.parse(q); err != nil {
-			return p.Error("YieldStatement", err)
+			return p.Error("YieldExpression", err)
 		}
 
 		p.Score(p)
@@ -514,7 +508,7 @@ func (y *YieldStatement) parse(p *pyParser) error {
 		q := p.NewGoal()
 
 		if err := y.Expression.parse(q, whitespaceToken); err != nil {
-			return p.Error("YieldStatement", err)
+			return p.Error("YieldExpression", err)
 		}
 
 		p.Score(p)
