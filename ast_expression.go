@@ -11,7 +11,7 @@ type PrimaryExpression struct {
 	Tokens            Tokens
 }
 
-func (pr *PrimaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
+func (pr *PrimaryExpression) parse(p *pyParser) error {
 	pr.Atom = new(Atom)
 
 	q := p.NewGoal()
@@ -25,7 +25,7 @@ func (pr *PrimaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
 	q = p.NewGoal()
 
 	for {
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
 			if !q.Accept(TokenIdentifier) {
@@ -38,9 +38,10 @@ func (pr *PrimaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
 				AttributeRef:      q.GetLastToken(),
 			}
 		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+			q.OpenBrackets()
 			var sl SliceList
 
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.AcceptRunWhitespace()
 
 			r := q.NewGoal()
 
@@ -56,15 +57,18 @@ func (pr *PrimaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
 				Slicing:           &sl,
 			}
 
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.AcceptRunWhitespace()
 
 			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 				return q.Error("Primary", ErrMissingClosingBracket)
 			}
+
+			q.CloseBrackets()
 		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 			var call ArgumentListOrComprehension
 
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.OpenBrackets()
+			q.AcceptRunWhitespace()
 
 			r := q.NewGoal()
 
@@ -80,11 +84,13 @@ func (pr *PrimaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
 				Call:              &call,
 			}
 
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.AcceptRunWhitespace()
 
 			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 				return q.Error("Primary", ErrMissingClosingParen)
 			}
+
+			q.CloseBrackets()
 		} else {
 			break
 		}
@@ -167,7 +173,7 @@ func (e *ExpressionList) parse(p *pyParser) error {
 
 		var ex Expression
 
-		if err := ex.parse(q, whitespaceCommentTokens); err != nil {
+		if err := ex.parse(q); err != nil {
 			return p.Error("ExpressionList", err)
 		}
 
@@ -176,17 +182,17 @@ func (e *ExpressionList) parse(p *pyParser) error {
 		e.Expressions = append(e.Expressions, ex)
 		q = p.NewGoal()
 
-		q.AcceptRun(TokenWhitespace, TokenComment)
+		q.AcceptRunWhitespace()
 
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "]"}) {
 			break
 		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 			return p.Error("ExpressionList", ErrMissingComma)
 		}
 
-		q.AcceptRun(TokenWhitespace, TokenComment)
+		q.AcceptRunWhitespace()
 
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "]"}) {
 			break
 		}
 
@@ -218,17 +224,17 @@ func (s *SliceList) parse(p *pyParser) error {
 		s.SliceItems = append(s.SliceItems, si)
 		q = p.NewGoal()
 
-		q.AcceptRun(TokenWhitespace, TokenComment)
+		q.AcceptRunWhitespace()
 
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "]"}) {
 			break
 		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 			return p.Error("SliceList", ErrMissingComma)
 		}
 
-		q.AcceptRun(TokenWhitespace, TokenComment)
+		q.AcceptRunWhitespace()
 
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "]"}) {
 			break
 		}
 
@@ -253,7 +259,7 @@ func (s *SliceItem) parse(p *pyParser) error {
 
 	s.Expression = new(Expression)
 
-	if err := s.Expression.parse(q, whitespaceCommentTokens); err != nil {
+	if err := s.Expression.parse(q); err != nil {
 		return p.Error("SliceItem", err)
 	}
 
@@ -261,10 +267,10 @@ func (s *SliceItem) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(TokenWhitespace, TokenComment)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-		q.AcceptRun(TokenWhitespace, TokenComment)
+		q.AcceptRunWhitespace()
 		p.Score(q)
 
 		q = p.NewGoal()
@@ -272,7 +278,7 @@ func (s *SliceItem) parse(p *pyParser) error {
 		s.Expression = nil
 		s.UpperBound = new(Expression)
 
-		if err := s.UpperBound.parse(q, whitespaceCommentTokens); err != nil {
+		if err := s.UpperBound.parse(q); err != nil {
 			return p.Error("SliceItem", err)
 		}
 
@@ -280,16 +286,16 @@ func (s *SliceItem) parse(p *pyParser) error {
 
 		q = p.NewGoal()
 
-		q.AcceptRun(TokenWhitespace, TokenComment)
+		q.AcceptRunWhitespace()
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.AcceptRunWhitespace()
 			p.Score(q)
 
 			q = p.NewGoal()
 			s.Stride = new(Expression)
 
-			if err := s.Stride.parse(q, whitespaceCommentTokens); err != nil {
+			if err := s.Stride.parse(q); err != nil {
 				return p.Error("SliceItem", err)
 			}
 
@@ -309,10 +315,10 @@ type OrExpression struct {
 	Tokens         Tokens
 }
 
-func (o *OrExpression) parse(p *pyParser, ws []parser.TokenType) error {
+func (o *OrExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := o.XorExpressions.parse(p, ws); err != nil {
+	if err := o.XorExpressions.parse(p); err != nil {
 		return p.Error("OrExpression", err)
 	}
 
@@ -320,17 +326,17 @@ func (o *OrExpression) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "|"}) {
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		p.Score(q)
 
 		q = p.NewGoal()
 		o.OrExpression = new(OrExpression)
 
-		if err := o.OrExpression.parse(q, ws); err != nil {
+		if err := o.OrExpression.parse(q); err != nil {
 			return p.Error("OrExpression", err)
 		}
 
@@ -348,10 +354,10 @@ type XorExpression struct {
 	Tokens         Tokens
 }
 
-func (x *XorExpression) parse(p *pyParser, ws []parser.TokenType) error {
+func (x *XorExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := x.AndExpressions.parse(p, ws); err != nil {
+	if err := x.AndExpressions.parse(p); err != nil {
 		return p.Error("XorExpression", err)
 	}
 
@@ -359,17 +365,17 @@ func (x *XorExpression) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "^"}) {
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		p.Score(q)
 
 		q = p.NewGoal()
 		x.XorExpression = new(XorExpression)
 
-		if err := x.XorExpression.parse(q, ws); err != nil {
+		if err := x.XorExpression.parse(q); err != nil {
 			return p.Error("XorExpression", err)
 		}
 
@@ -387,10 +393,10 @@ type AndExpression struct {
 	Tokens          Tokens
 }
 
-func (a *AndExpression) parse(p *pyParser, ws []parser.TokenType) error {
+func (a *AndExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := a.ShiftExpression.parse(p, ws); err != nil {
+	if err := a.ShiftExpression.parse(p); err != nil {
 		return p.Error("AndExpression", err)
 	}
 
@@ -398,17 +404,17 @@ func (a *AndExpression) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "&"}) {
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		p.Score(q)
 
 		q = p.NewGoal()
 		a.AndExpression = new(AndExpression)
 
-		if err := a.AndExpression.parse(q, ws); err != nil {
+		if err := a.AndExpression.parse(q); err != nil {
 			return p.Error("AndExpression", err)
 		}
 
@@ -427,10 +433,10 @@ type ShiftExpression struct {
 	Tokens          Tokens
 }
 
-func (s *ShiftExpression) parse(p *pyParser, ws []parser.TokenType) error {
+func (s *ShiftExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := s.AddExpression.parse(p, ws); err != nil {
+	if err := s.AddExpression.parse(p); err != nil {
 		return p.Error("ShiftExpression", err)
 	}
 
@@ -438,19 +444,19 @@ func (s *ShiftExpression) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "<<"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: ">>"}) {
 		s.Shift = q.GetLastToken()
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		p.Score(q)
 
 		q = p.NewGoal()
 		s.ShiftExpression = new(ShiftExpression)
 
-		if err := s.ShiftExpression.parse(q, ws); err != nil {
+		if err := s.ShiftExpression.parse(q); err != nil {
 			return p.Error("ShiftExpression", err)
 		}
 
@@ -469,10 +475,10 @@ type AddExpression struct {
 	Tokens             Tokens
 }
 
-func (a *AddExpression) parse(p *pyParser, ws []parser.TokenType) error {
+func (a *AddExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := a.MultiplyExpression.parse(p, ws); err != nil {
+	if err := a.MultiplyExpression.parse(p); err != nil {
 		return p.Error("AddExpression", err)
 	}
 
@@ -480,19 +486,19 @@ func (a *AddExpression) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "+"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: "-"}) {
 		a.Add = q.GetLastToken()
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		p.Score(q)
 
 		q = p.NewGoal()
 		a.AddExpression = new(AddExpression)
 
-		if err := a.AddExpression.parse(q, ws); err != nil {
+		if err := a.AddExpression.parse(q); err != nil {
 			return p.Error("AddExpression", err)
 		}
 
@@ -511,10 +517,10 @@ type MultiplyExpression struct {
 	Tokens             Tokens
 }
 
-func (m *MultiplyExpression) parse(p *pyParser, ws []parser.TokenType) error {
+func (m *MultiplyExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := m.UnaryExpression.parse(p, ws); err != nil {
+	if err := m.UnaryExpression.parse(p); err != nil {
 		return p.Error("MultiplyExpression", err)
 	}
 
@@ -522,21 +528,21 @@ func (m *MultiplyExpression) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) ||
 		q.AcceptToken(parser.Token{Type: TokenOperator, Data: "//"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) ||
 		q.AcceptToken(parser.Token{Type: TokenOperator, Data: "%"}) {
 		m.Multiply = q.GetLastToken()
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		p.Score(q)
 
 		q = p.NewGoal()
 		m.MultiplyExpression = new(MultiplyExpression)
 
-		if err := m.MultiplyExpression.parse(q, ws); err != nil {
+		if err := m.MultiplyExpression.parse(q); err != nil {
 			return p.Error("MultiplyExpression", err)
 		}
 
@@ -555,18 +561,18 @@ type UnaryExpression struct {
 	Tokens          Tokens
 }
 
-func (u *UnaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
+func (u *UnaryExpression) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "-"}) ||
 		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "+"}) ||
 		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "~"}) {
 		u.Unary = p.GetLastToken()
 
-		p.AcceptRun(ws...)
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 		u.UnaryExpression = new(UnaryExpression)
 
-		if err := u.UnaryExpression.parse(q, ws); err != nil {
+		if err := u.UnaryExpression.parse(q); err != nil {
 			return p.Error("UnaryExpression", err)
 		}
 
@@ -575,7 +581,7 @@ func (u *UnaryExpression) parse(p *pyParser, ws []parser.TokenType) error {
 		q := p.NewGoal()
 		u.PowerExpression = new(PowerExpression)
 
-		if err := u.PowerExpression.parse(q, ws); err != nil {
+		if err := u.PowerExpression.parse(q); err != nil {
 			return p.Error("UnaryExpression", err)
 		}
 
@@ -594,16 +600,16 @@ type PowerExpression struct {
 	Tokens            Tokens
 }
 
-func (pe *PowerExpression) parse(p *pyParser, ws []parser.TokenType) error {
+func (pe *PowerExpression) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "await"}) {
 		pe.AwaitExpression = true
 
-		p.AcceptRun(ws...)
+		p.AcceptRunWhitespace()
 	}
 
 	q := p.NewGoal()
 
-	if err := pe.PrimaryExpression.parse(q, ws); err != nil {
+	if err := pe.PrimaryExpression.parse(q); err != nil {
 		return p.Error("PowerExpression", err)
 	}
 
@@ -611,16 +617,16 @@ func (pe *PowerExpression) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 		p.Score(q)
 
 		q = p.NewGoal()
 		pe.UnaryExpression = new(UnaryExpression)
 
-		if err := pe.UnaryExpression.parse(q, ws); err != nil {
+		if err := pe.UnaryExpression.parse(q); err != nil {
 			return p.Error("PowerExpression", err)
 		}
 

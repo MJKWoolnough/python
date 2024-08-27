@@ -66,7 +66,7 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 		err = c.Class.parse(q, decorators)
 	case "async":
 		p.next()
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		switch tk := p.Peek(); tk.Data {
 		case "for":
@@ -107,11 +107,11 @@ func (d *Decorators) parse(p *pyParser) error {
 
 		q := p.NewGoal()
 
-		if err := ae.parse(q, whitespaceToken); err != nil {
+		if err := ae.parse(q); err != nil {
 			return p.Error("Decorator", err)
 		}
 
-		q.AcceptRun(TokenWhitespace)
+		q.AcceptRunWhitespace()
 		p.Score(q)
 
 		if !q.Accept(TokenLineTerminator) {
@@ -133,7 +133,7 @@ type IfStatement struct {
 
 func (i *IfStatement) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"})
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
 
@@ -148,7 +148,7 @@ func (i *IfStatement) parse(p *pyParser) error {
 	q.AcceptRun(TokenLineTerminator)
 
 	for q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "elif"}) {
-		q.AcceptRun(TokenWhitespace)
+		q.AcceptRunWhitespace()
 		p.Score(q)
 
 		q := p.NewGoal()
@@ -174,13 +174,13 @@ func (i *IfStatement) parse(p *pyParser) error {
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 			return p.Error("IfStatement", ErrMissingColon)
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 
@@ -206,7 +206,7 @@ type WhileStatement struct {
 
 func (w *WhileStatement) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "while"})
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
 
@@ -222,13 +222,13 @@ func (w *WhileStatement) parse(p *pyParser) error {
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 			return p.Error("WhileStatement", ErrMissingColon)
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 
@@ -259,23 +259,23 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 	f.Async = async
 
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "while"})
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
 
-	if err := f.TargetList.parse(p, whitespaceToken); err != nil {
+	if err := f.TargetList.parse(p); err != nil {
 		return p.Error("ForStatement", err)
 	}
 
 	p.Score(q)
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
 		return p.Error("ForStatement", ErrMissingIn)
 	}
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
 
@@ -285,13 +285,13 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 
 	p.Score(q)
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 		return p.Error("ForStatement", ErrMissingIn)
 	}
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
 
@@ -307,13 +307,13 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 			return p.Error("ForStatement", ErrMissingColon)
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 
@@ -342,7 +342,7 @@ type TryStatement struct {
 
 func (t *TryStatement) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "try"})
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 		return p.Error("TryStatement", ErrMissingColon)
@@ -354,7 +354,7 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 	for p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "except"}) {
 		p.Score(q)
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		group := p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"})
 
@@ -364,7 +364,7 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 		t.Groups = group
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 
@@ -385,13 +385,13 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 	if len(t.Except) > 0 && p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 			return p.Error("TryStatement", ErrMissingColon)
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 
@@ -410,13 +410,13 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "finally"}) {
 		p.Score(q)
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 			return p.Error("TryStatement", ErrMissingColon)
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 
@@ -446,16 +446,16 @@ type Except struct {
 func (e *Except) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := e.Expression.parse(q, whitespaceToken); err != nil {
+	if err := e.Expression.parse(q); err != nil {
 		return p.Error("Except", err)
 	}
 
 	p.Score(q)
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		token := p.next()
 
@@ -465,14 +465,14 @@ func (e *Except) parse(p *pyParser) error {
 
 		e.Identifier = &token.Data
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 	}
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 		return p.Error("Except", ErrMissingColon)
 	}
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
 
@@ -498,32 +498,37 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 	w.Async = async
 
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "while"})
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
-	p.AcceptRun(TokenWhitespace, TokenComment)
+	if parens {
+		p.OpenBrackets()
+	}
+
+	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
 
-	if err := w.Contents.parse(q, parens); err != nil {
+	if err := w.Contents.parse(q); err != nil {
 		return p.Error("WithStatement", err)
 	}
 
 	p.Score(q)
-
-	p.AcceptRun(TokenWhitespace, TokenComment)
+	p.AcceptRunWhitespace()
 
 	if parens {
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			p.AcceptRun(TokenWhitespace, TokenComment)
+			p.AcceptRunWhitespace()
 		}
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			return p.Error("WithStatement", ErrMissingClosingParen)
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.CloseBrackets()
+
+		p.AcceptRunWhitespace()
 	}
 
 	q = p.NewGoal()
@@ -542,27 +547,17 @@ type WithStatementContents struct {
 	Tokens Tokens
 }
 
-var (
-	whitespaceCommentTokens = []parser.TokenType{TokenWhitespace, TokenComment}
-	whitespaceToken         = whitespaceCommentTokens[:1]
-)
-
-func (w *WithStatementContents) parse(p *pyParser, inParen bool) error {
+func (w *WithStatementContents) parse(p *pyParser) error {
 	q := p.NewGoal()
 
 	another := true
-	ws := whitespaceToken
-
-	if inParen {
-		ws = whitespaceCommentTokens
-	}
 
 	for another {
 		var wi WithItem
 
 		r := q.NewGoal()
 
-		if err := wi.parse(r, ws); err != nil {
+		if err := wi.parse(r); err != nil {
 			return p.Error("WithStatementContents", err)
 		}
 
@@ -571,11 +566,11 @@ func (w *WithStatementContents) parse(p *pyParser, inParen bool) error {
 
 		q = p.NewGoal()
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		another = q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			break
@@ -593,10 +588,10 @@ type WithItem struct {
 	Tokens     Tokens
 }
 
-func (w *WithItem) parse(p *pyParser, ws []parser.TokenType) error {
+func (w *WithItem) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := w.Expression.parse(q, ws); err != nil {
+	if err := w.Expression.parse(q); err != nil {
 		return p.Error("WithItem", err)
 	}
 
@@ -604,16 +599,16 @@ func (w *WithItem) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 		p.Score(q)
 
 		q = p.NewGoal()
 		w.Target = new(Target)
 
-		if err := w.Target.parse(q, ws); err != nil {
+		if err := w.Target.parse(q); err != nil {
 			return p.Error("WithItem", err)
 		}
 
@@ -641,7 +636,7 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 	f.Async = async
 
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "def"})
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	if !p.Accept(TokenIdentifier) {
 		return p.Error("FuncDefinition", ErrMissingIdentifier)
@@ -650,8 +645,10 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 	f.FuncName = p.GetLastToken()
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+		p.OpenBrackets()
+
 		for {
-			p.AcceptRun(TokenWhitespace, TokenComment)
+			p.AcceptRunWhitespace()
 
 			q := p.NewGoal()
 
@@ -665,61 +662,67 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 
 			f.TypeParams = append(f.TypeParams, t)
 
-			p.AcceptRun(TokenWhitespace, TokenComment)
+			p.AcceptRunWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 					return p.Error("FuncDefinition", ErrMissingClosingBracket)
 				}
 
+				p.CloseBrackets()
+
 				break
 			}
 		}
 
-		p.AcceptRun(TokenWhitespace, TokenComment)
+		p.AcceptRunWhitespace()
 	}
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 		return p.Error("FuncDefinition", ErrMissingOpeningParen)
 	}
 
-	p.AcceptRun(TokenWhitespace, TokenComment)
+	p.OpenBrackets()
+	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 		q := p.NewGoal()
 
-		if err := f.ParameterList.parse(q, whitespaceCommentTokens); err != nil {
+		if err := f.ParameterList.parse(q); err != nil {
 			return p.Error("FuncDefinition", err)
 		}
 
-		p.AcceptRun(TokenWhitespace, TokenComment)
+		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			return p.Error("FuncDefinition", ErrMissingClosingParen)
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.CloseBrackets()
+		p.AcceptRunWhitespace()
+	} else {
+		p.CloseBrackets()
 	}
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "->"}) {
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 
 		f.Expression = new(Expression)
 
-		if err := f.Expression.parse(q, whitespaceToken); err != nil {
+		if err := f.Expression.parse(q); err != nil {
 			return p.Error("FuncDefinition", err)
 		}
 
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 	}
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 		return p.Error("FuncDefinition", ErrMissingColon)
 	}
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
 
@@ -747,7 +750,7 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 	c.Decorators = decorators
 
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "class"})
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	if !p.Accept(TokenIdentifier) {
 		return p.Error("ClassDefinition", ErrMissingIdentifier)
@@ -756,8 +759,10 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 	c.ClassName = p.GetLastToken()
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+		p.OpenBrackets()
+
 		for {
-			p.AcceptRun(TokenWhitespace, TokenComment)
+			p.AcceptRunWhitespace()
 
 			q := p.NewGoal()
 
@@ -771,22 +776,25 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 
 			c.TypeParams = append(c.TypeParams, t)
 
-			p.AcceptRun(TokenWhitespace, TokenComment)
+			p.AcceptRunWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 					return p.Error("ClassDefinition", ErrMissingClosingBracket)
 				}
 
+				p.CloseBrackets()
+
 				break
 			}
 		}
 
-		p.AcceptRun(TokenWhitespace, TokenComment)
+		p.AcceptRunWhitespace()
 	}
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-		p.AcceptRun(TokenWhitespace, TokenComment)
+		p.OpenBrackets()
+		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			q := p.NewGoal()
@@ -795,13 +803,16 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 				return p.Error("ClassDefinition", err)
 			}
 
-			p.AcceptRun(TokenWhitespace, TokenComment)
+			p.AcceptRunWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 				return p.Error("ClassDefinition", ErrMissingClosingParen)
 			}
 
-			p.AcceptRun(TokenWhitespace, TokenComment)
+			p.CloseBrackets()
+			p.AcceptRunWhitespace()
+		} else {
+			p.CloseBrackets()
 		}
 	}
 
@@ -809,7 +820,7 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 		return p.Error("ClassDefinition", ErrMissingColon)
 	}
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
 
@@ -833,19 +844,18 @@ type AssignmentExpressionAndSuite struct {
 func (a *AssignmentExpressionAndSuite) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := a.AssignmentExpression.parse(q, whitespaceToken); err != nil {
+	if err := a.AssignmentExpression.parse(q); err != nil {
 		return p.Error("AssignmentExpressionAndSuite", err)
 	}
 
 	p.Score(q)
-
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 		return p.Error("AssignmentExpressionAndSuite", ErrMissingColon)
 	}
 
-	p.AcceptRun(TokenWhitespace)
+	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
 
@@ -919,14 +929,14 @@ type TargetList struct {
 	Tokens  Tokens
 }
 
-func (t *TargetList) parse(p *pyParser, ws []parser.TokenType) error {
+func (t *TargetList) parse(p *pyParser) error {
 Loop:
 	for {
 		q := p.NewGoal()
 
 		var tg Target
 
-		if err := tg.parse(q, ws); err != nil {
+		if err := tg.parse(q); err != nil {
 			return p.Error("TargetList", err)
 		}
 
@@ -936,7 +946,7 @@ Loop:
 
 		q = p.NewGoal()
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 			break
@@ -954,7 +964,7 @@ Loop:
 			}
 		}
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 		p.Score(q)
 	}
 
@@ -973,51 +983,56 @@ type Target struct {
 	Tokens            Tokens
 }
 
-func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
+func (t *Target) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-		p.AcceptRun(whitespaceCommentTokens...)
+		p.OpenBrackets()
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 
 		t.Tuple = new(TargetList)
 
-		if err := t.Tuple.parse(p, whitespaceCommentTokens); err != nil {
+		if err := t.Tuple.parse(p); err != nil {
 			return p.Error("Target", err)
 		}
 
 		p.Score(q)
 
-		p.AcceptRun(whitespaceCommentTokens...)
+		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			return p.Error("Target", ErrMissingClosingParen)
 		}
+
+		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
-		p.AcceptRun(whitespaceCommentTokens...)
+		p.OpenBrackets()
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 
 		t.Array = new(TargetList)
 
-		if err := t.Array.parse(p, whitespaceCommentTokens); err != nil {
+		if err := t.Array.parse(p); err != nil {
 			return p.Error("Target", err)
 		}
 
 		p.Score(q)
-
-		p.AcceptRun(whitespaceCommentTokens...)
+		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 			return p.Error("Target", ErrMissingClosingBracket)
 		}
+
+		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		p.AcceptRun(ws...)
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 
 		t.Star = new(Target)
 
-		if err := t.Star.parse(q, ws); err != nil {
+		if err := t.Star.parse(q); err != nil {
 			return p.Error("Target", err)
 		}
 
@@ -1027,20 +1042,20 @@ func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
 
 		q := p.NewGoal()
 
-		if err := t.PrimaryExpression.parse(q, whitespaceToken); err != nil {
+		if err := t.PrimaryExpression.parse(q); err != nil {
 			return err
 		}
 
 		r := q.NewGoal()
 
-		r.AcceptRun(ws...)
+		r.AcceptRunWhitespace()
 
 		switch r.Peek() {
 		case parser.Token{Type: TokenDelimiter, Data: "."}:
 			q.Score(r)
 			p.Score(q)
 
-			p.AcceptRun(ws...)
+			p.AcceptRunWhitespace()
 
 			if !p.Accept(TokenIdentifier) {
 				return p.Error("Target", ErrMissingIdentifier)
@@ -1048,7 +1063,8 @@ func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
 
 			t.AttributeRef = p.GetLastToken()
 		case parser.Token{Type: TokenDelimiter, Data: "["}:
-			p.AcceptRun(whitespaceCommentTokens...)
+			p.OpenBrackets()
+			p.AcceptRunWhitespace()
 
 			t.Slicing = new(SliceList)
 
@@ -1060,11 +1076,13 @@ func (t *Target) parse(p *pyParser, ws []parser.TokenType) error {
 
 			p.Score(q)
 
-			p.AcceptRun(whitespaceCommentTokens...)
+			p.AcceptRunWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 				return p.Error("Target", ErrMissingClosingBracket)
 			}
+
+			p.CloseBrackets()
 		default:
 			if !t.PrimaryExpression.IsIdentifier() {
 				return p.Error("Target", ErrMissingIdentifier)
@@ -1099,7 +1117,7 @@ Loop:
 
 		q = p.NewGoal()
 
-		q.AcceptRun(TokenWhitespace)
+		q.AcceptRunWhitespace()
 
 		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 			break
@@ -1112,7 +1130,7 @@ Loop:
 			break Loop
 		}
 
-		q.AcceptRun(TokenWhitespace)
+		q.AcceptRunWhitespace()
 
 		p.Score(q)
 	}
@@ -1130,12 +1148,12 @@ type StarredItem struct {
 
 func (s *StarredItem) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		p.AcceptRun(TokenWhitespace)
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 		s.OrExpr = new(OrExpression)
 
-		if err := s.OrExpr.parse(q, whitespaceToken); err != nil {
+		if err := s.OrExpr.parse(q); err != nil {
 			return p.Error("StarredItem", err)
 		}
 
@@ -1144,7 +1162,7 @@ func (s *StarredItem) parse(p *pyParser) error {
 		q := p.NewGoal()
 		s.AssignmentExpression = new(AssignmentExpression)
 
-		if err := s.AssignmentExpression.parse(q, whitespaceToken); err != nil {
+		if err := s.AssignmentExpression.parse(q); err != nil {
 			return p.Error("StarredItem", err)
 		}
 
@@ -1175,11 +1193,11 @@ func (t *TypeParam) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
 		t.Type = TypeParamVar
 
-		p.AcceptRun(whitespaceCommentTokens...)
+		p.AcceptRunWhitespace()
 	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
 		t.Type = TypeParamVarTuple
 
-		p.AcceptRun(whitespaceCommentTokens...)
+		p.AcceptRunWhitespace()
 	}
 
 	if !p.Accept(TokenIdentifier) {
@@ -1189,17 +1207,17 @@ func (t *TypeParam) parse(p *pyParser) error {
 	if t.Type == TypeParamIdentifer {
 		q := p.NewGoal()
 
-		q.AcceptRun(whitespaceCommentTokens...)
+		q.AcceptRunWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-			q.AcceptRun(whitespaceCommentTokens...)
+			q.AcceptRunWhitespace()
 			p.Score(q)
 
 			q = p.NewGoal()
 
 			t.Expression = new(Expression)
 
-			if err := t.Expression.parse(q, whitespaceCommentTokens); err != nil {
+			if err := t.Expression.parse(q); err != nil {
 				return p.Error("TypeParam", err)
 			}
 
@@ -1221,10 +1239,10 @@ type ParameterList struct {
 	Tokens        Tokens
 }
 
-func (l *ParameterList) parse(p *pyParser, ws []parser.TokenType) error {
+func (l *ParameterList) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	dps, err := paramList(q, ws)
+	dps, err := paramList(q)
 	if err != nil {
 		return p.Error("ParameterList", err)
 	}
@@ -1233,10 +1251,10 @@ func (l *ParameterList) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) {
 			l.DefParameters = dps
@@ -1246,13 +1264,13 @@ func (l *ParameterList) parse(p *pyParser, ws []parser.TokenType) error {
 
 			q = p.NewGoal()
 
-			q.AcceptRun(ws...)
+			q.AcceptRunWhitespace()
 
 			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-				q.AcceptRun(ws...)
+				q.AcceptRunWhitespace()
 
 				if q.Peek().Type == TokenIdentifier {
-					dps, err = paramList(q, ws)
+					dps, err = paramList(q)
 					if err != nil {
 						return p.Error("ParameterList", err)
 					}
@@ -1268,21 +1286,21 @@ func (l *ParameterList) parse(p *pyParser, ws []parser.TokenType) error {
 
 		q = p.NewGoal()
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			q.AcceptRun(ws...)
+			q.AcceptRunWhitespace()
 
 			tryStarStar := true
 
 			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-				q.AcceptRun(ws...)
+				q.AcceptRunWhitespace()
 				p.Score(q)
 
 				q = p.NewGoal()
 				l.StarArg = new(Parameter)
 
-				if err := l.StarArg.parse(q, ws); err != nil {
+				if err := l.StarArg.parse(q); err != nil {
 					return p.Error("ParameterList", err)
 				}
 
@@ -1290,17 +1308,17 @@ func (l *ParameterList) parse(p *pyParser, ws []parser.TokenType) error {
 
 				q = p.NewGoal()
 
-				q.AcceptRun(ws...)
+				q.AcceptRunWhitespace()
 
 				if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-					q.AcceptRun(ws...)
+					q.AcceptRunWhitespace()
 
 					if q.Peek().Type == TokenIdentifier {
 						p.Score(q)
 
 						q = p.NewGoal()
 
-						dps, err := paramList(q, ws)
+						dps, err := paramList(q)
 						if err != nil {
 							return p.Error("ParameterList", err)
 						}
@@ -1310,10 +1328,10 @@ func (l *ParameterList) parse(p *pyParser, ws []parser.TokenType) error {
 						l.StarArgs = dps
 						q = p.NewGoal()
 
-						q.AcceptRun(ws...)
+						q.AcceptRunWhitespace()
 
 						if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-							q.AcceptRun(ws...)
+							q.AcceptRunWhitespace()
 						} else {
 							tryStarStar = false
 						}
@@ -1322,14 +1340,14 @@ func (l *ParameterList) parse(p *pyParser, ws []parser.TokenType) error {
 			}
 
 			if tryStarStar && q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "**"}) {
-				q.AcceptRun(ws...)
+				q.AcceptRunWhitespace()
 
 				p.Score(q)
 
 				q = p.NewGoal()
 				l.StarStarArg = new(Parameter)
 
-				if err := l.StarStarArg.parse(q, ws); err != nil {
+				if err := l.StarStarArg.parse(q); err != nil {
 					return p.Error("ParameterList", err)
 				}
 			}
@@ -1341,7 +1359,7 @@ func (l *ParameterList) parse(p *pyParser, ws []parser.TokenType) error {
 	return nil
 }
 
-func paramList(p *pyParser, ws []parser.TokenType) ([]DefParameter, error) {
+func paramList(p *pyParser) ([]DefParameter, error) {
 	var defParameters []DefParameter
 
 	for {
@@ -1349,7 +1367,7 @@ func paramList(p *pyParser, ws []parser.TokenType) ([]DefParameter, error) {
 
 		var dp DefParameter
 
-		if err := dp.parse(q, ws); err != nil {
+		if err := dp.parse(q); err != nil {
 			return nil, err
 		}
 
@@ -1358,13 +1376,13 @@ func paramList(p *pyParser, ws []parser.TokenType) ([]DefParameter, error) {
 		defParameters = append(defParameters, dp)
 		q = p.NewGoal()
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 			break
 		}
 
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 
 		if q.Peek().Type != TokenIdentifier {
 			break
@@ -1382,10 +1400,10 @@ type DefParameter struct {
 	Tokens    Tokens
 }
 
-func (d *DefParameter) parse(p *pyParser, ws []parser.TokenType) error {
+func (d *DefParameter) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := d.Parameter.parse(q, ws); err != nil {
+	if err := d.Parameter.parse(q); err != nil {
 		return p.Error("DefParameter", err)
 	}
 
@@ -1393,16 +1411,16 @@ func (d *DefParameter) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 		p.Score(q)
 
 		q = p.NewGoal()
 		d.Value = new(Expression)
 
-		if err := d.Value.parse(q, ws); err != nil {
+		if err := d.Value.parse(q); err != nil {
 			return p.Error("DefParameter", err)
 		}
 
@@ -1420,7 +1438,7 @@ type Parameter struct {
 	Tokens     Tokens
 }
 
-func (pr *Parameter) parse(p *pyParser, ws []parser.TokenType) error {
+func (pr *Parameter) parse(p *pyParser) error {
 	if !p.Accept(TokenIdentifier) {
 		return p.Error("Parameter", ErrMissingIdentifier)
 	}
@@ -1429,16 +1447,16 @@ func (pr *Parameter) parse(p *pyParser, ws []parser.TokenType) error {
 
 	q := p.NewGoal()
 
-	q.AcceptRun(ws...)
+	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-		q.AcceptRun(ws...)
+		q.AcceptRunWhitespace()
 		p.Score(q)
 
 		q = p.NewGoal()
 		pr.Type = new(Expression)
 
-		if err := pr.Type.parse(q, ws); err != nil {
+		if err := pr.Type.parse(q); err != nil {
 			return p.Error("Parameter", err)
 		}
 
@@ -1469,7 +1487,8 @@ func (a *ArgumentList) parse(p *pyParser) error {
 			break
 		} else if next.Type == TokenIdentifier {
 			q.Skip()
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.AcceptRunWhitespace()
+
 			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "="}) {
 				nextIsKeywordItem = true
 
@@ -1490,17 +1509,17 @@ func (a *ArgumentList) parse(p *pyParser) error {
 		a.PositionalArguments = append(a.PositionalArguments, pa)
 		q = p.NewGoal()
 
-		q.AcceptRun(TokenWhitespace, TokenComment)
+		q.AcceptRunWhitespace()
 
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			break
 		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 			return p.Error("ArgumentList", ErrMissingComma)
 		}
 
-		q.AcceptRun(TokenWhitespace, TokenComment)
+		q.AcceptRunWhitespace()
 
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			break
 		}
 
@@ -1528,17 +1547,17 @@ func (a *ArgumentList) parse(p *pyParser) error {
 			a.StarredAndKeywordArguments = append(a.StarredAndKeywordArguments, sk)
 			q = p.NewGoal()
 
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.AcceptRunWhitespace()
 
-			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
 				break
 			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				return p.Error("ArgumentList", ErrMissingComma)
 			}
 
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.AcceptRunWhitespace()
 
-			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
 				break
 			}
 
@@ -1561,17 +1580,17 @@ func (a *ArgumentList) parse(p *pyParser) error {
 			a.KeywordArguments = append(a.KeywordArguments, ka)
 			q = p.NewGoal()
 
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.AcceptRunWhitespace()
 
-			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
 				break
 			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				return p.Error("ArgumentList", ErrMissingComma)
 			}
 
-			q.AcceptRun(TokenWhitespace, TokenComment)
+			q.AcceptRunWhitespace()
 
-			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
 				break
 			}
 
@@ -1592,12 +1611,12 @@ type PositionalArgument struct {
 
 func (pa *PositionalArgument) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		p.AcceptRun(TokenWhitespace, TokenComment)
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 		pa.Expression = new(Expression)
 
-		if err := pa.Expression.parse(q, whitespaceCommentTokens); err != nil {
+		if err := pa.Expression.parse(q); err != nil {
 			return p.Error("PositionalArgument", err)
 		}
 
@@ -1606,7 +1625,7 @@ func (pa *PositionalArgument) parse(p *pyParser) error {
 		q := p.NewGoal()
 		pa.AssignmentExpression = new(AssignmentExpression)
 
-		if err := pa.AssignmentExpression.parse(q, whitespaceCommentTokens); err != nil {
+		if err := pa.AssignmentExpression.parse(q); err != nil {
 			return p.Error("PositionalArgument", err)
 		}
 
@@ -1626,12 +1645,12 @@ type StarredOrKeywordArgument struct {
 
 func (s *StarredOrKeywordArgument) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		p.AcceptRun(TokenWhitespace, TokenComment)
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 		s.Expression = new(Expression)
 
-		if err := s.Expression.parse(q, whitespaceCommentTokens); err != nil {
+		if err := s.Expression.parse(q); err != nil {
 			return p.Error("StarredOrKeywordArgument", err)
 		}
 
@@ -1665,17 +1684,17 @@ func (k *KeywordItem) parse(p *pyParser) error {
 
 	k.Identifier = p.GetLastToken()
 
-	p.AcceptRun(TokenWhitespace, TokenComment)
+	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
 		return p.Error("KeywordItem", ErrMissingEquals)
 	}
 
-	p.AcceptRun(TokenWhitespace, TokenComment)
+	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
 
-	if err := k.Expression.parse(q, whitespaceCommentTokens); err != nil {
+	if err := k.Expression.parse(q); err != nil {
 		return p.Error("KeywordItem", err)
 	}
 
@@ -1694,12 +1713,12 @@ type KeywordArgument struct {
 
 func (k *KeywordArgument) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
-		p.AcceptRun(TokenWhitespace, TokenComment)
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 		k.Expression = new(Expression)
 
-		if err := k.Expression.parse(q, whitespaceCommentTokens); err != nil {
+		if err := k.Expression.parse(q); err != nil {
 			return p.Error("KeywordArgument", err)
 		}
 
