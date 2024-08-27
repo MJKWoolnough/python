@@ -1144,7 +1144,7 @@ func (s *StarredItem) parse(p *pyParser) error {
 		q := p.NewGoal()
 		s.AssignmentExpression = new(AssignmentExpression)
 
-		if err := s.AssignmentExpression.parse(q); err != nil {
+		if err := s.AssignmentExpression.parse(q, whitespaceToken); err != nil {
 			return p.Error("StarredItem", err)
 		}
 
