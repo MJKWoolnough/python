@@ -350,9 +350,57 @@ func (a *AssignmentStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type StarredExpression struct{}
+type StarredExpression struct {
+	Expression   *Expression
+	StarredItems []StarredItem
+	Tokens       Tokens
+}
 
-func (s *StarredExpression) parse(_ *pyParser) error {
+func (s *StarredExpression) parse(p *pyParser) error {
+	first := true
+
+	for {
+		var si StarredItem
+
+		q := p.NewGoal()
+
+		if err := si.parse(q); err != nil {
+			return p.Error("StarredExpression", err)
+		}
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		if first && q.Peek() != (parser.Token{Type: TokenDelimiter, Data: ","}) && si.AssignmentExpression != nil && si.AssignmentExpression.Identifier == nil {
+			s.Expression = &si.AssignmentExpression.Expression
+
+			break
+		}
+
+		first = false
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			break
+		}
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRun(TokenWhitespace)
+
+		if t := q.Peek(); t == (parser.Token{Type: TokenOperator, Data: "="}) || t.Type == TokenLineTerminator || t.Type == TokenComment {
+			break
+		}
+
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
 	return nil
 }
 
