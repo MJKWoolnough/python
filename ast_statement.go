@@ -113,6 +113,7 @@ const (
 type SimpleStatement struct {
 	Type                StatementType
 	AssertStatement     *AssertStatement
+	ExpressionStatement *StarredExpression
 	AssignmentStatement *AssignmentStatement
 	DelStatement        *DelStatement
 	ReturnStatement     *ReturnStatement
@@ -294,9 +295,78 @@ func (a *AssertStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type AssignmentStatement struct{}
+type AssignmentStatement struct {
+	TargetLists       []TargetList
+	StarredExpression *StarredExpression
+	YieldExpression   *YieldExpression
+	Tokens            Tokens
+}
 
-func (a *AssignmentStatement) parse(_ *pyParser) error {
+func (a *AssignmentStatement) parse(p *pyParser) error {
+	for {
+		q := p.NewGoal()
+
+		if p.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
+			a.YieldExpression = new(YieldExpression)
+
+			if err := a.YieldExpression.parse(q); err != nil {
+				return p.Error("AssignmentStatement", err)
+			}
+
+			p.Score(q)
+
+			break
+		}
+
+		a.StarredExpression = new(StarredExpression)
+
+		if err := a.StarredExpression.parse(q); err != nil {
+			return p.Error("AssignmentStatement", err)
+		}
+
+		p.Score(q)
+
+		if a.StarredExpression.isTargetList() {
+			q = p.NewGoal()
+
+			q.AcceptRun(TokenWhitespace)
+
+			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "="}) {
+				q.AcceptRun(TokenWhitespace)
+				p.Score(q)
+
+				a.TargetLists = append(a.TargetLists, a.StarredExpression.asTargetList())
+				a.StarredExpression = nil
+
+				continue
+			}
+		}
+
+		break
+	}
+
+	a.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type StarredExpression struct{}
+
+func (s *StarredExpression) parse(_ *pyParser) error {
+	return nil
+}
+
+func (s *StarredExpression) isTargetList() bool {
+	return false
+}
+
+func (s *StarredExpression) asTargetList() TargetList {
+	return TargetList{}
+}
+
+type YieldExpression struct{}
+
+func (y *YieldExpression) parse(_ *pyParser) error {
 	return nil
 }
 
