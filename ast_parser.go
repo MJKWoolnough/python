@@ -14,8 +14,6 @@ type Token struct {
 type Tokens []Token
 
 type pyParser struct {
-	indent      string
-	indentCount int
 	Tokens
 }
 
@@ -55,9 +53,7 @@ func newPyParser(t Tokeniser) (*pyParser, error) {
 
 func (p pyParser) NewGoal() *pyParser {
 	return &pyParser{
-		indent:      p.indent,
-		indentCount: p.indentCount,
-		Tokens:      p.Tokens[len(p.Tokens):],
+		Tokens: p.Tokens[len(p.Tokens):],
 	}
 }
 
