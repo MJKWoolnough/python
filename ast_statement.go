@@ -111,19 +111,20 @@ const (
 )
 
 type SimpleStatement struct {
-	Type                StatementType
-	AssertStatement     *AssertStatement
-	ExpressionStatement *StarredExpression
-	AssignmentStatement *AssignmentStatement
-	DelStatement        *DelStatement
-	ReturnStatement     *ReturnStatement
-	YieldStatement      *YieldExpression
-	RaiseStatement      *RaiseStatement
-	ImportStatement     *ImportStatement
-	GlobalStatement     *GlobalStatement
-	NonLocalStatement   *NonLocalStatement
-	TypeStatement       *TypeStatement
-	Tokens              Tokens
+	Type                         StatementType
+	AssertStatement              *AssertStatement
+	ExpressionStatement          *StarredExpression
+	AssignmentStatement          *AssignmentStatement
+	AugmentedAssignmentStatement *AugmentedAssignmentStatement
+	DelStatement                 *DelStatement
+	ReturnStatement              *ReturnStatement
+	YieldStatement               *YieldExpression
+	RaiseStatement               *RaiseStatement
+	ImportStatement              *ImportStatement
+	GlobalStatement              *GlobalStatement
+	NonLocalStatement            *NonLocalStatement
+	TypeStatement                *TypeStatement
+	Tokens                       Tokens
 }
 
 func (s *SimpleStatement) parse(p *pyParser) error {
@@ -240,13 +241,36 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 
 		p.Score(q)
 	default:
-		s.AssignmentStatement = new(AssignmentStatement)
-		s.Type = StatementAssignment
-
 		q := p.NewGoal()
 
-		if err := s.AssignmentStatement.parse(q); err != nil {
-			return p.Error("SimpleStatement", err)
+		if p.LookaheadLine(
+			parser.Token{Type: TokenDelimiter, Data: "+="},
+			parser.Token{Type: TokenDelimiter, Data: "-="},
+			parser.Token{Type: TokenDelimiter, Data: "*="},
+			parser.Token{Type: TokenDelimiter, Data: "@="},
+			parser.Token{Type: TokenDelimiter, Data: "/="},
+			parser.Token{Type: TokenDelimiter, Data: "//="},
+			parser.Token{Type: TokenDelimiter, Data: "%="},
+			parser.Token{Type: TokenDelimiter, Data: "**="},
+			parser.Token{Type: TokenDelimiter, Data: ">>="},
+			parser.Token{Type: TokenDelimiter, Data: "<<="},
+			parser.Token{Type: TokenDelimiter, Data: "&="},
+			parser.Token{Type: TokenDelimiter, Data: "^="},
+			parser.Token{Type: TokenDelimiter, Data: "|="},
+		) == -1 {
+			s.Type = StatementAssignment
+			s.AssignmentStatement = new(AssignmentStatement)
+
+			if err := s.AssignmentStatement.parse(q); err != nil {
+				return p.Error("SimpleStatement", err)
+			}
+		} else {
+			s.Type = StatementAugmentedAssignment
+			s.AugmentedAssignmentStatement = new(AugmentedAssignmentStatement)
+
+			if err := s.AugmentedAssignmentStatement.parse(q); err != nil {
+				return p.Error("SimpleStatement", err)
+			}
 		}
 
 		p.Score(q)
@@ -343,6 +367,12 @@ func (a *AssignmentStatement) parse(p *pyParser) error {
 
 	a.Tokens = p.ToTokens()
 
+	return nil
+}
+
+type AugmentedAssignmentStatement struct{}
+
+func (a *AugmentedAssignmentStatement) parse(_ *pyParser) error {
 	return nil
 }
 
