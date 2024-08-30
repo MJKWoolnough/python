@@ -116,6 +116,7 @@ type SimpleStatement struct {
 	ExpressionStatement          *StarredExpression
 	AssignmentStatement          *AssignmentStatement
 	AugmentedAssignmentStatement *AugmentedAssignmentStatement
+	AnnotatedAssignmentStatement *AnnotatedAssignmentStatement
 	DelStatement                 *DelStatement
 	ReturnStatement              *ReturnStatement
 	YieldStatement               *YieldExpression
@@ -243,7 +244,9 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	default:
 		q := p.NewGoal()
 
-		if p.LookaheadLine(
+		if n := p.LookaheadLine(
+			parser.Token{Type: TokenKeyword, Data: "lambda"},
+			parser.Token{Type: TokenDelimiter, Data: ":"},
 			parser.Token{Type: TokenDelimiter, Data: "+="},
 			parser.Token{Type: TokenDelimiter, Data: "-="},
 			parser.Token{Type: TokenDelimiter, Data: "*="},
@@ -257,11 +260,18 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 			parser.Token{Type: TokenDelimiter, Data: "&="},
 			parser.Token{Type: TokenDelimiter, Data: "^="},
 			parser.Token{Type: TokenDelimiter, Data: "|="},
-		) == -1 {
+		); n <= 0 {
 			s.Type = StatementAssignment
 			s.AssignmentStatement = new(AssignmentStatement)
 
 			if err := s.AssignmentStatement.parse(q); err != nil {
+				return p.Error("SimpleStatement", err)
+			}
+		} else if n == 1 {
+			s.Type = StatementAnnotatedAssignment
+			s.AnnotatedAssignmentStatement = new(AnnotatedAssignmentStatement)
+
+			if err := s.AugmentedAssignmentStatement.parse(q); err != nil {
 				return p.Error("SimpleStatement", err)
 			}
 		} else {
@@ -373,6 +383,12 @@ func (a *AssignmentStatement) parse(p *pyParser) error {
 type AugmentedAssignmentStatement struct{}
 
 func (a *AugmentedAssignmentStatement) parse(_ *pyParser) error {
+	return nil
+}
+
+type AnnotatedAssignmentStatement struct{}
+
+func (a *AnnotatedAssignmentStatement) parse(_ *pyParser) error {
 	return nil
 }
 
