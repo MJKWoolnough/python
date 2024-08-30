@@ -303,47 +303,43 @@ type AssignmentStatement struct {
 }
 
 func (a *AssignmentStatement) parse(p *pyParser) error {
+	q := p.NewGoal()
+
 	for {
-		q := p.NewGoal()
-
-		if p.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
-			a.YieldExpression = new(YieldExpression)
-
-			if err := a.YieldExpression.parse(q); err != nil {
-				return p.Error("AssignmentStatement", err)
-			}
-
-			p.Score(q)
-
+		if q.LookaheadLine(parser.Token{Type: TokenDelimiter, Data: "="}) != (parser.Token{Type: TokenDelimiter, Data: "="}) {
 			break
 		}
 
+		var tl TargetList
+
+		if err := tl.parse(q); err != nil {
+			return p.Error("AssignmentStatement", err)
+		}
+
+		p.Score(q)
+		p.AcceptRunWhitespace()
+		p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="})
+		p.AcceptRunWhitespace()
+
+		a.TargetLists = append(a.TargetLists, tl)
+		q = p.NewGoal()
+	}
+
+	if p.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
+		a.YieldExpression = new(YieldExpression)
+
+		if err := a.YieldExpression.parse(q); err != nil {
+			return p.Error("AssignmentStatement", err)
+		}
+	} else {
 		a.StarredExpression = new(StarredExpression)
 
 		if err := a.StarredExpression.parse(q); err != nil {
 			return p.Error("AssignmentStatement", err)
 		}
-
-		p.Score(q)
-
-		if a.StarredExpression.isTargetList() {
-			q = p.NewGoal()
-
-			q.AcceptRunWhitespace()
-
-			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "="}) {
-				q.AcceptRunWhitespace()
-				p.Score(q)
-
-				a.TargetLists = append(a.TargetLists, a.StarredExpression.asTargetList())
-				a.StarredExpression = nil
-
-				continue
-			}
-		}
-
-		break
 	}
+
+	p.Score(q)
 
 	a.Tokens = p.ToTokens()
 
@@ -402,14 +398,6 @@ func (s *StarredExpression) parse(p *pyParser) error {
 	s.Tokens = p.ToTokens()
 
 	return nil
-}
-
-func (s *StarredExpression) isTargetList() bool {
-	return false
-}
-
-func (s *StarredExpression) asTargetList() TargetList {
-	return TargetList{}
 }
 
 type DelStatement struct {
