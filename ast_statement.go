@@ -380,9 +380,65 @@ func (a *AssignmentStatement) parse(p *pyParser) error {
 	return nil
 }
 
-type AugmentedAssignmentStatement struct{}
+type AugmentedAssignmentStatement struct {
+	AugTarget       AugTarget
+	AugOp           *Token
+	ExpressionList  *ExpressionList
+	YieldExpression *YieldExpression
+	Tokens          Tokens
+}
 
-func (a *AugmentedAssignmentStatement) parse(_ *pyParser) error {
+func (a *AugmentedAssignmentStatement) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := a.AugTarget.parse(q); err != nil {
+		return p.Error("AugmentedAssignmentStatement", err)
+	}
+
+	p.Score(q)
+	p.AcceptRunWhitespace()
+
+	if p.Accept(TokenDelimiter) {
+		t := p.GetLastToken()
+
+		switch t.Data {
+		case "+=", "-=", "*=", "@=", "/=", "//=", "%=", "**=", ">>=", "<<=", "&=", "^=", "|=":
+			a.AugOp = t
+		}
+	}
+
+	if a.AugOp == nil {
+		return p.Error("AugmentedAssignmentStatement", ErrMissingOp)
+	}
+
+	p.AcceptRunWhitespace()
+
+	q = p.NewGoal()
+
+	if q.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
+		a.YieldExpression = new(YieldExpression)
+
+		if err := a.YieldExpression.parse(q); err != nil {
+			return p.Error("AugmentedAssignmentStatement", err)
+		}
+	} else {
+		a.ExpressionList = new(ExpressionList)
+
+		if err := a.ExpressionList.parse(q); err != nil {
+			return p.Error("AugmentedAssignmentStatement", err)
+		}
+	}
+
+	p.Score(q)
+
+	a.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type AugTarget struct{}
+
+func (a *AugTarget) parse(_ *pyParser) error {
 	return nil
 }
 
@@ -1317,4 +1373,5 @@ var (
 	ErrMissingModule = errors.New("missing module")
 	ErrMissingEquals = errors.New("missing equals")
 	ErrMissingElse   = errors.New("missing else")
+	ErrMissingOp     = errors.New("missing operator")
 )
