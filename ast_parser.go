@@ -170,7 +170,7 @@ func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 	return p.AcceptRun(TokenWhitespace)
 }
 
-func (p *pyParser) LookaheadLine(tks ...parser.Token) parser.Token {
+func (p *pyParser) LookaheadLine(tks ...parser.Token) int {
 	brackets := 0
 
 Loop:
@@ -199,14 +199,14 @@ Loop:
 			break
 		}
 
-		for _, t := range tks {
+		for n, t := range tks {
 			if t == tk.Token {
-				return t
+				return n
 			}
 		}
 	}
 
-	return parser.Token{Type: TokenLineTerminator, Data: ""}
+	return -1
 }
 
 type Error struct {

@@ -306,7 +306,7 @@ func (a *AssignmentStatement) parse(p *pyParser) error {
 	q := p.NewGoal()
 
 	for {
-		if q.LookaheadLine(parser.Token{Type: TokenDelimiter, Data: "="}) != (parser.Token{Type: TokenDelimiter, Data: "="}) {
+		if q.LookaheadLine(parser.Token{Type: TokenDelimiter, Data: "="}) != 0 {
 			break
 		}
 
