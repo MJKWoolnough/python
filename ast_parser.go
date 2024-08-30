@@ -173,6 +173,7 @@ func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 func (p *pyParser) LookaheadLine(tks ...parser.Token) parser.Token {
 	brackets := 0
 
+Loop:
 	for _, tk := range p.Tokens {
 		if brackets > 0 {
 			switch tk.Data {
@@ -189,6 +190,8 @@ func (p *pyParser) LookaheadLine(tks ...parser.Token) parser.Token {
 				brackets++
 
 				continue
+			case "]", ")", "}":
+				break Loop
 			}
 		}
 
