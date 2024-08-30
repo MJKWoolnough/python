@@ -486,9 +486,68 @@ func (a *AugTarget) parse(p *pyParser) error {
 	return nil
 }
 
-type AnnotatedAssignmentStatement struct{}
+type AnnotatedAssignmentStatement struct {
+	AugTarget         AugTarget
+	Expression        Expression
+	StarredExpression *StarredExpression
+	YieldExpression   *YieldExpression
+	Tokens            Tokens
+}
 
-func (a *AnnotatedAssignmentStatement) parse(_ *pyParser) error {
+func (a *AnnotatedAssignmentStatement) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := a.AugTarget.parse(q); err != nil {
+		return p.Error("AnnotatedAssignmentStatement", err)
+	}
+
+	p.Score(q)
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("AnnotatedAssignmentStatement", ErrMissingColon)
+	}
+
+	p.AcceptRunWhitespace()
+
+	q = p.NewGoal()
+
+	if err := a.Expression.parse(q); err != nil {
+		return p.Error("AnnotatedAssignmentStatement", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
+		p.Score(q)
+		p.AcceptRunWhitespace()
+
+		q = p.NewGoal()
+
+		if q.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
+			a.YieldExpression = new(YieldExpression)
+
+			if err := a.YieldExpression.parse(q); err != nil {
+				return p.Error("AnnotatedAssignmentStatement", err)
+			}
+
+		} else {
+			a.StarredExpression = new(StarredExpression)
+
+			if err := a.StarredExpression.parse(q); err != nil {
+				return p.Error("AnnotatedAssignmentStatement", err)
+			}
+		}
+
+		p.Score(q)
+	}
+
+	a.Tokens = p.ToTokens()
+
 	return nil
 }
 
