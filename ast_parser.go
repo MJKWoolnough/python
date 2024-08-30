@@ -170,6 +170,42 @@ func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 	return p.AcceptRun(TokenWhitespace)
 }
 
+func (p *pyParser) LookaheadLine(tks ...parser.Token) parser.Token {
+	brackets := 0
+
+	for _, tk := range p.Tokens {
+		if brackets > 0 {
+			switch tk.Data {
+			case "]", ")", "}":
+				brackets--
+			}
+
+			continue
+		}
+
+		if tk.Type == TokenDelimiter {
+			switch tk.Data {
+			case "[", "(", "{":
+				brackets++
+
+				continue
+			}
+		}
+
+		if tk.Type == TokenLineTerminator {
+			break
+		}
+
+		for _, t := range tks {
+			if t == tk.Token {
+				return t
+			}
+		}
+	}
+
+	return parser.Token{Type: TokenLineTerminator, Data: ""}
+}
+
 type Error struct {
 	Err     error
 	Parsing string
