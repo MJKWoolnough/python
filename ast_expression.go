@@ -1,8 +1,6 @@
 package python
 
 import (
-	"errors"
-
 	"vimagination.zapto.org/parser"
 )
 
@@ -1045,10 +1043,3 @@ func (pe *PowerExpression) parse(p *pyParser) error {
 
 	return nil
 }
-
-// Errors.
-var (
-	ErrMissingClosingBrace = errors.New("missing closing brace")
-	ErrMissingFor          = errors.New("missing for keyword")
-	ErrMissingIf           = errors.New("missing for keyword")
-)

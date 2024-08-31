@@ -1,7 +1,6 @@
 package python
 
 import (
-	"errors"
 	"io"
 	"slices"
 	"strings"
@@ -590,9 +589,3 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 
 	return t.Return(typ, p.main)
 }
-
-var (
-	ErrInvalidCharacter = errors.New("invalid character")
-	ErrInvalidNumber    = errors.New("invalid number")
-	ErrInvalidIndent    = errors.New("invalid indent")
-)

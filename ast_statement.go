@@ -1,7 +1,6 @@
 package python
 
 import (
-	"errors"
 	"slices"
 
 	"vimagination.zapto.org/parser"
@@ -1470,11 +1469,3 @@ type ComparisonExpression struct {
 	ComparisonOperator []Token
 	OrExpression       OrExpression
 }
-
-var (
-	ErrMissingImport = errors.New("missing import keyword")
-	ErrMissingModule = errors.New("missing module")
-	ErrMissingEquals = errors.New("missing equals")
-	ErrMissingElse   = errors.New("missing else")
-	ErrMissingOp     = errors.New("missing operator")
-)
