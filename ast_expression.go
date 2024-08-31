@@ -273,9 +273,64 @@ func (e *Enclosure) parse(p *pyParser) error {
 	return nil
 }
 
-type StarredListOrComprehension struct{}
+type StarredListOrComprehension struct {
+	StarredList   *StarredList
+	Comprehension *Comprehension
+	Tokens        Tokens
+}
 
-func (s *StarredListOrComprehension) parse(_ *pyParser, _ *AssignmentExpression) error {
+func (s *StarredListOrComprehension) parse(p *pyParser, ae *AssignmentExpression) error {
+	if ae == nil {
+		q := p.NewGoal()
+
+		s.StarredList = new(StarredList)
+
+		if err := s.StarredList.parse(q); err != nil {
+			return p.Error("StarredListOrComprehension", err)
+		}
+
+		p.Score(q)
+	} else {
+		s.StarredList = &StarredList{
+			StarredItems: []StarredItem{
+				{
+					AssignmentExpression: ae,
+					Tokens:               ae.Tokens,
+				},
+			},
+			Tokens: ae.Tokens,
+		}
+	}
+
+	if len(s.StarredList.StarredItems) == 1 && s.StarredList.StarredItems[0].AssignmentExpression != nil {
+		q := p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if tk := q.Peek(); tk == (parser.Token{Type: TokenKeyword, Data: "async"}) || tk == (parser.Token{Type: TokenKeyword, Data: "for"}) {
+			p.Score(q)
+
+			q = p.NewGoal()
+			s.Comprehension = new(Comprehension)
+
+			if err := s.Comprehension.parse(q, s.StarredList.StarredItems[0].AssignmentExpression); err != nil {
+				return p.Error("StarredListOrComprehension", err)
+			}
+
+			p.Score(q)
+
+			s.StarredList = nil
+		}
+	}
+
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type Comprehension struct{}
+
+func (c *Comprehension) parse(_ *pyParser, _ *AssignmentExpression) error {
 	return nil
 }
 
