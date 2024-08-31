@@ -540,9 +540,33 @@ func (g *GeneratorExpression) parse(p *pyParser) error {
 	return nil
 }
 
-type ArgumentListOrComprehension struct{}
+type ArgumentListOrComprehension struct {
+	ArgumentList  *ArgumentList
+	Comprehension *Comprehension
+	Tokens        Tokens
+}
 
-func (a *ArgumentListOrComprehension) parse(_ *pyParser) error {
+func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if q.LookaheadLine(parser.Token{Type: TokenKeyword, Data: "for"}) == 0 {
+		a.Comprehension = new(Comprehension)
+
+		if err := a.Comprehension.parse(q, nil); err != nil {
+			return p.Error("ArgumentListOrComprehension", err)
+		}
+	} else {
+		a.Comprehension = new(Comprehension)
+
+		if err := a.ArgumentList.parse(q); err != nil {
+			return p.Error("ArgumentListOrComprehension", err)
+		}
+	}
+
+	p.Score(q)
+
+	a.Tokens = p.ToTokens()
+
 	return nil
 }
 
