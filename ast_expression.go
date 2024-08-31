@@ -328,9 +328,43 @@ func (s *StarredListOrComprehension) parse(p *pyParser, ae *AssignmentExpression
 	return nil
 }
 
-type Comprehension struct{}
+type Comprehension struct {
+	AssignmentExpression AssignmentExpression
+	ComprehensionFor     ComprehensionFor
+	Tokens               Tokens
+}
 
-func (c *Comprehension) parse(_ *pyParser, _ *AssignmentExpression) error {
+func (c *Comprehension) parse(p *pyParser, ae *AssignmentExpression) error {
+	if ae != nil {
+		c.AssignmentExpression = *ae
+	} else {
+		q := p.NewGoal()
+
+		if err := c.AssignmentExpression.parse(q); err != nil {
+			return p.Error("Comprehension", err)
+		}
+
+		p.Score(q)
+	}
+
+	p.AcceptRunWhitespace()
+
+	q := p.NewGoal()
+
+	if err := c.ComprehensionFor.parse(q); err != nil {
+		return p.Error("Comprehension", err)
+	}
+
+	p.Score(q)
+
+	c.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type ComprehensionFor struct{}
+
+func (c *ComprehensionFor) parse(_ *pyParser) error {
 	return nil
 }
 
