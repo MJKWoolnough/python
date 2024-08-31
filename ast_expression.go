@@ -510,9 +510,33 @@ func (d *DictDisplay) parse(_ *pyParser, _ *Expression) error {
 	return nil
 }
 
-type GeneratorExpression struct{}
+type GeneratorExpression struct {
+	Expression       Expression
+	ComprehensionFor ComprehensionFor
+	Tokens           Tokens
+}
 
-func (f *GeneratorExpression) parse(_ *pyParser) error {
+func (g *GeneratorExpression) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := g.Expression.parse(q); err != nil {
+		return p.Error("GeneratorExpression", err)
+	}
+
+	p.Score(q)
+
+	p.AcceptRunWhitespace()
+
+	q = p.NewGoal()
+
+	if err := g.ComprehensionFor.parse(q); err != nil {
+		return p.Error("GeneratorExpression", err)
+	}
+
+	p.Score(q)
+
+	g.Tokens = p.ToTokens()
+
 	return nil
 }
 
