@@ -362,9 +362,77 @@ func (c *Comprehension) parse(p *pyParser, ae *AssignmentExpression) error {
 	return nil
 }
 
-type ComprehensionFor struct{}
+type ComprehensionFor struct {
+	Async                 bool
+	TargetList            TargetList
+	OrTest                OrTest
+	ComprehensionIterator *ComprehensionIterator
+	Tokens                Tokens
+}
 
-func (c *ComprehensionFor) parse(_ *pyParser) error {
+func (c *ComprehensionFor) parse(p *pyParser) error {
+	c.Async = p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"})
+
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "for"}) {
+		return p.Error("ComprehensionFor", ErrMissingFor)
+	}
+
+	p.AcceptRunWhitespace()
+
+	q := p.NewGoal()
+
+	if err := c.TargetList.parse(q); err != nil {
+		return p.Error("ComprehensionFor", err)
+	}
+
+	p.Score(q)
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
+		return p.Error("ComprehensionFor", ErrMissingIn)
+	}
+
+	p.Score(q)
+	p.AcceptRunWhitespace()
+
+	q = p.NewGoal()
+
+	if err := c.OrTest.parse(q); err != nil {
+		return p.Error("ComprehensionFor", err)
+	}
+
+	p.Score(q)
+	p.AcceptRunWhitespace()
+
+	q = p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	switch q.Peek() {
+	case parser.Token{Type: TokenDelimiter, Data: ")"}, parser.Token{Type: TokenDelimiter, Data: "]"}, parser.Token{Type: TokenDelimiter, Data: "}"}, parser.Token{Type: TokenDelimiter, Data: ","}:
+	default:
+		p.Score(q)
+
+		q = p.NewGoal()
+		c.ComprehensionIterator = new(ComprehensionIterator)
+
+		if err := c.ComprehensionIterator.parse(q); err != nil {
+			return p.Error("ComprehensionFor", err)
+		}
+
+		p.Score(q)
+	}
+
+	c.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type ComprehensionIterator struct{}
+
+func (c *ComprehensionIterator) parse(_ *pyParser) error {
 	return nil
 }
 
@@ -865,4 +933,5 @@ func (pe *PowerExpression) parse(p *pyParser) error {
 // Errors.
 var (
 	ErrMissingClosingBrace = errors.New("missing closing brace")
+	ErrMissingFor          = errors.New("missing for keyword")
 )
