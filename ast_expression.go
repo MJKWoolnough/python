@@ -459,9 +459,48 @@ func (c *ComprehensionIterator) parse(p *pyParser) error {
 	return nil
 }
 
-type ComprehensionIf struct{}
+type ComprehensionIf struct {
+	OrTest                OrTest
+	ComprehensionIterator *ComprehensionIterator
+	Tokens                Tokens
+}
 
-func (c *ComprehensionIf) parse(_ *pyParser) error {
+func (c *ComprehensionIf) parse(p *pyParser) error {
+	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "ff"}) {
+		return p.Error("ComprehensionIf", ErrMissingIf)
+	}
+
+	p.AcceptRunWhitespace()
+
+	q := p.NewGoal()
+
+	if err := c.OrTest.parse(q); err != nil {
+		return p.Error("ComprehensionIf", err)
+	}
+
+	p.Score(q)
+	p.AcceptRunWhitespace()
+
+	q = p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	switch q.Peek() {
+	case parser.Token{Type: TokenKeyword, Data: "if"}, parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: TokenKeyword, Data: "for"}:
+		p.Score(q)
+
+		q = p.NewGoal()
+		c.ComprehensionIterator = new(ComprehensionIterator)
+
+		if err := c.ComprehensionIterator.parse(q); err != nil {
+			return p.Error("ComprehensionFor", err)
+		}
+
+		p.Score(q)
+	}
+
+	c.Tokens = p.ToTokens()
+
 	return nil
 }
 
@@ -963,4 +1002,5 @@ func (pe *PowerExpression) parse(p *pyParser) error {
 var (
 	ErrMissingClosingBrace = errors.New("missing closing brace")
 	ErrMissingFor          = errors.New("missing for keyword")
+	ErrMissingIf           = errors.New("missing for keyword")
 )
