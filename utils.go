@@ -266,3 +266,39 @@ OrTest:
 
 	return c
 }
+
+func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
+	if c == nil {
+		return nil
+	} else if c.If != nil {
+		return c
+	} else if c.OrTest.OrTest != nil {
+		return &c.OrTest
+	} else if c.OrTest.AndTest.AndTest != nil {
+		return &c.OrTest.AndTest
+	} else if c.OrTest.AndTest.NotTest.Nots != 0 {
+		return &c.OrTest.AndTest.NotTest
+	} else if c.OrTest.AndTest.NotTest.Comparison.Comparisons != nil {
+		return &c.OrTest.AndTest.NotTest.Comparison
+	} else if c.OrTest.AndTest.NotTest.Comparison.OrExpression.OrExpression != nil {
+		return &c.OrTest.AndTest.NotTest.Comparison.OrExpression
+	} else if c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.XorExpression != nil {
+		return &c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions
+	} else if c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.AndExpression != nil {
+		return &c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression
+	} else if c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.ShiftExpression != nil {
+		return &c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression
+	} else if c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.AddExpression != nil {
+		return &c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression
+	} else if c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.MultiplyExpression != nil {
+		return &c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression
+	} else if c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.UnaryExpression != nil {
+		return &c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression
+	} else if c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression == nil {
+		return nil
+	} else if c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.AwaitExpression || c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.UnaryExpression != nil {
+		return c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression
+	} else {
+		return &c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression
+	}
+}
