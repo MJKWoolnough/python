@@ -185,72 +185,72 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 
 		goto XorExpression
 	case *AndExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions = *p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression = *p
 
 		goto AndExpression
 	case AndExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions = p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression = p
 
 		goto AndExpression
 	case *ShiftExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression = *p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression = *p
 
 		goto ShiftExpression
 	case ShiftExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression = p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression = p
 
 		goto ShiftExpression
 	case *AddExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression = *p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression = *p
 
 		goto AddExpression
 	case AddExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression = p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression = p
 
 		goto AddExpression
 	case *MultiplyExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression = *p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression = *p
 
 		goto MultiplyExpression
 	case MultiplyExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression = p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression = p
 
 		goto MultiplyExpression
 	case *UnaryExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression = *p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression = *p
 
 		goto UnaryExpression
 	case UnaryExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression = p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression = p
 
 		goto UnaryExpression
 	case *PowerExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression = p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression = p
 
 		goto PowerExpression
 	case PowerExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression = &p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression = &p
 
 		goto PowerExpression
 	case *PrimaryExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression = *p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression = *p
 	case PrimaryExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression = p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression = p
 	}
 
-	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Tokens
+	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Tokens
 PowerExpression:
-	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.Tokens
+	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.Tokens
 UnaryExpression:
-	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.Tokens
+	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.Tokens
 MultiplyExpression:
-	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.MultiplyExpression.Tokens
+	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.Tokens
 AddExpression:
-	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.AddExpression.Tokens
+	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.Tokens
 ShiftExpression:
-	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.ShiftExpression.Tokens
+	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.Tokens
 AndExpression:
-	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpressions.Tokens
+	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.Tokens
 XorExpression:
 	c.OrTest.AndTest.NotTest.Comparison.OrExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.Tokens
 OrExpression:

@@ -865,15 +865,15 @@ func (o *OrExpression) parse(p *pyParser) error {
 }
 
 type XorExpression struct {
-	AndExpressions AndExpression
-	XorExpression  *XorExpression
-	Tokens         Tokens
+	AndExpression AndExpression
+	XorExpression *XorExpression
+	Tokens        Tokens
 }
 
 func (x *XorExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := x.AndExpressions.parse(p); err != nil {
+	if err := x.AndExpression.parse(p); err != nil {
 		return p.Error("XorExpression", err)
 	}
 
