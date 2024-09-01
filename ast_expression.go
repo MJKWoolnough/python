@@ -566,10 +566,55 @@ Loop:
 }
 
 type DictItem struct {
+	Key, Value   *Expression
 	OrExpression *OrExpression
+	Tokens       Tokens
 }
 
-func (d *DictItem) parse(_ *pyParser, _ *Expression) error {
+func (d *DictItem) parse(p *pyParser, e *Expression) error {
+	if e == nil && p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+		p.AcceptRunWhitespace()
+
+		q := p.NewGoal()
+		d.OrExpression = new(OrExpression)
+
+		if err := d.OrExpression.parse(q); err != nil {
+			return p.Error("DictItem", err)
+		}
+
+		p.Score(q)
+	} else {
+		if e != nil {
+			d.Key = e
+		} else {
+			q := p.NewGoal()
+			d.Key = new(Expression)
+
+			if err := d.Key.parse(q); err != nil {
+				return p.Error("DictItem", err)
+			}
+
+			p.Score(q)
+		}
+
+		p.AcceptRunWhitespace()
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			return p.Error("DictItem", ErrMissingColon)
+		}
+
+		p.AcceptRunWhitespace()
+
+		q := p.NewGoal()
+		d.Value = new(Expression)
+
+		if err := d.Value.parse(q); err != nil {
+			return p.Error("DictItem", err)
+		}
+
+		p.Score(q)
+	}
+
 	return nil
 }
 
