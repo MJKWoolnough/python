@@ -1362,9 +1362,9 @@ func (n *NotTest) parse(p *pyParser) error {
 }
 
 type Comparison struct {
-	OrExpression
-	Comparisons []ComparisonExpression
-	Tokens      Tokens
+	OrExpression OrExpression
+	Comparisons  []ComparisonExpression
+	Tokens       Tokens
 }
 
 func (c *Comparison) parse(p *pyParser) error {
