@@ -7,6 +7,7 @@ var (
 	ErrInvalidCharacter      = errors.New("invalid character")
 	ErrInvalidNumber         = errors.New("invalid number")
 	ErrInvalidIndent         = errors.New("invalid indent")
+	ErrInvalidKeyword        = errors.New("unexpected keyword")
 	ErrMissingImport         = errors.New("missing import keyword")
 	ErrMissingModule         = errors.New("missing module")
 	ErrMissingEquals         = errors.New("missing equals")

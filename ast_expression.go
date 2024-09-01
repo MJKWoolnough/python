@@ -502,9 +502,74 @@ func (c *ComprehensionIf) parse(p *pyParser) error {
 	return nil
 }
 
-type DictDisplay struct{}
+type DictDisplay struct {
+	DictItems         []DictItem
+	DictComprehension *ComprehensionFor
+	Tokens            Tokens
+}
 
-func (d *DictDisplay) parse(_ *pyParser, _ *Expression) error {
+func (d *DictDisplay) parse(p *pyParser, e *Expression) error {
+Loop:
+	for {
+		q := p.NewGoal()
+
+		var di DictItem
+
+		if err := di.parse(q, e); err != nil {
+			return p.Error("DictDisplay", err)
+		}
+
+		p.Score(q)
+
+		e = nil
+		d.DictItems = append(d.DictItems, di)
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		switch q.Peek() {
+		case parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: TokenKeyword, Data: "for"}:
+			if len(d.DictItems) > 1 || d.DictItems[0].OrExpression != nil {
+				return p.Error("DictDisplay", ErrInvalidKeyword)
+			}
+
+			p.Score(q)
+
+			q = p.NewGoal()
+			d.DictComprehension = new(ComprehensionFor)
+
+			if err := d.DictComprehension.parse(q); err != nil {
+				return p.Error("DictDisplay", err)
+			}
+
+			p.Score(q)
+
+			break Loop
+		}
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			break
+		}
+
+		q.AcceptRunWhitespace()
+
+		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "}"}) {
+			break
+		}
+
+		p.Score(q)
+	}
+
+	d.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type DictItem struct {
+	OrExpression *OrExpression
+}
+
+func (d *DictItem) parse(_ *pyParser, _ *Expression) error {
 	return nil
 }
 
