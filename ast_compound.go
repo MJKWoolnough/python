@@ -436,7 +436,7 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 type Except struct {
 	Expression Expression
-	Identifier *string
+	Identifier *Token
 	Suite      Suite
 	Tokens     Tokens
 }
@@ -455,13 +455,11 @@ func (e *Except) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
 		p.AcceptRunWhitespace()
 
-		token := p.next()
-
-		if token.Type != TokenIdentifier {
+		if !p.Accept(TokenIdentifier) {
 			return p.Error("Except", ErrMissingIdentifier)
 		}
 
-		e.Identifier = &token.Data
+		e.Identifier = p.GetLastToken()
 
 		p.AcceptRunWhitespace()
 	}
