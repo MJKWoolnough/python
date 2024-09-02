@@ -1,5 +1,13 @@
 #!/bin/bash
 
+types() {
+	for file in ast.go ast_compound.go ast_expression.go ast_statement.go; do
+		while read type; do
+			echo "$type" "$file";
+		done < <(grep "type .* struct {" "$file" | cut -d' ' -f2);
+	done | sort;
+}
+
 (
 	cat <<HEREDOC
 package python
@@ -61,11 +69,30 @@ HEREDOC
 		echo;
 		echo "	io.WriteString(w, \"}\")";
 		echo "}";
-	done < <(
-		for file in ast.go ast_compound.go ast_expression.go ast_statement.go; do
-			while read type; do
-				echo "$type" "$file";
-			done < <(grep "type .* struct {" "$file" | cut -d' ' -f2);
-		done | sort;
-	);
-) > "format_types.go"
+	done < <(types);
+) > "format_types.go";
+
+(
+
+	cat <<HEREDOC
+package python
+
+// File automatically generated with format.sh.
+
+import "fmt"
+HEREDOC
+
+	while read type _; do
+		echo -e "\n// Format implements the fmt.Formatter interface";
+		echo "func (f $type) Format(s fmt.State, v rune) {";
+		echo "	if v == 'v' && s.Flag('#') {";
+		echo "		type X = $type";
+		echo "		type $type X";
+		echo;
+		echo "		fmt.Fprintf(s, \"%#v\", $t(f))";
+		echo "	} else {";
+		echo "		format(&f, s, v)";
+		echo "	}";
+		echo "}";
+	done < <(types);
+) > "format_format.go";
