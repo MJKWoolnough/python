@@ -566,7 +566,8 @@ Loop:
 }
 
 type DictItem struct {
-	Key, Value   *Expression
+	Key          *Expression
+	Value        *Expression
 	OrExpression *OrExpression
 	Tokens       Tokens
 }
