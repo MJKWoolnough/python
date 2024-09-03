@@ -10,6 +10,8 @@ type Type interface {
 	pythonType()
 }
 
+func (Tokens) pythonType() {}
+
 func (AddExpression) pythonType() {}
 
 func (AndExpression) pythonType() {}
