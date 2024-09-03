@@ -73,7 +73,6 @@ HEREDOC
 ) > "format_types.go";
 
 (
-
 	cat <<HEREDOC
 package python
 
@@ -96,3 +95,23 @@ HEREDOC
 		echo "}";
 	done < <(types);
 ) > "format_format.go";
+
+(
+	cat <<HEREDOC
+package python
+
+// File automatically generated with format.sh.
+
+import "fmt"
+
+// Type is an interface satisfied by all python structural types.
+type Type interface {
+	fmt.Formatter
+	pythonType()
+}
+HEREDOC
+
+	while read type _; do
+		echo -e "\nfunc ($type) pythonType() {}";
+	done < <(types);
+) > "types.go";
