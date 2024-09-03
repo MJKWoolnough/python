@@ -1,6 +1,7 @@
 package python
 
 type ConditionalWrappable interface {
+	Type
 	conditionalWrapabble()
 }
 
