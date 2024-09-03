@@ -26,12 +26,12 @@ HEREDOC
 			if [ "$fieldType" = "bool" ]; then
 				echo;
 				echo "	if f.$fieldName || v {";
-				echo "		pp.Printf(\"\\n$fieldName: $v\", f.$fieldName)";
+				echo "		pp.Printf(\"\\n$fieldName: %v\", f.$fieldName)";
 				echo "	}";
 			elif [ "$fieldType" = "uint" -o "$fieldType" = "int" ]; then
 				echo;
 				echo "	if f.$fieldName != 0 || v {";
-				echo "		pp.Printf(\"\\n$fieldName: $v\", f.$fieldName)";
+				echo "		pp.Printf(\"\\n$fieldName: %v\", f.$fieldName)";
 				echo "	}";
 			elif [ "${fieldType:0:2}" = "[]" ]; then
 				echo;
