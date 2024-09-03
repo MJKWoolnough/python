@@ -557,7 +557,7 @@ func (f *ComprehensionFor) printType(w io.Writer, v bool) {
 	pp.Print("ComprehensionFor {")
 
 	if f.Async || v {
-		pp.Printf("\nAsync: ", f.Async)
+		pp.Printf("\nAsync: %v", f.Async)
 	}
 
 	pp.Print("\nTargetList: ")
@@ -943,7 +943,7 @@ func (f *ForStatement) printType(w io.Writer, v bool) {
 	pp.Print("ForStatement {")
 
 	if f.Async || v {
-		pp.Printf("\nAsync: ", f.Async)
+		pp.Printf("\nAsync: %v", f.Async)
 	}
 
 	pp.Print("\nTargetList: ")
@@ -981,7 +981,7 @@ func (f *FuncDefinition) printType(w io.Writer, v bool) {
 	}
 
 	if f.Async || v {
-		pp.Printf("\nAsync: ", f.Async)
+		pp.Printf("\nAsync: %v", f.Async)
 	}
 
 	pp.Print("\nFuncName: ")
@@ -1307,7 +1307,7 @@ func (f *NotTest) printType(w io.Writer, v bool) {
 	pp.Print("NotTest {")
 
 	if f.Nots != 0 || v {
-		pp.Printf("\nNots: ", f.Nots)
+		pp.Printf("\nNots: %v", f.Nots)
 	}
 
 	pp.Print("\nComparison: ")
@@ -1489,7 +1489,7 @@ func (f *PowerExpression) printType(w io.Writer, v bool) {
 	pp.Print("PowerExpression {")
 
 	if f.AwaitExpression || v {
-		pp.Printf("\nAwaitExpression: ", f.AwaitExpression)
+		pp.Printf("\nAwaitExpression: %v", f.AwaitExpression)
 	}
 
 	pp.Print("\nPrimaryExpression: ")
@@ -1581,7 +1581,7 @@ func (f *RelativeModule) printType(w io.Writer, v bool) {
 	pp.Print("RelativeModule {")
 
 	if f.Dots != 0 || v {
-		pp.Printf("\nDots: ", f.Dots)
+		pp.Printf("\nDots: %v", f.Dots)
 	}
 
 	if f.Module != nil {
@@ -2122,7 +2122,7 @@ func (f *TryStatement) printType(w io.Writer, v bool) {
 	f.Try.printType(&pp, v)
 
 	if f.Groups || v {
-		pp.Printf("\nGroups: ", f.Groups)
+		pp.Printf("\nGroups: %v", f.Groups)
 	}
 
 	if f.Except == nil {
@@ -2314,7 +2314,7 @@ func (f *WithStatement) printType(w io.Writer, v bool) {
 	pp.Print("WithStatement {")
 
 	if f.Async || v {
-		pp.Printf("\nAsync: ", f.Async)
+		pp.Printf("\nAsync: %v", f.Async)
 	}
 
 	pp.Print("\nContents: ")
