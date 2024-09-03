@@ -109,6 +109,8 @@ type Type interface {
 	fmt.Formatter
 	pythonType()
 }
+
+func (Tokens) pythonType() {}
 HEREDOC
 
 	while read type _; do
