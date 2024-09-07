@@ -524,6 +524,8 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 		return p.Error("WithStatement", err)
 	}
 
+	p.Score(q)
+
 	w.Tokens = p.ToTokens()
 
 	return nil
