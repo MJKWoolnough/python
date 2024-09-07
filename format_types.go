@@ -12,8 +12,12 @@ func (f *AddExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nMultiplyExpression: ")
 	f.MultiplyExpression.printType(&pp, v)
 
-	pp.Print("\nAdd: ")
-	f.Add.printType(&pp, v)
+	if f.Add != nil {
+		pp.Print("\nAdd: ")
+		f.Add.printType(&pp, v)
+	} else if v {
+		pp.Print("\nAdd: nil")
+	}
 
 	if f.AddExpression != nil {
 		pp.Print("\nAddExpression: ")
@@ -25,7 +29,7 @@ func (f *AddExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *AndExpression) printType(w io.Writer, v bool) {
@@ -46,7 +50,7 @@ func (f *AndExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *AndTest) printType(w io.Writer, v bool) {
@@ -67,7 +71,7 @@ func (f *AndTest) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *AnnotatedAssignmentStatement) printType(w io.Writer, v bool) {
@@ -98,7 +102,7 @@ func (f *AnnotatedAssignmentStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ArgumentList) printType(w io.Writer, v bool) {
@@ -160,7 +164,7 @@ func (f *ArgumentList) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ArgumentListOrComprehension) printType(w io.Writer, v bool) {
@@ -185,7 +189,7 @@ func (f *ArgumentListOrComprehension) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *AssertStatement) printType(w io.Writer, v bool) {
@@ -213,7 +217,7 @@ func (f *AssertStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *AssignmentExpressionAndSuite) printType(w io.Writer, v bool) {
@@ -230,7 +234,7 @@ func (f *AssignmentExpressionAndSuite) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *AssignmentExpression) printType(w io.Writer, v bool) {
@@ -238,8 +242,12 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 
 	pp.Print("AssignmentExpression {")
 
-	pp.Print("\nIdentifier: ")
-	f.Identifier.printType(&pp, v)
+	if f.Identifier != nil {
+		pp.Print("\nIdentifier: ")
+		f.Identifier.printType(&pp, v)
+	} else if v {
+		pp.Print("\nIdentifier: nil")
+	}
 
 	pp.Print("\nExpression: ")
 	f.Expression.printType(&pp, v)
@@ -247,7 +255,7 @@ func (f *AssignmentExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *AssignmentStatement) printType(w io.Writer, v bool) {
@@ -289,7 +297,7 @@ func (f *AssignmentStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Atom) printType(w io.Writer, v bool) {
@@ -297,11 +305,19 @@ func (f *Atom) printType(w io.Writer, v bool) {
 
 	pp.Print("Atom {")
 
-	pp.Print("\nIdentifier: ")
-	f.Identifier.printType(&pp, v)
+	if f.Identifier != nil {
+		pp.Print("\nIdentifier: ")
+		f.Identifier.printType(&pp, v)
+	} else if v {
+		pp.Print("\nIdentifier: nil")
+	}
 
-	pp.Print("\nLiteral: ")
-	f.Literal.printType(&pp, v)
+	if f.Literal != nil {
+		pp.Print("\nLiteral: ")
+		f.Literal.printType(&pp, v)
+	} else if v {
+		pp.Print("\nLiteral: nil")
+	}
 
 	if f.Enclosure != nil {
 		pp.Print("\nEnclosure: ")
@@ -313,7 +329,7 @@ func (f *Atom) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *AugmentedAssignmentStatement) printType(w io.Writer, v bool) {
@@ -324,8 +340,12 @@ func (f *AugmentedAssignmentStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nAugTarget: ")
 	f.AugTarget.printType(&pp, v)
 
-	pp.Print("\nAugOp: ")
-	f.AugOp.printType(&pp, v)
+	if f.AugOp != nil {
+		pp.Print("\nAugOp: ")
+		f.AugOp.printType(&pp, v)
+	} else if v {
+		pp.Print("\nAugOp: nil")
+	}
 
 	if f.ExpressionList != nil {
 		pp.Print("\nExpressionList: ")
@@ -344,7 +364,7 @@ func (f *AugmentedAssignmentStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *AugTarget) printType(w io.Writer, v bool) {
@@ -355,8 +375,12 @@ func (f *AugTarget) printType(w io.Writer, v bool) {
 	pp.Print("\nPrimaryExpression: ")
 	f.PrimaryExpression.printType(&pp, v)
 
-	pp.Print("\nAttributeRef: ")
-	f.AttributeRef.printType(&pp, v)
+	if f.AttributeRef != nil {
+		pp.Print("\nAttributeRef: ")
+		f.AttributeRef.printType(&pp, v)
+	} else if v {
+		pp.Print("\nAttributeRef: nil")
+	}
 
 	if f.Slicing != nil {
 		pp.Print("\nSlicing: ")
@@ -368,7 +392,7 @@ func (f *AugTarget) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ClassDefinition) printType(w io.Writer, v bool) {
@@ -383,8 +407,12 @@ func (f *ClassDefinition) printType(w io.Writer, v bool) {
 		pp.Print("\nDecorators: nil")
 	}
 
-	pp.Print("\nClassName: ")
-	f.ClassName.printType(&pp, v)
+	if f.ClassName != nil {
+		pp.Print("\nClassName: ")
+		f.ClassName.printType(&pp, v)
+	} else if v {
+		pp.Print("\nClassName: nil")
+	}
 
 	if f.TypeParams == nil {
 		pp.Print("\nTypeParams: nil")
@@ -412,7 +440,7 @@ func (f *ClassDefinition) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Comparison) printType(w io.Writer, v bool) {
@@ -443,7 +471,7 @@ func (f *Comparison) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ComparisonExpression) printType(w io.Writer, v bool) {
@@ -471,7 +499,7 @@ func (f *ComparisonExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nOrExpression: ")
 	f.OrExpression.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *CompoundStatement) printType(w io.Writer, v bool) {
@@ -531,7 +559,7 @@ func (f *CompoundStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Comprehension) printType(w io.Writer, v bool) {
@@ -548,7 +576,7 @@ func (f *Comprehension) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ComprehensionFor) printType(w io.Writer, v bool) {
@@ -576,7 +604,7 @@ func (f *ComprehensionFor) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ComprehensionIf) printType(w io.Writer, v bool) {
@@ -597,7 +625,7 @@ func (f *ComprehensionIf) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ComprehensionIterator) printType(w io.Writer, v bool) {
@@ -622,7 +650,7 @@ func (f *ComprehensionIterator) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ConditionalExpression) printType(w io.Writer, v bool) {
@@ -650,7 +678,7 @@ func (f *ConditionalExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Decorators) printType(w io.Writer, v bool) {
@@ -678,7 +706,7 @@ func (f *Decorators) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *DefParameter) printType(w io.Writer, v bool) {
@@ -699,7 +727,7 @@ func (f *DefParameter) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *DelStatement) printType(w io.Writer, v bool) {
@@ -713,7 +741,7 @@ func (f *DelStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *DictDisplay) printType(w io.Writer, v bool) {
@@ -748,7 +776,7 @@ func (f *DictDisplay) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *DictItem) printType(w io.Writer, v bool) {
@@ -780,7 +808,7 @@ func (f *DictItem) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Enclosure) printType(w io.Writer, v bool) {
@@ -833,7 +861,7 @@ func (f *Enclosure) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Except) printType(w io.Writer, v bool) {
@@ -844,8 +872,12 @@ func (f *Except) printType(w io.Writer, v bool) {
 	pp.Print("\nExpression: ")
 	f.Expression.printType(&pp, v)
 
-	pp.Print("\nIdentifier: ")
-	f.Identifier.printType(&pp, v)
+	if f.Identifier != nil {
+		pp.Print("\nIdentifier: ")
+		f.Identifier.printType(&pp, v)
+	} else if v {
+		pp.Print("\nIdentifier: nil")
+	}
 
 	pp.Print("\nSuite: ")
 	f.Suite.printType(&pp, v)
@@ -853,7 +885,7 @@ func (f *Except) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Expression) printType(w io.Writer, v bool) {
@@ -878,7 +910,7 @@ func (f *Expression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ExpressionList) printType(w io.Writer, v bool) {
@@ -906,7 +938,7 @@ func (f *ExpressionList) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *File) printType(w io.Writer, v bool) {
@@ -934,7 +966,7 @@ func (f *File) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ForStatement) printType(w io.Writer, v bool) {
@@ -965,7 +997,7 @@ func (f *ForStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *FuncDefinition) printType(w io.Writer, v bool) {
@@ -984,8 +1016,12 @@ func (f *FuncDefinition) printType(w io.Writer, v bool) {
 		pp.Printf("\nAsync: %v", f.Async)
 	}
 
-	pp.Print("\nFuncName: ")
-	f.FuncName.printType(&pp, v)
+	if f.FuncName != nil {
+		pp.Print("\nFuncName: ")
+		f.FuncName.printType(&pp, v)
+	} else if v {
+		pp.Print("\nFuncName: nil")
+	}
 
 	if f.TypeParams == nil {
 		pp.Print("\nTypeParams: nil")
@@ -1020,7 +1056,7 @@ func (f *FuncDefinition) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *GeneratorExpression) printType(w io.Writer, v bool) {
@@ -1037,7 +1073,7 @@ func (f *GeneratorExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *GlobalStatement) printType(w io.Writer, v bool) {
@@ -1065,7 +1101,7 @@ func (f *GlobalStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *IfStatement) printType(w io.Writer, v bool) {
@@ -1103,7 +1139,7 @@ func (f *IfStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ImportStatement) printType(w io.Writer, v bool) {
@@ -1138,7 +1174,7 @@ func (f *ImportStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *KeywordArgument) printType(w io.Writer, v bool) {
@@ -1163,7 +1199,7 @@ func (f *KeywordArgument) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *KeywordItem) printType(w io.Writer, v bool) {
@@ -1171,8 +1207,12 @@ func (f *KeywordItem) printType(w io.Writer, v bool) {
 
 	pp.Print("KeywordItem {")
 
-	pp.Print("\nIdentifier: ")
-	f.Identifier.printType(&pp, v)
+	if f.Identifier != nil {
+		pp.Print("\nIdentifier: ")
+		f.Identifier.printType(&pp, v)
+	} else if v {
+		pp.Print("\nIdentifier: nil")
+	}
 
 	pp.Print("\nExpression: ")
 	f.Expression.printType(&pp, v)
@@ -1180,7 +1220,7 @@ func (f *KeywordItem) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *LambdaExpression) printType(w io.Writer, v bool) {
@@ -1201,7 +1241,7 @@ func (f *LambdaExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ModuleAs) printType(w io.Writer, v bool) {
@@ -1212,13 +1252,17 @@ func (f *ModuleAs) printType(w io.Writer, v bool) {
 	pp.Print("\nModule: ")
 	f.Module.printType(&pp, v)
 
-	pp.Print("\nAs: ")
-	f.As.printType(&pp, v)
+	if f.As != nil {
+		pp.Print("\nAs: ")
+		f.As.printType(&pp, v)
+	} else if v {
+		pp.Print("\nAs: nil")
+	}
 
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Module) printType(w io.Writer, v bool) {
@@ -1246,7 +1290,7 @@ func (f *Module) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *MultiplyExpression) printType(w io.Writer, v bool) {
@@ -1257,8 +1301,12 @@ func (f *MultiplyExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nUnaryExpression: ")
 	f.UnaryExpression.printType(&pp, v)
 
-	pp.Print("\nMultiply: ")
-	f.Multiply.printType(&pp, v)
+	if f.Multiply != nil {
+		pp.Print("\nMultiply: ")
+		f.Multiply.printType(&pp, v)
+	} else if v {
+		pp.Print("\nMultiply: nil")
+	}
 
 	if f.MultiplyExpression != nil {
 		pp.Print("\nMultiplyExpression: ")
@@ -1270,7 +1318,7 @@ func (f *MultiplyExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *NonLocalStatement) printType(w io.Writer, v bool) {
@@ -1298,7 +1346,7 @@ func (f *NonLocalStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *NotTest) printType(w io.Writer, v bool) {
@@ -1316,7 +1364,7 @@ func (f *NotTest) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *OrExpression) printType(w io.Writer, v bool) {
@@ -1337,7 +1385,7 @@ func (f *OrExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *OrTest) printType(w io.Writer, v bool) {
@@ -1358,7 +1406,7 @@ func (f *OrTest) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Parameter) printType(w io.Writer, v bool) {
@@ -1366,8 +1414,12 @@ func (f *Parameter) printType(w io.Writer, v bool) {
 
 	pp.Print("Parameter {")
 
-	pp.Print("\nIdentifier: ")
-	f.Identifier.printType(&pp, v)
+	if f.Identifier != nil {
+		pp.Print("\nIdentifier: ")
+		f.Identifier.printType(&pp, v)
+	} else if v {
+		pp.Print("\nIdentifier: nil")
+	}
 
 	if f.Type != nil {
 		pp.Print("\nType: ")
@@ -1379,7 +1431,7 @@ func (f *Parameter) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ParameterList) printType(w io.Writer, v bool) {
@@ -1455,7 +1507,7 @@ func (f *ParameterList) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *PositionalArgument) printType(w io.Writer, v bool) {
@@ -1480,7 +1532,7 @@ func (f *PositionalArgument) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *PowerExpression) printType(w io.Writer, v bool) {
@@ -1505,7 +1557,7 @@ func (f *PowerExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *PrimaryExpression) printType(w io.Writer, v bool) {
@@ -1527,8 +1579,12 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 		pp.Print("\nAtom: nil")
 	}
 
-	pp.Print("\nAttributeRef: ")
-	f.AttributeRef.printType(&pp, v)
+	if f.AttributeRef != nil {
+		pp.Print("\nAttributeRef: ")
+		f.AttributeRef.printType(&pp, v)
+	} else if v {
+		pp.Print("\nAttributeRef: nil")
+	}
 
 	if f.Slicing != nil {
 		pp.Print("\nSlicing: ")
@@ -1547,7 +1603,7 @@ func (f *PrimaryExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *RaiseStatement) printType(w io.Writer, v bool) {
@@ -1572,7 +1628,7 @@ func (f *RaiseStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *RelativeModule) printType(w io.Writer, v bool) {
@@ -1594,7 +1650,7 @@ func (f *RelativeModule) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ReturnStatement) printType(w io.Writer, v bool) {
@@ -1615,7 +1671,7 @@ func (f *ReturnStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *ShiftExpression) printType(w io.Writer, v bool) {
@@ -1626,8 +1682,12 @@ func (f *ShiftExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nAddExpression: ")
 	f.AddExpression.printType(&pp, v)
 
-	pp.Print("\nShift: ")
-	f.Shift.printType(&pp, v)
+	if f.Shift != nil {
+		pp.Print("\nShift: ")
+		f.Shift.printType(&pp, v)
+	} else if v {
+		pp.Print("\nShift: nil")
+	}
 
 	if f.ShiftExpression != nil {
 		pp.Print("\nShiftExpression: ")
@@ -1639,7 +1699,7 @@ func (f *ShiftExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *SimpleStatement) printType(w io.Writer, v bool) {
@@ -1744,7 +1804,7 @@ func (f *SimpleStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *SliceItem) printType(w io.Writer, v bool) {
@@ -1783,7 +1843,7 @@ func (f *SliceItem) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *SliceList) printType(w io.Writer, v bool) {
@@ -1811,7 +1871,7 @@ func (f *SliceList) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *StarredExpression) printType(w io.Writer, v bool) {
@@ -1846,7 +1906,7 @@ func (f *StarredExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *StarredItem) printType(w io.Writer, v bool) {
@@ -1871,7 +1931,7 @@ func (f *StarredItem) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *StarredList) printType(w io.Writer, v bool) {
@@ -1899,7 +1959,7 @@ func (f *StarredList) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *StarredListOrComprehension) printType(w io.Writer, v bool) {
@@ -1924,7 +1984,7 @@ func (f *StarredListOrComprehension) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *StarredOrKeywordArgument) printType(w io.Writer, v bool) {
@@ -1949,7 +2009,7 @@ func (f *StarredOrKeywordArgument) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Statement) printType(w io.Writer, v bool) {
@@ -1970,7 +2030,7 @@ func (f *Statement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *StatementList) printType(w io.Writer, v bool) {
@@ -1998,7 +2058,7 @@ func (f *StatementList) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Suite) printType(w io.Writer, v bool) {
@@ -2033,7 +2093,7 @@ func (f *Suite) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *Target) printType(w io.Writer, v bool) {
@@ -2062,8 +2122,12 @@ func (f *Target) printType(w io.Writer, v bool) {
 		pp.Print("\nArray: nil")
 	}
 
-	pp.Print("\nAttributeRef: ")
-	f.AttributeRef.printType(&pp, v)
+	if f.AttributeRef != nil {
+		pp.Print("\nAttributeRef: ")
+		f.AttributeRef.printType(&pp, v)
+	} else if v {
+		pp.Print("\nAttributeRef: nil")
+	}
 
 	if f.Slicing != nil {
 		pp.Print("\nSlicing: ")
@@ -2082,7 +2146,7 @@ func (f *Target) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *TargetList) printType(w io.Writer, v bool) {
@@ -2110,7 +2174,7 @@ func (f *TargetList) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *TryStatement) printType(w io.Writer, v bool) {
@@ -2159,7 +2223,7 @@ func (f *TryStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *TypeParam) printType(w io.Writer, v bool) {
@@ -2170,8 +2234,12 @@ func (f *TypeParam) printType(w io.Writer, v bool) {
 	pp.Print("\nType: ")
 	f.Type.printType(&pp, v)
 
-	pp.Print("\nIdentifier: ")
-	f.Identifier.printType(&pp, v)
+	if f.Identifier != nil {
+		pp.Print("\nIdentifier: ")
+		f.Identifier.printType(&pp, v)
+	} else if v {
+		pp.Print("\nIdentifier: nil")
+	}
 
 	if f.Expression != nil {
 		pp.Print("\nExpression: ")
@@ -2183,7 +2251,7 @@ func (f *TypeParam) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *TypeParams) printType(w io.Writer, v bool) {
@@ -2211,7 +2279,7 @@ func (f *TypeParams) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *TypeStatement) printType(w io.Writer, v bool) {
@@ -2219,8 +2287,12 @@ func (f *TypeStatement) printType(w io.Writer, v bool) {
 
 	pp.Print("TypeStatement {")
 
-	pp.Print("\nIdentifier: ")
-	f.Identifier.printType(&pp, v)
+	if f.Identifier != nil {
+		pp.Print("\nIdentifier: ")
+		f.Identifier.printType(&pp, v)
+	} else if v {
+		pp.Print("\nIdentifier: nil")
+	}
 
 	if f.TypeParams != nil {
 		pp.Print("\nTypeParams: ")
@@ -2235,7 +2307,7 @@ func (f *TypeStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *UnaryExpression) printType(w io.Writer, v bool) {
@@ -2250,8 +2322,12 @@ func (f *UnaryExpression) printType(w io.Writer, v bool) {
 		pp.Print("\nPowerExpression: nil")
 	}
 
-	pp.Print("\nUnary: ")
-	f.Unary.printType(&pp, v)
+	if f.Unary != nil {
+		pp.Print("\nUnary: ")
+		f.Unary.printType(&pp, v)
+	} else if v {
+		pp.Print("\nUnary: nil")
+	}
 
 	if f.UnaryExpression != nil {
 		pp.Print("\nUnaryExpression: ")
@@ -2263,7 +2339,7 @@ func (f *UnaryExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *WhileStatement) printType(w io.Writer, v bool) {
@@ -2284,7 +2360,7 @@ func (f *WhileStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *WithItem) printType(w io.Writer, v bool) {
@@ -2305,7 +2381,7 @@ func (f *WithItem) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *WithStatement) printType(w io.Writer, v bool) {
@@ -2326,7 +2402,7 @@ func (f *WithStatement) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *WithStatementContents) printType(w io.Writer, v bool) {
@@ -2354,7 +2430,7 @@ func (f *WithStatementContents) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *XorExpression) printType(w io.Writer, v bool) {
@@ -2375,7 +2451,7 @@ func (f *XorExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
 
 func (f *YieldExpression) printType(w io.Writer, v bool) {
@@ -2400,5 +2476,5 @@ func (f *YieldExpression) printType(w io.Writer, v bool) {
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
-	io.WriteString(w, "}")
+	io.WriteString(w, "\n}")
 }
