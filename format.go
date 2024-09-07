@@ -90,7 +90,7 @@ func (t Tokens) printType(w io.Writer, v bool) {
 		t.printType(w, v)
 	}
 
-	io.WriteString(w, "]")
+	io.WriteString(w, "\n]")
 }
 
 func (s StatementType) printType(w io.Writer, _ bool) {
