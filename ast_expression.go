@@ -110,9 +110,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 func (pr *PrimaryExpression) IsIdentifier() bool {
 	if pr.Atom != nil {
 		return pr.Atom.IsIdentifier()
-	}
-
-	if pr.PrimaryExpression != nil {
+	} else if pr.PrimaryExpression != nil {
 		return pr.PrimaryExpression.IsIdentifier()
 	}
 
