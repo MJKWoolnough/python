@@ -157,10 +157,9 @@ func (i *IfStatement) parse(p *pyParser) error {
 			return p.Error("IfStatement", err)
 		}
 
-		i.Elif = append(i.Elif, as)
-
 		p.Score(q)
 
+		i.Elif = append(i.Elif, as)
 		q = p.NewGoal()
 
 		q.AcceptRun(TokenLineTerminator)
@@ -180,9 +179,8 @@ func (i *IfStatement) parse(p *pyParser) error {
 
 		p.AcceptRunWhitespace()
 
-		q = p.NewGoal()
-
 		i.Else = new(Suite)
+		q = p.NewGoal()
 
 		if err := i.Else.parse(q); err != nil {
 			return p.Error("IfStatement", err)
@@ -228,9 +226,8 @@ func (w *WhileStatement) parse(p *pyParser) error {
 
 		p.AcceptRunWhitespace()
 
-		q = p.NewGoal()
-
 		w.Else = new(Suite)
+		q = p.NewGoal()
 
 		if err := w.Else.parse(q); err != nil {
 			return p.Error("WhileStatement", err)
@@ -266,7 +263,6 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 	}
 
 	p.Score(q)
-
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
@@ -282,7 +278,6 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 	}
 
 	p.Score(q)
-
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
@@ -313,9 +308,8 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 
 		p.AcceptRunWhitespace()
 
-		q = p.NewGoal()
-
 		f.Else = new(Suite)
+		q = p.NewGoal()
 
 		if err := f.Else.parse(q); err != nil {
 			return p.Error("ForStatement", err)
@@ -360,10 +354,9 @@ func (t *TryStatement) parse(p *pyParser) error {
 			return p.Error("TryStatement", ErrMismatchedGroups)
 		}
 
-		t.Groups = group
-
 		p.AcceptRunWhitespace()
 
+		t.Groups = group
 		q = p.NewGoal()
 
 		var except Except
@@ -391,9 +384,8 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 		p.AcceptRunWhitespace()
 
-		q := p.NewGoal()
-
 		t.Else = new(Suite)
+		q := p.NewGoal()
 
 		if err := t.Else.parse(q); err != nil {
 			return p.Error("TryStatement", err)
@@ -416,9 +408,8 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 		p.AcceptRunWhitespace()
 
-		q := p.NewGoal()
-
 		t.Finally = new(Suite)
+		q := p.NewGoal()
 
 		if err := t.Finally.parse(q); err != nil {
 			return p.Error("TryStatement", err)
@@ -704,7 +695,6 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
-
 		f.Expression = new(Expression)
 
 		if err := f.Expression.parse(q); err != nil {
@@ -768,10 +758,9 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 				return p.Error("ClassDefinition", err)
 			}
 
-			p.Score(q)
-
 			c.TypeParams = append(c.TypeParams, t)
 
+			p.Score(q)
 			p.AcceptRunWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
@@ -894,7 +883,6 @@ func (s *Suite) parse(p *pyParser) error {
 			s.Statements = append(s.Statements, stmt)
 
 			p.Score(q)
-
 			p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
 
 			if p.Accept(TokenDedent) {
@@ -993,7 +981,6 @@ func (t *Target) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
-
 		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
@@ -1025,7 +1012,6 @@ func (t *Target) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
-
 		t.Star = new(Target)
 
 		if err := t.Star.parse(q); err != nil {
@@ -1050,7 +1036,6 @@ func (t *Target) parse(p *pyParser) error {
 		case parser.Token{Type: TokenDelimiter, Data: "."}:
 			q.Score(r)
 			p.Score(q)
-
 			p.AcceptRunWhitespace()
 
 			if !p.Accept(TokenIdentifier) {
@@ -1062,16 +1047,14 @@ func (t *Target) parse(p *pyParser) error {
 			p.OpenBrackets()
 			p.AcceptRunWhitespace()
 
-			t.Slicing = new(SliceList)
-
 			q := p.NewGoal()
+			t.Slicing = new(SliceList)
 
 			if err := t.Slicing.parse(q); err != nil {
 				return p.Error("Target", err)
 			}
 
 			p.Score(q)
-
 			p.AcceptRunWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
@@ -1127,7 +1110,6 @@ Loop:
 		}
 
 		q.AcceptRunWhitespace()
-
 		p.Score(q)
 	}
 
@@ -1210,7 +1192,6 @@ func (t *TypeParam) parse(p *pyParser) error {
 			p.Score(q)
 
 			q = p.NewGoal()
-
 			t.Expression = new(Expression)
 
 			if err := t.Expression.parse(q); err != nil {
@@ -1337,7 +1318,6 @@ func (l *ParameterList) parse(p *pyParser) error {
 
 			if tryStarStar && q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "**"}) {
 				q.AcceptRunWhitespace()
-
 				p.Score(q)
 
 				q = p.NewGoal()
@@ -1440,7 +1420,6 @@ func (pr *Parameter) parse(p *pyParser) error {
 	}
 
 	pr.Identifier = p.GetLastToken()
-
 	q := p.NewGoal()
 
 	q.AcceptRunWhitespace()
