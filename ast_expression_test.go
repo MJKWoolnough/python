@@ -96,6 +96,42 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
+		{`a(b)`, func(t *test, tk Tokens) { // 4
+			t.Output = PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Call: &ArgumentListOrComprehension{
+					ArgumentList: &ArgumentList{
+						PositionalArguments: []PositionalArgument{
+							{
+								AssignmentExpression: &AssignmentExpression{
+									Expression: Expression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											Atom: &Atom{
+												Identifier: &tk[2],
+												Tokens:     tk[2:3],
+											},
+											Tokens: tk[2:3],
+										}),
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
 
