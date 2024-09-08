@@ -233,9 +233,13 @@ func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 
 		goto PowerExpression
 	case *PrimaryExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression = *p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression = &PowerExpression{
+			PrimaryExpression: *p,
+		}
 	case PrimaryExpression:
-		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression = p
+		c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression = &PowerExpression{
+			PrimaryExpression: p,
+		}
 	}
 
 	c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.Tokens = c.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpressions.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Tokens
