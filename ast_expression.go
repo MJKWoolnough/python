@@ -679,7 +679,7 @@ func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 			return p.Error("ArgumentListOrComprehension", err)
 		}
 	} else {
-		a.Comprehension = new(Comprehension)
+		a.ArgumentList = new(ArgumentList)
 
 		if err := a.ArgumentList.parse(q); err != nil {
 			return p.Error("ArgumentListOrComprehension", err)
