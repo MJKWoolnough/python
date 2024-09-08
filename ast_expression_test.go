@@ -66,6 +66,36 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens:       tk[:3],
 			}
 		}},
+		{`a[b]`, func(t *test, tk Tokens) { // 3
+			t.Output = PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Slicing: &SliceList{
+					SliceItems: []SliceItem{
+						{
+							Expression: &Expression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[2],
+										Tokens:     tk[2:3],
+									},
+									Tokens: tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
 
