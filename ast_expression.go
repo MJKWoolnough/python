@@ -165,103 +165,116 @@ func (e *Enclosure) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 		p.AcceptRunWhitespace()
 
-		q := p.NewGoal()
-
-		if q.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
-			e.YieldAtom = new(YieldExpression)
-
-			if err := e.YieldAtom.parse(q); err != nil {
-				return p.Error("Enclosure", err)
-			}
-		} else if q.LookaheadLine(parser.Token{Type: TokenKeyword, Data: "for"}) == 0 {
-			e.GeneratorExpression = new(GeneratorExpression)
-
-			if err := e.GeneratorExpression.parse(q); err != nil {
-				return p.Error("Enclosure", err)
-			}
-		} else {
+		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			e.ParenthForm = new(StarredExpression)
+		} else {
 
-			if err := e.ParenthForm.parse(q); err != nil {
-				return p.Error("Enclosure", err)
+			q := p.NewGoal()
+
+			if q.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
+				e.YieldAtom = new(YieldExpression)
+
+				if err := e.YieldAtom.parse(q); err != nil {
+					return p.Error("Enclosure", err)
+				}
+			} else if q.LookaheadLine(parser.Token{Type: TokenKeyword, Data: "for"}) == 0 {
+				e.GeneratorExpression = new(GeneratorExpression)
+
+				if err := e.GeneratorExpression.parse(q); err != nil {
+					return p.Error("Enclosure", err)
+				}
+			} else {
+				e.ParenthForm = new(StarredExpression)
+
+				if err := e.ParenthForm.parse(q); err != nil {
+					return p.Error("Enclosure", err)
+				}
 			}
-		}
 
-		p.Score(q)
-		p.AcceptRunWhitespace()
+			p.Score(q)
+			p.AcceptRunWhitespace()
 
-		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-			return p.Error("Enclosure", ErrMissingClosingParen)
+			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+				return p.Error("Enclosure", ErrMissingClosingParen)
+			}
 		}
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 		p.AcceptRunWhitespace()
 
-		q := p.NewGoal()
-		e.ListDisplay = new(StarredListOrComprehension)
+		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			e.ListDisplay = new(StarredListOrComprehension)
+		} else {
+			q := p.NewGoal()
+			e.ListDisplay = new(StarredListOrComprehension)
 
-		if err := e.ListDisplay.parse(q, nil); err != nil {
-			return p.Error("Enclosure", err)
-		}
+			if err := e.ListDisplay.parse(q, nil); err != nil {
+				return p.Error("Enclosure", err)
+			}
 
-		p.Score(q)
-		p.AcceptRunWhitespace()
+			p.Score(q)
+			p.AcceptRunWhitespace()
 
-		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			return p.Error("Enclosure", ErrMissingClosingBracket)
+			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+				return p.Error("Enclosure", ErrMissingClosingBracket)
+			}
 		}
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "{"}) {
 		p.AcceptRunWhitespace()
 
-		q := p.NewGoal()
-
-		var isDict bool
-		var ae *AssignmentExpression
-
-		switch q.Peek() {
-		case parser.Token{Type: TokenDelimiter, Data: "**"}:
-			isDict = true
-		case parser.Token{Type: TokenOperator, Data: "*"}:
-		default:
-			ae = new(AssignmentExpression)
-
-			if err := ae.parse(q); err != nil {
-				return p.Error("Enclosure", err)
-			}
-
-			if ae.Identifier == nil {
-				r := q.NewGoal()
-
-				r.AcceptRunWhitespace()
-
-				isDict = r.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"})
-			}
-		}
-
-		if isDict {
-			var ex *Expression
-
-			if ae != nil {
-				ex = &ae.Expression
-			}
-
+		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
 			e.DictDisplay = new(DictDisplay)
-
-			if err := e.DictDisplay.parse(q, ex); err != nil {
-				return p.Error("Enclosure", err)
-			}
 		} else {
-			e.SetDisplay = new(StarredListOrComprehension)
+			q := p.NewGoal()
 
-			if err := e.SetDisplay.parse(q, ae); err != nil {
-				return p.Error("Enclosure", err)
+			var isDict bool
+			var ae *AssignmentExpression
+
+			switch q.Peek() {
+			case parser.Token{Type: TokenDelimiter, Data: "**"}:
+				isDict = true
+			case parser.Token{Type: TokenOperator, Data: "*"}:
+			default:
+				ae = new(AssignmentExpression)
+
+				if err := ae.parse(q); err != nil {
+					return p.Error("Enclosure", err)
+				}
+
+				if ae.Identifier == nil {
+					r := q.NewGoal()
+
+					r.AcceptRunWhitespace()
+
+					isDict = r.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"})
+				}
 			}
-		}
 
-		p.Score(q)
-		p.AcceptRunWhitespace()
+			if isDict {
+				var ex *Expression
 
-		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
-			return p.Error("Enclosure", ErrMissingClosingBrace)
+				if ae != nil {
+					ex = &ae.Expression
+				}
+
+				e.DictDisplay = new(DictDisplay)
+
+				if err := e.DictDisplay.parse(q, ex); err != nil {
+					return p.Error("Enclosure", err)
+				}
+			} else {
+				e.SetDisplay = new(StarredListOrComprehension)
+
+				if err := e.SetDisplay.parse(q, ae); err != nil {
+					return p.Error("Enclosure", err)
+				}
+			}
+
+			p.Score(q)
+			p.AcceptRunWhitespace()
+
+			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
+				return p.Error("Enclosure", ErrMissingClosingBrace)
+			}
 		}
 	} else {
 		return p.Error("Enclosure", ErrInvalidEnclosure)
