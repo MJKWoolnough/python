@@ -263,6 +263,8 @@ func (e *Enclosure) parse(p *pyParser) error {
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
 			return p.Error("Enclosure", ErrMissingClosingBrace)
 		}
+	} else {
+		return p.Error("Enclosure", ErrInvalidEnclosure)
 	}
 
 	e.Tokens = p.ToTokens()
