@@ -24,9 +24,9 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 
 	p.Score(q)
 
-	q = p.NewGoal()
-
 	for {
+		q := p.NewGoal()
+
 		q.AcceptRunWhitespace()
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
@@ -35,8 +35,9 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			}
 
 			pr.Tokens = p.ToTokens()
-			pr = &PrimaryExpression{
-				PrimaryExpression: pr,
+			ipr := *pr
+			*pr = PrimaryExpression{
+				PrimaryExpression: &ipr,
 				AttributeRef:      q.GetLastToken(),
 			}
 		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
@@ -54,8 +55,9 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			q.Score(r)
 
 			pr.Tokens = p.ToTokens()
-			pr = &PrimaryExpression{
-				PrimaryExpression: pr,
+			ipr := *pr
+			*pr = PrimaryExpression{
+				PrimaryExpression: &ipr,
 				Slicing:           &sl,
 			}
 
@@ -81,8 +83,9 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			q.Score(r)
 
 			pr.Tokens = p.ToTokens()
-			pr = &PrimaryExpression{
-				PrimaryExpression: pr,
+			ipr := *pr
+			*pr = PrimaryExpression{
+				PrimaryExpression: &ipr,
 				Call:              &call,
 			}
 
@@ -98,8 +101,6 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
-
-		q = p.NewGoal()
 	}
 
 	pr.Tokens = p.ToTokens()
