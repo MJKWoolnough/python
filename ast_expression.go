@@ -128,7 +128,7 @@ type Atom struct {
 func (a *Atom) parse(p *pyParser) error {
 	if p.Accept(TokenIdentifier) {
 		a.Identifier = p.GetLastToken()
-	} else if p.Accept(TokenNumericLiteral, TokenStringLiteral) {
+	} else if p.Accept(TokenNumericLiteral, TokenStringLiteral, TokenBooleanLiteral) {
 		a.Literal = p.GetLastToken()
 	} else {
 		a.Enclosure = new(Enclosure)
