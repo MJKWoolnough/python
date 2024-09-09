@@ -39,6 +39,17 @@ func TestAtom(t *testing.T) {
 				Tokens:  tk[:1],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrInvalidEnclosure,
+					Parsing: "Enclosure",
+					Token:   tk[0],
+				},
+				Parsing: "Atom",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a Atom
 
