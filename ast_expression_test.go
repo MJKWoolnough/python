@@ -149,6 +149,21 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[0],
+					},
+					Parsing: "Atom",
+					Token:   tk[0],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
 
