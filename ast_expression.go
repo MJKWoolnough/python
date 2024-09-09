@@ -19,7 +19,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
 	if err := pr.Atom.parse(q); err != nil {
-		return p.Error("Primary", err)
+		return p.Error("PrimaryExpression", err)
 	}
 
 	p.Score(q)
@@ -31,7 +31,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
 			if !q.Accept(TokenIdentifier) {
-				return q.Error("Primary", ErrMissingIdentifier)
+				return q.Error("PrimaryExpression", ErrMissingIdentifier)
 			}
 
 			pr.Tokens = p.ToTokens()
@@ -49,7 +49,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			r := q.NewGoal()
 
 			if err := sl.parse(r); err != nil {
-				return q.Error("Primary", err)
+				return q.Error("PrimaryExpression", err)
 			}
 
 			q.Score(r)
@@ -64,7 +64,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			q.AcceptRunWhitespace()
 
 			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-				return q.Error("Primary", ErrMissingClosingBracket)
+				return q.Error("PrimaryExpression", ErrMissingClosingBracket)
 			}
 
 			q.CloseBrackets()
@@ -77,7 +77,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			r := q.NewGoal()
 
 			if err := call.parse(r); err != nil {
-				return q.Error("Primary", err)
+				return q.Error("PrimaryExpression", err)
 			}
 
 			q.Score(r)
@@ -92,7 +92,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			q.AcceptRunWhitespace()
 
 			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-				return q.Error("Primary", ErrMissingClosingParen)
+				return q.Error("PrimaryExpression", ErrMissingClosingParen)
 			}
 
 			q.CloseBrackets()
