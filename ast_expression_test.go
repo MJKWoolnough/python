@@ -34,14 +34,9 @@ func TestAtom(t *testing.T) {
 			}
 		}},
 		{`True`, func(t *test, tk Tokens) { // 5
-			t.Err = Error{
-				Err: Error{
-					Err:     ErrInvalidEnclosure,
-					Parsing: "Enclosure",
-					Token:   tk[0],
-				},
-				Parsing: "Atom",
-				Token:   tk[0],
+			t.Output = Atom{
+				Literal: &tk[0],
+				Tokens:  tk[:1],
 			}
 		}},
 	}, func(t *test) (Type, error) {
