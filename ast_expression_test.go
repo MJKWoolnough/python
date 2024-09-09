@@ -164,6 +164,99 @@ func TestPrimaryExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{`a.nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "PrimaryExpression",
+				Token:   tk[2],
+			}
+		}},
+		{`a[nonlocal]`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err: Error{
+																						Err: Error{
+																							Err:     ErrInvalidEnclosure,
+																							Parsing: "Enclosure",
+																							Token:   tk[2],
+																						},
+																						Parsing: "Atom",
+																						Token:   tk[2],
+																					},
+																					Parsing: "PrimaryExpression",
+																					Token:   tk[2],
+																				},
+																				Parsing: "PowerExpression",
+																				Token:   tk[2],
+																			},
+																			Parsing: "UnaryExpression",
+																			Token:   tk[2],
+																		},
+																		Parsing: "MultiplyExpression",
+																		Token:   tk[2],
+																	},
+																	Parsing: "AddExpression",
+																	Token:   tk[2],
+																},
+																Parsing: "ShiftExpression",
+																Token:   tk[2],
+															},
+															Parsing: "AndExpression",
+															Token:   tk[2],
+														},
+														Parsing: "XorExpression",
+														Token:   tk[2],
+													},
+													Parsing: "OrExpression",
+													Token:   tk[2],
+												},
+												Parsing: "Comparison",
+												Token:   tk[2],
+											},
+											Parsing: "NotTest",
+											Token:   tk[2],
+										},
+										Parsing: "AndTest",
+										Token:   tk[2],
+									},
+									Parsing: "OrTest",
+									Token:   tk[2],
+								},
+								Parsing: "ConditionalExpression",
+								Token:   tk[2],
+							},
+							Parsing: "Expression",
+							Token:   tk[2],
+						},
+						Parsing: "SliceItem",
+						Token:   tk[2],
+					},
+					Parsing: "ExpressionList",
+					Token:   tk[2],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[2],
+			}
+		}},
+		{`a[`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{}
+		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
 
