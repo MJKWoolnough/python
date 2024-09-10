@@ -1454,8 +1454,14 @@ type ArgumentList struct {
 func (a *ArgumentList) parse(p *pyParser) error {
 	var nextIsKeywordItem, nextIsDoubleStarred bool
 
+	q := p.NewGoal()
+
 	for {
-		q := p.NewGoal()
+		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			break
+		}
+
+		p.Score(q)
 
 		if next := q.Peek(); next == (parser.Token{Type: TokenOperator, Data: "**"}) {
 			nextIsDoubleStarred = true
@@ -1494,12 +1500,6 @@ func (a *ArgumentList) parse(p *pyParser) error {
 		}
 
 		q.AcceptRunWhitespace()
-
-		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
-			break
-		}
-
-		p.Score(q)
 	}
 
 	if nextIsKeywordItem {
