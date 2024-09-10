@@ -514,7 +514,6 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 		}
 
 		p.CloseBrackets()
-
 		p.AcceptRunWhitespace()
 	}
 
