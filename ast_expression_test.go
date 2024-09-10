@@ -198,6 +198,41 @@ func TestPrimaryExpression(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{`a(nonlocal)`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: wrapConditionalExpressionError(Error{
+										Err: Error{
+											Err:     ErrInvalidEnclosure,
+											Parsing: "Enclosure",
+											Token:   tk[2],
+										},
+										Parsing: "Atom",
+										Token:   tk[2],
+									}),
+									Parsing: "Expression",
+									Token:   tk[2],
+								},
+								Parsing: "AssignmentExpression",
+								Token:   tk[2],
+							},
+							Parsing: "PositionalArgument",
+							Token:   tk[2],
+						},
+						Parsing: "ArgumentList",
+						Token:   tk[2],
+					},
+					Parsing: "ArgumentListOrComprehension",
+					Token:   tk[2],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
 
