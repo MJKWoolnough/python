@@ -45,3 +45,121 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 		}
 	}
 }
+
+func wrapConditionalExpressionError(err Error) error {
+	switch err.Parsing {
+	case "Atom":
+		err = Error{
+			Err:     err,
+			Parsing: "PrimaryExpression",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "PrimaryExpression":
+		err = Error{
+			Err:     err,
+			Parsing: "PowerExpression",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "PowerExpression":
+		err = Error{
+			Err:     err,
+			Parsing: "UnaryExpression",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "UnaryExpression":
+		err = Error{
+			Err:     err,
+			Parsing: "MultiplyExpression",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "MultiplyExpression":
+		err = Error{
+			Err:     err,
+			Parsing: "AddExpression",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "AddExpression":
+		err = Error{
+			Err:     err,
+			Parsing: "ShiftExpression",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "ShiftExpression":
+		err = Error{
+			Err:     err,
+			Parsing: "AndExpression",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "AndExpression":
+		err = Error{
+			Err:     err,
+			Parsing: "XorExpression",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "XorExpression":
+		err = Error{
+			Err:     err,
+			Parsing: "OrExpression",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "OrExpression":
+		err = Error{
+			Err:     err,
+			Parsing: "Comparison",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "Comparison":
+		err = Error{
+			Err:     err,
+			Parsing: "NotTest",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "NotTest":
+		err = Error{
+			Err:     err,
+			Parsing: "AndTest",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "AndTest":
+		err = Error{
+			Err:     err,
+			Parsing: "OrTest",
+			Token:   err.Token,
+		}
+
+		fallthrough
+	case "OrTest":
+		err = Error{
+			Err:     err,
+			Parsing: "ConditionalExpression",
+			Token:   err.Token,
+		}
+
+	}
+
+	return err
+}
