@@ -61,11 +61,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			}
 
 			q.AcceptRunWhitespace()
-
-			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-				return q.Error("PrimaryExpression", ErrMissingClosingBracket)
-			}
-
+			q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"})
 			q.CloseBrackets()
 		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 			q.OpenBrackets()
