@@ -467,6 +467,7 @@ func (a *AugTarget) parse(p *pyParser) error {
 	} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 		q.AcceptRunWhitespace()
 		p.Score(q)
+		p.OpenBrackets()
 
 		q = p.NewGoal()
 		a.Slicing = new(SliceList)
@@ -476,6 +477,7 @@ func (a *AugTarget) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+		p.CloseBrackets()
 	} else if !a.PrimaryExpression.IsIdentifier() {
 		return p.Error("AugTarget", ErrMissingIdentifier)
 	}
@@ -796,7 +798,6 @@ func (i *ImportStatement) parse(p *pyParser) error {
 
 		if parens {
 			p.OpenBrackets()
-
 			p.AcceptRunWhitespace()
 		}
 
@@ -1080,11 +1081,11 @@ func (t *TypeParams) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			p.CloseBrackets()
-
 			break
 		}
 	}
+
+	p.CloseBrackets()
 
 	t.Tokens = p.ToTokens()
 	return nil
