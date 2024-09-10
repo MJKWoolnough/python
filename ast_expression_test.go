@@ -233,6 +233,24 @@ func TestPrimaryExpression(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{`a()`, func(t *test, tk Tokens) { // 9
+			t.Output = PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Call: &ArgumentListOrComprehension{
+					ArgumentList: &ArgumentList{
+						Tokens: tk[3:3],
+					},
+					Tokens: tk[3:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
 
