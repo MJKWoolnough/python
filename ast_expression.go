@@ -158,6 +158,7 @@ type Enclosure struct {
 
 func (e *Enclosure) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
+		p.OpenBrackets()
 		p.AcceptRunWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
@@ -193,7 +194,10 @@ func (e *Enclosure) parse(p *pyParser) error {
 				return p.Error("Enclosure", ErrMissingClosingParen)
 			}
 		}
+
+		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+		p.OpenBrackets()
 		p.AcceptRunWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
@@ -213,7 +217,10 @@ func (e *Enclosure) parse(p *pyParser) error {
 				return p.Error("Enclosure", ErrMissingClosingBracket)
 			}
 		}
+
+		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "{"}) {
+		p.OpenBrackets()
 		p.AcceptRunWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
@@ -271,6 +278,7 @@ func (e *Enclosure) parse(p *pyParser) error {
 				return p.Error("Enclosure", ErrMissingClosingBrace)
 			}
 		}
+		p.CloseBrackets()
 	} else {
 		return p.Error("Enclosure", ErrInvalidEnclosure)
 	}
