@@ -42,11 +42,10 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			}
 		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 			q.OpenBrackets()
-			var sl SliceList
-
 			q.AcceptRunWhitespace()
 
 			r := q.NewGoal()
+			var sl SliceList
 
 			if err := sl.parse(r); err != nil {
 				return q.Error("PrimaryExpression", err)
@@ -69,12 +68,12 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 
 			q.CloseBrackets()
 		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-			var call ArgumentListOrComprehension
-
 			q.OpenBrackets()
 			q.AcceptRunWhitespace()
 
 			r := q.NewGoal()
+
+			var call ArgumentListOrComprehension
 
 			if err := call.parse(r); err != nil {
 				return q.Error("PrimaryExpression", err)
