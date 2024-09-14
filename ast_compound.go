@@ -962,8 +962,6 @@ type Target struct {
 	PrimaryExpression *PrimaryExpression
 	Tuple             *TargetList
 	Array             *TargetList
-	AttributeRef      *Token
-	Slicing           *SliceList
 	Star              *Target
 	Tokens            Tokens
 }
@@ -1025,52 +1023,12 @@ func (t *Target) parse(p *pyParser) error {
 		q := p.NewGoal()
 
 		if err := t.PrimaryExpression.parse(q); err != nil {
-			return err
+			return p.Error("Target", err)
+		} else if t.PrimaryExpression.Call != nil || t.PrimaryExpression.Atom != nil && !t.PrimaryExpression.IsIdentifier() {
+			return p.Error("Target", ErrMissingIdentifier)
 		}
 
-		r := q.NewGoal()
-
-		r.AcceptRunWhitespace()
-
-		switch r.Peek() {
-		case parser.Token{Type: TokenDelimiter, Data: "."}:
-			q.Score(r)
-			p.Score(q)
-			p.AcceptRunWhitespace()
-
-			if !p.Accept(TokenIdentifier) {
-				return p.Error("Target", ErrMissingIdentifier)
-			}
-
-			t.AttributeRef = p.GetLastToken()
-		case parser.Token{Type: TokenDelimiter, Data: "["}:
-			q.Score(r)
-			p.Score(q)
-			p.OpenBrackets()
-			p.AcceptRunWhitespace()
-
-			q := p.NewGoal()
-			t.Slicing = new(SliceList)
-
-			if err := t.Slicing.parse(q); err != nil {
-				return p.Error("Target", err)
-			}
-
-			p.Score(q)
-			p.AcceptRunWhitespace()
-
-			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-				return p.Error("Target", ErrMissingClosingBracket)
-			}
-
-			p.CloseBrackets()
-		default:
-			if !t.PrimaryExpression.IsIdentifier() {
-				return p.Error("Target", ErrMissingIdentifier)
-			}
-
-			p.Score(q)
-		}
+		p.Score(q)
 	}
 
 	t.Tokens = p.ToTokens()
