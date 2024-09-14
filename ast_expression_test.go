@@ -307,6 +307,60 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
+		{`a(a for 1 in x)`, func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrMissingIdentifier,
+									Parsing: "Target",
+									Token:   tk[6],
+								},
+								Parsing: "TargetList",
+								Token:   tk[6],
+							},
+							Parsing: "ComprehensionFor",
+							Token:   tk[6],
+						},
+						Parsing: "Comprehension",
+						Token:   tk[4],
+					},
+					Parsing: "ArgumentListOrComprehension",
+					Token:   tk[2],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[2],
+			}
+		}},
+		{`a(a for i() in x)`, func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrMissingIdentifier,
+									Parsing: "Target",
+									Token:   tk[6],
+								},
+								Parsing: "TargetList",
+								Token:   tk[6],
+							},
+							Parsing: "ComprehensionFor",
+							Token:   tk[6],
+						},
+						Parsing: "Comprehension",
+						Token:   tk[4],
+					},
+					Parsing: "ArgumentListOrComprehension",
+					Token:   tk[2],
+				},
+				Parsing: "PrimaryExpression",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
 
