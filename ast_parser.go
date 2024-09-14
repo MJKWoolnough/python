@@ -174,7 +174,7 @@ func (p *pyParser) LookaheadLine(tks ...parser.Token) int {
 	brackets := 0
 
 Loop:
-	for _, tk := range p.Tokens {
+	for _, tk := range p.Tokens[:cap(p.Tokens)] {
 		if brackets > 0 {
 			switch tk.Data {
 			case "]", ")", "}":
