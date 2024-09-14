@@ -2122,20 +2122,6 @@ func (f *Target) printType(w io.Writer, v bool) {
 		pp.Print("\nArray: nil")
 	}
 
-	if f.AttributeRef != nil {
-		pp.Print("\nAttributeRef: ")
-		f.AttributeRef.printType(&pp, v)
-	} else if v {
-		pp.Print("\nAttributeRef: nil")
-	}
-
-	if f.Slicing != nil {
-		pp.Print("\nSlicing: ")
-		f.Slicing.printType(&pp, v)
-	} else if v {
-		pp.Print("\nSlicing: nil")
-	}
-
 	if f.Star != nil {
 		pp.Print("\nStar: ")
 		f.Star.printType(&pp, v)
