@@ -361,6 +361,71 @@ func TestPrimaryExpression(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{`a.b[c](d).e`, func(t *test, tk Tokens) { // 13
+			t.Output = PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					PrimaryExpression: &PrimaryExpression{
+						PrimaryExpression: &PrimaryExpression{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							AttributeRef: &tk[2],
+							Tokens:       tk[:3],
+						},
+						Slicing: &SliceList{
+							SliceItems: []SliceItem{
+								{
+									Expression: &Expression{
+										ConditionalExpression: WrapConditional(&PrimaryExpression{
+											Atom: &Atom{
+												Identifier: &tk[4],
+												Tokens:     tk[4:5],
+											},
+											Tokens: tk[4:5],
+										}),
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[:6],
+					},
+					Call: &ArgumentListOrComprehension{
+						ArgumentList: &ArgumentList{
+							PositionalArguments: []PositionalArgument{
+								{
+									AssignmentExpression: &AssignmentExpression{
+										Expression: Expression{
+											ConditionalExpression: WrapConditional(&PrimaryExpression{
+												Atom: &Atom{
+													Identifier: &tk[7],
+													Tokens:     tk[7:8],
+												},
+												Tokens: tk[7:8],
+											}),
+											Tokens: tk[7:8],
+										},
+										Tokens: tk[7:8],
+									},
+									Tokens: tk[7:8],
+								},
+							},
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[7:8],
+					},
+					Tokens: tk[:9],
+				},
+				AttributeRef: &tk[10],
+				Tokens:       tk[:11],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
 
