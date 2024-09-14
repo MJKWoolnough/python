@@ -244,11 +244,67 @@ func TestPrimaryExpression(t *testing.T) {
 				},
 				Call: &ArgumentListOrComprehension{
 					ArgumentList: &ArgumentList{
-						Tokens: tk[3:3],
+						Tokens: tk[2:2],
 					},
-					Tokens: tk[3:3],
+					Tokens: tk[2:2],
 				},
 				Tokens: tk[:3],
+			}
+		}},
+		{`a(a for i in x)`, func(t *test, tk Tokens) { // 10
+			t.Output = PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Call: &ArgumentListOrComprehension{
+					Comprehension: &Comprehension{
+						AssignmentExpression: AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[2],
+										Tokens:     tk[2:3],
+									},
+									Tokens: tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						ComprehensionFor: ComprehensionFor{
+							TargetList: TargetList{
+								Targets: []Target{
+									{
+										PrimaryExpression: &PrimaryExpression{
+											Atom: &Atom{
+												Identifier: &tk[6],
+												Tokens:     tk[6:7],
+											},
+											Tokens: tk[6:7],
+										},
+										Tokens: tk[6:7],
+									},
+								},
+								Tokens: tk[6:7],
+							},
+							OrTest: WrapConditional(&PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[10],
+									Tokens:     tk[10:11],
+								},
+								Tokens: tk[10:11],
+							}).OrTest,
+							Tokens: tk[4:11],
+						},
+						Tokens: tk[2:11],
+					},
+					Tokens: tk[2:11],
+				},
+				Tokens: tk[:12],
 			}
 		}},
 	}, func(t *test) (Type, error) {
