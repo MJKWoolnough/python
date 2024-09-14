@@ -1022,7 +1022,6 @@ func (t *Target) parse(p *pyParser) error {
 		p.Score(q)
 	} else {
 		t.PrimaryExpression = new(PrimaryExpression)
-
 		q := p.NewGoal()
 
 		if err := t.PrimaryExpression.parse(q); err != nil {
@@ -1045,6 +1044,8 @@ func (t *Target) parse(p *pyParser) error {
 
 			t.AttributeRef = p.GetLastToken()
 		case parser.Token{Type: TokenDelimiter, Data: "["}:
+			q.Score(r)
+			p.Score(q)
 			p.OpenBrackets()
 			p.AcceptRunWhitespace()
 
@@ -1067,6 +1068,8 @@ func (t *Target) parse(p *pyParser) error {
 			if !t.PrimaryExpression.IsIdentifier() {
 				return p.Error("Target", ErrMissingIdentifier)
 			}
+
+			p.Score(q)
 		}
 	}
 
