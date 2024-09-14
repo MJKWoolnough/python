@@ -363,7 +363,6 @@ func (c *Comprehension) parse(p *pyParser, ae *AssignmentExpression) error {
 	}
 
 	p.AcceptRunWhitespace()
-
 	q := p.NewGoal()
 
 	if err := c.ComprehensionFor.parse(q); err != nil {
