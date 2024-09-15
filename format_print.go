@@ -259,7 +259,13 @@ func (f TypeParams) printSource(w io.Writer, v bool) {
 func (f TypeStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f UnaryExpression) printSource(w io.Writer, v bool) {
+func (u UnaryExpression) printSource(w io.Writer, v bool) {
+	if u.PowerExpression != nil {
+		u.PowerExpression.printSource(w, v)
+	} else if u.Unary != nil && u.UnaryExpression != nil {
+		io.WriteString(w, u.Unary.Data)
+		u.UnaryExpression.printSource(w, v)
+	}
 }
 
 func (f WhileStatement) printSource(w io.Writer, v bool) {
