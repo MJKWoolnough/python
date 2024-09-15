@@ -165,7 +165,25 @@ func (f PositionalArgument) printSource(w io.Writer, v bool) {
 func (f PowerExpression) printSource(w io.Writer, v bool) {
 }
 
-func (f PrimaryExpression) printSource(w io.Writer, v bool) {
+func (p PrimaryExpression) printSource(w io.Writer, v bool) {
+	if p.Atom != nil {
+		p.Atom.printSource(w, v)
+	} else if p.PrimaryExpression != nil {
+		p.PrimaryExpression.printSource(w, v)
+
+		if p.AttributeRef != nil {
+			io.WriteString(w, ".")
+			io.WriteString(w, p.AttributeRef.Data)
+		} else if p.Slicing != nil {
+			io.WriteString(w, "[")
+			p.Slicing.printSource(w, v)
+			io.WriteString(w, "]")
+		} else if p.Call != nil {
+			io.WriteString(w, "(")
+			p.Call.printSource(w, v)
+			io.WriteString(w, ")")
+		}
+	}
 }
 
 func (f RaiseStatement) printSource(w io.Writer, v bool) {
