@@ -153,14 +153,14 @@ func (t TypeParamType) String() string {
 
 type formatter interface {
 	printType(io.Writer, bool)
-	// printSource(io.Writer, bool)
+	printSource(io.Writer, bool)
 }
 
 func format(f formatter, s fmt.State, v rune) {
 	switch v {
 	case 'v':
 		f.printType(s, s.Flag('+'))
-		// case 's':
-		// f.printSource(s, s.Flag('+'))
+	case 's':
+		f.printSource(s, s.Flag('+'))
 	}
 }
