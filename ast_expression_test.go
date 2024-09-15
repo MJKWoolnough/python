@@ -570,7 +570,7 @@ func TestPowerExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`1 ** nonlocal`, func(t *test, tk Tokens) { // 6
+		{`1 ** nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
