@@ -32,7 +32,14 @@ func (f AssignmentExpression) printSource(w io.Writer, v bool) {
 func (f AssignmentStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f Atom) printSource(w io.Writer, v bool) {
+func (a Atom) printSource(w io.Writer, v bool) {
+	if a.Identifier != nil {
+		io.WriteString(w, a.Identifier.Data)
+	} else if a.Literal != nil {
+		io.WriteString(w, a.Literal.Data)
+	} else if a.Enclosure != nil {
+		a.Enclosure.printSource(w, v)
+	}
 }
 
 func (f AugmentedAssignmentStatement) printSource(w io.Writer, v bool) {
