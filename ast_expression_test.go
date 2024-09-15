@@ -605,3 +605,109 @@ func TestPowerExpression(t *testing.T) {
 		return pe, err
 	})
 }
+
+func TestUnaryExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = UnaryExpression{
+				PowerExpression: &PowerExpression{
+					PrimaryExpression: PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`~True`, func(t *test, tk Tokens) { // 2
+			t.Output = UnaryExpression{
+				Unary: &tk[0],
+				UnaryExpression: &UnaryExpression{
+					PowerExpression: &PowerExpression{
+						PrimaryExpression: PrimaryExpression{
+							Atom: &Atom{
+								Literal: &tk[1],
+								Tokens:  tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`-1`, func(t *test, tk Tokens) { // 3
+			t.Output = UnaryExpression{
+				Unary: &tk[0],
+				UnaryExpression: &UnaryExpression{
+					PowerExpression: &PowerExpression{
+						PrimaryExpression: PrimaryExpression{
+							Atom: &Atom{
+								Literal: &tk[1],
+								Tokens:  tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`+ a`, func(t *test, tk Tokens) { // 4
+			t.Output = UnaryExpression{
+				Unary: &tk[0],
+				UnaryExpression: &UnaryExpression{
+					PowerExpression: &PowerExpression{
+						PrimaryExpression: PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`~-a`, func(t *test, tk Tokens) { // 4
+			t.Output = UnaryExpression{
+				Unary: &tk[0],
+				UnaryExpression: &UnaryExpression{
+					Unary: &tk[1],
+					UnaryExpression: &UnaryExpression{
+						PowerExpression: &PowerExpression{
+							PrimaryExpression: PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[1:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var ue UnaryExpression
+
+		err := ue.parse(t.Tokens)
+
+		return ue, err
+	})
+}
