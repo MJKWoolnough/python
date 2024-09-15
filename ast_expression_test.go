@@ -703,6 +703,56 @@ func TestUnaryExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[0],
+							},
+							Parsing: "Atom",
+							Token:   tk[0],
+						},
+						Parsing: "PrimaryExpression",
+						Token:   tk[0],
+					},
+					Parsing: "PowerExpression",
+					Token:   tk[0],
+				},
+				Parsing: "UnaryExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`+nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[1],
+								},
+								Parsing: "Atom",
+								Token:   tk[1],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[1],
+						},
+						Parsing: "PowerExpression",
+						Token:   tk[1],
+					},
+					Parsing: "UnaryExpression",
+					Token:   tk[1],
+				},
+				Parsing: "UnaryExpression",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ue UnaryExpression
 
