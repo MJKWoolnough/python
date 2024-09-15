@@ -162,7 +162,17 @@ func (f ParameterList) printSource(w io.Writer, v bool) {
 func (f PositionalArgument) printSource(w io.Writer, v bool) {
 }
 
-func (f PowerExpression) printSource(w io.Writer, v bool) {
+func (p PowerExpression) printSource(w io.Writer, v bool) {
+	if p.AwaitExpression {
+		io.WriteString(w, "await ")
+	}
+
+	p.PrimaryExpression.printSource(w, v)
+
+	if p.UnaryExpression != nil {
+		io.WriteString(w, " ** ")
+		p.UnaryExpression.printSource(w, v)
+	}
 }
 
 func (p PrimaryExpression) printSource(w io.Writer, v bool) {
