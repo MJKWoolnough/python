@@ -1333,3 +1333,202 @@ func TestAddExpression(t *testing.T) {
 		return ae, err
 	})
 }
+
+func TestShiftExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = ShiftExpression{
+				AddExpression: AddExpression{
+					MultiplyExpression: MultiplyExpression{
+						UnaryExpression: UnaryExpression{
+							PowerExpression: &PowerExpression{
+								PrimaryExpression: PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a<<b`, func(t *test, tk Tokens) { // 2
+			t.Output = ShiftExpression{
+				AddExpression: AddExpression{
+					MultiplyExpression: MultiplyExpression{
+						UnaryExpression: UnaryExpression{
+							PowerExpression: &PowerExpression{
+								PrimaryExpression: PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Shift: &tk[1],
+				ShiftExpression: &ShiftExpression{
+					AddExpression: AddExpression{
+						MultiplyExpression: MultiplyExpression{
+							UnaryExpression: UnaryExpression{
+								PowerExpression: &PowerExpression{
+									PrimaryExpression: PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										},
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a >> b`, func(t *test, tk Tokens) { // 3
+			t.Output = ShiftExpression{
+				AddExpression: AddExpression{
+					MultiplyExpression: MultiplyExpression{
+						UnaryExpression: UnaryExpression{
+							PowerExpression: &PowerExpression{
+								PrimaryExpression: PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Shift: &tk[2],
+				ShiftExpression: &ShiftExpression{
+					AddExpression: AddExpression{
+						MultiplyExpression: MultiplyExpression{
+							UnaryExpression: UnaryExpression{
+								PowerExpression: &PowerExpression{
+									PrimaryExpression: PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[4],
+											Tokens:     tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a << b>>c`, func(t *test, tk Tokens) { // 4
+			t.Output = ShiftExpression{
+				AddExpression: AddExpression{
+					MultiplyExpression: MultiplyExpression{
+						UnaryExpression: UnaryExpression{
+							PowerExpression: &PowerExpression{
+								PrimaryExpression: PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Shift: &tk[2],
+				ShiftExpression: &ShiftExpression{
+					AddExpression: AddExpression{
+						MultiplyExpression: MultiplyExpression{
+							UnaryExpression: UnaryExpression{
+								PowerExpression: &PowerExpression{
+									PrimaryExpression: PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[4],
+											Tokens:     tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+					Shift: &tk[5],
+					ShiftExpression: &ShiftExpression{
+						AddExpression: AddExpression{
+							MultiplyExpression: MultiplyExpression{
+								UnaryExpression: UnaryExpression{
+									PowerExpression: &PowerExpression{
+										PrimaryExpression: PrimaryExpression{
+											Atom: &Atom{
+												Identifier: &tk[6],
+												Tokens:     tk[6:7],
+											},
+											Tokens: tk[6:7],
+										},
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[4:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var se ShiftExpression
+
+		err := se.parse(t.Tokens)
+
+		return se, err
+	})
+}
