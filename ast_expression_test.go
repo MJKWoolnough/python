@@ -1026,6 +1026,64 @@ func TestMultiplyExpression(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[0],
+								},
+								Parsing: "Atom",
+								Token:   tk[0],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[0],
+						},
+						Parsing: "PowerExpression",
+						Token:   tk[0],
+					},
+					Parsing: "UnaryExpression",
+					Token:   tk[0],
+				},
+				Parsing: "MultiplyExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`1 * nonlocal`, func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[4],
+									},
+									Parsing: "Atom",
+									Token:   tk[4],
+								},
+								Parsing: "PrimaryExpression",
+								Token:   tk[4],
+							},
+							Parsing: "PowerExpression",
+							Token:   tk[4],
+						},
+						Parsing: "UnaryExpression",
+						Token:   tk[4],
+					},
+					Parsing: "MultiplyExpression",
+					Token:   tk[4],
+				},
+				Parsing: "MultiplyExpression",
+				Token:   tk[4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var me MultiplyExpression
 
