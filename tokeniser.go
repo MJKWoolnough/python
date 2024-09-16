@@ -528,7 +528,7 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 		t.Err = ErrInvalidCharacter
 
 		return t.Error()
-	case '+', '%', '@', '|', '^', ':', '=':
+	case '+', '%', '@', '&', '|', '^', ':', '=':
 		t.Next()
 
 		if t.Accept("=") != (c == '=' || c == ':') {
