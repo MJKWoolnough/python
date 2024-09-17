@@ -2241,6 +2241,104 @@ func TestOrExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err:     ErrInvalidEnclosure,
+														Parsing: "Enclosure",
+														Token:   tk[0],
+													},
+													Parsing: "Atom",
+													Token:   tk[0],
+												},
+												Parsing: "PrimaryExpression",
+												Token:   tk[0],
+											},
+											Parsing: "PowerExpression",
+											Token:   tk[0],
+										},
+										Parsing: "UnaryExpression",
+										Token:   tk[0],
+									},
+									Parsing: "MultiplyExpression",
+									Token:   tk[0],
+								},
+								Parsing: "AddExpression",
+								Token:   tk[0],
+							},
+							Parsing: "ShiftExpression",
+							Token:   tk[0],
+						},
+						Parsing: "AndExpression",
+						Token:   tk[0],
+					},
+					Parsing: "XorExpression",
+					Token:   tk[0],
+				},
+				Parsing: "OrExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`1|nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err:     ErrInvalidEnclosure,
+															Parsing: "Enclosure",
+															Token:   tk[2],
+														},
+														Parsing: "Atom",
+														Token:   tk[2],
+													},
+													Parsing: "PrimaryExpression",
+													Token:   tk[2],
+												},
+												Parsing: "PowerExpression",
+												Token:   tk[2],
+											},
+											Parsing: "UnaryExpression",
+											Token:   tk[2],
+										},
+										Parsing: "MultiplyExpression",
+										Token:   tk[2],
+									},
+									Parsing: "AddExpression",
+									Token:   tk[2],
+								},
+								Parsing: "ShiftExpression",
+								Token:   tk[2],
+							},
+							Parsing: "AndExpression",
+							Token:   tk[2],
+						},
+						Parsing: "XorExpression",
+						Token:   tk[2],
+					},
+					Parsing: "OrExpression",
+					Token:   tk[2],
+				},
+				Parsing: "OrExpression",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var oe OrExpression
 
