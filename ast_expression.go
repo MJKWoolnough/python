@@ -843,15 +843,15 @@ func (s *SliceItem) parse(p *pyParser) error {
 }
 
 type OrExpression struct {
-	XorExpressions XorExpression
-	OrExpression   *OrExpression
-	Tokens         Tokens
+	XorExpression XorExpression
+	OrExpression  *OrExpression
+	Tokens        Tokens
 }
 
 func (o *OrExpression) parse(p *pyParser) error {
 	q := p.NewGoal()
 
-	if err := o.XorExpressions.parse(p); err != nil {
+	if err := o.XorExpression.parse(p); err != nil {
 		return p.Error("OrExpression", err)
 	}
 
