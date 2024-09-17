@@ -296,7 +296,13 @@ func (f WithStatement) printSource(w io.Writer, v bool) {
 func (f WithStatementContents) printSource(w io.Writer, v bool) {
 }
 
-func (f XorExpression) printSource(w io.Writer, v bool) {
+func (x XorExpression) printSource(w io.Writer, v bool) {
+	x.AndExpression.printSource(w, v)
+
+	if x.XorExpression != nil {
+		io.WriteString(w, " ^ ")
+		x.XorExpression.printSource(w, v)
+	}
 }
 
 func (f YieldExpression) printSource(w io.Writer, v bool) {
