@@ -163,7 +163,13 @@ func (f NonLocalStatement) printSource(w io.Writer, v bool) {
 func (f NotTest) printSource(w io.Writer, v bool) {
 }
 
-func (f OrExpression) printSource(w io.Writer, v bool) {
+func (o OrExpression) printSource(w io.Writer, v bool) {
+	o.XorExpression.printSource(w, v)
+
+	if o.OrExpression != nil {
+		io.WriteString(w, " | ")
+		o.OrExpression.printSource(w, v)
+	}
 }
 
 func (f OrTest) printSource(w io.Writer, v bool) {
