@@ -2,7 +2,15 @@ package python
 
 import "io"
 
-func (f AddExpression) printSource(w io.Writer, v bool) {
+func (a AddExpression) printSource(w io.Writer, v bool) {
+	a.MultiplyExpression.printSource(w, v)
+
+	if a.Add != nil && a.AddExpression != nil {
+		io.WriteString(w, " ")
+		io.WriteString(w, a.Add.Data)
+		io.WriteString(w, " ")
+		a.AddExpression.printSource(w, v)
+	}
 }
 
 func (f AndExpression) printSource(w io.Writer, v bool) {
