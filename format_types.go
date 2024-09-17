@@ -1372,8 +1372,8 @@ func (f *OrExpression) printType(w io.Writer, v bool) {
 
 	pp.Print("OrExpression {")
 
-	pp.Print("\nXorExpressions: ")
-	f.XorExpressions.printType(&pp, v)
+	pp.Print("\nXorExpression: ")
+	f.XorExpression.printType(&pp, v)
 
 	if f.OrExpression != nil {
 		pp.Print("\nOrExpression: ")
