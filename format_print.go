@@ -59,7 +59,12 @@ func (f AugTarget) printSource(w io.Writer, v bool) {
 func (f ClassDefinition) printSource(w io.Writer, v bool) {
 }
 
-func (f Comparison) printSource(w io.Writer, v bool) {
+func (c Comparison) printSource(w io.Writer, v bool) {
+	c.OrExpression.printSource(w, v)
+
+	for _, ce := range c.Comparisons {
+		ce.printSource(w, v)
+	}
 }
 
 func (f ComparisonExpression) printSource(w io.Writer, v bool) {
