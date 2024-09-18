@@ -2347,3 +2347,656 @@ func TestOrExpression(t *testing.T) {
 		return oe, err
 	})
 }
+
+func TestComparison(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[0],
+														Tokens:     tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a < b`, func(t *test, tk Tokens) { // 2
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[0],
+														Tokens:     tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Comparisons: []ComparisonExpression{
+					{
+						ComparisonOperator: []Token{tk[2]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[4],
+																Tokens:     tk[4:5],
+															},
+															Tokens: tk[4:5],
+														},
+														Tokens: tk[4:5],
+													},
+													Tokens: tk[4:5],
+												},
+												Tokens: tk[4:5],
+											},
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a>b`, func(t *test, tk Tokens) { // 3
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[0],
+														Tokens:     tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Comparisons: []ComparisonExpression{
+					{
+						ComparisonOperator: []Token{tk[1]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[2],
+																Tokens:     tk[2:3],
+															},
+															Tokens: tk[2:3],
+														},
+														Tokens: tk[2:3],
+													},
+													Tokens: tk[2:3],
+												},
+												Tokens: tk[2:3],
+											},
+											Tokens: tk[2:3],
+										},
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a==b>=c <= d != e`, func(t *test, tk Tokens) { // 4
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[0],
+														Tokens:     tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Comparisons: []ComparisonExpression{
+					{
+						ComparisonOperator: []Token{tk[1]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[2],
+																Tokens:     tk[2:3],
+															},
+															Tokens: tk[2:3],
+														},
+														Tokens: tk[2:3],
+													},
+													Tokens: tk[2:3],
+												},
+												Tokens: tk[2:3],
+											},
+											Tokens: tk[2:3],
+										},
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					{
+						ComparisonOperator: []Token{tk[3]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[4],
+																Tokens:     tk[4:5],
+															},
+															Tokens: tk[4:5],
+														},
+														Tokens: tk[4:5],
+													},
+													Tokens: tk[4:5],
+												},
+												Tokens: tk[4:5],
+											},
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+					},
+					{
+						ComparisonOperator: []Token{tk[6]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[8],
+																Tokens:     tk[8:9],
+															},
+															Tokens: tk[8:9],
+														},
+														Tokens: tk[8:9],
+													},
+													Tokens: tk[8:9],
+												},
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[8:9],
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+					},
+					{
+						ComparisonOperator: []Token{tk[10]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[12],
+																Tokens:     tk[12:13],
+															},
+															Tokens: tk[12:13],
+														},
+														Tokens: tk[12:13],
+													},
+													Tokens: tk[12:13],
+												},
+												Tokens: tk[12:13],
+											},
+											Tokens: tk[12:13],
+										},
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:13],
+								},
+								Tokens: tk[12:13],
+							},
+							Tokens: tk[12:13],
+						},
+					},
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{`a is b`, func(t *test, tk Tokens) { // 5
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[0],
+														Tokens:     tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Comparisons: []ComparisonExpression{
+					{
+						ComparisonOperator: []Token{tk[2]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[4],
+																Tokens:     tk[4:5],
+															},
+															Tokens: tk[4:5],
+														},
+														Tokens: tk[4:5],
+													},
+													Tokens: tk[4:5],
+												},
+												Tokens: tk[4:5],
+											},
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a is not b`, func(t *test, tk Tokens) { // 6
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[0],
+														Tokens:     tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Comparisons: []ComparisonExpression{
+					{
+						ComparisonOperator: []Token{tk[2], tk[3], tk[4]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[6],
+																Tokens:     tk[6:7],
+															},
+															Tokens: tk[6:7],
+														},
+														Tokens: tk[6:7],
+													},
+													Tokens: tk[6:7],
+												},
+												Tokens: tk[6:7],
+											},
+											Tokens: tk[6:7],
+										},
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`a not in b`, func(t *test, tk Tokens) { // 7
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[0],
+														Tokens:     tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Comparisons: []ComparisonExpression{
+					{
+						ComparisonOperator: []Token{tk[2], tk[3], tk[4]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[6],
+																Tokens:     tk[6:7],
+															},
+															Tokens: tk[6:7],
+														},
+														Tokens: tk[6:7],
+													},
+													Tokens: tk[6:7],
+												},
+												Tokens: tk[6:7],
+											},
+											Tokens: tk[6:7],
+										},
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`a in b`, func(t *test, tk Tokens) { // 8
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[0],
+														Tokens:     tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Comparisons: []ComparisonExpression{
+					{
+						ComparisonOperator: []Token{tk[2]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[4],
+																Tokens:     tk[4:5],
+															},
+															Tokens: tk[4:5],
+														},
+														Tokens: tk[4:5],
+													},
+													Tokens: tk[4:5],
+												},
+												Tokens: tk[4:5],
+											},
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var c Comparison
+
+		err := c.parse(t.Tokens)
+
+		return c, err
+	})
+}
