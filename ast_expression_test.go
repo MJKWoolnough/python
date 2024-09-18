@@ -3109,3 +3109,133 @@ func TestComparison(t *testing.T) {
 		return c, err
 	})
 }
+
+func TestNotTest(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = NotTest{
+				Comparison: Comparison{
+					OrExpression: OrExpression{
+						XorExpression: XorExpression{
+							AndExpression: AndExpression{
+								ShiftExpression: ShiftExpression{
+									AddExpression: AddExpression{
+										MultiplyExpression: MultiplyExpression{
+											UnaryExpression: UnaryExpression{
+												PowerExpression: &PowerExpression{
+													PrimaryExpression: PrimaryExpression{
+														Atom: &Atom{
+															Identifier: &tk[0],
+															Tokens:     tk[:1],
+														},
+														Tokens: tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`not a`, func(t *test, tk Tokens) { // 2
+			t.Output = NotTest{
+				Nots: 1,
+				Comparison: Comparison{
+					OrExpression: OrExpression{
+						XorExpression: XorExpression{
+							AndExpression: AndExpression{
+								ShiftExpression: ShiftExpression{
+									AddExpression: AddExpression{
+										MultiplyExpression: MultiplyExpression{
+											UnaryExpression: UnaryExpression{
+												PowerExpression: &PowerExpression{
+													PrimaryExpression: PrimaryExpression{
+														Atom: &Atom{
+															Identifier: &tk[2],
+															Tokens:     tk[2:3],
+														},
+														Tokens: tk[2:3],
+													},
+													Tokens: tk[2:3],
+												},
+												Tokens: tk[2:3],
+											},
+											Tokens: tk[2:3],
+										},
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`not not not not a`, func(t *test, tk Tokens) { // 3
+			t.Output = NotTest{
+				Nots: 4,
+				Comparison: Comparison{
+					OrExpression: OrExpression{
+						XorExpression: XorExpression{
+							AndExpression: AndExpression{
+								ShiftExpression: ShiftExpression{
+									AddExpression: AddExpression{
+										MultiplyExpression: MultiplyExpression{
+											UnaryExpression: UnaryExpression{
+												PowerExpression: &PowerExpression{
+													PrimaryExpression: PrimaryExpression{
+														Atom: &Atom{
+															Identifier: &tk[8],
+															Tokens:     tk[8:9],
+														},
+														Tokens: tk[8:9],
+													},
+													Tokens: tk[8:9],
+												},
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[8:9],
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var nt NotTest
+
+		err := nt.parse(t.Tokens)
+
+		return nt, err
+	})
+}
