@@ -67,7 +67,39 @@ func (c Comparison) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f ComparisonExpression) printSource(w io.Writer, v bool) {
+func (c ComparisonExpression) printSource(w io.Writer, v bool) {
+	if len(c.ComparisonOperator) == 0 {
+		return
+	}
+
+	switch c.ComparisonOperator[0].Data {
+	case "<", ">", "==", ">=", "<=", "!=":
+		if v {
+			io.WriteString(w, " ")
+		}
+
+		io.WriteString(w, c.ComparisonOperator[0].Data)
+
+		if v {
+			io.WriteString(w, " ")
+		}
+	case "is":
+		if c.ComparisonOperator[len(c.ComparisonOperator)-1].Data == "not" {
+			io.WriteString(w, " is not ")
+		} else {
+			io.WriteString(w, " is ")
+		}
+	case "not":
+		if c.ComparisonOperator[len(c.ComparisonOperator)-1].Data == "in" {
+			io.WriteString(w, " not in ")
+		} else {
+			return
+		}
+	default:
+		return
+	}
+
+	c.OrExpression.printSource(w, v)
 }
 
 func (f CompoundStatement) printSource(w io.Writer, v bool) {
