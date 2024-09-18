@@ -2992,6 +2992,115 @@ func TestComparison(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err:     ErrInvalidEnclosure,
+															Parsing: "Enclosure",
+															Token:   tk[0],
+														},
+														Parsing: "Atom",
+														Token:   tk[0],
+													},
+													Parsing: "PrimaryExpression",
+													Token:   tk[0],
+												},
+												Parsing: "PowerExpression",
+												Token:   tk[0],
+											},
+											Parsing: "UnaryExpression",
+											Token:   tk[0],
+										},
+										Parsing: "MultiplyExpression",
+										Token:   tk[0],
+									},
+									Parsing: "AddExpression",
+									Token:   tk[0],
+								},
+								Parsing: "ShiftExpression",
+								Token:   tk[0],
+							},
+							Parsing: "AndExpression",
+							Token:   tk[0],
+						},
+						Parsing: "XorExpression",
+						Token:   tk[0],
+					},
+					Parsing: "OrExpression",
+					Token:   tk[0],
+				},
+				Parsing: "Comparison",
+				Token:   tk[0],
+			}
+		}},
+		{`a not a b`, func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrMissingIn,
+				Parsing: "Comparison",
+				Token:   tk[4],
+			}
+		}},
+		{`1<nonlocal`, func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err:     ErrInvalidEnclosure,
+															Parsing: "Enclosure",
+															Token:   tk[2],
+														},
+														Parsing: "Atom",
+														Token:   tk[2],
+													},
+													Parsing: "PrimaryExpression",
+													Token:   tk[2],
+												},
+												Parsing: "PowerExpression",
+												Token:   tk[2],
+											},
+											Parsing: "UnaryExpression",
+											Token:   tk[2],
+										},
+										Parsing: "MultiplyExpression",
+										Token:   tk[2],
+									},
+									Parsing: "AddExpression",
+									Token:   tk[2],
+								},
+								Parsing: "ShiftExpression",
+								Token:   tk[2],
+							},
+							Parsing: "AndExpression",
+							Token:   tk[2],
+						},
+						Parsing: "XorExpression",
+						Token:   tk[2],
+					},
+					Parsing: "OrExpression",
+					Token:   tk[2],
+				},
+				Parsing: "Comparison",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var c Comparison
 
