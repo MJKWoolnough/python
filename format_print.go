@@ -197,7 +197,12 @@ func (m MultiplyExpression) printSource(w io.Writer, v bool) {
 func (f NonLocalStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f NotTest) printSource(w io.Writer, v bool) {
+func (n NotTest) printSource(w io.Writer, v bool) {
+	for i := n.Nots; i >= 0; i-- {
+		io.WriteString(w, "not ")
+	}
+
+	n.Comparison.printSource(w, v)
 }
 
 func (o OrExpression) printSource(w io.Writer, v bool) {
