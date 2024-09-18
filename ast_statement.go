@@ -1313,7 +1313,7 @@ func (a *AndTest) parse(p *pyParser) error {
 
 	q.AcceptRunWhitespace()
 
-	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "or"}) {
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "and"}) {
 		q.AcceptRunWhitespace()
 		p.Score(q)
 
