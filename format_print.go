@@ -16,7 +16,13 @@ func (a AddExpression) printSource(w io.Writer, v bool) {
 func (f AndExpression) printSource(w io.Writer, v bool) {
 }
 
-func (f AndTest) printSource(w io.Writer, v bool) {
+func (a AndTest) printSource(w io.Writer, v bool) {
+	a.NotTest.printSource(w, v)
+
+	if a.AndTest != nil {
+		io.WriteString(w, " and ")
+		a.AndTest.printSource(w, v)
+	}
 }
 
 func (f AnnotatedAssignmentStatement) printSource(w io.Writer, v bool) {
