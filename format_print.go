@@ -220,7 +220,13 @@ func (o OrExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f OrTest) printSource(w io.Writer, v bool) {
+func (o OrTest) printSource(w io.Writer, v bool) {
+	o.AndTest.printSource(w, v)
+
+	if o.OrTest != nil {
+		io.WriteString(w, " or ")
+		o.OrTest.printSource(w, v)
+	}
 }
 
 func (f Parameter) printSource(w io.Writer, v bool) {
