@@ -1534,3 +1534,202 @@ func TestOrTest(t *testing.T) {
 		return ot, err
 	})
 }
+
+func TestConditionalExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = ConditionalExpression{
+				OrTest: OrTest{
+					AndTest: AndTest{
+						NotTest: NotTest{
+							Comparison: Comparison{
+								OrExpression: OrExpression{
+									XorExpression: XorExpression{
+										AndExpression: AndExpression{
+											ShiftExpression: ShiftExpression{
+												AddExpression: AddExpression{
+													MultiplyExpression: MultiplyExpression{
+														UnaryExpression: UnaryExpression{
+															PowerExpression: &PowerExpression{
+																PrimaryExpression: PrimaryExpression{
+																	Atom: &Atom{
+																		Identifier: &tk[0],
+																		Tokens:     tk[:1],
+																	},
+																	Tokens: tk[:1],
+																},
+																Tokens: tk[:1],
+															},
+															Tokens: tk[:1],
+														},
+														Tokens: tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a if b else c`, func(t *test, tk Tokens) { // 2
+			t.Output = ConditionalExpression{
+				OrTest: OrTest{
+					AndTest: AndTest{
+						NotTest: NotTest{
+							Comparison: Comparison{
+								OrExpression: OrExpression{
+									XorExpression: XorExpression{
+										AndExpression: AndExpression{
+											ShiftExpression: ShiftExpression{
+												AddExpression: AddExpression{
+													MultiplyExpression: MultiplyExpression{
+														UnaryExpression: UnaryExpression{
+															PowerExpression: &PowerExpression{
+																PrimaryExpression: PrimaryExpression{
+																	Atom: &Atom{
+																		Identifier: &tk[0],
+																		Tokens:     tk[:1],
+																	},
+																	Tokens: tk[:1],
+																},
+																Tokens: tk[:1],
+															},
+															Tokens: tk[:1],
+														},
+														Tokens: tk[:1],
+													},
+													Tokens: tk[:1],
+												},
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				If: &OrTest{
+					AndTest: AndTest{
+						NotTest: NotTest{
+							Comparison: Comparison{
+								OrExpression: OrExpression{
+									XorExpression: XorExpression{
+										AndExpression: AndExpression{
+											ShiftExpression: ShiftExpression{
+												AddExpression: AddExpression{
+													MultiplyExpression: MultiplyExpression{
+														UnaryExpression: UnaryExpression{
+															PowerExpression: &PowerExpression{
+																PrimaryExpression: PrimaryExpression{
+																	Atom: &Atom{
+																		Identifier: &tk[4],
+																		Tokens:     tk[4:5],
+																	},
+																	Tokens: tk[4:5],
+																},
+																Tokens: tk[4:5],
+															},
+															Tokens: tk[4:5],
+														},
+														Tokens: tk[4:5],
+													},
+													Tokens: tk[4:5],
+												},
+												Tokens: tk[4:5],
+											},
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Else: &Expression{
+					ConditionalExpression: &ConditionalExpression{
+						OrTest: OrTest{
+							AndTest: AndTest{
+								NotTest: NotTest{
+									Comparison: Comparison{
+										OrExpression: OrExpression{
+											XorExpression: XorExpression{
+												AndExpression: AndExpression{
+													ShiftExpression: ShiftExpression{
+														AddExpression: AddExpression{
+															MultiplyExpression: MultiplyExpression{
+																UnaryExpression: UnaryExpression{
+																	PowerExpression: &PowerExpression{
+																		PrimaryExpression: PrimaryExpression{
+																			Atom: &Atom{
+																				Identifier: &tk[8],
+																				Tokens:     tk[8:9],
+																			},
+																			Tokens: tk[8:9],
+																		},
+																		Tokens: tk[8:9],
+																	},
+																	Tokens: tk[8:9],
+																},
+																Tokens: tk[8:9],
+															},
+															Tokens: tk[8:9],
+														},
+														Tokens: tk[8:9],
+													},
+													Tokens: tk[8:9],
+												},
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[8:9],
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var ce ConditionalExpression
+
+		err := ce.parse(t.Tokens)
+
+		return ce, err
+	})
+}
