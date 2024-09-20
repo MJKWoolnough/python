@@ -188,7 +188,16 @@ func (f KeywordArgument) printSource(w io.Writer, v bool) {
 func (f KeywordItem) printSource(w io.Writer, v bool) {
 }
 
-func (f LambdaExpression) printSource(w io.Writer, v bool) {
+func (l LambdaExpression) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "lambda ")
+
+	if l.ParameterList != nil {
+		l.ParameterList.printSource(w, v)
+	}
+
+	io.WriteString(w, ": ")
+
+	l.Expression.printSource(w, v)
 }
 
 func (f ModuleAs) printSource(w io.Writer, v bool) {
