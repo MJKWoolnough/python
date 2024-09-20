@@ -1949,3 +1949,105 @@ func TestConditionalExpression(t *testing.T) {
 		return ce, err
 	})
 }
+
+func TestLambda(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`lambda:a`, func(t *test, tk Tokens) { // 1
+			t.Output = LambdaExpression{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						},
+						Tokens: tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`lambda : a`, func(t *test, tk Tokens) { // 2
+			t.Output = LambdaExpression{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[4],
+							Tokens:     tk[4:5],
+						},
+						Tokens: tk[4:5],
+					}),
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`lambda a: b`, func(t *test, tk Tokens) { // 3
+			t.Output = LambdaExpression{
+				ParameterList: &ParameterList{
+					NoPosOnly: []DefParameter{
+						{
+							Parameter: Parameter{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[5],
+							Tokens:     tk[5:6],
+						},
+						Tokens: tk[5:6],
+					}),
+					Tokens: tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`lambda a, b : c`, func(t *test, tk Tokens) { // 4
+			t.Output = LambdaExpression{
+				ParameterList: &ParameterList{
+					NoPosOnly: []DefParameter{
+						{
+							Parameter: Parameter{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						{
+							Parameter: Parameter{
+								Identifier: &tk[5],
+								Tokens:     tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+					},
+					Tokens: tk[2:6],
+				},
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[9],
+							Tokens:     tk[9:10],
+						},
+						Tokens: tk[9:10],
+					}),
+					Tokens: tk[9:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var le LambdaExpression
+
+		err := le.parse(t.Tokens)
+
+		return le, err
+	})
+}
