@@ -123,7 +123,15 @@ func (f ComprehensionIf) printSource(w io.Writer, v bool) {
 func (f ComprehensionIterator) printSource(w io.Writer, v bool) {
 }
 
-func (f ConditionalExpression) printSource(w io.Writer, v bool) {
+func (c ConditionalExpression) printSource(w io.Writer, v bool) {
+	c.OrTest.printSource(w, v)
+
+	if c.If != nil && c.Else != nil {
+		io.WriteString(w, " if ")
+		c.If.printSource(w, v)
+		io.WriteString(w, " else ")
+		c.Else.printSource(w, v)
+	}
 }
 
 func (f Decorators) printSource(w io.Writer, v bool) {
