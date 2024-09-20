@@ -2043,6 +2043,48 @@ func TestLambda(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
+		{`lambda nonlocal: a`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingIdentifier,
+							Parsing: "Parameter",
+							Token:   tk[2],
+						},
+						Parsing: "DefParameter",
+						Token:   tk[2],
+					},
+					Parsing: "ParameterList",
+					Token:   tk[2],
+				},
+				Parsing: "LambdaExpression",
+				Token:   tk[2],
+			}
+		}},
+		{`lambda: nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[3],
+							},
+							Parsing: "Atom",
+							Token:   tk[3],
+						},
+						Parsing: "PrimaryExpression",
+						Token:   tk[3],
+					}),
+					Parsing: "Expression",
+					Token:   tk[3],
+				},
+				Parsing: "LambdaExpression",
+				Token:   tk[3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var le LambdaExpression
 
