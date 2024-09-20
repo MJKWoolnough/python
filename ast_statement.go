@@ -1220,7 +1220,6 @@ type LambdaExpression struct {
 
 func (l *LambdaExpression) parse(p *pyParser) error {
 	p.Skip()
-
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
