@@ -1231,7 +1231,7 @@ func (l *LambdaExpression) parse(p *pyParser) error {
 		q := p.NewGoal()
 		l.ParameterList = new(ParameterList)
 
-		if err := l.ParameterList.parse(q); err != nil {
+		if err := l.ParameterList.parse(q, false); err != nil {
 			return p.Error("LambdaExpression", err)
 		}
 

@@ -676,7 +676,7 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 		q := p.NewGoal()
 
-		if err := f.ParameterList.parse(q); err != nil {
+		if err := f.ParameterList.parse(q, true); err != nil {
 			return p.Error("FuncDefinition", err)
 		}
 
@@ -1178,10 +1178,10 @@ type ParameterList struct {
 	Tokens        Tokens
 }
 
-func (l *ParameterList) parse(p *pyParser) error {
+func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 	q := p.NewGoal()
 
-	dps, err := paramList(q)
+	dps, err := paramList(q, allowAnnotations)
 	if err != nil {
 		return p.Error("ParameterList", err)
 	}
@@ -1209,7 +1209,7 @@ func (l *ParameterList) parse(p *pyParser) error {
 				q.AcceptRunWhitespace()
 
 				if q.Peek().Type == TokenIdentifier {
-					dps, err = paramList(q)
+					dps, err = paramList(q, allowAnnotations)
 					if err != nil {
 						return p.Error("ParameterList", err)
 					}
@@ -1239,7 +1239,7 @@ func (l *ParameterList) parse(p *pyParser) error {
 				q = p.NewGoal()
 				l.StarArg = new(Parameter)
 
-				if err := l.StarArg.parse(q); err != nil {
+				if err := l.StarArg.parse(q, allowAnnotations); err != nil {
 					return p.Error("ParameterList", err)
 				}
 
@@ -1257,7 +1257,7 @@ func (l *ParameterList) parse(p *pyParser) error {
 
 						q = p.NewGoal()
 
-						dps, err := paramList(q)
+						dps, err := paramList(q, allowAnnotations)
 						if err != nil {
 							return p.Error("ParameterList", err)
 						}
@@ -1285,7 +1285,7 @@ func (l *ParameterList) parse(p *pyParser) error {
 				q = p.NewGoal()
 				l.StarStarArg = new(Parameter)
 
-				if err := l.StarStarArg.parse(q); err != nil {
+				if err := l.StarStarArg.parse(q, allowAnnotations); err != nil {
 					return p.Error("ParameterList", err)
 				}
 			}
@@ -1297,7 +1297,7 @@ func (l *ParameterList) parse(p *pyParser) error {
 	return nil
 }
 
-func paramList(p *pyParser) ([]DefParameter, error) {
+func paramList(p *pyParser, allowAnnotations bool) ([]DefParameter, error) {
 	var defParameters []DefParameter
 
 	for {
@@ -1305,7 +1305,7 @@ func paramList(p *pyParser) ([]DefParameter, error) {
 
 		var dp DefParameter
 
-		if err := dp.parse(q); err != nil {
+		if err := dp.parse(q, allowAnnotations); err != nil {
 			return nil, err
 		}
 
@@ -1338,10 +1338,10 @@ type DefParameter struct {
 	Tokens    Tokens
 }
 
-func (d *DefParameter) parse(p *pyParser) error {
+func (d *DefParameter) parse(p *pyParser, allowAnnotations bool) error {
 	q := p.NewGoal()
 
-	if err := d.Parameter.parse(q); err != nil {
+	if err := d.Parameter.parse(q, allowAnnotations); err != nil {
 		return p.Error("DefParameter", err)
 	}
 
@@ -1376,7 +1376,7 @@ type Parameter struct {
 	Tokens     Tokens
 }
 
-func (pr *Parameter) parse(p *pyParser) error {
+func (pr *Parameter) parse(p *pyParser, allowAnnotations bool) error {
 	if !p.Accept(TokenIdentifier) {
 		return p.Error("Parameter", ErrMissingIdentifier)
 	}
@@ -1386,7 +1386,7 @@ func (pr *Parameter) parse(p *pyParser) error {
 
 	q.AcceptRunWhitespace()
 
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+	if allowAnnotations && q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 		q.AcceptRunWhitespace()
 		p.Score(q)
 
