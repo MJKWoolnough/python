@@ -7,16 +7,13 @@ import (
 )
 
 type Statement struct {
-	StatementList     StatementList
+	StatementList     *StatementList
 	CompoundStatement *CompoundStatement
 	Tokens            Tokens
 }
 
 func (s *Statement) parse(p *pyParser) error {
-	var (
-		isCompound     bool
-		isSoftCompound bool
-	)
+	var isCompound, isSoftCompound bool
 
 	q := p.NewGoal()
 
@@ -31,7 +28,7 @@ func (s *Statement) parse(p *pyParser) error {
 	}
 
 	if isCompound {
-		var c CompoundStatement
+		c := new(CompoundStatement)
 
 		if err := c.parser(q); err != nil {
 			if !isSoftCompound {
@@ -40,16 +37,22 @@ func (s *Statement) parse(p *pyParser) error {
 		} else {
 			p.Score(q)
 
-			s.CompoundStatement = &c
-			s.Tokens = p.ToTokens()
-
-			return nil
+			s.CompoundStatement = c
 		}
 	}
 
-	if err := s.StatementList.parse(q); err != nil {
-		return p.Error("Statement", err)
+	if s.CompoundStatement == nil {
+		q = p.NewGoal()
+		s.StatementList = new(StatementList)
+
+		if err := s.StatementList.parse(q); err != nil {
+			return p.Error("Statement", err)
+		}
+
+		p.Score(q)
 	}
+
+	s.Tokens = p.ToTokens()
 
 	return nil
 }
