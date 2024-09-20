@@ -1725,6 +1725,222 @@ func TestConditionalExpression(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err:     ErrInvalidEnclosure,
+																			Parsing: "Enclosure",
+																			Token:   tk[0],
+																		},
+																		Parsing: "Atom",
+																		Token:   tk[0],
+																	},
+																	Parsing: "PrimaryExpression",
+																	Token:   tk[0],
+																},
+																Parsing: "PowerExpression",
+																Token:   tk[0],
+															},
+															Parsing: "UnaryExpression",
+															Token:   tk[0],
+														},
+														Parsing: "MultiplyExpression",
+														Token:   tk[0],
+													},
+													Parsing: "AddExpression",
+													Token:   tk[0],
+												},
+												Parsing: "ShiftExpression",
+												Token:   tk[0],
+											},
+											Parsing: "AndExpression",
+											Token:   tk[0],
+										},
+										Parsing: "XorExpression",
+										Token:   tk[0],
+									},
+									Parsing: "OrExpression",
+									Token:   tk[0],
+								},
+								Parsing: "Comparison",
+								Token:   tk[0],
+							},
+							Parsing: "NotTest",
+							Token:   tk[0],
+						},
+						Parsing: "AndTest",
+						Token:   tk[0],
+					},
+					Parsing: "OrTest",
+					Token:   tk[0],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`a if nonlocal else c`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err:     ErrInvalidEnclosure,
+																			Parsing: "Enclosure",
+																			Token:   tk[4],
+																		},
+																		Parsing: "Atom",
+																		Token:   tk[4],
+																	},
+																	Parsing: "PrimaryExpression",
+																	Token:   tk[4],
+																},
+																Parsing: "PowerExpression",
+																Token:   tk[4],
+															},
+															Parsing: "UnaryExpression",
+															Token:   tk[4],
+														},
+														Parsing: "MultiplyExpression",
+														Token:   tk[4],
+													},
+													Parsing: "AddExpression",
+													Token:   tk[4],
+												},
+												Parsing: "ShiftExpression",
+												Token:   tk[4],
+											},
+											Parsing: "AndExpression",
+											Token:   tk[4],
+										},
+										Parsing: "XorExpression",
+										Token:   tk[4],
+									},
+									Parsing: "OrExpression",
+									Token:   tk[4],
+								},
+								Parsing: "Comparison",
+								Token:   tk[4],
+							},
+							Parsing: "NotTest",
+							Token:   tk[4],
+						},
+						Parsing: "AndTest",
+						Token:   tk[4],
+					},
+					Parsing: "OrTest",
+					Token:   tk[4],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[4],
+			}
+		}},
+		{`a if b els c`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingElse,
+				Parsing: "ConditionalExpression",
+				Token:   tk[6],
+			}
+		}},
+		{`a if b else nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err: Error{
+																			Err: Error{
+																				Err: Error{
+																					Err:     ErrInvalidEnclosure,
+																					Parsing: "Enclosure",
+																					Token:   tk[8],
+																				},
+																				Parsing: "Atom",
+																				Token:   tk[8],
+																			},
+																			Parsing: "PrimaryExpression",
+																			Token:   tk[8],
+																		},
+																		Parsing: "PowerExpression",
+																		Token:   tk[8],
+																	},
+																	Parsing: "UnaryExpression",
+																	Token:   tk[8],
+																},
+																Parsing: "MultiplyExpression",
+																Token:   tk[8],
+															},
+															Parsing: "AddExpression",
+															Token:   tk[8],
+														},
+														Parsing: "ShiftExpression",
+														Token:   tk[8],
+													},
+													Parsing: "AndExpression",
+													Token:   tk[8],
+												},
+												Parsing: "XorExpression",
+												Token:   tk[8],
+											},
+											Parsing: "OrExpression",
+											Token:   tk[8],
+										},
+										Parsing: "Comparison",
+										Token:   tk[8],
+									},
+									Parsing: "NotTest",
+									Token:   tk[8],
+								},
+								Parsing: "AndTest",
+								Token:   tk[8],
+							},
+							Parsing: "OrTest",
+							Token:   tk[8],
+						},
+						Parsing: "ConditionalExpression",
+						Token:   tk[8],
+					},
+					Parsing: "Expression",
+					Token:   tk[8],
+				},
+				Parsing: "ConditionalExpression",
+				Token:   tk[8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
 
