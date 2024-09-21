@@ -155,7 +155,12 @@ func (f Enclosure) printSource(w io.Writer, v bool) {
 func (f Except) printSource(w io.Writer, v bool) {
 }
 
-func (f Expression) printSource(w io.Writer, v bool) {
+func (e Expression) printSource(w io.Writer, v bool) {
+	if e.LambdaExpression != nil {
+		e.LambdaExpression.printSource(w, v)
+	} else if e.ConditionalExpression != nil {
+		e.ConditionalExpression.printSource(w, v)
+	}
 }
 
 func (f ExpressionList) printSource(w io.Writer, v bool) {
