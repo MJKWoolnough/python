@@ -2126,6 +2126,52 @@ func TestExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: wrapConditionalExpressionError(Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						},
+						Parsing: "Atom",
+						Token:   tk[0],
+					},
+					Parsing: "PrimaryExpression",
+					Token:   tk[0],
+				}),
+				Parsing: "Expression",
+				Token:   tk[0],
+			}
+		}},
+		{`lambda:nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[2],
+								},
+								Parsing: "Atom",
+								Token:   tk[2],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "LambdaExpression",
+					Token:   tk[2],
+				},
+				Parsing: "Expression",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var e Expression
 
