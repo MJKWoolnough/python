@@ -612,7 +612,7 @@ type FuncDefinition struct {
 	Decorators    *Decorators
 	Async         bool
 	FuncName      *Token
-	TypeParams    []TypeParam
+	TypeParams    *TypeParams
 	ParameterList ParameterList
 	Expression    *Expression
 	Suite         Suite
@@ -632,37 +632,15 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 
 	f.FuncName = p.GetLastToken()
 
-	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
-		p.OpenBrackets()
+	if p.Peek() == (parser.Token{Type: TokenDelimiter, Data: "["}) {
+		q := p.NewGoal()
+		f.TypeParams = new(TypeParams)
 
-		for {
-			p.AcceptRunWhitespace()
-
-			q := p.NewGoal()
-
-			var t TypeParam
-
-			if err := t.parse(q); err != nil {
-				return p.Error("FuncDefinition", err)
-			}
-
-			p.Score(q)
-
-			f.TypeParams = append(f.TypeParams, t)
-
-			p.AcceptRunWhitespace()
-
-			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-				if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-					return p.Error("FuncDefinition", ErrMissingClosingBracket)
-				}
-
-				p.CloseBrackets()
-
-				break
-			}
+		if err := f.TypeParams.parse(q); err != nil {
+			return p.Error("FuncDefinition", err)
 		}
 
+		p.Score(q)
 		p.AcceptRunWhitespace()
 	}
 
