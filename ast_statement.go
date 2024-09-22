@@ -440,8 +440,6 @@ func (a *AugmentedAssignmentStatement) parse(p *pyParser) error {
 
 type AugTarget struct {
 	PrimaryExpression PrimaryExpression
-	AttributeRef      *Token
-	Slicing           *SliceList
 	Tokens            Tokens
 }
 
@@ -450,40 +448,11 @@ func (a *AugTarget) parse(p *pyParser) error {
 
 	if err := a.PrimaryExpression.parse(q); err != nil {
 		return p.Error("AugTarget", err)
+	} else if a.PrimaryExpression.Call != nil || a.PrimaryExpression.Atom != nil && !a.PrimaryExpression.IsIdentifier() {
+		return p.Error("AugTarget", ErrMissingIdentifier)
 	}
 
 	p.Score(q)
-
-	q = p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
-
-		if !p.Accept(TokenIdentifier) {
-			return p.Error("AugTarget", ErrMissingIdentifier)
-		}
-
-		a.AttributeRef = p.GetLastToken()
-	} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
-		p.OpenBrackets()
-
-		q = p.NewGoal()
-		a.Slicing = new(SliceList)
-
-		if err := a.Slicing.parse(q); err != nil {
-			return p.Error("AugTarget", err)
-		}
-
-		p.Score(q)
-		p.CloseBrackets()
-	} else if !a.PrimaryExpression.IsIdentifier() {
-		return p.Error("AugTarget", ErrMissingIdentifier)
-	}
 
 	a.Tokens = p.ToTokens()
 
