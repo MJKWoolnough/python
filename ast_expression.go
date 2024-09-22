@@ -40,10 +40,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 				PrimaryExpression: &ipr,
 				AttributeRef:      q.GetLastToken(),
 			}
-		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
-			q.OpenBrackets()
-			q.AcceptRunWhitespace()
-
+		} else if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "["}) {
 			r := q.NewGoal()
 			var sl SliceList
 
@@ -59,14 +56,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 				PrimaryExpression: &ipr,
 				Slicing:           &sl,
 			}
-
-			q.AcceptRunWhitespace()
-			q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"})
-			q.CloseBrackets()
-		} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-			q.OpenBrackets()
-			q.AcceptRunWhitespace()
-
+		} else if tk == (parser.Token{Type: TokenDelimiter, Data: "("}) {
 			r := q.NewGoal()
 
 			var call ArgumentListOrComprehension
@@ -83,14 +73,6 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 				PrimaryExpression: &ipr,
 				Call:              &call,
 			}
-
-			q.AcceptRunWhitespace()
-
-			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-				return q.Error("PrimaryExpression", ErrMissingClosingParen)
-			}
-
-			q.CloseBrackets()
 		} else {
 			break
 		}
@@ -672,6 +654,10 @@ type ArgumentListOrComprehension struct {
 }
 
 func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
+	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
+	p.OpenBrackets()
+	p.AcceptRunWhitespace()
+
 	q := p.NewGoal()
 
 	if q.LookaheadLine(parser.Token{Type: TokenKeyword, Data: "for"}) == 0 {
@@ -689,6 +675,13 @@ func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 	}
 
 	p.Score(q)
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		return p.Error("PrimaryExpression", ErrMissingClosingParen)
+	}
+
+	p.CloseBrackets()
 
 	a.Tokens = p.ToTokens()
 
@@ -743,7 +736,11 @@ type SliceList struct {
 }
 
 func (s *SliceList) parse(p *pyParser) error {
-	for {
+	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
+	p.OpenBrackets()
+	p.AcceptRunWhitespace()
+
+	for !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 		q := p.NewGoal()
 
 		var si SliceItem
@@ -755,24 +752,19 @@ func (s *SliceList) parse(p *pyParser) error {
 		p.Score(q)
 
 		s.SliceItems = append(s.SliceItems, si)
-		q = p.NewGoal()
 
-		q.AcceptRunWhitespace()
+		p.AcceptRunWhitespace()
 
-		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			break
-		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			return p.Error("SliceList", ErrMissingComma)
+		if p.Peek() != (parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				return p.Error("SliceList", ErrMissingComma)
+			}
+
+			p.AcceptRunWhitespace()
 		}
-
-		q.AcceptRunWhitespace()
-
-		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			break
-		}
-
-		p.Score(q)
 	}
+
+	p.CloseBrackets()
 
 	s.Tokens = p.ToTokens()
 

@@ -108,7 +108,7 @@ func TestPrimaryExpression(t *testing.T) {
 							Tokens: tk[2:3],
 						},
 					},
-					Tokens: tk[2:3],
+					Tokens: tk[1:4],
 				},
 				Tokens: tk[:4],
 			}
@@ -144,7 +144,7 @@ func TestPrimaryExpression(t *testing.T) {
 						},
 						Tokens: tk[2:3],
 					},
-					Tokens: tk[2:3],
+					Tokens: tk[1:4],
 				},
 				Tokens: tk[:4],
 			}
@@ -195,7 +195,7 @@ func TestPrimaryExpression(t *testing.T) {
 					Token:   tk[2],
 				},
 				Parsing: "PrimaryExpression",
-				Token:   tk[2],
+				Token:   tk[1],
 			}
 		}},
 		{`a(nonlocal)`, func(t *test, tk Tokens) { // 8
@@ -230,7 +230,7 @@ func TestPrimaryExpression(t *testing.T) {
 					Token:   tk[2],
 				},
 				Parsing: "PrimaryExpression",
-				Token:   tk[2],
+				Token:   tk[1],
 			}
 		}},
 		{`a()`, func(t *test, tk Tokens) { // 9
@@ -246,7 +246,7 @@ func TestPrimaryExpression(t *testing.T) {
 					ArgumentList: &ArgumentList{
 						Tokens: tk[2:2],
 					},
-					Tokens: tk[2:2],
+					Tokens: tk[1:3],
 				},
 				Tokens: tk[:3],
 			}
@@ -302,7 +302,7 @@ func TestPrimaryExpression(t *testing.T) {
 						},
 						Tokens: tk[2:11],
 					},
-					Tokens: tk[2:11],
+					Tokens: tk[1:12],
 				},
 				Tokens: tk[:12],
 			}
@@ -331,7 +331,7 @@ func TestPrimaryExpression(t *testing.T) {
 					Token:   tk[2],
 				},
 				Parsing: "PrimaryExpression",
-				Token:   tk[2],
+				Token:   tk[1],
 			}
 		}},
 		{`a(a for i() in x)`, func(t *test, tk Tokens) { // 12
@@ -358,7 +358,7 @@ func TestPrimaryExpression(t *testing.T) {
 					Token:   tk[2],
 				},
 				Parsing: "PrimaryExpression",
-				Token:   tk[2],
+				Token:   tk[1],
 			}
 		}},
 		{`a.b[c](d).e`, func(t *test, tk Tokens) { // 13
@@ -392,7 +392,7 @@ func TestPrimaryExpression(t *testing.T) {
 									Tokens: tk[4:5],
 								},
 							},
-							Tokens: tk[4:5],
+							Tokens: tk[3:6],
 						},
 						Tokens: tk[:6],
 					},
@@ -418,7 +418,7 @@ func TestPrimaryExpression(t *testing.T) {
 							},
 							Tokens: tk[7:8],
 						},
-						Tokens: tk[7:8],
+						Tokens: tk[6:9],
 					},
 					Tokens: tk[:9],
 				},
