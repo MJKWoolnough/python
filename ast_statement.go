@@ -1034,6 +1034,7 @@ type TypeParams struct {
 }
 
 func (t *TypeParams) parse(p *pyParser) error {
+	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
 	p.Skip()
 	p.OpenBrackets()
 
