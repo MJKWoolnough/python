@@ -375,20 +375,6 @@ func (f *AugTarget) printType(w io.Writer, v bool) {
 	pp.Print("\nPrimaryExpression: ")
 	f.PrimaryExpression.printType(&pp, v)
 
-	if f.AttributeRef != nil {
-		pp.Print("\nAttributeRef: ")
-		f.AttributeRef.printType(&pp, v)
-	} else if v {
-		pp.Print("\nAttributeRef: nil")
-	}
-
-	if f.Slicing != nil {
-		pp.Print("\nSlicing: ")
-		f.Slicing.printType(&pp, v)
-	} else if v {
-		pp.Print("\nSlicing: nil")
-	}
-
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
@@ -414,21 +400,11 @@ func (f *ClassDefinition) printType(w io.Writer, v bool) {
 		pp.Print("\nClassName: nil")
 	}
 
-	if f.TypeParams == nil {
-		pp.Print("\nTypeParams: nil")
-	} else if len(f.TypeParams) > 0 {
-		pp.Print("\nTypeParams: [")
-
-		ipp := indentPrinter{&pp}
-
-		for n, e := range f.TypeParams {
-			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
-		}
-
-		pp.Print("\n]")
+	if f.TypeParams != nil {
+		pp.Print("\nTypeParams: ")
+		f.TypeParams.printType(&pp, v)
 	} else if v {
-		pp.Print("\nTypeParams: []")
+		pp.Print("\nTypeParams: nil")
 	}
 
 	pp.Print("\nInheritance: ")
@@ -1023,21 +999,11 @@ func (f *FuncDefinition) printType(w io.Writer, v bool) {
 		pp.Print("\nFuncName: nil")
 	}
 
-	if f.TypeParams == nil {
-		pp.Print("\nTypeParams: nil")
-	} else if len(f.TypeParams) > 0 {
-		pp.Print("\nTypeParams: [")
-
-		ipp := indentPrinter{&pp}
-
-		for n, e := range f.TypeParams {
-			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
-		}
-
-		pp.Print("\n]")
+	if f.TypeParams != nil {
+		pp.Print("\nTypeParams: ")
+		f.TypeParams.printType(&pp, v)
 	} else if v {
-		pp.Print("\nTypeParams: []")
+		pp.Print("\nTypeParams: nil")
 	}
 
 	pp.Print("\nParameterList: ")
@@ -2017,8 +1983,12 @@ func (f *Statement) printType(w io.Writer, v bool) {
 
 	pp.Print("Statement {")
 
-	pp.Print("\nStatementList: ")
-	f.StatementList.printType(&pp, v)
+	if f.StatementList != nil {
+		pp.Print("\nStatementList: ")
+		f.StatementList.printType(&pp, v)
+	} else if v {
+		pp.Print("\nStatementList: nil")
+	}
 
 	if f.CompoundStatement != nil {
 		pp.Print("\nCompoundStatement: ")
