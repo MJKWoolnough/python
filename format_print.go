@@ -283,13 +283,9 @@ func (p PrimaryExpression) printSource(w io.Writer, v bool) {
 			io.WriteString(w, ".")
 			io.WriteString(w, p.AttributeRef.Data)
 		} else if p.Slicing != nil {
-			io.WriteString(w, "[")
 			p.Slicing.printSource(w, v)
-			io.WriteString(w, "]")
 		} else if p.Call != nil {
-			io.WriteString(w, "(")
 			p.Call.printSource(w, v)
-			io.WriteString(w, ")")
 		}
 	}
 }
