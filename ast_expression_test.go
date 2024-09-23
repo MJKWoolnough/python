@@ -96,12 +96,9 @@ func TestPrimaryExpression(t *testing.T) {
 					SliceItems: []SliceItem{
 						{
 							Expression: &Expression{
-								ConditionalExpression: WrapConditional(&PrimaryExpression{
-									Atom: &Atom{
-										Identifier: &tk[2],
-										Tokens:     tk[2:3],
-									},
-									Tokens: tk[2:3],
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
 								}),
 								Tokens: tk[2:3],
 							},
@@ -128,12 +125,9 @@ func TestPrimaryExpression(t *testing.T) {
 							{
 								AssignmentExpression: &AssignmentExpression{
 									Expression: Expression{
-										ConditionalExpression: WrapConditional(&PrimaryExpression{
-											Atom: &Atom{
-												Identifier: &tk[2],
-												Tokens:     tk[2:3],
-											},
-											Tokens: tk[2:3],
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
 										}),
 										Tokens: tk[2:3],
 									},
@@ -264,12 +258,9 @@ func TestPrimaryExpression(t *testing.T) {
 					Comprehension: &Comprehension{
 						AssignmentExpression: AssignmentExpression{
 							Expression: Expression{
-								ConditionalExpression: WrapConditional(&PrimaryExpression{
-									Atom: &Atom{
-										Identifier: &tk[2],
-										Tokens:     tk[2:3],
-									},
-									Tokens: tk[2:3],
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
 								}),
 								Tokens: tk[2:3],
 							},
@@ -291,12 +282,9 @@ func TestPrimaryExpression(t *testing.T) {
 								},
 								Tokens: tk[6:7],
 							},
-							OrTest: WrapConditional(&PrimaryExpression{
-								Atom: &Atom{
-									Identifier: &tk[10],
-									Tokens:     tk[10:11],
-								},
-								Tokens: tk[10:11],
+							OrTest: WrapConditional(&Atom{
+								Identifier: &tk[10],
+								Tokens:     tk[10:11],
 							}).OrTest,
 							Tokens: tk[4:11],
 						},
@@ -380,12 +368,9 @@ func TestPrimaryExpression(t *testing.T) {
 							SliceItems: []SliceItem{
 								{
 									Expression: &Expression{
-										ConditionalExpression: WrapConditional(&PrimaryExpression{
-											Atom: &Atom{
-												Identifier: &tk[4],
-												Tokens:     tk[4:5],
-											},
-											Tokens: tk[4:5],
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[4],
+											Tokens:     tk[4:5],
 										}),
 										Tokens: tk[4:5],
 									},
@@ -402,12 +387,9 @@ func TestPrimaryExpression(t *testing.T) {
 								{
 									AssignmentExpression: &AssignmentExpression{
 										Expression: Expression{
-											ConditionalExpression: WrapConditional(&PrimaryExpression{
-												Atom: &Atom{
-													Identifier: &tk[7],
-													Tokens:     tk[7:8],
-												},
-												Tokens: tk[7:8],
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[7],
+												Tokens:     tk[7:8],
 											}),
 											Tokens: tk[7:8],
 										},
