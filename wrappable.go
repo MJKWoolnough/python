@@ -32,3 +32,5 @@ func (UnaryExpression) conditionalWrapabble() {}
 func (PowerExpression) conditionalWrapabble() {}
 
 func (PrimaryExpression) conditionalWrapabble() {}
+
+func (Atom) conditionalWrapabble() {}
