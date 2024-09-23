@@ -1955,12 +1955,9 @@ func TestLambda(t *testing.T) {
 		{`lambda:a`, func(t *test, tk Tokens) { // 1
 			t.Output = LambdaExpression{
 				Expression: Expression{
-					ConditionalExpression: WrapConditional(&PrimaryExpression{
-						Atom: &Atom{
-							Identifier: &tk[2],
-							Tokens:     tk[2:3],
-						},
-						Tokens: tk[2:3],
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
 					}),
 					Tokens: tk[2:3],
 				},
@@ -1970,12 +1967,9 @@ func TestLambda(t *testing.T) {
 		{`lambda : a`, func(t *test, tk Tokens) { // 2
 			t.Output = LambdaExpression{
 				Expression: Expression{
-					ConditionalExpression: WrapConditional(&PrimaryExpression{
-						Atom: &Atom{
-							Identifier: &tk[4],
-							Tokens:     tk[4:5],
-						},
-						Tokens: tk[4:5],
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
 					}),
 					Tokens: tk[4:5],
 				},
@@ -1997,12 +1991,9 @@ func TestLambda(t *testing.T) {
 					Tokens: tk[2:3],
 				},
 				Expression: Expression{
-					ConditionalExpression: WrapConditional(&PrimaryExpression{
-						Atom: &Atom{
-							Identifier: &tk[5],
-							Tokens:     tk[5:6],
-						},
-						Tokens: tk[5:6],
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[5],
+						Tokens:     tk[5:6],
 					}),
 					Tokens: tk[5:6],
 				},
@@ -2031,12 +2022,9 @@ func TestLambda(t *testing.T) {
 					Tokens: tk[2:6],
 				},
 				Expression: Expression{
-					ConditionalExpression: WrapConditional(&PrimaryExpression{
-						Atom: &Atom{
-							Identifier: &tk[9],
-							Tokens:     tk[9:10],
-						},
-						Tokens: tk[9:10],
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[9],
+						Tokens:     tk[9:10],
 					}),
 					Tokens: tk[9:10],
 				},
@@ -2098,12 +2086,9 @@ func TestExpression(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
 			t.Output = Expression{
-				ConditionalExpression: WrapConditional(&PrimaryExpression{
-					Atom: &Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					},
-					Tokens: tk[:1],
+				ConditionalExpression: WrapConditional(&Atom{
+					Identifier: &tk[0],
+					Tokens:     tk[:1],
 				}),
 				Tokens: tk[:1],
 			}
@@ -2112,12 +2097,9 @@ func TestExpression(t *testing.T) {
 			t.Output = Expression{
 				LambdaExpression: &LambdaExpression{
 					Expression: Expression{
-						ConditionalExpression: WrapConditional(&PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[2],
-								Tokens:     tk[2:3],
-							},
-							Tokens: tk[2:3],
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
 						}),
 						Tokens: tk[2:3],
 					},
