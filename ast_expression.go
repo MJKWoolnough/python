@@ -219,7 +219,7 @@ func (e *Enclosure) parse(p *pyParser) error {
 			var ae *AssignmentExpression
 
 			switch q.Peek() {
-			case parser.Token{Type: TokenDelimiter, Data: "**"}:
+			case parser.Token{Type: TokenOperator, Data: "**"}:
 				isDict = true
 			case parser.Token{Type: TokenOperator, Data: "*"}:
 			default:

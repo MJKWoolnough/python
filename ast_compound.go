@@ -1239,7 +1239,7 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 				}
 			}
 
-			if tryStarStar && q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "**"}) {
+			if tryStarStar && q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
 				q.AcceptRunWhitespace()
 				p.Score(q)
 
