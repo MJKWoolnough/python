@@ -616,6 +616,8 @@ func (d *DictItem) parse(p *pyParser, e *Expression) error {
 		p.Score(q)
 	}
 
+	d.Tokens = p.ToTokens()
+
 	return nil
 }
 
