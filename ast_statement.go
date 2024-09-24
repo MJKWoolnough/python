@@ -651,15 +651,13 @@ type YieldExpression struct {
 
 func (y *YieldExpression) parse(p *pyParser) error {
 	p.Skip()
-
 	p.AcceptRunWhitespace()
 
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
-		y.From = new(ExpressionList)
-
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
+		y.From = new(ExpressionList)
 
 		if err := y.From.parse(q); err != nil {
 			return p.Error("YieldExpression", err)
@@ -667,11 +665,10 @@ func (y *YieldExpression) parse(p *pyParser) error {
 
 		p.Score(p)
 	} else {
-		y.Expression = new(Expression)
-
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
+		y.Expression = new(Expression)
 
 		if err := y.Expression.parse(q); err != nil {
 			return p.Error("YieldExpression", err)
