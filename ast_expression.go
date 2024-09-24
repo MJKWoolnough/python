@@ -144,9 +144,10 @@ func (e *Enclosure) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-			e.ParenthForm = new(StarredExpression)
+			e.ParenthForm = &StarredExpression{
+				Tokens: p.NewGoal().ToTokens(),
+			}
 		} else {
-
 			q := p.NewGoal()
 
 			if q.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
