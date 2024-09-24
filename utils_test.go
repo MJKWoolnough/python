@@ -14,47 +14,47 @@ func TestUnquote(t *testing.T) {
 		Input, Output string
 		Err           error
 	}{
-		{
+		{ // 1
 			Input:  "\"abc\"",
 			Output: "abc",
 		},
-		{
+		{ // 2
 			Input:  "\"ab\\\"c\"",
 			Output: "ab\"c",
 		},
-		{
+		{ // 3
 			Input:  "'ab\\\"c'",
 			Output: "ab\"c",
 		},
-		{
+		{ // 4
 			Input:  "'ab\\'c'",
 			Output: "ab'c",
 		},
-		{
+		{ // 5
 			Input: "\"ab\nc\"",
 			Err:   strconv.ErrSyntax,
 		},
-		{
+		{ // 6
 			Input:  "\"\"\"ab\nc\"\"\"",
 			Output: "ab\nc",
 		},
-		{
+		{ // 7
 			Input: "'ab\nc'",
 			Err:   strconv.ErrSyntax,
 		},
-		{
+		{ // 8
 			Input:  "'''ab\nc'''",
 			Output: "ab\nc",
 		},
-		{
+		{ // 9
 			Input: "\"abc\\\"",
 			Err:   strconv.ErrSyntax,
 		},
-		{
+		{ // 10
 			Input:  "r\"abc\\\"",
 			Output: "abc\\",
 		},
-		{
+		{ // 11
 			Input:  "R'abc\\'",
 			Output: "abc\\",
 		},
@@ -127,29 +127,29 @@ func TestWrapConditional(t *testing.T) {
 	}
 
 	for n, test := range [...]ConditionalWrappable{
-		&Atom{
+		&Atom{ // 1
 			Identifier: ident,
 			Tokens:     tks,
 		},
-		Atom{
+		Atom{ // 2
 			Identifier: ident,
 			Tokens:     tks,
 		},
-		&PrimaryExpression{
+		&PrimaryExpression{ // 3
 			Atom: &Atom{
 				Identifier: ident,
 				Tokens:     tks,
 			},
 			Tokens: tks,
 		},
-		PrimaryExpression{
+		PrimaryExpression{ // 4
 			Atom: &Atom{
 				Identifier: ident,
 				Tokens:     tks,
 			},
 			Tokens: tks,
 		},
-		&PowerExpression{
+		&PowerExpression{ // 5
 			PrimaryExpression: PrimaryExpression{
 				Atom: &Atom{
 					Identifier: ident,
@@ -159,7 +159,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		PowerExpression{
+		PowerExpression{ // 6
 			PrimaryExpression: PrimaryExpression{
 				Atom: &Atom{
 					Identifier: ident,
@@ -169,7 +169,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&UnaryExpression{
+		&UnaryExpression{ // 7
 			PowerExpression: &PowerExpression{
 				PrimaryExpression: PrimaryExpression{
 					Atom: &Atom{
@@ -182,7 +182,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		UnaryExpression{
+		UnaryExpression{ // 8
 			PowerExpression: &PowerExpression{
 				PrimaryExpression: PrimaryExpression{
 					Atom: &Atom{
@@ -195,7 +195,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&MultiplyExpression{
+		&MultiplyExpression{ // 9
 			UnaryExpression: UnaryExpression{
 				PowerExpression: &PowerExpression{
 					PrimaryExpression: PrimaryExpression{
@@ -211,7 +211,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		MultiplyExpression{
+		MultiplyExpression{ // 10
 			UnaryExpression: UnaryExpression{
 				PowerExpression: &PowerExpression{
 					PrimaryExpression: PrimaryExpression{
@@ -227,7 +227,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&AddExpression{
+		&AddExpression{ // 11
 			MultiplyExpression: MultiplyExpression{
 				UnaryExpression: UnaryExpression{
 					PowerExpression: &PowerExpression{
@@ -246,7 +246,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		AddExpression{
+		AddExpression{ // 12
 			MultiplyExpression: MultiplyExpression{
 				UnaryExpression: UnaryExpression{
 					PowerExpression: &PowerExpression{
@@ -265,7 +265,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&ShiftExpression{
+		&ShiftExpression{ // 13
 			AddExpression: AddExpression{
 				MultiplyExpression: MultiplyExpression{
 					UnaryExpression: UnaryExpression{
@@ -287,7 +287,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		ShiftExpression{
+		ShiftExpression{ // 14
 			AddExpression: AddExpression{
 				MultiplyExpression: MultiplyExpression{
 					UnaryExpression: UnaryExpression{
@@ -309,7 +309,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&AndExpression{
+		&AndExpression{ // 15
 			ShiftExpression: ShiftExpression{
 				AddExpression: AddExpression{
 					MultiplyExpression: MultiplyExpression{
@@ -334,7 +334,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		AndExpression{
+		AndExpression{ // 16
 			ShiftExpression: ShiftExpression{
 				AddExpression: AddExpression{
 					MultiplyExpression: MultiplyExpression{
@@ -359,7 +359,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&XorExpression{
+		&XorExpression{ // 17
 			AndExpression: AndExpression{
 				ShiftExpression: ShiftExpression{
 					AddExpression: AddExpression{
@@ -387,7 +387,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		XorExpression{
+		XorExpression{ // 18
 			AndExpression: AndExpression{
 				ShiftExpression: ShiftExpression{
 					AddExpression: AddExpression{
@@ -415,7 +415,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&OrExpression{
+		&OrExpression{ // 19
 			XorExpression: XorExpression{
 				AndExpression: AndExpression{
 					ShiftExpression: ShiftExpression{
@@ -446,7 +446,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		OrExpression{
+		OrExpression{ // 20
 			XorExpression: XorExpression{
 				AndExpression: AndExpression{
 					ShiftExpression: ShiftExpression{
@@ -477,7 +477,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&Comparison{
+		&Comparison{ // 21
 			OrExpression: OrExpression{
 				XorExpression: XorExpression{
 					AndExpression: AndExpression{
@@ -511,7 +511,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		Comparison{
+		Comparison{ // 22
 			OrExpression: OrExpression{
 				XorExpression: XorExpression{
 					AndExpression: AndExpression{
@@ -545,7 +545,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&NotTest{
+		&NotTest{ // 23
 			Comparison: Comparison{
 				OrExpression: OrExpression{
 					XorExpression: XorExpression{
@@ -582,7 +582,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		NotTest{
+		NotTest{ // 24
 			Comparison: Comparison{
 				OrExpression: OrExpression{
 					XorExpression: XorExpression{
@@ -619,7 +619,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&AndTest{
+		&AndTest{ // 25
 			NotTest: NotTest{
 				Comparison: Comparison{
 					OrExpression: OrExpression{
@@ -659,7 +659,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		AndTest{
+		AndTest{ // 26
 			NotTest: NotTest{
 				Comparison: Comparison{
 					OrExpression: OrExpression{
@@ -699,7 +699,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&OrTest{
+		&OrTest{ // 27
 			AndTest: AndTest{
 				NotTest: NotTest{
 					Comparison: Comparison{
@@ -742,7 +742,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		OrTest{
+		OrTest{ // 28
 			AndTest: AndTest{
 				NotTest: NotTest{
 					Comparison: Comparison{
@@ -785,7 +785,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		&ConditionalExpression{
+		&ConditionalExpression{ // 29
 			OrTest: OrTest{
 				AndTest: AndTest{
 					NotTest: NotTest{
@@ -831,7 +831,7 @@ func TestWrapConditional(t *testing.T) {
 			},
 			Tokens: tks,
 		},
-		ConditionalExpression{
+		ConditionalExpression{ // 30
 			OrTest: OrTest{
 				AndTest: AndTest{
 					NotTest: NotTest{
@@ -903,11 +903,11 @@ func TestUnwrapConditional(t *testing.T) {
 	identB := &tks[1]
 
 	for n, test := range [...]ConditionalWrappable{
-		&Atom{
+		&Atom{ // 1
 			Identifier: identA,
 			Tokens:     tks[:1],
 		},
-		&PrimaryExpression{
+		&PrimaryExpression{ // 2
 			PrimaryExpression: &PrimaryExpression{
 				Atom: &Atom{
 					Identifier: identA,
@@ -917,7 +917,7 @@ func TestUnwrapConditional(t *testing.T) {
 			AttributeRef: identB,
 			Tokens:       tks[:2],
 		},
-		&PowerExpression{
+		&PowerExpression{ // 3
 			PrimaryExpression: PrimaryExpression{
 				Atom: &Atom{
 					Identifier: identA,
@@ -940,7 +940,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&UnaryExpression{
+		&UnaryExpression{ // 4
 			UnaryExpression: &UnaryExpression{
 				PowerExpression: &PowerExpression{
 					PrimaryExpression: PrimaryExpression{
@@ -956,7 +956,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[1:2],
 		},
-		&MultiplyExpression{
+		&MultiplyExpression{ // 5
 			UnaryExpression: UnaryExpression{
 				PowerExpression: &PowerExpression{
 					PrimaryExpression: PrimaryExpression{
@@ -988,7 +988,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&AddExpression{
+		&AddExpression{ // 6
 			MultiplyExpression: MultiplyExpression{
 				UnaryExpression: UnaryExpression{
 					PowerExpression: &PowerExpression{
@@ -1030,7 +1030,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&ShiftExpression{
+		&ShiftExpression{ // 7
 			AddExpression: AddExpression{
 				MultiplyExpression: MultiplyExpression{
 					UnaryExpression: UnaryExpression{
@@ -1078,7 +1078,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&AndExpression{
+		&AndExpression{ // 8
 			ShiftExpression: ShiftExpression{
 				AddExpression: AddExpression{
 					MultiplyExpression: MultiplyExpression{
@@ -1132,7 +1132,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&XorExpression{
+		&XorExpression{ // 9
 			AndExpression: AndExpression{
 				ShiftExpression: ShiftExpression{
 					AddExpression: AddExpression{
@@ -1192,7 +1192,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&OrExpression{
+		&OrExpression{ // 10
 			XorExpression: XorExpression{
 				AndExpression: AndExpression{
 					ShiftExpression: ShiftExpression{
@@ -1258,7 +1258,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&Comparison{
+		&Comparison{ // 11
 			OrExpression: OrExpression{
 				XorExpression: XorExpression{
 					AndExpression: AndExpression{
@@ -1292,7 +1292,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Comparisons: []ComparisonExpression{{}},
 		},
-		&NotTest{
+		&NotTest{ // 12
 			Nots: 1,
 			Comparison: Comparison{
 				OrExpression: OrExpression{
@@ -1330,7 +1330,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:1],
 		},
-		&AndTest{
+		&AndTest{ // 13
 			NotTest: NotTest{
 				Comparison: Comparison{
 					OrExpression: OrExpression{
@@ -1410,7 +1410,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&OrTest{
+		&OrTest{ // 14
 			AndTest: AndTest{
 				NotTest: NotTest{
 					Comparison: Comparison{
@@ -1496,7 +1496,7 @@ func TestUnwrapConditional(t *testing.T) {
 			},
 			Tokens: tks[:2],
 		},
-		&ConditionalExpression{
+		&ConditionalExpression{ // 15
 			OrTest: OrTest{
 				AndTest: AndTest{
 					NotTest: NotTest{
