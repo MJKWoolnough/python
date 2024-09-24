@@ -27,8 +27,10 @@ func TestAtom(t *testing.T) {
 		{`{}`, func(t *test, tk Tokens) { // 4
 			t.Output = Atom{
 				Enclosure: &Enclosure{
-					DictDisplay: &DictDisplay{},
-					Tokens:      tk[:2],
+					DictDisplay: &DictDisplay{
+						Tokens: tk[1:1],
+					},
+					Tokens: tk[:2],
 				},
 				Tokens: tk[:2],
 			}

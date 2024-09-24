@@ -184,7 +184,9 @@ func (e *Enclosure) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			e.ListDisplay = new(StarredListOrComprehension)
+			e.ListDisplay = &StarredListOrComprehension{
+				Tokens: p.NewGoal().ToTokens(),
+			}
 		} else {
 			q := p.NewGoal()
 			e.ListDisplay = new(StarredListOrComprehension)
@@ -207,7 +209,9 @@ func (e *Enclosure) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
-			e.DictDisplay = new(DictDisplay)
+			e.DictDisplay = &DictDisplay{
+				Tokens: p.NewGoal().ToTokens(),
+			}
 		} else {
 			q := p.NewGoal()
 
