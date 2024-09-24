@@ -1009,26 +1009,30 @@ Loop:
 			return p.Error("StarredList", err)
 		}
 
-		s.StarredItems = append(s.StarredItems, si)
-
 		p.Score(q)
+
+		s.StarredItems = append(s.StarredItems, si)
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			q.AcceptRunWhitespace()
+		}
+
+		switch q.Peek() {
+		case parser.Token{Type: TokenDelimiter, Data: "]"}, parser.Token{Type: TokenDelimiter, Data: "}"}, parser.Token{Type: TokenDelimiter, Data: ":"}:
+			break Loop
+		}
 
 		q = p.NewGoal()
 
 		q.AcceptRunWhitespace()
 
-		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			break
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			return q.Error("StarredList", ErrMissingComma)
 		}
 
-		switch q.Peek() {
-		case parser.Token{Type: TokenDelimiter, Data: "]"}:
-		case parser.Token{Type: TokenDelimiter, Data: "}"}:
-		case parser.Token{Type: TokenDelimiter, Data: ":"}:
-			break Loop
-		}
-
-		q.AcceptRunWhitespace()
 		p.Score(q)
 	}
 
