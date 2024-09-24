@@ -284,7 +284,6 @@ type StarredListOrComprehension struct {
 func (s *StarredListOrComprehension) parse(p *pyParser, ae *AssignmentExpression) error {
 	if ae == nil {
 		q := p.NewGoal()
-
 		s.StarredList = new(StarredList)
 
 		if err := s.StarredList.parse(q); err != nil {
