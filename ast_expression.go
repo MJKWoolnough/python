@@ -401,10 +401,8 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 	}
 
 	p.Score(q)
-	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
-
 	q.AcceptRunWhitespace()
 
 	switch q.Peek() {
