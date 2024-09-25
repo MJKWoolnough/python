@@ -13,7 +13,18 @@ func (a AddExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f AndExpression) printSource(w io.Writer, v bool) {
+func (a AndExpression) printSource(w io.Writer, v bool) {
+	a.ShiftExpression.printSource(w, v)
+
+	if a.AndExpression != nil {
+		if v {
+			io.WriteString(w, " & ")
+		} else {
+			io.WriteString(w, "&")
+		}
+
+		a.AndExpression.printSource(w, v)
+	}
 }
 
 func (a AndTest) printSource(w io.Writer, v bool) {
