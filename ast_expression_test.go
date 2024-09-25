@@ -2750,6 +2750,252 @@ func TestEnclosure(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{`(yield nonlocal)`, func(t *test, tk Tokens) { // 23
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[3],
+							},
+							Parsing: "Atom",
+							Token:   tk[3],
+						}),
+						Parsing: "Expression",
+						Token:   tk[3],
+					},
+					Parsing: "YieldExpression",
+					Token:   tk[3],
+				},
+				Parsing: "Enclosure",
+				Token:   tk[1],
+			}
+		}},
+		{`(nonlocal for)`, func(t *test, tk Tokens) { // 24
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[1],
+							},
+							Parsing: "Atom",
+							Token:   tk[1],
+						}),
+						Parsing: "Expression",
+						Token:   tk[1],
+					},
+					Parsing: "GeneratorExpression",
+					Token:   tk[1],
+				},
+				Parsing: "Enclosure",
+				Token:   tk[1],
+			}
+		}},
+		{`(nonlocal)`, func(t *test, tk Tokens) { // 25
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: wrapConditionalExpressionError(Error{
+									Err: Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[1],
+									},
+									Parsing: "Atom",
+									Token:   tk[1],
+								}),
+								Parsing: "Expression",
+								Token:   tk[1],
+							},
+							Parsing: "AssignmentExpression",
+							Token:   tk[1],
+						},
+						Parsing: "StarredItem",
+						Token:   tk[1],
+					},
+					Parsing: "StarredExpression",
+					Token:   tk[1],
+				},
+				Parsing: "Enclosure",
+				Token:   tk[1],
+			}
+		}},
+		{`(a b)`, func(t *test, tk Tokens) { // 26
+			t.Err = Error{
+				Err:     ErrMissingClosingParen,
+				Parsing: "Enclosure",
+				Token:   tk[3],
+			}
+		}},
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 27
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: wrapConditionalExpressionError(Error{
+										Err: Error{
+											Err:     ErrInvalidEnclosure,
+											Parsing: "Enclosure",
+											Token:   tk[1],
+										},
+										Parsing: "Atom",
+										Token:   tk[1],
+									}),
+									Parsing: "Expression",
+									Token:   tk[1],
+								},
+								Parsing: "AssignmentExpression",
+								Token:   tk[1],
+							},
+							Parsing: "StarredItem",
+							Token:   tk[1],
+						},
+						Parsing: "StarredList",
+						Token:   tk[1],
+					},
+					Parsing: "StarredListOrComprehension",
+					Token:   tk[1],
+				},
+				Parsing: "Enclosure",
+				Token:   tk[1],
+			}
+		}},
+		{`[a for b in c d]`, func(t *test, tk Tokens) { // 28
+			t.Err = Error{
+				Err:     ErrMissingClosingBracket,
+				Parsing: "Enclosure",
+				Token:   tk[11],
+			}
+		}},
+		{`{nonlocal}`, func(t *test, tk Tokens) { // 29
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[1],
+							},
+							Parsing: "Atom",
+							Token:   tk[1],
+						}),
+						Parsing: "Expression",
+						Token:   tk[1],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[1],
+				},
+				Parsing: "Enclosure",
+				Token:   tk[1],
+			}
+		}},
+		{`{a:nonlocal}`, func(t *test, tk Tokens) { // 30
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[3],
+								},
+								Parsing: "Atom",
+								Token:   tk[3],
+							}),
+							Parsing: "Expression",
+							Token:   tk[3],
+						},
+						Parsing: "DictItem",
+						Token:   tk[3],
+					},
+					Parsing: "DictDisplay",
+					Token:   tk[1],
+				},
+				Parsing: "Enclosure",
+				Token:   tk[1],
+			}
+		}},
+		{`{*nonlocal}`, func(t *test, tk Tokens) { // 31
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err: Error{
+																	Err: Error{
+																		Err:     ErrInvalidEnclosure,
+																		Parsing: "Enclosure",
+																		Token:   tk[2],
+																	},
+																	Parsing: "Atom",
+																	Token:   tk[2],
+																},
+																Parsing: "PrimaryExpression",
+																Token:   tk[2],
+															},
+															Parsing: "PowerExpression",
+															Token:   tk[2],
+														},
+														Parsing: "UnaryExpression",
+														Token:   tk[2],
+													},
+													Parsing: "MultiplyExpression",
+													Token:   tk[2],
+												},
+												Parsing: "AddExpression",
+												Token:   tk[2],
+											},
+											Parsing: "ShiftExpression",
+											Token:   tk[2],
+										},
+										Parsing: "AndExpression",
+										Token:   tk[2],
+									},
+									Parsing: "XorExpression",
+									Token:   tk[2],
+								},
+								Parsing: "OrExpression",
+								Token:   tk[2],
+							},
+							Parsing: "StarredItem",
+							Token:   tk[2],
+						},
+						Parsing: "StarredList",
+						Token:   tk[1],
+					},
+					Parsing: "StarredListOrComprehension",
+					Token:   tk[1],
+				},
+				Parsing: "Enclosure",
+				Token:   tk[1],
+			}
+		}},
+		{`{a for b in c d}`, func(t *test, tk Tokens) { // 32
+			t.Err = Error{
+				Err:     ErrMissingClosingBrace,
+				Parsing: "Enclosure",
+				Token:   tk[11],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var e Enclosure
 
