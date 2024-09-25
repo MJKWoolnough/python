@@ -2331,3 +2331,430 @@ func TestOrExpression(t *testing.T) {
 		return oe, err
 	})
 }
+
+func TestEnclosure(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`()`, func(t *test, tk Tokens) { // 1
+			t.Output = Enclosure{
+				ParenthForm: &StarredExpression{
+					Tokens: tk[1:1],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`( )`, func(t *test, tk Tokens) { // 2
+			t.Output = Enclosure{
+				ParenthForm: &StarredExpression{
+					Tokens: tk[2:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`(yield a)`, func(t *test, tk Tokens) { // 3
+			t.Output = Enclosure{
+				YieldAtom: &YieldExpression{
+					Expression: &Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						}),
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[1:4],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`( yield a )`, func(t *test, tk Tokens) { // 4
+			t.Output = Enclosure{
+				YieldAtom: &YieldExpression{
+					Expression: &Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[4],
+							Tokens:     tk[4:5],
+						}),
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[2:5],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`(a for b in c)`, func(t *test, tk Tokens) { // 5
+			t.Output = Enclosure{
+				GeneratorExpression: &GeneratorExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[1],
+							Tokens:     tk[1:2],
+						}),
+						Tokens: tk[1:2],
+					},
+					ComprehensionFor: ComprehensionFor{
+						TargetList: TargetList{
+							Targets: []Target{
+								{
+									PrimaryExpression: &PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[5],
+											Tokens:     tk[5:6],
+										},
+										Tokens: tk[5:6],
+									},
+									Tokens: tk[5:6],
+								},
+							},
+							Tokens: tk[5:6],
+						},
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[9],
+							Tokens:     tk[9:10],
+						}).OrTest,
+						Tokens: tk[3:10],
+					},
+					Tokens: tk[1:10],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`( a for b in c )`, func(t *test, tk Tokens) { // 6
+			t.Output = Enclosure{
+				GeneratorExpression: &GeneratorExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					ComprehensionFor: ComprehensionFor{
+						TargetList: TargetList{
+							Targets: []Target{
+								{
+									PrimaryExpression: &PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[6],
+											Tokens:     tk[6:7],
+										},
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+							},
+							Tokens: tk[6:7],
+						},
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[10],
+							Tokens:     tk[10:11],
+						}).OrTest,
+						Tokens: tk[4:11],
+					},
+					Tokens: tk[2:11],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{`(a)`, func(t *test, tk Tokens) { // 7
+			t.Output = Enclosure{
+				ParenthForm: &StarredExpression{
+					Expression: &Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[1],
+							Tokens:     tk[1:2],
+						}),
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`( a )`, func(t *test, tk Tokens) { // 8
+			t.Output = Enclosure{
+				ParenthForm: &StarredExpression{
+					Expression: &Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`[]`, func(t *test, tk Tokens) { // 9
+			t.Output = Enclosure{
+				ListDisplay: &StarredListOrComprehension{
+					Tokens: tk[1:1],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`[ ]`, func(t *test, tk Tokens) { // 10
+			t.Output = Enclosure{
+				ListDisplay: &StarredListOrComprehension{
+					Tokens: tk[2:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`[a]`, func(t *test, tk Tokens) { // 11
+			t.Output = Enclosure{
+				ListDisplay: &StarredListOrComprehension{
+					StarredList: &StarredList{
+						StarredItems: []StarredItem{
+							{
+								AssignmentExpression: &AssignmentExpression{
+									Expression: Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[1],
+											Tokens:     tk[1:2],
+										}),
+										Tokens: tk[1:2],
+									},
+									Tokens: tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`[ a ]`, func(t *test, tk Tokens) { // 12
+			t.Output = Enclosure{
+				ListDisplay: &StarredListOrComprehension{
+					StarredList: &StarredList{
+						StarredItems: []StarredItem{
+							{
+								AssignmentExpression: &AssignmentExpression{
+									Expression: Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}),
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`{}`, func(t *test, tk Tokens) { // 13
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					Tokens: tk[1:1],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`{ }`, func(t *test, tk Tokens) { // 14
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					Tokens: tk[2:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`{**a}`, func(t *test, tk Tokens) { // 15
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					DictItems: []DictItem{
+						{
+							OrExpression: &WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+							Tokens: tk[1:3],
+						},
+					},
+					Tokens: tk[1:3],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`{ **a }`, func(t *test, tk Tokens) { // 16
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					DictItems: []DictItem{
+						{
+							OrExpression: &WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+							Tokens: tk[2:4],
+						},
+					},
+					Tokens: tk[2:4],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`{*a}`, func(t *test, tk Tokens) { // 17
+			t.Output = Enclosure{
+				SetDisplay: &StarredListOrComprehension{
+					StarredList: &StarredList{
+						StarredItems: []StarredItem{
+							{
+								OrExpr: &WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[1:3],
+							},
+						},
+						Tokens: tk[1:3],
+					},
+					Tokens: tk[1:3],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`{ *a }`, func(t *test, tk Tokens) { // 18
+			t.Output = Enclosure{
+				SetDisplay: &StarredListOrComprehension{
+					StarredList: &StarredList{
+						StarredItems: []StarredItem{
+							{
+								OrExpr: &WrapConditional(&Atom{
+									Identifier: &tk[3],
+									Tokens:     tk[3:4],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[2:4],
+							},
+						},
+						Tokens: tk[2:4],
+					},
+					Tokens: tk[2:4],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`{a:=b}`, func(t *test, tk Tokens) { // 19
+			t.Output = Enclosure{
+				SetDisplay: &StarredListOrComprehension{
+					StarredList: &StarredList{
+						StarredItems: []StarredItem{
+							{
+								AssignmentExpression: &AssignmentExpression{
+									Identifier: &tk[1],
+									Expression: Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[3],
+											Tokens:     tk[3:4],
+										}),
+										Tokens: tk[3:4],
+									},
+									Tokens: tk[1:4],
+								},
+								Tokens: tk[1:4],
+							},
+						},
+						Tokens: tk[1:4],
+					},
+					Tokens: tk[1:4],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`{ a:=b }`, func(t *test, tk Tokens) { // 20
+			t.Output = Enclosure{
+				SetDisplay: &StarredListOrComprehension{
+					StarredList: &StarredList{
+						StarredItems: []StarredItem{
+							{
+								AssignmentExpression: &AssignmentExpression{
+									Identifier: &tk[2],
+									Expression: Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[4],
+											Tokens:     tk[4:5],
+										}),
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[2:5],
+								},
+								Tokens: tk[2:5],
+							},
+						},
+						Tokens: tk[2:5],
+					},
+					Tokens: tk[2:5],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`{a:b}`, func(t *test, tk Tokens) { // 21
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					DictItems: []DictItem{
+						{
+							Key: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[1],
+									Tokens:     tk[1:2],
+								}),
+								Tokens: tk[1:2],
+							},
+							Value: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[3],
+									Tokens:     tk[3:4],
+								}),
+								Tokens: tk[3:4],
+							},
+							Tokens: tk[1:4],
+						},
+					},
+					Tokens: tk[1:4],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`{ a:b }`, func(t *test, tk Tokens) { // 22
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					DictItems: []DictItem{
+						{
+							Key: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Value: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[2:5],
+						},
+					},
+					Tokens: tk[2:5],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var e Enclosure
+
+		err := e.parse(t.Tokens)
+
+		return e, err
+	})
+}
