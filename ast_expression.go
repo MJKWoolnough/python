@@ -247,7 +247,7 @@ func (e *Enclosure) parse(p *pyParser) error {
 
 				e.DictDisplay = new(DictDisplay)
 
-				if err := e.DictDisplay.parse(q, ex); err != nil {
+				if err := e.DictDisplay.parse(q, p, ex); err != nil {
 					return p.Error("Enclosure", err)
 				}
 			} else {
@@ -508,7 +508,7 @@ type DictDisplay struct {
 	Tokens            Tokens
 }
 
-func (d *DictDisplay) parse(p *pyParser, e *Expression) error {
+func (d *DictDisplay) parse(p, o *pyParser, e *Expression) error {
 Loop:
 	for {
 		q := p
@@ -520,6 +520,10 @@ Loop:
 		var di DictItem
 
 		if err := di.parse(q, e); err != nil {
+			if e != nil {
+				p = o
+			}
+
 			return p.Error("DictDisplay", err)
 		}
 
