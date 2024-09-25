@@ -323,7 +323,22 @@ func (f RelativeModule) printSource(w io.Writer, v bool) {
 func (f ReturnStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f ShiftExpression) printSource(w io.Writer, v bool) {
+func (s ShiftExpression) printSource(w io.Writer, v bool) {
+	s.AddExpression.printSource(w, v)
+
+	if s.Shift != nil && s.ShiftExpression != nil {
+		if v {
+			io.WriteString(w, " ")
+		}
+
+		io.WriteString(w, s.Shift.Data)
+
+		if v {
+			io.WriteString(w, " ")
+		}
+
+		s.ShiftExpression.printSource(w, v)
+	}
 }
 
 func (f SimpleStatement) printSource(w io.Writer, v bool) {
