@@ -511,7 +511,11 @@ type DictDisplay struct {
 func (d *DictDisplay) parse(p *pyParser, e *Expression) error {
 Loop:
 	for {
-		q := p.NewGoal()
+		q := p
+
+		if e == nil {
+			q = p.NewGoal()
+		}
 
 		var di DictItem
 
@@ -519,9 +523,12 @@ Loop:
 			return p.Error("DictDisplay", err)
 		}
 
-		p.Score(q)
+		if e == nil {
+			p.Score(q)
+		} else {
+			e = nil
+		}
 
-		e = nil
 		d.DictItems = append(d.DictItems, di)
 		q = p.NewGoal()
 
