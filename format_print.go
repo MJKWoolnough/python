@@ -149,7 +149,20 @@ func (f DictDisplay) printSource(w io.Writer, v bool) {
 func (f DictItem) printSource(w io.Writer, v bool) {
 }
 
-func (f Enclosure) printSource(w io.Writer, v bool) {
+func (e Enclosure) printSource(w io.Writer, v bool) {
+	if e.ParenthForm != nil {
+		e.ParenthForm.printSource(w, v)
+	} else if e.ListDisplay != nil {
+		e.ListDisplay.printSource(w, v)
+	} else if e.DictDisplay != nil {
+		e.DictDisplay.printSource(w, v)
+	} else if e.SetDisplay != nil {
+		e.SetDisplay.printSource(w, v)
+	} else if e.GeneratorExpression != nil {
+		e.GeneratorExpression.printSource(w, v)
+	} else if e.YieldAtom != nil {
+		e.YieldAtom.printSource(w, v)
+	}
 }
 
 func (f Except) printSource(w io.Writer, v bool) {
