@@ -422,7 +422,12 @@ func (x XorExpression) printSource(w io.Writer, v bool) {
 	x.AndExpression.printSource(w, v)
 
 	if x.XorExpression != nil {
-		io.WriteString(w, " ^ ")
+		if v {
+			io.WriteString(w, " ^ ")
+		} else {
+			io.WriteString(w, "^")
+		}
+
 		x.XorExpression.printSource(w, v)
 	}
 }
