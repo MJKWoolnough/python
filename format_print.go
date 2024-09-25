@@ -292,7 +292,12 @@ func (p PowerExpression) printSource(w io.Writer, v bool) {
 	p.PrimaryExpression.printSource(w, v)
 
 	if p.UnaryExpression != nil {
-		io.WriteString(w, " ** ")
+		if v {
+			io.WriteString(w, " ** ")
+		} else {
+			io.WriteString(w, "**")
+		}
+
 		p.UnaryExpression.printSource(w, v)
 	}
 }
