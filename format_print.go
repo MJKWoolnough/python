@@ -250,9 +250,16 @@ func (m MultiplyExpression) printSource(w io.Writer, v bool) {
 	m.UnaryExpression.printSource(w, v)
 
 	if m.Multiply != nil && m.MultiplyExpression != nil {
-		io.WriteString(w, " ")
+		if v {
+			io.WriteString(w, " ")
+		}
+
 		io.WriteString(w, m.Multiply.Data)
-		io.WriteString(w, " ")
+
+		if v {
+			io.WriteString(w, " ")
+		}
+
 		m.MultiplyExpression.printSource(w, v)
 	}
 }
