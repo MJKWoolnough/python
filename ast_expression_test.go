@@ -3122,6 +3122,36 @@ func TestSliceList(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[1],
+							},
+							Parsing: "Atom",
+							Token:   tk[1],
+						}),
+						Parsing: "Expression",
+						Token:   tk[1],
+					},
+					Parsing: "SliceItem",
+					Token:   tk[1],
+				},
+				Parsing: "SliceList",
+				Token:   tk[1],
+			}
+		}},
+		{`[a b]`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "SliceList",
+				Token:   tk[3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var sl SliceList
 
