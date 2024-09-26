@@ -231,7 +231,11 @@ func (l LambdaExpression) printSource(w io.Writer, v bool) {
 		l.ParameterList.printSource(w, v)
 	}
 
-	io.WriteString(w, ": ")
+	if v {
+		io.WriteString(w, ": ")
+	} else {
+		io.WriteString(w, ":")
+	}
 
 	l.Expression.printSource(w, v)
 }
