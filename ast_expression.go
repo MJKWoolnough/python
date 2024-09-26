@@ -693,7 +693,7 @@ func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-		return p.Error("PrimaryExpression", ErrMissingClosingParen)
+		return p.Error("ArgumentListOrComprehension", ErrMissingClosingParen)
 	}
 
 	p.CloseBrackets()
