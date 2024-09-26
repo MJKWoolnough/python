@@ -3160,3 +3160,85 @@ func TestSliceList(t *testing.T) {
 		return sl, err
 	})
 }
+
+func TestArgumentListOrComprehension(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`()`, func(t *test, tk Tokens) { // 1
+			t.Output = ArgumentListOrComprehension{
+				ArgumentList: &ArgumentList{
+					Tokens: tk[1:1],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`(a)`, func(t *test, tk Tokens) { // 2
+			t.Output = ArgumentListOrComprehension{
+				ArgumentList: &ArgumentList{
+					PositionalArguments: []PositionalArgument{
+						{
+							AssignmentExpression: &AssignmentExpression{
+								Expression: Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[1],
+										Tokens:     tk[1:2],
+									}),
+									Tokens: tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`(a for b in c)`, func(t *test, tk Tokens) { // 3
+			t.Output = ArgumentListOrComprehension{
+				Comprehension: &Comprehension{
+					AssignmentExpression: AssignmentExpression{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							}),
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					ComprehensionFor: ComprehensionFor{
+						TargetList: TargetList{
+							Targets: []Target{
+								{
+									PrimaryExpression: &PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[5],
+											Tokens:     tk[5:6],
+										},
+										Tokens: tk[5:6],
+									},
+									Tokens: tk[5:6],
+								},
+							},
+							Tokens: tk[5:6],
+						},
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[9],
+							Tokens:     tk[9:10],
+						}).OrTest,
+						Tokens: tk[3:10],
+					},
+					Tokens: tk[1:10],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var a ArgumentListOrComprehension
+
+		err := a.parse(t.Tokens)
+
+		return a, err
+	})
+}
