@@ -187,7 +187,7 @@ func TestPrimaryExpression(t *testing.T) {
 						Parsing: "SliceItem",
 						Token:   tk[2],
 					},
-					Parsing: "ExpressionList",
+					Parsing: "SliceList",
 					Token:   tk[2],
 				},
 				Parsing: "PrimaryExpression",

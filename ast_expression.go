@@ -761,7 +761,7 @@ func (s *SliceList) parse(p *pyParser) error {
 		var si SliceItem
 
 		if err := si.parse(q); err != nil {
-			return p.Error("ExpressionList", err)
+			return p.Error("SliceList", err)
 		}
 
 		p.Score(q)
