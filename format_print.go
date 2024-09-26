@@ -356,7 +356,22 @@ func (f SimpleStatement) printSource(w io.Writer, v bool) {
 func (f SliceItem) printSource(w io.Writer, v bool) {
 }
 
-func (f SliceList) printSource(w io.Writer, v bool) {
+func (s SliceList) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "[")
+
+	for n, si := range s.SliceItems {
+		if n > 0 {
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+		}
+
+		si.printSource(w, v)
+	}
+
+	io.WriteString(w, "]")
 }
 
 func (f StarredExpression) printSource(w io.Writer, v bool) {
