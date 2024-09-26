@@ -261,7 +261,11 @@ func (o OrExpression) printSource(w io.Writer, v bool) {
 	o.XorExpression.printSource(w, v)
 
 	if o.OrExpression != nil {
-		io.WriteString(w, " | ")
+		if v {
+			io.WriteString(w, " | ")
+		} else {
+			io.WriteString(w, "|")
+		}
 		o.OrExpression.printSource(w, v)
 	}
 }
