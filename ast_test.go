@@ -14,9 +14,11 @@ type sourceFn struct {
 }
 
 type test struct {
-	Tokens *pyParser
-	Output Type
-	Err    error
+	Tokens               *pyParser
+	Output               Type
+	AssignmentExpression *AssignmentExpression
+	TokenSkip            int
+	Err                  error
 }
 
 func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
