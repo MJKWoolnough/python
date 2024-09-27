@@ -410,7 +410,12 @@ func (f StarredItem) printSource(w io.Writer, v bool) {
 func (f StarredList) printSource(w io.Writer, v bool) {
 }
 
-func (f StarredListOrComprehension) printSource(w io.Writer, v bool) {
+func (s StarredListOrComprehension) printSource(w io.Writer, v bool) {
+	if s.StarredList != nil {
+		s.StarredList.printSource(w, v)
+	} else if s.Comprehension != nil {
+		s.Comprehension.printSource(w, v)
+	}
 }
 
 func (f StarredOrKeywordArgument) printSource(w io.Writer, v bool) {
