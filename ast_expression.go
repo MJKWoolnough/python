@@ -282,6 +282,7 @@ type StarredListOrComprehension struct {
 }
 
 func (s *StarredListOrComprehension) parse(p *pyParser, ae *AssignmentExpression) error {
+	o := p.NewGoal()
 	if ae == nil {
 		q := p.NewGoal()
 		s.StarredList = new(StarredList)
@@ -311,14 +312,11 @@ func (s *StarredListOrComprehension) parse(p *pyParser, ae *AssignmentExpression
 		if tk := q.Peek(); tk == (parser.Token{Type: TokenKeyword, Data: "async"}) || tk == (parser.Token{Type: TokenKeyword, Data: "for"}) {
 			p.Score(q)
 
-			q = p.NewGoal()
 			s.Comprehension = new(Comprehension)
 
-			if err := s.Comprehension.parse(q, s.StarredList.StarredItems[0].AssignmentExpression); err != nil {
-				return p.Error("StarredListOrComprehension", err)
+			if err := s.Comprehension.parse(p, s.StarredList.StarredItems[0].AssignmentExpression); err != nil {
+				return o.Error("StarredListOrComprehension", err)
 			}
-
-			p.Score(q)
 
 			s.StarredList = nil
 		}
