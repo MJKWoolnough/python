@@ -49,7 +49,16 @@ func (f AnnotatedAssignmentStatement) printSource(w io.Writer, v bool) {
 func (f ArgumentList) printSource(w io.Writer, v bool) {
 }
 
-func (f ArgumentListOrComprehension) printSource(w io.Writer, v bool) {
+func (a ArgumentListOrComprehension) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "(")
+
+	if a.ArgumentList != nil {
+		a.ArgumentList.printSource(w, v)
+	} else if a.Comprehension != nil {
+		a.Comprehension.printSource(w, v)
+	}
+
+	io.WriteString(w, ")")
 }
 
 func (f AssertStatement) printSource(w io.Writer, v bool) {
