@@ -3234,6 +3234,71 @@ func TestArgumentListOrComprehension(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{`(nonlocal)`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: wrapConditionalExpressionError(Error{
+									Err: Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[1],
+									},
+									Parsing: "Atom",
+									Token:   tk[1],
+								}),
+								Parsing: "Expression",
+								Token:   tk[1],
+							},
+							Parsing: "AssignmentExpression",
+							Token:   tk[1],
+						},
+						Parsing: "PositionalArgument",
+						Token:   tk[1],
+					},
+					Parsing: "ArgumentList",
+					Token:   tk[1],
+				},
+				Parsing: "ArgumentListOrComprehension",
+				Token:   tk[1],
+			}
+		}},
+		{`(nonlocal for a in b)`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[1],
+								},
+								Parsing: "Atom",
+								Token:   tk[1],
+							}),
+							Parsing: "Expression",
+							Token:   tk[1],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[1],
+					},
+					Parsing: "Comprehension",
+					Token:   tk[1],
+				},
+				Parsing: "ArgumentListOrComprehension",
+				Token:   tk[1],
+			}
+		}},
+		{`(a for b in c d)`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingClosingParen,
+				Parsing: "ArgumentListOrComprehension",
+				Token:   tk[11],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a ArgumentListOrComprehension
 
