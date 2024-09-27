@@ -1335,6 +1335,72 @@ func TestStarredListOrComprehension(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: wrapConditionalExpressionError(Error{
+									Err: Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[0],
+									},
+									Parsing: "Atom",
+									Token:   tk[0],
+								}),
+								Parsing: "Expression",
+								Token:   tk[0],
+							},
+							Parsing: "AssignmentExpression",
+							Token:   tk[0],
+						},
+						Parsing: "StarredItem",
+						Token:   tk[0],
+					},
+					Parsing: "StarredList",
+					Token:   tk[0],
+				},
+				Parsing: "StarredListOrComprehension",
+				Token:   tk[0],
+			}
+		}},
+		{`a for nonlocal in b`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err:     ErrInvalidEnclosure,
+											Parsing: "Enclosure",
+											Token:   tk[4],
+										},
+										Parsing: "Atom",
+										Token:   tk[4],
+									},
+									Parsing: "PrimaryExpression",
+									Token:   tk[4],
+								},
+								Parsing: "Target",
+								Token:   tk[4],
+							},
+							Parsing: "TargetList",
+							Token:   tk[4],
+						},
+						Parsing: "ComprehensionFor",
+						Token:   tk[4],
+					},
+					Parsing: "Comprehension",
+					Token:   tk[2],
+				},
+				Parsing: "StarredListOrComprehension",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s StarredListOrComprehension
 
