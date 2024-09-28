@@ -1404,10 +1404,6 @@ func TestStarredListOrComprehension(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var s StarredListOrComprehension
 
-		for range t.TokenSkip {
-			t.Tokens.Skip()
-		}
-
 		err := s.parse(t.Tokens, t.AssignmentExpression)
 
 		return s, err
