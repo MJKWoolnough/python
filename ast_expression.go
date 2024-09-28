@@ -462,7 +462,7 @@ type ComprehensionIf struct {
 }
 
 func (c *ComprehensionIf) parse(p *pyParser) error {
-	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "ff"}) {
+	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
 		return p.Error("ComprehensionIf", ErrMissingIf)
 	}
 
