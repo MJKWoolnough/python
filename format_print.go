@@ -138,7 +138,10 @@ func (c ComparisonExpression) printSource(w io.Writer, v bool) {
 func (f CompoundStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f Comprehension) printSource(w io.Writer, v bool) {
+func (c Comprehension) printSource(w io.Writer, v bool) {
+	c.AssignmentExpression.printSource(w, v)
+	io.WriteString(w, " ")
+	c.ComprehensionFor.printSource(w, v)
 }
 
 func (f ComprehensionFor) printSource(w io.Writer, v bool) {
