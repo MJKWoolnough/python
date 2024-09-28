@@ -1552,11 +1552,155 @@ func TestComprehension(t *testing.T) {
 			}
 		}},
 	}, func(t *test) (Type, error) {
-		var s Comprehension
+		var c Comprehension
 
-		err := s.parse(t.Tokens, t.AssignmentExpression)
+		err := c.parse(t.Tokens, t.AssignmentExpression)
 
-		return s, err
+		return c, err
+	})
+}
+
+func TestComprehensionFor(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`for a in b`, func(t *test, tk Tokens) { // 1
+			t.Output = ComprehensionFor{
+				TargetList: TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				OrTest: WrapConditional(&Atom{
+					Identifier: &tk[6],
+					Tokens:     tk[6:7],
+				}).OrTest,
+				Tokens: tk[:7],
+			}
+		}},
+		{`async for a in b`, func(t *test, tk Tokens) { // 2
+			t.Output = ComprehensionFor{
+				Async: true,
+				TargetList: TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				OrTest: WrapConditional(&Atom{
+					Identifier: &tk[8],
+					Tokens:     tk[8:9],
+				}).OrTest,
+				Tokens: tk[:9],
+			}
+		}},
+		{`for a in b if c`, func(t *test, tk Tokens) { // 3
+			t.Output = ComprehensionFor{
+				TargetList: TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				OrTest: WrapConditional(&Atom{
+					Identifier: &tk[6],
+					Tokens:     tk[6:7],
+				}).OrTest,
+				ComprehensionIterator: &ComprehensionIterator{
+					ComprehensionIf: &ComprehensionIf{
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[10],
+							Tokens:     tk[10:11],
+						}).OrTest,
+						Tokens: tk[8:11],
+					},
+					Tokens: tk[8:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`async for a in b for c in d`, func(t *test, tk Tokens) { // 4
+			t.Output = ComprehensionFor{
+				Async: true,
+				TargetList: TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				OrTest: WrapConditional(&Atom{
+					Identifier: &tk[8],
+					Tokens:     tk[8:9],
+				}).OrTest,
+				ComprehensionIterator: &ComprehensionIterator{
+					ComprehensionFor: &ComprehensionFor{
+						TargetList: TargetList{
+							Targets: []Target{
+								{
+									PrimaryExpression: &PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[12],
+											Tokens:     tk[12:13],
+										},
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:13],
+								},
+							},
+							Tokens: tk[12:13],
+						},
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[16],
+							Tokens:     tk[16:17],
+						}).OrTest,
+						Tokens: tk[10:17],
+					},
+					Tokens: tk[10:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var c ComprehensionFor
+
+		err := c.parse(t.Tokens)
+
+		return c, err
 	})
 }
 
