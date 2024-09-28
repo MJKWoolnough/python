@@ -1410,6 +1410,102 @@ func TestStarredListOrComprehension(t *testing.T) {
 	})
 }
 
+func TestComprehension(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a for b in c`, func(t *test, tk Tokens) { // 1
+			t.Output = Comprehension{
+				AssignmentExpression: AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}),
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				ComprehensionFor: ComprehensionFor{
+					TargetList: TargetList{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[4],
+										Tokens:     tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					OrTest: WrapConditional(&Atom{
+						Identifier: &tk[8],
+						Tokens:     tk[8:9],
+					}).OrTest,
+					Tokens: tk[2:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`a for b in c`, func(t *test, tk Tokens) { // 2
+			t.AssignmentExpression = &AssignmentExpression{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+			t.TokenSkip = 1
+			t.Output = Comprehension{
+				AssignmentExpression: AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}),
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				ComprehensionFor: ComprehensionFor{
+					TargetList: TargetList{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[4],
+										Tokens:     tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					OrTest: WrapConditional(&Atom{
+						Identifier: &tk[8],
+						Tokens:     tk[8:9],
+					}).OrTest,
+					Tokens: tk[2:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var s Comprehension
+
+		err := s.parse(t.Tokens, t.AssignmentExpression)
+
+		return s, err
+	})
+}
+
 func TestArgumentListOrComprehension(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`()`, func(t *test, tk Tokens) { // 1
