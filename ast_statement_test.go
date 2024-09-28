@@ -498,7 +498,7 @@ func TestConditionalExpression(t *testing.T) {
 	})
 }
 
-func TestLambda(t *testing.T) {
+func TestLambdaExpression(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`lambda:a`, func(t *test, tk Tokens) { // 1
 			t.Output = LambdaExpression{
