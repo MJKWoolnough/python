@@ -1695,6 +1695,105 @@ func TestComprehensionFor(t *testing.T) {
 				Tokens: tk[:17],
 			}
 		}},
+		{`for a in b async for c in d`, func(t *test, tk Tokens) { // 5
+			t.Output = ComprehensionFor{
+				TargetList: TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				OrTest: WrapConditional(&Atom{
+					Identifier: &tk[6],
+					Tokens:     tk[6:7],
+				}).OrTest,
+				ComprehensionIterator: &ComprehensionIterator{
+					ComprehensionFor: &ComprehensionFor{
+						Async: true,
+						TargetList: TargetList{
+							Targets: []Target{
+								{
+									PrimaryExpression: &PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[12],
+											Tokens:     tk[12:13],
+										},
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:13],
+								},
+							},
+							Tokens: tk[12:13],
+						},
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[16],
+							Tokens:     tk[16:17],
+						}).OrTest,
+						Tokens: tk[8:17],
+					},
+					Tokens: tk[8:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{`async a in b if c`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingFor,
+				Parsing: "ComprehensionFor",
+				Token:   tk[2],
+			}
+		}},
+		{`for nonlocal in a if b`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[2],
+								},
+								Parsing: "Atom",
+								Token:   tk[2],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[2],
+						},
+						Parsing: "Target",
+						Token:   tk[2],
+					},
+					Parsing: "TargetList",
+					Token:   tk[2],
+				},
+				Parsing: "ComprehensionFor",
+				Token:   tk[2],
+			}
+		}},
+		{`for a in nonlocal if b`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: wrapConditionalExpressionError(Error{
+					Err: Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[6],
+					},
+					Parsing: "Atom",
+					Token:   tk[6],
+				}).Err,
+				Parsing: "ComprehensionFor",
+				Token:   tk[6],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var c ComprehensionFor
 
