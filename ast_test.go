@@ -52,7 +52,7 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 	}
 }
 
-func wrapConditionalExpressionError(err Error) error {
+func wrapConditionalExpressionError(err Error) Error {
 	switch err.Parsing {
 	case "Atom":
 		err = Error{
