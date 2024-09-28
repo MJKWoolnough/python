@@ -28,5 +28,5 @@ var (
 	ErrMissingComma          = errors.New("missing comma")
 	ErrMissingClosingBrace   = errors.New("missing closing brace")
 	ErrMissingFor            = errors.New("missing for keyword")
-	ErrMissingIf             = errors.New("missing for keyword")
+	ErrMissingIf             = errors.New("missing if keyword")
 )
