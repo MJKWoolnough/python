@@ -17,6 +17,8 @@ type test struct {
 	Tokens               *pyParser
 	Output               Type
 	AssignmentExpression *AssignmentExpression
+	Expression           *Expression
+	OrigTokens           *pyParser
 	TokenSkip            int
 	Err                  error
 }
@@ -39,6 +41,8 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 		}
 
 		tt.Fn(&ts, ts.Tokens.Tokens[:cap(ts.Tokens.Tokens)])
+
+		ts.Tokens = ts.Tokens.NewGoal()
 
 		for range ts.TokenSkip {
 			ts.Tokens.Skip()
