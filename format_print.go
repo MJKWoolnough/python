@@ -144,7 +144,19 @@ func (c Comprehension) printSource(w io.Writer, v bool) {
 	c.ComprehensionFor.printSource(w, v)
 }
 
-func (f ComprehensionFor) printSource(w io.Writer, v bool) {
+func (c ComprehensionFor) printSource(w io.Writer, v bool) {
+	if c.Async {
+		io.WriteString(w, "async ")
+	}
+
+	io.WriteString(w, "for ")
+	c.TargetList.printSource(w, v)
+	io.WriteString(w, " in ")
+	c.OrTest.printSource(w, v)
+
+	if c.ComprehensionIterator != nil {
+		c.ComprehensionIterator.printSource(w, v)
+	}
 }
 
 func (f ComprehensionIf) printSource(w io.Writer, v bool) {
