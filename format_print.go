@@ -159,7 +159,14 @@ func (c ComprehensionFor) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f ComprehensionIf) printSource(w io.Writer, v bool) {
+func (c ComprehensionIf) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "if ")
+	c.OrTest.printSource(w, v)
+
+	if c.ComprehensionIterator != nil {
+		io.WriteString(w, " ")
+		c.ComprehensionIterator.printSource(w, v)
+	}
 }
 
 func (c ComprehensionIterator) printSource(w io.Writer, v bool) {
