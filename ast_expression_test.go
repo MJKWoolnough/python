@@ -1872,6 +1872,56 @@ func TestComprehensionIterator(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`if nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						},
+						Parsing: "Atom",
+						Token:   tk[2],
+					}).Err,
+					Parsing: "ComprehensionIf",
+					Token:   tk[2],
+				},
+				Parsing: "ComprehensionIterator",
+				Token:   tk[0],
+			}
+		}},
+		{`for nonlocal in a`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[2],
+									},
+									Parsing: "Atom",
+									Token:   tk[2],
+								},
+								Parsing: "PrimaryExpression",
+								Token:   tk[2],
+							},
+							Parsing: "Target",
+							Token:   tk[2],
+						},
+						Parsing: "TargetList",
+						Token:   tk[2],
+					},
+					Parsing: "ComprehensionFor",
+					Token:   tk[2],
+				},
+				Parsing: "ComprehensionIterator",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var c ComprehensionIterator
 
