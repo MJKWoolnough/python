@@ -162,7 +162,12 @@ func (c ComprehensionFor) printSource(w io.Writer, v bool) {
 func (f ComprehensionIf) printSource(w io.Writer, v bool) {
 }
 
-func (f ComprehensionIterator) printSource(w io.Writer, v bool) {
+func (c ComprehensionIterator) printSource(w io.Writer, v bool) {
+	if c.ComprehensionIf != nil {
+		c.ComprehensionIf.printSource(w, v)
+	} else if c.ComprehensionFor != nil {
+		c.ComprehensionFor.printSource(w, v)
+	}
 }
 
 func (c ConditionalExpression) printSource(w io.Writer, v bool) {
