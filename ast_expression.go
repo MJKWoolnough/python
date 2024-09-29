@@ -562,7 +562,7 @@ Loop:
 
 		q.AcceptRunWhitespace()
 
-		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "}"}) {
+		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "}"}) || tk.Type == parser.TokenDone {
 			break
 		}
 
