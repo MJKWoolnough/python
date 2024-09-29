@@ -489,7 +489,7 @@ func (c *ComprehensionIf) parse(p *pyParser) error {
 		c.ComprehensionIterator = new(ComprehensionIterator)
 
 		if err := c.ComprehensionIterator.parse(q); err != nil {
-			return p.Error("ComprehensionFor", err)
+			return p.Error("ComprehensionIf", err)
 		}
 
 		p.Score(q)
