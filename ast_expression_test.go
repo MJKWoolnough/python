@@ -2634,6 +2634,51 @@ func TestDictItem(t *testing.T) {
 	})
 }
 
+func TestGeneratorExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a for b in c`, func(t *test, tk Tokens) { // 1
+			t.Output = GeneratorExpression{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				ComprehensionFor: ComprehensionFor{
+					TargetList: TargetList{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[4],
+										Tokens:     tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					OrTest: WrapConditional(&Atom{
+						Identifier: &tk[8],
+						Tokens:     tk[8:9],
+					}).OrTest,
+					Tokens: tk[2:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var g GeneratorExpression
+
+		err := g.parse(t.Tokens)
+
+		return g, err
+	})
+}
+
 func TestArgumentListOrComprehension(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`()`, func(t *test, tk Tokens) { // 1
