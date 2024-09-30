@@ -2536,6 +2536,95 @@ func TestDictItem(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
+		{`nonlocal: b`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						},
+						Parsing: "Atom",
+						Token:   tk[0],
+					}),
+					Parsing: "Expression",
+					Token:   tk[0],
+				},
+				Parsing: "DictItem",
+				Token:   tk[0],
+			}
+		}},
+		{`a: nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[3],
+						},
+						Parsing: "Atom",
+						Token:   tk[3],
+					}),
+					Parsing: "Expression",
+					Token:   tk[3],
+				},
+				Parsing: "DictItem",
+				Token:   tk[3],
+			}
+		}},
+		{`**nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err:     ErrInvalidEnclosure,
+															Parsing: "Enclosure",
+															Token:   tk[1],
+														},
+														Parsing: "Atom",
+														Token:   tk[1],
+													},
+													Parsing: "PrimaryExpression",
+													Token:   tk[1],
+												},
+												Parsing: "PowerExpression",
+												Token:   tk[1],
+											},
+											Parsing: "UnaryExpression",
+											Token:   tk[1],
+										},
+										Parsing: "MultiplyExpression",
+										Token:   tk[1],
+									},
+									Parsing: "AddExpression",
+									Token:   tk[1],
+								},
+								Parsing: "ShiftExpression",
+								Token:   tk[1],
+							},
+							Parsing: "AndExpression",
+							Token:   tk[1],
+						},
+						Parsing: "XorExpression",
+						Token:   tk[1],
+					},
+					Parsing: "OrExpression",
+					Token:   tk[1],
+				},
+				Parsing: "DictItem",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var d DictItem
 
