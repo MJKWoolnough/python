@@ -2479,6 +2479,72 @@ func TestDictDisplay(t *testing.T) {
 	})
 }
 
+func TestDictItem(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a: b`, func(t *test, tk Tokens) { // 1
+			t.Output = DictItem{
+				Key: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				Value: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a: b`, func(t *test, tk Tokens) { // 2
+			t.Expression = &Expression{
+				ConditionalExpression: WrapConditional(&Atom{
+					Identifier: &tk[0],
+					Tokens:     tk[:1],
+				}),
+				Tokens: tk[:1],
+			}
+			t.TokenSkip = 1
+			t.Output = DictItem{
+				Key: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				Value: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`**a`, func(t *test, tk Tokens) { // 3
+			t.Output = DictItem{
+				OrExpression: &WrapConditional(&Atom{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+				Tokens: tk[:2],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var d DictItem
+
+		err := d.parse(t.Tokens, t.Expression)
+
+		return d, err
+	})
+}
+
 func TestArgumentListOrComprehension(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`()`, func(t *test, tk Tokens) { // 1
