@@ -212,7 +212,21 @@ func (d DictDisplay) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f DictItem) printSource(w io.Writer, v bool) {
+func (d DictItem) printSource(w io.Writer, v bool) {
+	if d.OrExpression != nil {
+		io.WriteString(w, "**")
+		d.OrExpression.printSource(w, v)
+	} else if d.Key != nil && d.Value != nil {
+		d.Key.printSource(w, v)
+
+		if v {
+			io.WriteString(w, ": ")
+		} else {
+			io.WriteString(w, ":")
+		}
+
+		d.Value.printSource(w, v)
+	}
 }
 
 func (e Enclosure) printSource(w io.Writer, v bool) {
