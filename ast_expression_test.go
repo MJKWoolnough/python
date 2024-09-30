@@ -2085,6 +2085,332 @@ func TestComprehensionIf(t *testing.T) {
 	})
 }
 
+func TestDictDisplay(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a: b`, func(t *test, tk Tokens) { // 1
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							}),
+							Tokens: tk[:1],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[:4],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a :b, c:d`, func(t *test, tk Tokens) { // 2
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							}),
+							Tokens: tk[:1],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[:4],
+					},
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[8],
+								Tokens:     tk[8:9],
+							}),
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[6:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`a: b for c in d`, func(t *test, tk Tokens) { // 3
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							}),
+							Tokens: tk[:1],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[:4],
+					},
+				},
+				DictComprehension: &ComprehensionFor{
+					TargetList: TargetList{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[7],
+										Tokens:     tk[7:8],
+									},
+									Tokens: tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+						},
+						Tokens: tk[7:8],
+					},
+					OrTest: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}).OrTest,
+					Tokens: tk[5:12],
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`a: b async for c in d`, func(t *test, tk Tokens) { // 4
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							}),
+							Tokens: tk[:1],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[:4],
+					},
+				},
+				DictComprehension: &ComprehensionFor{
+					Async: true,
+					TargetList: TargetList{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[9],
+										Tokens:     tk[9:10],
+									},
+									Tokens: tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+						},
+						Tokens: tk[9:10],
+					},
+					OrTest: WrapConditional(&Atom{
+						Identifier: &tk[13],
+						Tokens:     tk[13:14],
+					}).OrTest,
+					Tokens: tk[5:14],
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{`**a`, func(t *test, tk Tokens) { // 5
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						OrExpression: &WrapConditional(&Atom{
+							Identifier: &tk[1],
+							Tokens:     tk[1:2],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[:2],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`a: b, ** c`, func(t *test, tk Tokens) { // 6
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							}),
+							Tokens: tk[:1],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[:4],
+					},
+					{
+						OrExpression: &WrapConditional(&Atom{
+							Identifier: &tk[8],
+							Tokens:     tk[8:9],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[6:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`**a, b:c`, func(t *test, tk Tokens) { // 7
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						OrExpression: &WrapConditional(&Atom{
+							Identifier: &tk[1],
+							Tokens:     tk[1:2],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[:2],
+					},
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
+							}),
+							Tokens: tk[4:5],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[4:7],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`a: b`, func(t *test, tk Tokens) { // 8
+			t.Expression = &Expression{
+				ConditionalExpression: WrapConditional(&Atom{
+					Identifier: &tk[0],
+					Tokens:     tk[:1],
+				}),
+				Tokens: tk[:1],
+			}
+			t.TokenSkip = 1
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							}),
+							Tokens: tk[:1],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[:4],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a :b, c:d`, func(t *test, tk Tokens) { // 9
+			t.Expression = &Expression{
+				ConditionalExpression: WrapConditional(&Atom{
+					Identifier: &tk[0],
+					Tokens:     tk[:1],
+				}),
+				Tokens: tk[:1],
+			}
+			t.TokenSkip = 1
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							}),
+							Tokens: tk[:1],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[:4],
+					},
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[8],
+								Tokens:     tk[8:9],
+							}),
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[6:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var d DictDisplay
+
+		err := d.parse(t.Tokens, t.OrigTokens, t.Expression)
+
+		return d, err
+	})
+}
+
 func TestArgumentListOrComprehension(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`()`, func(t *test, tk Tokens) { // 1
