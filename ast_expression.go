@@ -539,7 +539,7 @@ Loop:
 		switch q.Peek() {
 		case parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: TokenKeyword, Data: "for"}:
 			if len(d.DictItems) > 1 || d.DictItems[0].OrExpression != nil {
-				return p.Error("DictDisplay", ErrInvalidKeyword)
+				return q.Error("DictDisplay", ErrInvalidKeyword)
 			}
 
 			p.Score(q)
