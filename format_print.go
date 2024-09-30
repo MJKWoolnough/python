@@ -197,7 +197,19 @@ func (f DefParameter) printSource(w io.Writer, v bool) {
 func (f DelStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f DictDisplay) printSource(w io.Writer, v bool) {
+func (d DictDisplay) printSource(w io.Writer, v bool) {
+	for n, di := range d.DictItems {
+		if n > 0 {
+			io.WriteString(w, ", ")
+		}
+
+		di.printSource(w, v)
+	}
+
+	if d.DictComprehension != nil {
+		io.WriteString(w, " ")
+		d.DictComprehension.printSource(w, v)
+	}
 }
 
 func (f DictItem) printSource(w io.Writer, v bool) {
