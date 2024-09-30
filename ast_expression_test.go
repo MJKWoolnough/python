@@ -2670,6 +2670,44 @@ func TestGeneratorExpression(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`nonlocal for b in c`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						},
+						Parsing: "Atom",
+						Token:   tk[0],
+					}),
+					Parsing: "Expression",
+					Token:   tk[0],
+				},
+				Parsing: "GeneratorExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`a for b in nonlocal`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[8],
+						},
+						Parsing: "Atom",
+						Token:   tk[8],
+					}).Err,
+					Parsing: "ComprehensionFor",
+					Token:   tk[8],
+				},
+				Parsing: "GeneratorExpression",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var g GeneratorExpression
 
