@@ -2402,6 +2402,74 @@ func TestDictDisplay(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`a: nonlocal`, func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[3],
+							},
+							Parsing: "Atom",
+							Token:   tk[3],
+						}),
+						Parsing: "Expression",
+						Token:   tk[3],
+					},
+					Parsing: "DictItem",
+					Token:   tk[3],
+				},
+				Parsing: "DictDisplay",
+				Token:   tk[0],
+			}
+		}},
+		{`a: b, c: d for e in f`, func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err:     ErrInvalidKeyword,
+				Parsing: "DictDisplay",
+				Token:   tk[11],
+			}
+		}},
+		{`**a for e in f`, func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err:     ErrInvalidKeyword,
+				Parsing: "DictDisplay",
+				Token:   tk[3],
+			}
+		}},
+		{`a: b for nonlocal in f`, func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[7],
+									},
+									Parsing: "Atom",
+									Token:   tk[7],
+								},
+								Parsing: "PrimaryExpression",
+								Token:   tk[7],
+							},
+							Parsing: "Target",
+							Token:   tk[7],
+						},
+						Parsing: "TargetList",
+						Token:   tk[7],
+					},
+					Parsing: "ComprehensionFor",
+					Token:   tk[7],
+				},
+				Parsing: "DictDisplay",
+				Token:   tk[5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var d DictDisplay
 
