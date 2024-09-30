@@ -268,7 +268,10 @@ func (f ForStatement) printSource(w io.Writer, v bool) {
 func (f FuncDefinition) printSource(w io.Writer, v bool) {
 }
 
-func (f GeneratorExpression) printSource(w io.Writer, v bool) {
+func (g GeneratorExpression) printSource(w io.Writer, v bool) {
+	g.Expression.printSource(w, v)
+	io.WriteString(w, " ")
+	g.ComprehensionFor.printSource(w, v)
 }
 
 func (f GlobalStatement) printSource(w io.Writer, v bool) {
