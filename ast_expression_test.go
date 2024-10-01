@@ -2432,7 +2432,39 @@ func TestDictDisplay(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`a: nonlocal`, func(t *test, tk Tokens) { // 10
+		{`a: b,`, func(t *test, tk Tokens) { // 10
+			t.Expression = &Expression{
+				ConditionalExpression: WrapConditional(&Atom{
+					Identifier: &tk[0],
+					Tokens:     tk[:1],
+				}),
+				Tokens: tk[:1],
+			}
+			t.TokenSkip = 1
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Key: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							}),
+							Tokens: tk[:1],
+						},
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[:4],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a: nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2455,21 +2487,21 @@ func TestDictDisplay(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a: b, c: d for e in f`, func(t *test, tk Tokens) { // 11
+		{`a: b, c: d for e in f`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err:     ErrInvalidKeyword,
 				Parsing: "DictDisplay",
 				Token:   tk[11],
 			}
 		}},
-		{`**a for e in f`, func(t *test, tk Tokens) { // 12
+		{`**a for e in f`, func(t *test, tk Tokens) { // 13
 			t.Err = Error{
 				Err:     ErrInvalidKeyword,
 				Parsing: "DictDisplay",
 				Token:   tk[3],
 			}
 		}},
-		{`a: b for nonlocal in f`, func(t *test, tk Tokens) { // 13
+		{`a: b for nonlocal in f`, func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
