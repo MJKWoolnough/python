@@ -256,7 +256,14 @@ func (e Expression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f ExpressionList) printSource(w io.Writer, v bool) {
+func (e ExpressionList) printSource(w io.Writer, v bool) {
+	for n, ex := range e.Expressions {
+		if n > 0 {
+			io.WriteString(w, ", ")
+		}
+
+		ex.printSource(w, v)
+	}
 }
 
 func (f File) printSource(w io.Writer, v bool) {
