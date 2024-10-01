@@ -3257,6 +3257,63 @@ func TestSliceItem(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						},
+						Parsing: "Atom",
+						Token:   tk[0],
+					}),
+					Parsing: "Expression",
+					Token:   tk[0],
+				},
+				Parsing: "SliceItem",
+				Token:   tk[0],
+			}
+		}},
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						},
+						Parsing: "Atom",
+						Token:   tk[2],
+					}),
+					Parsing: "Expression",
+					Token:   tk[2],
+				},
+				Parsing: "SliceItem",
+				Token:   tk[2],
+			}
+		}},
+		{`a:b:nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[4],
+						},
+						Parsing: "Atom",
+						Token:   tk[4],
+					}),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "SliceItem",
+				Token:   tk[4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var si SliceItem
 
