@@ -2687,6 +2687,13 @@ func TestDictItem(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
+		{`a`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "DictItem",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var d DictItem
 
