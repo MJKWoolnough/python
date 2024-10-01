@@ -443,7 +443,32 @@ func (s ShiftExpression) printSource(w io.Writer, v bool) {
 func (f SimpleStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f SliceItem) printSource(w io.Writer, v bool) {
+func (s SliceItem) printSource(w io.Writer, v bool) {
+	if s.Expression != nil {
+		s.Expression.printSource(w, v)
+	} else if s.LowerBound != nil {
+		s.LowerBound.printSource(w, v)
+
+		if s.UpperBound != nil {
+			if v {
+				io.WriteString(w, " : ")
+			} else {
+				io.WriteString(w, ":")
+			}
+
+			s.UpperBound.printSource(w, v)
+
+			if s.Stride != nil {
+				if v {
+					io.WriteString(w, " : ")
+				} else {
+					io.WriteString(w, ":")
+				}
+
+				s.Stride.printSource(w, v)
+			}
+		}
+	}
 }
 
 func (s SliceList) printSource(w io.Writer, v bool) {
