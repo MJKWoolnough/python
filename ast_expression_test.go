@@ -2943,6 +2943,51 @@ func TestExpressionList(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						},
+						Parsing: "Atom",
+						Token:   tk[0],
+					}),
+					Parsing: "Expression",
+					Token:   tk[0],
+				},
+				Parsing: "ExpressionList",
+				Token:   tk[0],
+			}
+		}},
+		{`a,nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						},
+						Parsing: "Atom",
+						Token:   tk[2],
+					}),
+					Parsing: "Expression",
+					Token:   tk[2],
+				},
+				Parsing: "ExpressionList",
+				Token:   tk[2],
+			}
+		}},
+		{`a b`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "ExpressionList",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var e ExpressionList
 
