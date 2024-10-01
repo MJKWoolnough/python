@@ -3153,6 +3153,119 @@ func TestSliceList(t *testing.T) {
 	})
 }
 
+func TestSliceItem(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = SliceItem{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a:b`, func(t *test, tk Tokens) { // 2
+			t.Output = SliceItem{
+				LowerBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				UpperBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a: b`, func(t *test, tk Tokens) { // 3
+			t.Output = SliceItem{
+				LowerBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				UpperBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a:b:c`, func(t *test, tk Tokens) { // 4
+			t.Output = SliceItem{
+				LowerBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				UpperBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Stride: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					}),
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a:b: c`, func(t *test, tk Tokens) { // 5
+			t.Output = SliceItem{
+				LowerBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				UpperBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Stride: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[5],
+						Tokens:     tk[5:6],
+					}),
+					Tokens: tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var si SliceItem
+
+		err := si.parse(t.Tokens)
+
+		return si, err
+	})
+}
+
 func TestOrExpression(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
