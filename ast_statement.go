@@ -992,6 +992,7 @@ func (t *TypeStatement) parse(p *pyParser) error {
 		return p.Error("TypeStatement", ErrMissingIdentifier)
 	}
 
+	t.Identifier = p.GetLastToken()
 	p.AcceptRunWhitespace()
 
 	if p.Peek() == (parser.Token{Type: TokenDelimiter, Data: "["}) {
