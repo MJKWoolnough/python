@@ -67,7 +67,18 @@ func (f AssertStatement) printSource(w io.Writer, v bool) {
 func (f AssignmentExpressionAndSuite) printSource(w io.Writer, v bool) {
 }
 
-func (f AssignmentExpression) printSource(w io.Writer, v bool) {
+func (a AssignmentExpression) printSource(w io.Writer, v bool) {
+	if a.Identifier != nil {
+		io.WriteString(w, a.Identifier.Data)
+
+		if v {
+			io.WriteString(w, " := ")
+		} else {
+			io.WriteString(w, ":=")
+		}
+	}
+
+	a.Expression.printSource(w, v)
 }
 
 func (f AssignmentStatement) printSource(w io.Writer, v bool) {
