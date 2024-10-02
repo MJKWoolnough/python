@@ -2,6 +2,54 @@ package python
 
 import "testing"
 
+func TestTypeParams(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`[a]`, func(t *test, tk Tokens) { // 1
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`[ a ]`, func(t *test, tk Tokens) { // 2
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`[a, b]`, func(t *test, tk Tokens) { // 3
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					},
+					{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					},
+				},
+				Tokens: tk[:6],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var tp TypeParams
+
+		err := tp.parse(t.Tokens)
+
+		return tp, err
+	})
+}
+
 func TestAssignmentExpression(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
