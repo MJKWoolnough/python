@@ -1036,6 +1036,7 @@ func (t *TypeParams) parse(p *pyParser) error {
 	p.OpenBrackets()
 
 	for {
+		p.AcceptRunWhitespace()
 		q := p.NewGoal()
 
 		var tp TypeParam
