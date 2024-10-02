@@ -42,6 +42,44 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal := a`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						},
+						Parsing: "Atom",
+						Token:   tk[0],
+					}),
+					Parsing: "Expression",
+					Token:   tk[0],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`a := nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[4],
+						},
+						Parsing: "Atom",
+						Token:   tk[4],
+					}),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "AssignmentExpression",
+				Token:   tk[4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a AssignmentExpression
 
