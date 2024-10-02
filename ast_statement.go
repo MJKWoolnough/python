@@ -1033,7 +1033,6 @@ type TypeParams struct {
 
 func (t *TypeParams) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
-	p.Skip()
 	p.OpenBrackets()
 
 	for {
@@ -1053,12 +1052,15 @@ func (t *TypeParams) parse(p *pyParser) error {
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 			break
+		} else if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			return p.Error("TypeParams", ErrMissingComma)
 		}
 	}
 
 	p.CloseBrackets()
 
 	t.Tokens = p.ToTokens()
+
 	return nil
 }
 
