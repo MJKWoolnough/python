@@ -41,6 +41,24 @@ func TestTypeParams(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "TypeParam",
+					Token:   tk[1],
+				},
+				Parsing: "TypeParams",
+				Token:   tk[1],
+			}
+		}},
+		{`[a b]`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "TypeParams",
+				Token:   tk[3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var tp TypeParams
 
