@@ -541,7 +541,22 @@ func (f TryStatement) printSource(w io.Writer, v bool) {
 func (f TypeParam) printSource(w io.Writer, v bool) {
 }
 
-func (f TypeParams) printSource(w io.Writer, v bool) {
+func (t TypeParams) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "[")
+
+	for n, tp := range t.TypeParams {
+		if n > 0 {
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+		}
+
+		tp.printSource(w, v)
+	}
+
+	io.WriteString(w, "]")
 }
 
 func (f TypeStatement) printSource(w io.Writer, v bool) {
