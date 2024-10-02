@@ -1105,6 +1105,8 @@ func (t *TypeParam) parse(p *pyParser) error {
 		return p.Error("TypeParam", ErrMissingIdentifier)
 	}
 
+	t.Identifier = p.GetLastToken()
+
 	if t.Type == TypeParamIdentifer {
 		q := p.NewGoal()
 
