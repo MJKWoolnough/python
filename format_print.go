@@ -538,7 +538,24 @@ func (f TargetList) printSource(w io.Writer, v bool) {
 func (f TryStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f TypeParam) printSource(w io.Writer, v bool) {
+func (t TypeParam) printSource(w io.Writer, v bool) {
+	if t.Type == TypeParamVar {
+		io.WriteString(w, "*")
+	} else if t.Type == TypeParamVarTuple {
+		io.WriteString(w, "**")
+	}
+
+	io.WriteString(w, t.Identifier.Data)
+
+	if t.Expression != nil {
+		if v {
+			io.WriteString(w, ": ")
+		} else {
+			io.WriteString(w, ":")
+		}
+
+		t.Expression.printSource(w, v)
+	}
 }
 
 func (t TypeParams) printSource(w io.Writer, v bool) {
