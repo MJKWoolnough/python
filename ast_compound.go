@@ -1112,7 +1112,7 @@ func (t *TypeParam) parse(p *pyParser) error {
 
 		q.AcceptRunWhitespace()
 
-		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 			q.AcceptRunWhitespace()
 			p.Score(q)
 
