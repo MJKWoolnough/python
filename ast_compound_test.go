@@ -64,6 +64,46 @@ func TestTypeParam(t *testing.T) {
 				Tokens:     tk[:3],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "TypeParam",
+				Token:   tk[0],
+			}
+		}},
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						},
+						Parsing: "Atom",
+						Token:   tk[2],
+					}),
+					Parsing: "Expression",
+					Token:   tk[2],
+				},
+				Parsing: "TypeParam",
+				Token:   tk[2],
+			}
+		}},
+		{`*nonlocal`, func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "TypeParam",
+				Token:   tk[1],
+			}
+		}},
+		{`**nonlocal`, func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "TypeParam",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var tp TypeParam
 
