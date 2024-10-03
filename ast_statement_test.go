@@ -31,6 +31,20 @@ func TestNonLocalStatement(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`nonlocal nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "NonLocalStatement",
+				Token:   tk[2],
+			}
+		}},
+		{`nonlocal a, nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "NonLocalStatement",
+				Token:   tk[5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var n NonLocalStatement
 
