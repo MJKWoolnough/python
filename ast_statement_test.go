@@ -74,6 +74,47 @@ func TestTypeStatement(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{`type nonlocal[a] = b`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "TypeStatement",
+				Token:   tk[2],
+			}
+		}},
+		{`type a[nonlocal] = b`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "TypeParam",
+						Token:   tk[4],
+					},
+					Parsing: "TypeParams",
+					Token:   tk[4],
+				},
+				Parsing: "TypeStatement",
+				Token:   tk[3],
+			}
+		}},
+		{`type a[b] = nonlocal`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[9],
+						},
+						Parsing: "Atom",
+						Token:   tk[9],
+					}),
+					Parsing: "Expression",
+					Token:   tk[9],
+				},
+				Parsing: "TypeStatement",
+				Token:   tk[9],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ts TypeStatement
 
