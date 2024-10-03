@@ -2,6 +2,87 @@ package python
 
 import "testing"
 
+func TestTypeStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`type a=b`, func(t *test, tk Tokens) { // 1
+			t.Output = TypeStatement{
+				Identifier: &tk[2],
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					}),
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`type a = b`, func(t *test, tk Tokens) { // 2
+			t.Output = TypeStatement{
+				Identifier: &tk[2],
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[6],
+						Tokens:     tk[6:7],
+					}),
+					Tokens: tk[6:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`type a[b] = c`, func(t *test, tk Tokens) { // 3
+			t.Output = TypeStatement{
+				Identifier: &tk[2],
+				TypeParams: &TypeParams{
+					TypeParams: []TypeParam{
+						{
+							Identifier: &tk[4],
+							Tokens:     tk[4:5],
+						},
+					},
+					Tokens: tk[3:6],
+				},
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[9],
+						Tokens:     tk[9:10],
+					}),
+					Tokens: tk[9:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`type a [b] = c`, func(t *test, tk Tokens) { // 4
+			t.Output = TypeStatement{
+				Identifier: &tk[2],
+				TypeParams: &TypeParams{
+					TypeParams: []TypeParam{
+						{
+							Identifier: &tk[5],
+							Tokens:     tk[5:6],
+						},
+					},
+					Tokens: tk[4:7],
+				},
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[10],
+						Tokens:     tk[10:11],
+					}),
+					Tokens: tk[10:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var ts TypeStatement
+
+		err := ts.parse(t.Tokens)
+
+		return ts, err
+	})
+}
+
 func TestTypeParams(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`[a]`, func(t *test, tk Tokens) { // 1
