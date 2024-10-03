@@ -347,7 +347,22 @@ func (m MultiplyExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f NonLocalStatement) printSource(w io.Writer, v bool) {
+func (n NonLocalStatement) printSource(w io.Writer, v bool) {
+	if len(n.Identifiers) > 0 {
+		io.WriteString(w, "nonlocal ")
+
+		for n, t := range n.Identifiers {
+			if n > 0 {
+				if v {
+					io.WriteString(w, ", ")
+				} else {
+					io.WriteString(w, ",")
+				}
+			}
+
+			io.WriteString(w, t.Data)
+		}
+	}
 }
 
 func (n NotTest) printSource(w io.Writer, v bool) {
