@@ -559,7 +559,16 @@ func (t TypeParams) printSource(w io.Writer, v bool) {
 	io.WriteString(w, "]")
 }
 
-func (f TypeStatement) printSource(w io.Writer, v bool) {
+func (t TypeStatement) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "type ")
+	io.WriteString(w, t.Identifier.Data)
+
+	if t.TypeParams != nil {
+		t.TypeParams.printSource(w, v)
+	}
+
+	io.WriteString(w, " = ")
+	t.Expression.printSource(w, v)
 }
 
 func (u UnaryExpression) printSource(w io.Writer, v bool) {
