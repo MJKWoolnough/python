@@ -2,6 +2,44 @@ package python
 
 import "testing"
 
+func TestNonLocalStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`nonlocal a`, func(t *test, tk Tokens) { // 1
+			t.Output = NonLocalStatement{
+				Identifiers: []*Token{
+					&tk[2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`nonlocal a,b`, func(t *test, tk Tokens) { // 2
+			t.Output = NonLocalStatement{
+				Identifiers: []*Token{
+					&tk[2],
+					&tk[4],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`nonlocal a, b, c`, func(t *test, tk Tokens) { // 3
+			t.Output = NonLocalStatement{
+				Identifiers: []*Token{
+					&tk[2],
+					&tk[5],
+					&tk[8],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var n NonLocalStatement
+
+		err := n.parse(t.Tokens)
+
+		return n, err
+	})
+}
+
 func TestTypeStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`type a=b`, func(t *test, tk Tokens) { // 1
