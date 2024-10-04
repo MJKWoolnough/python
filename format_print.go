@@ -292,7 +292,22 @@ func (g GeneratorExpression) printSource(w io.Writer, v bool) {
 	g.ComprehensionFor.printSource(w, v)
 }
 
-func (f GlobalStatement) printSource(w io.Writer, v bool) {
+func (g GlobalStatement) printSource(w io.Writer, v bool) {
+	if len(g.Identifiers) > 0 {
+		io.WriteString(w, "global ")
+
+		for n, t := range g.Identifiers {
+			if n > 0 {
+				if v {
+					io.WriteString(w, ", ")
+				} else {
+					io.WriteString(w, ",")
+				}
+			}
+
+			io.WriteString(w, t.Data)
+		}
+	}
 }
 
 func (f IfStatement) printSource(w io.Writer, v bool) {
