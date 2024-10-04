@@ -341,7 +341,14 @@ func (l LambdaExpression) printSource(w io.Writer, v bool) {
 func (f ModuleAs) printSource(w io.Writer, v bool) {
 }
 
-func (f Module) printSource(w io.Writer, v bool) {
+func (m Module) printSource(w io.Writer, v bool) {
+	for n, i := range m.Identifiers {
+		if n > 0 {
+			io.WriteString(w, ".")
+		}
+
+		io.WriteString(w, i.Data)
+	}
 }
 
 func (m MultiplyExpression) printSource(w io.Writer, v bool) {
