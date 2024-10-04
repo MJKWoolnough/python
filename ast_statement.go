@@ -893,7 +893,6 @@ func (m *Module) parse(p *pyParser) error {
 		}
 
 		m.Identifiers = append(m.Identifiers, p.GetLastToken())
-
 		q := p.NewGoal()
 
 		q.AcceptRunWhitespace()
