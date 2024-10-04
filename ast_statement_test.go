@@ -31,6 +31,20 @@ func TestGlobalStatement(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`global nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "GlobalStatement",
+				Token:   tk[2],
+			}
+		}},
+		{`global a, nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "GlobalStatement",
+				Token:   tk[5],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var g GlobalStatement
 
