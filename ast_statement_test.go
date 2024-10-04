@@ -2,6 +2,40 @@ package python
 
 import "testing"
 
+func TestModuleAs(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = ModuleAs{
+				Module: Module{
+					Identifiers: []*Token{
+						&tk[0],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a as b`, func(t *test, tk Tokens) { // 2
+			t.Output = ModuleAs{
+				Module: Module{
+					Identifiers: []*Token{
+						&tk[0],
+					},
+					Tokens: tk[:1],
+				},
+				As:     &tk[4],
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var m ModuleAs
+
+		err := m.parse(t.Tokens)
+
+		return m, err
+	})
+}
+
 func TestModule(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
