@@ -338,7 +338,13 @@ func (l LambdaExpression) printSource(w io.Writer, v bool) {
 	l.Expression.printSource(w, v)
 }
 
-func (f ModuleAs) printSource(w io.Writer, v bool) {
+func (m ModuleAs) printSource(w io.Writer, v bool) {
+	m.Module.printType(w, v)
+
+	if m.As != nil {
+		io.WriteString(w, " as ")
+		io.WriteString(w, m.As.Data)
+	}
 }
 
 func (m Module) printSource(w io.Writer, v bool) {
