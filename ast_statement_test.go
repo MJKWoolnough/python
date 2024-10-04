@@ -2,6 +2,44 @@ package python
 
 import "testing"
 
+func TestModule(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = Module{
+				Identifiers: []*Token{
+					&tk[0],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a.b`, func(t *test, tk Tokens) { // 2
+			t.Output = Module{
+				Identifiers: []*Token{
+					&tk[0],
+					&tk[2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a . b . c`, func(t *test, tk Tokens) { // 3
+			t.Output = Module{
+				Identifiers: []*Token{
+					&tk[0],
+					&tk[4],
+					&tk[8],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var m Module
+
+		err := m.parse(t.Tokens)
+
+		return m, err
+	})
+}
+
 func TestGlobalStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`global a`, func(t *test, tk Tokens) { // 1
