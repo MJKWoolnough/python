@@ -27,6 +27,24 @@ func TestModuleAs(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "Module",
+					Token:   tk[0],
+				},
+				Parsing: "ModuleAs",
+				Token:   tk[0],
+			}
+		}},
+		{`a as nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "ModuleAs",
+				Token:   tk[4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var m ModuleAs
 
