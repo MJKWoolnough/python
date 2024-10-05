@@ -2,6 +2,53 @@ package python
 
 import "testing"
 
+func TestRaiseStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`raise`, func(t *test, tk Tokens) { // 1
+			t.Output = RaiseStatement{
+				Tokens: tk[:1],
+			}
+		}},
+		{`raise a`, func(t *test, tk Tokens) { // 2
+			t.Output = RaiseStatement{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`raise a from b`, func(t *test, tk Tokens) { // 3
+			t.Output = RaiseStatement{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				From: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[6],
+						Tokens:     tk[6:7],
+					}),
+					Tokens: tk[6:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var r RaiseStatement
+
+		err := r.parse(t.Tokens)
+
+		return r, err
+	})
+}
+
 func TestImportStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`from a import *`, func(t *test, tk Tokens) { // 1
