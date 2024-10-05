@@ -763,7 +763,7 @@ func (i *ImportStatement) parse(p *pyParser) error {
 	p.AcceptRunWhitespace()
 
 	if i.RelativeModule == nil || !p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
+		parens := i.RelativeModule != nil && p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
 		if parens {
 			p.OpenBrackets()
@@ -771,7 +771,6 @@ func (i *ImportStatement) parse(p *pyParser) error {
 		}
 
 		for {
-
 			q := p.NewGoal()
 
 			var module ModuleAs
@@ -782,22 +781,25 @@ func (i *ImportStatement) parse(p *pyParser) error {
 
 			p.Score(q)
 
-			q = p.NewGoal()
+			i.Modules = append(i.Modules, module)
 
-			q.AcceptRunWhitespace()
+			p.AcceptRunWhitespace()
 
-			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) && !parens {
+			if parens {
+				if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+					p.CloseBrackets()
+
+					break
+				}
+
+				if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+					return p.Error("ImportStatement", ErrMissingComma)
+				}
+			} else if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				break
 			}
 
-			q.AcceptRunWhitespace()
-
-			if parens && q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-				p.Score(q)
-				p.CloseBrackets()
-
-				break
-			}
+			p.AcceptRunWhitespace()
 		}
 	}
 
