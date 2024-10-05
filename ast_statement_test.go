@@ -76,6 +76,24 @@ func TestRelativeModule(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrMissingModule,
+				Parsing: "RelativeModule",
+				Token:   tk[0],
+			}
+		}},
+		{`.a.nonlocal`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "Module",
+					Token:   tk[3],
+				},
+				Parsing: "RelativeModule",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var r RelativeModule
 
