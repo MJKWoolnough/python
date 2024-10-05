@@ -2,6 +2,89 @@ package python
 
 import "testing"
 
+func TestRelativeModule(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = RelativeModule{
+				Module: &Module{
+					Identifiers: []*Token{
+						&tk[0],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`.a`, func(t *test, tk Tokens) { // 2
+			t.Output = RelativeModule{
+				Dots: 1,
+				Module: &Module{
+					Identifiers: []*Token{
+						&tk[1],
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`..a`, func(t *test, tk Tokens) { // 3
+			t.Output = RelativeModule{
+				Dots: 2,
+				Module: &Module{
+					Identifiers: []*Token{
+						&tk[2],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`. . a`, func(t *test, tk Tokens) { // 4
+			t.Output = RelativeModule{
+				Dots: 2,
+				Module: &Module{
+					Identifiers: []*Token{
+						&tk[4],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`.a.b`, func(t *test, tk Tokens) { // 5
+			t.Output = RelativeModule{
+				Dots: 1,
+				Module: &Module{
+					Identifiers: []*Token{
+						&tk[1],
+						&tk[3],
+					},
+					Tokens: tk[1:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`.`, func(t *test, tk Tokens) { // 6
+			t.Output = RelativeModule{
+				Dots:   1,
+				Tokens: tk[:1],
+			}
+		}},
+		{`...`, func(t *test, tk Tokens) { // 7
+			t.Output = RelativeModule{
+				Dots:   3,
+				Tokens: tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var r RelativeModule
+
+		err := r.parse(t.Tokens)
+
+		return r, err
+	})
+}
+
 func TestModuleAs(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
