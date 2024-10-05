@@ -684,19 +684,18 @@ func (y *YieldExpression) parse(p *pyParser) error {
 
 type RaiseStatement struct {
 	Expression *Expression
-	From       *ExpressionList
+	From       *Expression
 	Tokens     Tokens
 }
 
 func (r *RaiseStatement) parse(p *pyParser) error {
 	p.Skip()
-
 	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
 
 	switch q.AcceptRunWhitespace() {
-	case TokenLineTerminator, TokenComment:
+	case TokenLineTerminator, TokenComment, parser.TokenDone:
 	default:
 		p.Score(q)
 
@@ -718,7 +717,7 @@ func (r *RaiseStatement) parse(p *pyParser) error {
 			p.Score(q)
 
 			q = p.NewGoal()
-			r.From = new(ExpressionList)
+			r.From = new(Expression)
 
 			if err := r.From.parse(q); err != nil {
 				return p.Error("RaiseStatement", err)
