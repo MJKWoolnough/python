@@ -279,6 +279,76 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`from nonlocal import a`, func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingModule,
+					Parsing: "RelativeModule",
+					Token:   tk[2],
+				},
+				Parsing: "ImportStatement",
+				Token:   tk[2],
+			}
+		}},
+		{`from a b`, func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err:     ErrMissingImport,
+				Parsing: "ImportStatement",
+				Token:   tk[4],
+			}
+		}},
+		{`from a import nonlocal`, func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "Module",
+						Token:   tk[6],
+					},
+					Parsing: "ModuleAs",
+					Token:   tk[6],
+				},
+				Parsing: "ImportStatement",
+				Token:   tk[6],
+			}
+		}},
+		{`from a import (b c)`, func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "ImportStatement",
+				Token:   tk[9],
+			}
+		}},
+		{`import nonlocal`, func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "Module",
+						Token:   tk[2],
+					},
+					Parsing: "ModuleAs",
+					Token:   tk[2],
+				},
+				Parsing: "ImportStatement",
+				Token:   tk[2],
+			}
+		}},
+		{`import (b)`, func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "Module",
+						Token:   tk[2],
+					},
+					Parsing: "ModuleAs",
+					Token:   tk[2],
+				},
+				Parsing: "ImportStatement",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var i ImportStatement
 
