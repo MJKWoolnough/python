@@ -470,7 +470,14 @@ func (p PrimaryExpression) printSource(w io.Writer, v bool) {
 func (f RaiseStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f RelativeModule) printSource(w io.Writer, v bool) {
+func (r RelativeModule) printSource(w io.Writer, v bool) {
+	for range r.Dots {
+		io.WriteString(w, ".")
+	}
+
+	if r.Module != nil {
+		r.Module.printSource(w, v)
+	}
 }
 
 func (f ReturnStatement) printSource(w io.Writer, v bool) {
