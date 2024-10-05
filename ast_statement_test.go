@@ -2,6 +2,292 @@ package python
 
 import "testing"
 
+func TestImportStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`from a import *`, func(t *test, tk Tokens) { // 1
+			t.Output = ImportStatement{
+				RelativeModule: &RelativeModule{
+					Module: &Module{
+						Identifiers: []*Token{
+							&tk[2],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`from a import b`, func(t *test, tk Tokens) { // 2
+			t.Output = ImportStatement{
+				RelativeModule: &RelativeModule{
+					Module: &Module{
+						Identifiers: []*Token{
+							&tk[2],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[6],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`from a import b,c`, func(t *test, tk Tokens) { // 3
+			t.Output = ImportStatement{
+				RelativeModule: &RelativeModule{
+					Module: &Module{
+						Identifiers: []*Token{
+							&tk[2],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[6],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[8],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[8:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`from a import b, c`, func(t *test, tk Tokens) { // 4
+			t.Output = ImportStatement{
+				RelativeModule: &RelativeModule{
+					Module: &Module{
+						Identifiers: []*Token{
+							&tk[2],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[6],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[9],
+							},
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[9:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`from a import (b)`, func(t *test, tk Tokens) { // 5
+			t.Output = ImportStatement{
+				RelativeModule: &RelativeModule{
+					Module: &Module{
+						Identifiers: []*Token{
+							&tk[2],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[7],
+							},
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[7:8],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`from a import (b,c)`, func(t *test, tk Tokens) { // 6
+			t.Output = ImportStatement{
+				RelativeModule: &RelativeModule{
+					Module: &Module{
+						Identifiers: []*Token{
+							&tk[2],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[7],
+							},
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[7:8],
+					},
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[9],
+							},
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[9:10],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`from a import (b, c)`, func(t *test, tk Tokens) { // 7
+			t.Output = ImportStatement{
+				RelativeModule: &RelativeModule{
+					Module: &Module{
+						Identifiers: []*Token{
+							&tk[2],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[7],
+							},
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[7:8],
+					},
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[10],
+							},
+							Tokens: tk[10:11],
+						},
+						Tokens: tk[10:11],
+					},
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`import a`, func(t *test, tk Tokens) { // 8
+			t.Output = ImportStatement{
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[2],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`import a,b`, func(t *test, tk Tokens) { // 9
+			t.Output = ImportStatement{
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[2],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[4],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`import a, b, c`, func(t *test, tk Tokens) { // 10
+			t.Output = ImportStatement{
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[2],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[5],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[8],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[8:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var i ImportStatement
+
+		err := i.parse(t.Tokens)
+
+		return i, err
+	})
+}
+
 func TestRelativeModule(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
