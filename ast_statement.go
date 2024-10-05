@@ -813,22 +813,19 @@ type RelativeModule struct {
 }
 
 func (r *RelativeModule) parse(p *pyParser) error {
-	dots := 0
-
-	for p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
-		dots++
-	}
-
-	r.Dots = dots
-
 	q := p.NewGoal()
 
-	switch q.AcceptRunWhitespace() {
-	case TokenLineTerminator, TokenComment:
-		if dots == 0 {
-			return q.Error("RelativeModule", ErrMissingModule)
-		}
-	default:
+	for q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
+		r.Dots++
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+	}
+	switch q.Peek().Type {
+	case TokenIdentifier:
 		p.Score(q)
 
 		q = p.NewGoal()
@@ -839,6 +836,10 @@ func (r *RelativeModule) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	default:
+		if r.Dots == 0 {
+			return q.Error("RelativeModule", ErrMissingModule)
+		}
 	}
 
 	r.Tokens = p.ToTokens()
