@@ -313,7 +313,22 @@ func (g GlobalStatement) printSource(w io.Writer, v bool) {
 func (f IfStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f ImportStatement) printSource(w io.Writer, v bool) {
+func (i ImportStatement) printSource(w io.Writer, v bool) {
+	if i.RelativeModule != nil {
+		io.WriteString(w, "from ")
+		i.RelativeModule.printSource(w, v)
+		io.WriteString(w, " import ")
+	} else {
+		io.WriteString(w, "import ")
+	}
+
+	for n, m := range i.Modules {
+		if n > 0 {
+			io.WriteString(w, ", ")
+		}
+
+		m.printSource(w, v)
+	}
 }
 
 func (f KeywordArgument) printSource(w io.Writer, v bool) {
