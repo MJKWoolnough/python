@@ -378,6 +378,25 @@ type FlexibleExpression struct {
 }
 
 func (f *FlexibleExpression) parse(p *pyParser) error {
+	q := p.NewGoal()
+	if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) {
+		f.StarredExpression = new(StarredExpression)
+
+		if err := f.StarredExpression.parse(q); err != nil {
+			return p.Error("FlexibleExpression", err)
+		}
+	} else {
+		f.AssignmentExpression = new(AssignmentExpression)
+
+		if err := f.AssignmentExpression.parse(q); err != nil {
+			return p.Error("FlexibleExpression", err)
+		}
+	}
+
+	p.Score(q)
+
+	f.Tokens = p.ToTokens()
+
 	return nil
 }
 
