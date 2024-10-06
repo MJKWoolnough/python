@@ -645,7 +645,7 @@ func (r *ReturnStatement) parse(p *pyParser) error {
 
 type YieldExpression struct {
 	ExpressionList *ExpressionList
-	StarredList    *StarredList
+	StarredList    *StarredExpressionList
 	From           *Expression
 	Tokens         Tokens
 }
@@ -671,7 +671,7 @@ func (y *YieldExpression) parse(p *pyParser) error {
 		q := p.NewGoal()
 
 		if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) {
-			y.StarredList = new(StarredList)
+			y.StarredList = new(StarredExpressionList)
 
 			if err := y.StarredList.parse(q); err != nil {
 				return p.Error("YieldExpression", err)
@@ -689,6 +689,12 @@ func (y *YieldExpression) parse(p *pyParser) error {
 
 	y.Tokens = p.ToTokens()
 
+	return nil
+}
+
+type StarredExpressionList struct{}
+
+func (s *StarredExpressionList) parse(p *pyParser) error {
 	return nil
 }
 
