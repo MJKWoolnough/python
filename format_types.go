@@ -1875,6 +1875,34 @@ func (f *StarredExpression) printType(w io.Writer, v bool) {
 	io.WriteString(w, "\n}")
 }
 
+func (f *StarredExpressionList) printType(w io.Writer, v bool) {
+	pp := indentPrinter{w}
+
+	pp.Print("StarredExpressionList {")
+
+	if f.StarredExpressions == nil {
+		pp.Print("\nStarredExpressions: nil")
+	} else if len(f.StarredExpressions) > 0 {
+		pp.Print("\nStarredExpressions: [")
+
+		ipp := indentPrinter{&pp}
+
+		for n, e := range f.StarredExpressions {
+			ipp.Printf("\n%d: ", n)
+			e.printType(&ipp, v)
+		}
+
+		pp.Print("\n]")
+	} else if v {
+		pp.Print("\nStarredExpressions: []")
+	}
+
+	pp.Print("\nTokens: ")
+	f.Tokens.printType(&pp, v)
+
+	io.WriteString(w, "\n}")
+}
+
 func (f *StarredItem) printType(w io.Writer, v bool) {
 	pp := indentPrinter{w}
 
