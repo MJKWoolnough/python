@@ -40,6 +40,44 @@ func TestRaiseStatement(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{`raise nonlocal from a`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						},
+						Parsing: "Atom",
+						Token:   tk[2],
+					}),
+					Parsing: "Expression",
+					Token:   tk[2],
+				},
+				Parsing: "RaiseStatement",
+				Token:   tk[2],
+			}
+		}},
+		{`raise a from nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[6],
+						},
+						Parsing: "Atom",
+						Token:   tk[6],
+					}),
+					Parsing: "Expression",
+					Token:   tk[6],
+				},
+				Parsing: "RaiseStatement",
+				Token:   tk[6],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var r RaiseStatement
 
