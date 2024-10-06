@@ -482,7 +482,18 @@ func (p PrimaryExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f RaiseStatement) printSource(w io.Writer, v bool) {
+func (r RaiseStatement) printSource(w io.Writer, v bool) {
+	if r.Expression == nil {
+		io.WriteString(w, "raise")
+	} else {
+		io.WriteString(w, "raise")
+		r.Expression.printSource(w, v)
+
+		if r.From != nil {
+			io.WriteString(w, " from ")
+			r.From.printSource(w, v)
+		}
+	}
 }
 
 func (r RelativeModule) printSource(w io.Writer, v bool) {
