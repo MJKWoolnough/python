@@ -692,9 +692,45 @@ func (y *YieldExpression) parse(p *pyParser) error {
 	return nil
 }
 
-type StarredExpressionList struct{}
+type StarredExpressionList struct {
+	StarredExpressions []StarredExpression
+	Tokens             Tokens
+}
 
 func (s *StarredExpressionList) parse(p *pyParser) error {
+	for {
+		var se StarredExpression
+
+		q := p.NewGoal()
+
+		if err := se.parse(q); err != nil {
+			return p.Error("StarredExpressionList", err)
+		}
+
+		p.Score(q)
+
+		s.StarredExpressions = append(s.StarredExpressions, se)
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			if len(s.StarredExpressions) == 1 {
+				return p.Error("StarredExpressionList", ErrMissingComma)
+			}
+
+			break
+		}
+
+		q.AcceptRunWhitespace()
+
+		if q.Peek() != (parser.Token{Type: TokenOperator, Data: "*"}) {
+			break
+		}
+
+		p.Score(q)
+	}
+
 	return nil
 }
 
