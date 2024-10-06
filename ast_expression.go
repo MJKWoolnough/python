@@ -333,6 +333,41 @@ type FlexibleExpressionList struct {
 }
 
 func (f *FlexibleExpressionList) parse(p *pyParser) error {
+	for {
+		q := p.NewGoal()
+
+		var fe FlexibleExpression
+
+		if err := fe.parse(q); err != nil {
+			return p.Error("FlexibleExpressionList", err)
+		}
+
+		f.FlexibleExpressions = append(f.FlexibleExpressions, fe)
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			break
+		}
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "}"}) || tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == TokenLineTerminator || tk.Type == parser.TokenDone {
+			break
+		}
+
+		p.Score(q)
+	}
+
+	f.Tokens = p.ToTokens()
+
 	return nil
 }
 
