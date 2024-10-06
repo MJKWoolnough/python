@@ -440,11 +440,16 @@ func TestEnclosure(t *testing.T) {
 		{`(yield a)`, func(t *test, tk Tokens) { // 3
 			t.Output = Enclosure{
 				YieldAtom: &YieldExpression{
-					Expression: &Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[3],
-							Tokens:     tk[3:4],
-						}),
+					ExpressionList: &ExpressionList{
+						Expressions: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[3],
+									Tokens:     tk[3:4],
+								}),
+								Tokens: tk[3:4],
+							},
+						},
 						Tokens: tk[3:4],
 					},
 					Tokens: tk[1:4],
@@ -455,11 +460,16 @@ func TestEnclosure(t *testing.T) {
 		{`( yield a )`, func(t *test, tk Tokens) { // 4
 			t.Output = Enclosure{
 				YieldAtom: &YieldExpression{
-					Expression: &Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[4],
-							Tokens:     tk[4:5],
-						}),
+					ExpressionList: &ExpressionList{
+						Expressions: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+						},
 						Tokens: tk[4:5],
 					},
 					Tokens: tk[2:5],
@@ -841,16 +851,20 @@ func TestEnclosure(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err: wrapConditionalExpressionError(Error{
-							Err: Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[3],
+								},
+								Parsing: "Atom",
 								Token:   tk[3],
-							},
-							Parsing: "Atom",
+							}),
+							Parsing: "Expression",
 							Token:   tk[3],
-						}),
-						Parsing: "Expression",
+						},
+						Parsing: "ExpressionList",
 						Token:   tk[3],
 					},
 					Parsing: "YieldExpression",

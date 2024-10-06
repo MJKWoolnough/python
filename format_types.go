@@ -2415,11 +2415,18 @@ func (f *YieldExpression) printType(w io.Writer, v bool) {
 
 	pp.Print("YieldExpression {")
 
-	if f.Expression != nil {
-		pp.Print("\nExpression: ")
-		f.Expression.printType(&pp, v)
+	if f.ExpressionList != nil {
+		pp.Print("\nExpressionList: ")
+		f.ExpressionList.printType(&pp, v)
 	} else if v {
-		pp.Print("\nExpression: nil")
+		pp.Print("\nExpressionList: nil")
+	}
+
+	if f.StarredList != nil {
+		pp.Print("\nStarredList: ")
+		f.StarredList.printType(&pp, v)
+	} else if v {
+		pp.Print("\nStarredList: nil")
 	}
 
 	if f.From != nil {

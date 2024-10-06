@@ -644,9 +644,10 @@ func (r *ReturnStatement) parse(p *pyParser) error {
 }
 
 type YieldExpression struct {
-	Expression *Expression
-	From       *ExpressionList
-	Tokens     Tokens
+	ExpressionList *ExpressionList
+	StarredList    *StarredList
+	From           *Expression
+	Tokens         Tokens
 }
 
 func (y *YieldExpression) parse(p *pyParser) error {
@@ -657,7 +658,7 @@ func (y *YieldExpression) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
-		y.From = new(ExpressionList)
+		y.From = new(Expression)
 
 		if err := y.From.parse(q); err != nil {
 			return p.Error("YieldExpression", err)
@@ -668,10 +669,19 @@ func (y *YieldExpression) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
-		y.Expression = new(Expression)
 
-		if err := y.Expression.parse(q); err != nil {
-			return p.Error("YieldExpression", err)
+		if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) {
+			y.StarredList = new(StarredList)
+
+			if err := y.StarredList.parse(q); err != nil {
+				return p.Error("YieldExpression", err)
+			}
+		} else {
+			y.ExpressionList = new(ExpressionList)
+
+			if err := y.ExpressionList.parse(q); err != nil {
+				return p.Error("YieldExpression", err)
+			}
 		}
 
 		p.Score(q)
