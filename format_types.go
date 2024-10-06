@@ -945,6 +945,84 @@ func (f *File) printType(w io.Writer, v bool) {
 	io.WriteString(w, "\n}")
 }
 
+func (f *FlexibleExpression) printType(w io.Writer, v bool) {
+	pp := indentPrinter{w}
+
+	pp.Print("FlexibleExpression {")
+
+	if f.AssignmentExpression != nil {
+		pp.Print("\nAssignmentExpression: ")
+		f.AssignmentExpression.printType(&pp, v)
+	} else if v {
+		pp.Print("\nAssignmentExpression: nil")
+	}
+
+	if f.StarredExpression != nil {
+		pp.Print("\nStarredExpression: ")
+		f.StarredExpression.printType(&pp, v)
+	} else if v {
+		pp.Print("\nStarredExpression: nil")
+	}
+
+	pp.Print("\nTokens: ")
+	f.Tokens.printType(&pp, v)
+
+	io.WriteString(w, "\n}")
+}
+
+func (f *FlexibleExpressionList) printType(w io.Writer, v bool) {
+	pp := indentPrinter{w}
+
+	pp.Print("FlexibleExpressionList {")
+
+	if f.FlexibleExpressions == nil {
+		pp.Print("\nFlexibleExpressions: nil")
+	} else if len(f.FlexibleExpressions) > 0 {
+		pp.Print("\nFlexibleExpressions: [")
+
+		ipp := indentPrinter{&pp}
+
+		for n, e := range f.FlexibleExpressions {
+			ipp.Printf("\n%d: ", n)
+			e.printType(&ipp, v)
+		}
+
+		pp.Print("\n]")
+	} else if v {
+		pp.Print("\nFlexibleExpressions: []")
+	}
+
+	pp.Print("\nTokens: ")
+	f.Tokens.printType(&pp, v)
+
+	io.WriteString(w, "\n}")
+}
+
+func (f *FlexibleExpressionListOrComprehension) printType(w io.Writer, v bool) {
+	pp := indentPrinter{w}
+
+	pp.Print("FlexibleExpressionListOrComprehension {")
+
+	if f.FlexibleExpressionList != nil {
+		pp.Print("\nFlexibleExpressionList: ")
+		f.FlexibleExpressionList.printType(&pp, v)
+	} else if v {
+		pp.Print("\nFlexibleExpressionList: nil")
+	}
+
+	if f.Comprehension != nil {
+		pp.Print("\nComprehension: ")
+		f.Comprehension.printType(&pp, v)
+	} else if v {
+		pp.Print("\nComprehension: nil")
+	}
+
+	pp.Print("\nTokens: ")
+	f.Tokens.printType(&pp, v)
+
+	io.WriteString(w, "\n}")
+}
+
 func (f *ForStatement) printType(w io.Writer, v bool) {
 	pp := indentPrinter{w}
 
@@ -1948,31 +2026,6 @@ func (f *StarredList) printType(w io.Writer, v bool) {
 		pp.Print("\n]")
 	} else if v {
 		pp.Print("\nStarredItems: []")
-	}
-
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
-
-	io.WriteString(w, "\n}")
-}
-
-func (f *StarredListOrComprehension) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
-
-	pp.Print("StarredListOrComprehension {")
-
-	if f.StarredList != nil {
-		pp.Print("\nStarredList: ")
-		f.StarredList.printType(&pp, v)
-	} else if v {
-		pp.Print("\nStarredList: nil")
-	}
-
-	if f.Comprehension != nil {
-		pp.Print("\nComprehension: ")
-		f.Comprehension.printType(&pp, v)
-	} else if v {
-		pp.Print("\nComprehension: nil")
 	}
 
 	pp.Print("\nTokens: ")

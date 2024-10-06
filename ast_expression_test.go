@@ -583,7 +583,7 @@ func TestEnclosure(t *testing.T) {
 		}},
 		{`[]`, func(t *test, tk Tokens) { // 9
 			t.Output = Enclosure{
-				ListDisplay: &StarredListOrComprehension{
+				ListDisplay: &FlexibleExpressionListOrComprehension{
 					Tokens: tk[1:1],
 				},
 				Tokens: tk[:2],
@@ -591,7 +591,7 @@ func TestEnclosure(t *testing.T) {
 		}},
 		{`[ ]`, func(t *test, tk Tokens) { // 10
 			t.Output = Enclosure{
-				ListDisplay: &StarredListOrComprehension{
+				ListDisplay: &FlexibleExpressionListOrComprehension{
 					Tokens: tk[2:2],
 				},
 				Tokens: tk[:3],
@@ -599,9 +599,9 @@ func TestEnclosure(t *testing.T) {
 		}},
 		{`[a]`, func(t *test, tk Tokens) { // 11
 			t.Output = Enclosure{
-				ListDisplay: &StarredListOrComprehension{
-					StarredList: &StarredList{
-						StarredItems: []StarredItem{
+				ListDisplay: &FlexibleExpressionListOrComprehension{
+					FlexibleExpressionList: &FlexibleExpressionList{
+						FlexibleExpressions: []FlexibleExpression{
 							{
 								AssignmentExpression: &AssignmentExpression{
 									Expression: Expression{
@@ -625,9 +625,9 @@ func TestEnclosure(t *testing.T) {
 		}},
 		{`[ a ]`, func(t *test, tk Tokens) { // 12
 			t.Output = Enclosure{
-				ListDisplay: &StarredListOrComprehension{
-					StarredList: &StarredList{
-						StarredItems: []StarredItem{
+				ListDisplay: &FlexibleExpressionListOrComprehension{
+					FlexibleExpressionList: &FlexibleExpressionList{
+						FlexibleExpressions: []FlexibleExpression{
 							{
 								AssignmentExpression: &AssignmentExpression{
 									Expression: Expression{
@@ -701,14 +701,22 @@ func TestEnclosure(t *testing.T) {
 		}},
 		{`{*a}`, func(t *test, tk Tokens) { // 17
 			t.Output = Enclosure{
-				SetDisplay: &StarredListOrComprehension{
-					StarredList: &StarredList{
-						StarredItems: []StarredItem{
+				SetDisplay: &FlexibleExpressionListOrComprehension{
+					FlexibleExpressionList: &FlexibleExpressionList{
+						FlexibleExpressions: []FlexibleExpression{
 							{
-								OrExpr: &WrapConditional(&Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
-								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								StarredExpression: &StarredExpression{
+									StarredItems: []StarredItem{
+										{
+											OrExpr: &WrapConditional(&Atom{
+												Identifier: &tk[2],
+												Tokens:     tk[2:3],
+											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Tokens: tk[1:3],
+										},
+									},
+									Tokens: tk[1:3],
+								},
 								Tokens: tk[1:3],
 							},
 						},
@@ -721,14 +729,22 @@ func TestEnclosure(t *testing.T) {
 		}},
 		{`{ *a }`, func(t *test, tk Tokens) { // 18
 			t.Output = Enclosure{
-				SetDisplay: &StarredListOrComprehension{
-					StarredList: &StarredList{
-						StarredItems: []StarredItem{
+				SetDisplay: &FlexibleExpressionListOrComprehension{
+					FlexibleExpressionList: &FlexibleExpressionList{
+						FlexibleExpressions: []FlexibleExpression{
 							{
-								OrExpr: &WrapConditional(&Atom{
-									Identifier: &tk[3],
-									Tokens:     tk[3:4],
-								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								StarredExpression: &StarredExpression{
+									StarredItems: []StarredItem{
+										{
+											OrExpr: &WrapConditional(&Atom{
+												Identifier: &tk[3],
+												Tokens:     tk[3:4],
+											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Tokens: tk[2:4],
+										},
+									},
+									Tokens: tk[2:4],
+								},
 								Tokens: tk[2:4],
 							},
 						},
@@ -741,9 +757,9 @@ func TestEnclosure(t *testing.T) {
 		}},
 		{`{a:=b}`, func(t *test, tk Tokens) { // 19
 			t.Output = Enclosure{
-				SetDisplay: &StarredListOrComprehension{
-					StarredList: &StarredList{
-						StarredItems: []StarredItem{
+				SetDisplay: &FlexibleExpressionListOrComprehension{
+					FlexibleExpressionList: &FlexibleExpressionList{
+						FlexibleExpressions: []FlexibleExpression{
 							{
 								AssignmentExpression: &AssignmentExpression{
 									Identifier: &tk[1],
@@ -768,9 +784,9 @@ func TestEnclosure(t *testing.T) {
 		}},
 		{`{ a:=b }`, func(t *test, tk Tokens) { // 20
 			t.Output = Enclosure{
-				SetDisplay: &StarredListOrComprehension{
-					StarredList: &StarredList{
-						StarredItems: []StarredItem{
+				SetDisplay: &FlexibleExpressionListOrComprehension{
+					FlexibleExpressionList: &FlexibleExpressionList{
+						FlexibleExpressions: []FlexibleExpression{
 							{
 								AssignmentExpression: &AssignmentExpression{
 									Identifier: &tk[2],
@@ -960,10 +976,10 @@ func TestEnclosure(t *testing.T) {
 							Parsing: "StarredItem",
 							Token:   tk[1],
 						},
-						Parsing: "StarredList",
+						Parsing: "FlexibleExpressionList",
 						Token:   tk[1],
 					},
-					Parsing: "StarredListOrComprehension",
+					Parsing: "FlexibleExpressionListOrComprehension",
 					Token:   tk[1],
 				},
 				Parsing: "Enclosure",
@@ -1080,10 +1096,10 @@ func TestEnclosure(t *testing.T) {
 							Parsing: "StarredItem",
 							Token:   tk[2],
 						},
-						Parsing: "StarredList",
+						Parsing: "FlexibleExpressionList",
 						Token:   tk[1],
 					},
-					Parsing: "StarredListOrComprehension",
+					Parsing: "FlexibleExpressionListOrComprehension",
 					Token:   tk[1],
 				},
 				Parsing: "Enclosure",
@@ -1106,12 +1122,12 @@ func TestEnclosure(t *testing.T) {
 	})
 }
 
-func TestStarredListOrComprehension(t *testing.T) {
+func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = StarredListOrComprehension{
-				StarredList: &StarredList{
-					StarredItems: []StarredItem{
+			t.Output = FlexibleExpressionListOrComprehension{
+				FlexibleExpressionList: &FlexibleExpressionList{
+					FlexibleExpressions: []FlexibleExpression{
 						{
 							AssignmentExpression: &AssignmentExpression{
 								Expression: Expression{
@@ -1132,7 +1148,7 @@ func TestStarredListOrComprehension(t *testing.T) {
 			}
 		}},
 		{`a for b in c`, func(t *test, tk Tokens) { // 2
-			t.Output = StarredListOrComprehension{
+			t.Output = FlexibleExpressionListOrComprehension{
 				Comprehension: &Comprehension{
 					AssignmentExpression: AssignmentExpression{
 						Expression: Expression{
@@ -1172,7 +1188,7 @@ func TestStarredListOrComprehension(t *testing.T) {
 			}
 		}},
 		{`a async for b in c`, func(t *test, tk Tokens) { // 3
-			t.Output = StarredListOrComprehension{
+			t.Output = FlexibleExpressionListOrComprehension{
 				Comprehension: &Comprehension{
 					AssignmentExpression: AssignmentExpression{
 						Expression: Expression{
@@ -1224,9 +1240,9 @@ func TestStarredListOrComprehension(t *testing.T) {
 				Tokens: tk[:1],
 			}
 			t.TokenSkip = 1
-			t.Output = StarredListOrComprehension{
-				StarredList: &StarredList{
-					StarredItems: []StarredItem{
+			t.Output = FlexibleExpressionListOrComprehension{
+				FlexibleExpressionList: &FlexibleExpressionList{
+					FlexibleExpressions: []FlexibleExpression{
 						{
 							AssignmentExpression: &AssignmentExpression{
 								Expression: Expression{
@@ -1258,7 +1274,7 @@ func TestStarredListOrComprehension(t *testing.T) {
 				Tokens: tk[:1],
 			}
 			t.TokenSkip = 1
-			t.Output = StarredListOrComprehension{
+			t.Output = FlexibleExpressionListOrComprehension{
 				Comprehension: &Comprehension{
 					AssignmentExpression: AssignmentExpression{
 						Expression: Expression{
@@ -1309,7 +1325,7 @@ func TestStarredListOrComprehension(t *testing.T) {
 				Tokens: tk[:1],
 			}
 			t.TokenSkip = 1
-			t.Output = StarredListOrComprehension{
+			t.Output = FlexibleExpressionListOrComprehension{
 				Comprehension: &Comprehension{
 					AssignmentExpression: AssignmentExpression{
 						Expression: Expression{
@@ -1373,10 +1389,10 @@ func TestStarredListOrComprehension(t *testing.T) {
 						Parsing: "StarredItem",
 						Token:   tk[0],
 					},
-					Parsing: "StarredList",
+					Parsing: "FlexibleExpressionList",
 					Token:   tk[0],
 				},
-				Parsing: "StarredListOrComprehension",
+				Parsing: "FlexibleExpressionListOrComprehension",
 				Token:   tk[0],
 			}
 		}},
@@ -1411,12 +1427,12 @@ func TestStarredListOrComprehension(t *testing.T) {
 					Parsing: "Comprehension",
 					Token:   tk[2],
 				},
-				Parsing: "StarredListOrComprehension",
+				Parsing: "FlexibleExpressionListOrComprehension",
 				Token:   tk[0],
 			}
 		}},
 	}, func(t *test) (Type, error) {
-		var s StarredListOrComprehension
+		var s FlexibleExpressionListOrComprehension
 
 		err := s.parse(t.Tokens, t.AssignmentExpression)
 

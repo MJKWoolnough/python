@@ -130,9 +130,9 @@ func (a *Atom) IsIdentifier() bool {
 
 type Enclosure struct {
 	ParenthForm         *StarredExpression
-	ListDisplay         *StarredListOrComprehension
+	ListDisplay         *FlexibleExpressionListOrComprehension
 	DictDisplay         *DictDisplay
-	SetDisplay          *StarredListOrComprehension
+	SetDisplay          *FlexibleExpressionListOrComprehension
 	GeneratorExpression *GeneratorExpression
 	YieldAtom           *YieldExpression
 	Tokens              Tokens
@@ -184,12 +184,12 @@ func (e *Enclosure) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			e.ListDisplay = &StarredListOrComprehension{
+			e.ListDisplay = &FlexibleExpressionListOrComprehension{
 				Tokens: p.NewGoal().ToTokens(),
 			}
 		} else {
 			q := p.NewGoal()
-			e.ListDisplay = new(StarredListOrComprehension)
+			e.ListDisplay = new(FlexibleExpressionListOrComprehension)
 
 			if err := e.ListDisplay.parse(q, nil); err != nil {
 				return p.Error("Enclosure", err)
@@ -251,7 +251,7 @@ func (e *Enclosure) parse(p *pyParser) error {
 					return p.Error("Enclosure", err)
 				}
 			} else {
-				e.SetDisplay = new(StarredListOrComprehension)
+				e.SetDisplay = new(FlexibleExpressionListOrComprehension)
 
 				if err := e.SetDisplay.parse(q, ae); err != nil {
 					return p.Error("Enclosure", err)
@@ -275,26 +275,26 @@ func (e *Enclosure) parse(p *pyParser) error {
 	return nil
 }
 
-type StarredListOrComprehension struct {
-	StarredList   *StarredList
-	Comprehension *Comprehension
-	Tokens        Tokens
+type FlexibleExpressionListOrComprehension struct {
+	FlexibleExpressionList *FlexibleExpressionList
+	Comprehension          *Comprehension
+	Tokens                 Tokens
 }
 
-func (s *StarredListOrComprehension) parse(p *pyParser, ae *AssignmentExpression) error {
+func (f *FlexibleExpressionListOrComprehension) parse(p *pyParser, ae *AssignmentExpression) error {
 	o := p.NewGoal()
 	if ae == nil {
 		q := p.NewGoal()
-		s.StarredList = new(StarredList)
+		f.FlexibleExpressionList = new(FlexibleExpressionList)
 
-		if err := s.StarredList.parse(q); err != nil {
-			return p.Error("StarredListOrComprehension", err)
+		if err := f.FlexibleExpressionList.parse(q); err != nil {
+			return p.Error("FlexibleExpressionListOrComprehension", err)
 		}
 
 		p.Score(q)
 	} else {
-		s.StarredList = &StarredList{
-			StarredItems: []StarredItem{
+		f.FlexibleExpressionList = &FlexibleExpressionList{
+			FlexibleExpressions: []FlexibleExpression{
 				{
 					AssignmentExpression: ae,
 					Tokens:               ae.Tokens,
@@ -304,7 +304,7 @@ func (s *StarredListOrComprehension) parse(p *pyParser, ae *AssignmentExpression
 		}
 	}
 
-	if len(s.StarredList.StarredItems) == 1 && s.StarredList.StarredItems[0].AssignmentExpression != nil {
+	if len(f.FlexibleExpressionList.FlexibleExpressions) == 1 && f.FlexibleExpressionList.FlexibleExpressions[0].AssignmentExpression != nil {
 		q := p.NewGoal()
 
 		q.AcceptRunWhitespace()
@@ -312,18 +312,37 @@ func (s *StarredListOrComprehension) parse(p *pyParser, ae *AssignmentExpression
 		if tk := q.Peek(); tk == (parser.Token{Type: TokenKeyword, Data: "async"}) || tk == (parser.Token{Type: TokenKeyword, Data: "for"}) {
 			p.Score(q)
 
-			s.Comprehension = new(Comprehension)
+			f.Comprehension = new(Comprehension)
 
-			if err := s.Comprehension.parse(p, s.StarredList.StarredItems[0].AssignmentExpression); err != nil {
-				return o.Error("StarredListOrComprehension", err)
+			if err := f.Comprehension.parse(p, f.FlexibleExpressionList.FlexibleExpressions[0].AssignmentExpression); err != nil {
+				return o.Error("FlexibleExpressionListOrComprehension", err)
 			}
 
-			s.StarredList = nil
+			f.FlexibleExpressionList = nil
 		}
 	}
 
-	s.Tokens = p.ToTokens()
+	f.Tokens = p.ToTokens()
 
+	return nil
+}
+
+type FlexibleExpressionList struct {
+	FlexibleExpressions []FlexibleExpression
+	Tokens
+}
+
+func (f *FlexibleExpressionList) parse(p *pyParser) error {
+	return nil
+}
+
+type FlexibleExpression struct {
+	AssignmentExpression *AssignmentExpression
+	StarredExpression    *StarredExpression
+	Tokens
+}
+
+func (f *FlexibleExpression) parse(p *pyParser) error {
 	return nil
 }
 

@@ -389,6 +389,42 @@ func (f File) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f FlexibleExpression) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = FlexibleExpression
+		type FlexibleExpression X
+
+		fmt.Fprintf(s, "%#v", (f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
+func (f FlexibleExpressionList) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = FlexibleExpressionList
+		type FlexibleExpressionList X
+
+		fmt.Fprintf(s, "%#v", (f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
+func (f FlexibleExpressionListOrComprehension) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = FlexibleExpressionListOrComprehension
+		type FlexibleExpressionListOrComprehension X
+
+		fmt.Fprintf(s, "%#v", (f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f ForStatement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = ForStatement
@@ -765,18 +801,6 @@ func (f StarredList) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = StarredList
 		type StarredList X
-
-		fmt.Fprintf(s, "%#v", (f))
-	} else {
-		format(&f, s, v)
-	}
-}
-
-// Format implements the fmt.Formatter interface
-func (f StarredListOrComprehension) Format(s fmt.State, v rune) {
-	if v == 'v' && s.Flag('#') {
-		type X = StarredListOrComprehension
-		type StarredListOrComprehension X
 
 		fmt.Fprintf(s, "%#v", (f))
 	} else {

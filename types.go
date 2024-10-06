@@ -76,6 +76,12 @@ func (ExpressionList) pythonType() {}
 
 func (File) pythonType() {}
 
+func (FlexibleExpression) pythonType() {}
+
+func (FlexibleExpressionList) pythonType() {}
+
+func (FlexibleExpressionListOrComprehension) pythonType() {}
+
 func (ForStatement) pythonType() {}
 
 func (FuncDefinition) pythonType() {}
@@ -139,8 +145,6 @@ func (StarredExpressionList) pythonType() {}
 func (StarredItem) pythonType() {}
 
 func (StarredList) pythonType() {}
-
-func (StarredListOrComprehension) pythonType() {}
 
 func (StarredOrKeywordArgument) pythonType() {}
 

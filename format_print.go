@@ -280,6 +280,20 @@ func (e ExpressionList) printSource(w io.Writer, v bool) {
 func (f File) printSource(w io.Writer, v bool) {
 }
 
+func (f FlexibleExpressionListOrComprehension) printSource(w io.Writer, v bool) {
+	if f.FlexibleExpressionList != nil {
+		f.FlexibleExpressionList.printSource(w, v)
+	} else if f.Comprehension != nil {
+		f.Comprehension.printSource(w, v)
+	}
+}
+
+func (f FlexibleExpressionList) printSource(w io.Writer, v bool) {
+}
+
+func (f FlexibleExpression) printSource(w io.Writer, v bool) {
+}
+
 func (f ForStatement) printSource(w io.Writer, v bool) {
 }
 
@@ -579,18 +593,13 @@ func (s SliceList) printSource(w io.Writer, v bool) {
 func (f StarredExpression) printSource(w io.Writer, v bool) {
 }
 
+func (f StarredExpressionList) printSource(w io.Writer, v bool) {
+}
+
 func (f StarredItem) printSource(w io.Writer, v bool) {
 }
 
 func (f StarredList) printSource(w io.Writer, v bool) {
-}
-
-func (s StarredListOrComprehension) printSource(w io.Writer, v bool) {
-	if s.StarredList != nil {
-		s.StarredList.printSource(w, v)
-	} else if s.Comprehension != nil {
-		s.Comprehension.printSource(w, v)
-	}
 }
 
 func (f StarredOrKeywordArgument) printSource(w io.Writer, v bool) {
