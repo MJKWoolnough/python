@@ -58,6 +58,14 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 
 func wrapConditionalExpressionError(err Error) Error {
 	switch err.Parsing {
+	case "Enclosure":
+		err = Error{
+			Err:     err,
+			Parsing: "Atom",
+			Token:   err.Token,
+		}
+
+		fallthrough
 	case "Atom":
 		err = Error{
 			Err:     err,
