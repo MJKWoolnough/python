@@ -1923,29 +1923,12 @@ func (f *StarredExpression) printType(w io.Writer, v bool) {
 
 	pp.Print("StarredExpression {")
 
-	if f.Expression != nil {
-		pp.Print("\nExpression: ")
-		f.Expression.printType(&pp, v)
-	} else if v {
-		pp.Print("\nExpression: nil")
+	if f.Starred || v {
+		pp.Printf("\nStarred: %v", f.Starred)
 	}
 
-	if f.StarredItems == nil {
-		pp.Print("\nStarredItems: nil")
-	} else if len(f.StarredItems) > 0 {
-		pp.Print("\nStarredItems: [")
-
-		ipp := indentPrinter{&pp}
-
-		for n, e := range f.StarredItems {
-			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
-		}
-
-		pp.Print("\n]")
-	} else if v {
-		pp.Print("\nStarredItems: []")
-	}
+	pp.Print("\nOrExpr: ")
+	f.OrExpr.printType(&pp, v)
 
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
