@@ -1640,6 +1640,80 @@ func TestFlexibleExpression(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						}),
+						Parsing: "Expression",
+						Token:   tk[0],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[0],
+				},
+				Parsing: "FlexibleExpression",
+				Token:   tk[0],
+			}
+		}},
+		{`*nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err:     ErrInvalidEnclosure,
+																Parsing: "Enclosure",
+																Token:   tk[1],
+															},
+															Parsing: "Atom",
+															Token:   tk[1],
+														},
+														Parsing: "PrimaryExpression",
+														Token:   tk[1],
+													},
+													Parsing: "PowerExpression",
+													Token:   tk[1],
+												},
+												Parsing: "UnaryExpression",
+												Token:   tk[1],
+											},
+											Parsing: "MultiplyExpression",
+											Token:   tk[1],
+										},
+										Parsing: "AddExpression",
+										Token:   tk[1],
+									},
+									Parsing: "ShiftExpression",
+									Token:   tk[1],
+								},
+								Parsing: "AndExpression",
+								Token:   tk[1],
+							},
+							Parsing: "XorExpression",
+							Token:   tk[1],
+						},
+						Parsing: "OrExpression",
+						Token:   tk[1],
+					},
+					Parsing: "StarredExpression",
+					Token:   tk[1],
+				},
+				Parsing: "FlexibleExpression",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f FlexibleExpression
 
