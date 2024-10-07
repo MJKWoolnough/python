@@ -1555,6 +1555,52 @@ func TestFlexibleExpressionList(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[0],
+							}),
+							Parsing: "Expression",
+							Token:   tk[0],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[0],
+					},
+					Parsing: "FlexibleExpression",
+					Token:   tk[0],
+				},
+				Parsing: "FlexibleExpressionList",
+				Token:   tk[0],
+			}
+		}},
+		{`a,nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[2],
+							}),
+							Parsing: "Expression",
+							Token:   tk[2],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[2],
+					},
+					Parsing: "FlexibleExpression",
+					Token:   tk[2],
+				},
+				Parsing: "FlexibleExpressionList",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f FlexibleExpressionList
 
