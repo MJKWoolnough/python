@@ -299,6 +299,11 @@ func (f FlexibleExpressionList) printSource(w io.Writer, v bool) {
 }
 
 func (f FlexibleExpression) printSource(w io.Writer, v bool) {
+	if f.AssignmentExpression != nil {
+		f.AssignmentExpression.printSource(w, v)
+	} else if f.StarredExpression != nil {
+		f.StarredExpression.printSource(w, v)
+	}
 }
 
 func (f ForStatement) printSource(w io.Writer, v bool) {
