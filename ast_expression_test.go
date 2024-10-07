@@ -554,13 +554,10 @@ func TestEnclosure(t *testing.T) {
 		{`(a)`, func(t *test, tk Tokens) { // 7
 			t.Output = Enclosure{
 				ParenthForm: &StarredExpression{
-					Expression: &Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[1],
-							Tokens:     tk[1:2],
-						}),
-						Tokens: tk[1:2],
-					},
+					OrExpr: WrapConditional(&Atom{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					}).OrTest.AndTest.NotTest.Comparison.OrExpression,
 					Tokens: tk[1:2],
 				},
 				Tokens: tk[:3],
@@ -569,13 +566,10 @@ func TestEnclosure(t *testing.T) {
 		{`( a )`, func(t *test, tk Tokens) { // 8
 			t.Output = Enclosure{
 				ParenthForm: &StarredExpression{
-					Expression: &Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[2],
-							Tokens:     tk[2:3],
-						}),
-						Tokens: tk[2:3],
-					},
+					OrExpr: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}).OrTest.AndTest.NotTest.Comparison.OrExpression,
 					Tokens: tk[2:3],
 				},
 				Tokens: tk[:5],
@@ -706,15 +700,11 @@ func TestEnclosure(t *testing.T) {
 						FlexibleExpressions: []FlexibleExpression{
 							{
 								StarredExpression: &StarredExpression{
-									StarredItems: []StarredItem{
-										{
-											OrExpr: &WrapConditional(&Atom{
-												Identifier: &tk[2],
-												Tokens:     tk[2:3],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
-											Tokens: tk[1:3],
-										},
-									},
+									Starred: true,
+									OrExpr: WrapConditional(&Atom{
+										Identifier: &tk[2],
+										Tokens:     tk[2:3],
+									}).OrTest.AndTest.NotTest.Comparison.OrExpression,
 									Tokens: tk[1:3],
 								},
 								Tokens: tk[1:3],
@@ -734,15 +724,11 @@ func TestEnclosure(t *testing.T) {
 						FlexibleExpressions: []FlexibleExpression{
 							{
 								StarredExpression: &StarredExpression{
-									StarredItems: []StarredItem{
-										{
-											OrExpr: &WrapConditional(&Atom{
-												Identifier: &tk[3],
-												Tokens:     tk[3:4],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
-											Tokens: tk[2:4],
-										},
-									},
+									Starred: true,
+									OrExpr: WrapConditional(&Atom{
+										Identifier: &tk[3],
+										Tokens:     tk[3:4],
+									}).OrTest.AndTest.NotTest.Comparison.OrExpression,
 									Tokens: tk[2:4],
 								},
 								Tokens: tk[2:4],
@@ -919,22 +905,46 @@ func TestEnclosure(t *testing.T) {
 					Err: Error{
 						Err: Error{
 							Err: Error{
-								Err: wrapConditionalExpressionError(Error{
+								Err: Error{
 									Err: Error{
-										Err:     ErrInvalidEnclosure,
-										Parsing: "Enclosure",
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err:     ErrInvalidEnclosure,
+																Parsing: "Enclosure",
+																Token:   tk[1],
+															},
+															Parsing: "Atom",
+															Token:   tk[1],
+														},
+														Parsing: "PrimaryExpression",
+														Token:   tk[1],
+													},
+													Parsing: "PowerExpression",
+													Token:   tk[1],
+												},
+												Parsing: "UnaryExpression",
+												Token:   tk[1],
+											},
+											Parsing: "MultiplyExpression",
+											Token:   tk[1],
+										},
+										Parsing: "AddExpression",
 										Token:   tk[1],
 									},
-									Parsing: "Atom",
+									Parsing: "ShiftExpression",
 									Token:   tk[1],
-								}),
-								Parsing: "Expression",
+								},
+								Parsing: "AndExpression",
 								Token:   tk[1],
 							},
-							Parsing: "AssignmentExpression",
+							Parsing: "XorExpression",
 							Token:   tk[1],
 						},
-						Parsing: "StarredItem",
+						Parsing: "OrExpression",
 						Token:   tk[1],
 					},
 					Parsing: "StarredExpression",
@@ -973,7 +983,7 @@ func TestEnclosure(t *testing.T) {
 								Parsing: "AssignmentExpression",
 								Token:   tk[1],
 							},
-							Parsing: "StarredItem",
+							Parsing: "FlexibleExpression",
 							Token:   tk[1],
 						},
 						Parsing: "FlexibleExpressionList",
@@ -1059,42 +1069,46 @@ func TestEnclosure(t *testing.T) {
 															Err: Error{
 																Err: Error{
 																	Err: Error{
-																		Err:     ErrInvalidEnclosure,
-																		Parsing: "Enclosure",
+																		Err: Error{
+																			Err:     ErrInvalidEnclosure,
+																			Parsing: "Enclosure",
+																			Token:   tk[2],
+																		},
+																		Parsing: "Atom",
 																		Token:   tk[2],
 																	},
-																	Parsing: "Atom",
+																	Parsing: "PrimaryExpression",
 																	Token:   tk[2],
 																},
-																Parsing: "PrimaryExpression",
+																Parsing: "PowerExpression",
 																Token:   tk[2],
 															},
-															Parsing: "PowerExpression",
+															Parsing: "UnaryExpression",
 															Token:   tk[2],
 														},
-														Parsing: "UnaryExpression",
+														Parsing: "MultiplyExpression",
 														Token:   tk[2],
 													},
-													Parsing: "MultiplyExpression",
+													Parsing: "AddExpression",
 													Token:   tk[2],
 												},
-												Parsing: "AddExpression",
+												Parsing: "ShiftExpression",
 												Token:   tk[2],
 											},
-											Parsing: "ShiftExpression",
+											Parsing: "AndExpression",
 											Token:   tk[2],
 										},
-										Parsing: "AndExpression",
+										Parsing: "XorExpression",
 										Token:   tk[2],
 									},
-									Parsing: "XorExpression",
+									Parsing: "OrExpression",
 									Token:   tk[2],
 								},
-								Parsing: "OrExpression",
+								Parsing: "StarredExpression",
 								Token:   tk[2],
 							},
-							Parsing: "StarredItem",
-							Token:   tk[2],
+							Parsing: "FlexibleExpression",
+							Token:   tk[1],
 						},
 						Parsing: "FlexibleExpressionList",
 						Token:   tk[1],
@@ -1386,7 +1400,7 @@ func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 							Parsing: "AssignmentExpression",
 							Token:   tk[0],
 						},
-						Parsing: "StarredItem",
+						Parsing: "FlexibleExpression",
 						Token:   tk[0],
 					},
 					Parsing: "FlexibleExpressionList",
