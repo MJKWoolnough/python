@@ -289,6 +289,13 @@ func (f FlexibleExpressionListOrComprehension) printSource(w io.Writer, v bool) 
 }
 
 func (f FlexibleExpressionList) printSource(w io.Writer, v bool) {
+	for n, fe := range f.FlexibleExpressions {
+		if n > 0 {
+			io.WriteString(w, ", ")
+		}
+
+		fe.printSource(w, v)
+	}
 }
 
 func (f FlexibleExpression) printSource(w io.Writer, v bool) {
