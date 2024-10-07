@@ -1446,11 +1446,121 @@ func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 			}
 		}},
 	}, func(t *test) (Type, error) {
-		var s FlexibleExpressionListOrComprehension
+		var f FlexibleExpressionListOrComprehension
 
-		err := s.parse(t.Tokens, t.AssignmentExpression)
+		err := f.parse(t.Tokens, t.AssignmentExpression)
 
-		return s, err
+		return f, err
+	})
+}
+
+func TestFlexibleExpressionList(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = FlexibleExpressionList{
+				FlexibleExpressions: []FlexibleExpression{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a,b`, func(t *test, tk Tokens) { // 2
+			t.Output = FlexibleExpressionList{
+				FlexibleExpressions: []FlexibleExpression{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a, b, c`, func(t *test, tk Tokens) { // 3
+			t.Output = FlexibleExpressionList{
+				FlexibleExpressions: []FlexibleExpression{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[3],
+									Tokens:     tk[3:4],
+								}),
+								Tokens: tk[3:4],
+							},
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var f FlexibleExpressionList
+
+		err := f.parse(t.Tokens)
+
+		return f, err
 	})
 }
 
