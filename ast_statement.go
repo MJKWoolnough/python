@@ -525,53 +525,20 @@ func (a *AnnotatedAssignmentStatement) parse(p *pyParser) error {
 }
 
 type StarredExpression struct {
-	Expression   *Expression
-	StarredItems []StarredItem
-	Tokens       Tokens
+	Starred bool
+	OrExpr  OrExpression
+	Tokens  Tokens
 }
 
 func (s *StarredExpression) parse(p *pyParser) error {
-	first := true
+	s.Starred = p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"})
+	q := p.NewGoal()
 
-	for {
-		var si StarredItem
-
-		q := p.NewGoal()
-
-		if err := si.parse(q); err != nil {
-			return p.Error("StarredExpression", err)
-		}
-
-		p.Score(q)
-
-		q = p.NewGoal()
-
-		q.AcceptRunWhitespace()
-
-		if first && q.Peek() != (parser.Token{Type: TokenDelimiter, Data: ","}) && si.AssignmentExpression != nil && si.AssignmentExpression.Identifier == nil {
-			s.Expression = &si.AssignmentExpression.Expression
-
-			break
-		}
-
-		first = false
-
-		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			break
-		}
-
-		p.Score(q)
-
-		q = p.NewGoal()
-
-		q.AcceptRunWhitespace()
-
-		if t := q.Peek(); t == (parser.Token{Type: TokenOperator, Data: "="}) || t.Type == TokenLineTerminator || t.Type == TokenComment {
-			break
-		}
-
-		p.Score(q)
+	if err := s.OrExpr.parse(q); err != nil {
+		return p.Error("StarredExpression", err)
 	}
+
+	p.Score(q)
 
 	s.Tokens = p.ToTokens()
 
