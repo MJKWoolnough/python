@@ -75,12 +75,8 @@ func TestTypeParam(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
-						Err: Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[2],
-						},
-						Parsing: "Atom",
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
 						Token:   tk[2],
 					}),
 					Parsing: "Expression",

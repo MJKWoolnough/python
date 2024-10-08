@@ -44,12 +44,8 @@ func TestRaiseStatement(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
-						Err: Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[2],
-						},
-						Parsing: "Atom",
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
 						Token:   tk[2],
 					}),
 					Parsing: "Expression",
@@ -63,12 +59,8 @@ func TestRaiseStatement(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
-						Err: Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[6],
-						},
-						Parsing: "Atom",
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
 						Token:   tk[6],
 					}),
 					Parsing: "Expression",
@@ -850,12 +842,8 @@ func TestTypeStatement(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
-						Err: Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[9],
-						},
-						Parsing: "Atom",
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
 						Token:   tk[9],
 					}),
 					Parsing: "Expression",
@@ -984,12 +972,8 @@ func TestAssignmentExpression(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
-						Err: Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[0],
-						},
-						Parsing: "Atom",
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
 						Token:   tk[0],
 					}),
 					Parsing: "Expression",
@@ -1003,12 +987,8 @@ func TestAssignmentExpression(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
-						Err: Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[4],
-						},
-						Parsing: "Atom",
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
 						Token:   tk[4],
 					}),
 					Parsing: "Expression",
@@ -1056,16 +1036,8 @@ func TestExpression(t *testing.T) {
 		{`nonlocal`, func(t *test, tk Tokens) { // 3
 			t.Err = Error{
 				Err: wrapConditionalExpressionError(Error{
-					Err: Error{
-						Err: Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[0],
-						},
-						Parsing: "Atom",
-						Token:   tk[0],
-					},
-					Parsing: "PrimaryExpression",
+					Err:     ErrInvalidEnclosure,
+					Parsing: "Enclosure",
 					Token:   tk[0],
 				}),
 				Parsing: "Expression",
@@ -1077,16 +1049,8 @@ func TestExpression(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: wrapConditionalExpressionError(Error{
-							Err: Error{
-								Err: Error{
-									Err:     ErrInvalidEnclosure,
-									Parsing: "Enclosure",
-									Token:   tk[2],
-								},
-								Parsing: "Atom",
-								Token:   tk[2],
-							},
-							Parsing: "PrimaryExpression",
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
 							Token:   tk[2],
 						}),
 						Parsing: "Expression",
@@ -1627,16 +1591,8 @@ func TestLambdaExpression(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
-						Err: Error{
-							Err: Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
-								Token:   tk[3],
-							},
-							Parsing: "Atom",
-							Token:   tk[3],
-						},
-						Parsing: "PrimaryExpression",
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
 						Token:   tk[3],
 					}),
 					Parsing: "Expression",
