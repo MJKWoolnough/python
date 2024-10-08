@@ -670,6 +670,7 @@ type StarredExpressionList struct {
 }
 
 func (s *StarredExpressionList) parse(p *pyParser) error {
+Loop:
 	for {
 		var se StarredExpression
 
@@ -696,8 +697,8 @@ func (s *StarredExpressionList) parse(p *pyParser) error {
 
 		q.AcceptRunWhitespace()
 
-		if q.Peek() != (parser.Token{Type: TokenOperator, Data: "*"}) {
-			break
+		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "}"}) || tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == TokenLineTerminator || tk.Type == parser.TokenDone {
+			break Loop
 		}
 
 		p.Score(q)
