@@ -74,6 +74,68 @@ func TestStarredExpressionList(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
+		{`nonlocal,`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err:     ErrInvalidEnclosure,
+																Parsing: "Enclosure",
+																Token:   tk[0],
+															},
+															Parsing: "Atom",
+															Token:   tk[0],
+														},
+														Parsing: "PrimaryExpression",
+														Token:   tk[0],
+													},
+													Parsing: "PowerExpression",
+													Token:   tk[0],
+												},
+												Parsing: "UnaryExpression",
+												Token:   tk[0],
+											},
+											Parsing: "MultiplyExpression",
+											Token:   tk[0],
+										},
+										Parsing: "AddExpression",
+										Token:   tk[0],
+									},
+									Parsing: "ShiftExpression",
+									Token:   tk[0],
+								},
+								Parsing: "AndExpression",
+								Token:   tk[0],
+							},
+							Parsing: "XorExpression",
+							Token:   tk[0],
+						},
+						Parsing: "OrExpression",
+						Token:   tk[0],
+					},
+					Parsing: "StarredExpression",
+					Token:   tk[0],
+				},
+				Parsing: "StarredExpressionList",
+				Token:   tk[0],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "StarredExpressionList",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s StarredExpressionList
 
