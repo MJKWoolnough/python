@@ -708,6 +708,8 @@ Loop:
 		p.Score(q)
 	}
 
+	s.Tokens = p.ToTokens()
+
 	return nil
 }
 
