@@ -2,6 +2,87 @@ package python
 
 import "testing"
 
+func TestStarredExpressionList(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a,`, func(t *test, tk Tokens) { // 1
+			t.Output = StarredExpressionList{
+				StarredExpressions: []StarredExpression{
+					{
+						OrExpr: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`a ,`, func(t *test, tk Tokens) { // 2
+			t.Output = StarredExpressionList{
+				StarredExpressions: []StarredExpression{
+					{
+						OrExpr: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a,b`, func(t *test, tk Tokens) { // 3
+			t.Output = StarredExpressionList{
+				StarredExpressions: []StarredExpression{
+					{
+						OrExpr: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[:1],
+					},
+					{
+						OrExpr: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a, b`, func(t *test, tk Tokens) { // 4
+			t.Output = StarredExpressionList{
+				StarredExpressions: []StarredExpression{
+					{
+						OrExpr: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[:1],
+					},
+					{
+						OrExpr: WrapConditional(&Atom{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[3:4],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var s StarredExpressionList
+
+		err := s.parse(t.Tokens)
+
+		return s, err
+	})
+}
+
 func TestRaiseStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`raise`, func(t *test, tk Tokens) { // 1
