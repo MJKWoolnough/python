@@ -695,6 +695,10 @@ Loop:
 			break
 		}
 
+		p.Score(q)
+
+		q = p.NewGoal()
+
 		q.AcceptRunWhitespace()
 
 		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "}"}) || tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == TokenLineTerminator || tk.Type == parser.TokenDone {
