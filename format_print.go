@@ -605,7 +605,18 @@ func (s SliceList) printSource(w io.Writer, v bool) {
 func (f StarredExpression) printSource(w io.Writer, v bool) {
 }
 
-func (f StarredExpressionList) printSource(w io.Writer, v bool) {
+func (s StarredExpressionList) printSource(w io.Writer, v bool) {
+	for n, se := range s.StarredExpressions {
+		if n > 0 {
+			io.WriteString(w, ", ")
+		}
+
+		se.printSource(w, v)
+	}
+
+	if len(s.StarredExpressions) == 1 {
+		io.WriteString(w, ",")
+	}
 }
 
 func (f StarredItem) printSource(w io.Writer, v bool) {
