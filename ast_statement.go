@@ -531,7 +531,12 @@ type StarredExpression struct {
 }
 
 func (s *StarredExpression) parse(p *pyParser) error {
-	s.Starred = p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"})
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		s.Starred = true
+
+		p.AcceptRunWhitespace()
+	}
+
 	q := p.NewGoal()
 
 	if err := s.OrExpr.parse(q); err != nil {
