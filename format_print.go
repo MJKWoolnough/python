@@ -357,7 +357,13 @@ func (i ImportStatement) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f KeywordArgument) printSource(w io.Writer, v bool) {
+func (k KeywordArgument) printSource(w io.Writer, v bool) {
+	if k.Expression != nil {
+		io.WriteString(w, "**")
+		k.Expression.printSource(w, v)
+	} else if k.KeywordItem != nil {
+		k.KeywordItem.printSource(w, v)
+	}
 }
 
 func (f KeywordItem) printSource(w io.Writer, v bool) {
