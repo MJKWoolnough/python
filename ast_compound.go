@@ -1551,7 +1551,7 @@ func (s *StarredOrKeyword) parse(p *pyParser) error {
 		s.Expression = new(Expression)
 
 		if err := s.Expression.parse(q); err != nil {
-			return p.Error("StarredOrKeywordArgument", err)
+			return p.Error("StarredOrKeyword", err)
 		}
 
 		p.Score(q)
@@ -1560,7 +1560,7 @@ func (s *StarredOrKeyword) parse(p *pyParser) error {
 		s.KeywordItem = new(KeywordItem)
 
 		if err := s.KeywordItem.parse(q); err != nil {
-			return p.Error("StarredOrKeywordArgument", err)
+			return p.Error("StarredOrKeyword", err)
 		}
 
 		p.Score(q)
