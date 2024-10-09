@@ -223,6 +223,57 @@ func TestTypeParam(t *testing.T) {
 	})
 }
 
+func TestStarredOrKeyword(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`*a`, func(t *test, tk Tokens) { // 1
+			t.Output = StarredOrKeyword{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					}),
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`* a`, func(t *test, tk Tokens) { // 2
+			t.Output = StarredOrKeyword{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a=b`, func(t *test, tk Tokens) { // 3
+			t.Output = StarredOrKeyword{
+				KeywordItem: &KeywordItem{
+					Identifier: &tk[0],
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var s StarredOrKeyword
+
+		err := s.parse(t.Tokens)
+
+		return s, err
+	})
+}
+
 func TestKeywordItem(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a=b`, func(t *test, tk Tokens) { // 1
