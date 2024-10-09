@@ -223,6 +223,43 @@ func TestTypeParam(t *testing.T) {
 	})
 }
 
+func TestKeywordItem(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a=b`, func(t *test, tk Tokens) { // 1
+			t.Output = KeywordItem{
+				Identifier: &tk[0],
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a = b`, func(t *test, tk Tokens) { // 2
+			t.Output = KeywordItem{
+				Identifier: &tk[0],
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					}),
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var k KeywordItem
+
+		err := k.parse(t.Tokens)
+
+		return k, err
+	})
+}
+
 func TestKeywordArgument(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a=b`, func(t *test, tk Tokens) { // 1
