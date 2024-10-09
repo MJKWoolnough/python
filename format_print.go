@@ -366,7 +366,18 @@ func (k KeywordArgument) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f KeywordItem) printSource(w io.Writer, v bool) {
+func (k KeywordItem) printSource(w io.Writer, v bool) {
+	if k.Identifier != nil {
+		io.WriteString(w, k.Identifier.Data)
+
+		if v {
+			io.WriteString(w, ": ")
+		} else {
+			io.WriteString(w, ":")
+		}
+
+		k.Expression.printSource(w, v)
+	}
 }
 
 func (l LambdaExpression) printSource(w io.Writer, v bool) {
