@@ -1370,7 +1370,7 @@ func (pr *Parameter) parse(p *pyParser, allowAnnotations bool) error {
 
 type ArgumentList struct {
 	PositionalArguments        []PositionalArgument
-	StarredAndKeywordArguments []StarredOrKeywordArgument
+	StarredAndKeywordArguments []StarredOrKeyword
 	KeywordArguments           []KeywordArgument
 	Tokens                     Tokens
 }
@@ -1436,7 +1436,7 @@ func (a *ArgumentList) parse(p *pyParser) error {
 				break
 			}
 
-			var sk StarredOrKeywordArgument
+			var sk StarredOrKeyword
 
 			if err := sk.parse(q); err != nil {
 				return p.Error("ArgumentList", err)
@@ -1537,13 +1537,13 @@ func (pa *PositionalArgument) parse(p *pyParser) error {
 	return nil
 }
 
-type StarredOrKeywordArgument struct {
+type StarredOrKeyword struct {
 	Expression  *Expression
 	KeywordItem *KeywordItem
 	Tokens      Tokens
 }
 
-func (s *StarredOrKeywordArgument) parse(p *pyParser) error {
+func (s *StarredOrKeyword) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
 		p.AcceptRunWhitespace()
 

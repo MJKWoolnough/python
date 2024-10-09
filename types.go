@@ -146,7 +146,7 @@ func (StarredItem) pythonType() {}
 
 func (StarredList) pythonType() {}
 
-func (StarredOrKeywordArgument) pythonType() {}
+func (StarredOrKeyword) pythonType() {}
 
 func (Statement) pythonType() {}
 

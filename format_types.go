@@ -2017,10 +2017,10 @@ func (f *StarredList) printType(w io.Writer, v bool) {
 	io.WriteString(w, "\n}")
 }
 
-func (f *StarredOrKeywordArgument) printType(w io.Writer, v bool) {
+func (f *StarredOrKeyword) printType(w io.Writer, v bool) {
 	pp := indentPrinter{w}
 
-	pp.Print("StarredOrKeywordArgument {")
+	pp.Print("StarredOrKeyword {")
 
 	if f.Expression != nil {
 		pp.Print("\nExpression: ")

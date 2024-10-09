@@ -648,7 +648,7 @@ func (s StarredItem) printSource(w io.Writer, v bool) {
 func (f StarredList) printSource(w io.Writer, v bool) {
 }
 
-func (f StarredOrKeywordArgument) printSource(w io.Writer, v bool) {
+func (f StarredOrKeyword) printSource(w io.Writer, v bool) {
 }
 
 func (f Statement) printSource(w io.Writer, v bool) {

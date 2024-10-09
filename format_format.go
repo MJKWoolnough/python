@@ -809,10 +809,10 @@ func (f StarredList) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
-func (f StarredOrKeywordArgument) Format(s fmt.State, v rune) {
+func (f StarredOrKeyword) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
-		type X = StarredOrKeywordArgument
-		type StarredOrKeywordArgument X
+		type X = StarredOrKeyword
+		type StarredOrKeyword X
 
 		fmt.Fprintf(s, "%#v", (f))
 	} else {
