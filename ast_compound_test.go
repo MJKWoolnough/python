@@ -251,6 +251,35 @@ func TestKeywordItem(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal=a`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "KeywordItem",
+				Token:   tk[0],
+			}
+		}},
+		{`a:b`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingEquals,
+				Parsing: "KeywordItem",
+				Token:   tk[1],
+			}
+		}},
+		{`a=nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[2],
+					}),
+					Parsing: "Expression",
+					Token:   tk[2],
+				},
+				Parsing: "KeywordItem",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var k KeywordItem
 
