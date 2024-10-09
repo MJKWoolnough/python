@@ -619,7 +619,13 @@ func (s StarredExpressionList) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f StarredItem) printSource(w io.Writer, v bool) {
+func (s StarredItem) printSource(w io.Writer, v bool) {
+	if s.AssignmentExpression != nil {
+		s.AssignmentExpression.printSource(w, v)
+	} else if s.OrExpr != nil {
+		io.WriteString(w, "*")
+		s.OrExpr.printSource(w, v)
+	}
 }
 
 func (f StarredList) printSource(w io.Writer, v bool) {
