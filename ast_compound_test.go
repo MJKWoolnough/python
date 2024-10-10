@@ -615,6 +615,92 @@ func TestArgumentList(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[0],
+							}),
+							Parsing: "Expression",
+							Token:   tk[0],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[0],
+					},
+					Parsing: "PositionalArgument",
+					Token:   tk[0],
+				},
+				Parsing: "ArgumentList",
+				Token:   tk[0],
+			}
+		}},
+		{`a b`, func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "ArgumentList",
+				Token:   tk[1],
+			}
+		}},
+		{`a=nonlocal`, func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[2],
+							}),
+							Parsing: "Expression",
+							Token:   tk[2],
+						},
+						Parsing: "KeywordItem",
+						Token:   tk[2],
+					},
+					Parsing: "StarredOrKeyword",
+					Token:   tk[0],
+				},
+				Parsing: "ArgumentList",
+				Token:   tk[0],
+			}
+		}},
+		{`a=b c`, func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "ArgumentList",
+				Token:   tk[3],
+			}
+		}},
+		{`**nonlocal`, func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[1],
+						}),
+						Parsing: "Expression",
+						Token:   tk[1],
+					},
+					Parsing: "KeywordArgument",
+					Token:   tk[1],
+				},
+				Parsing: "ArgumentList",
+				Token:   tk[0],
+			}
+		}},
+		{`**a b`, func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "ArgumentList",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a ArgumentList
 
