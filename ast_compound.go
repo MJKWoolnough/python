@@ -1381,27 +1381,28 @@ func (a *ArgumentList) parse(p *pyParser) error {
 	q := p.NewGoal()
 
 	for {
-		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
 			break
 		}
 
 		p.Score(q)
+		q = p.NewGoal()
 
 		if next := q.Peek(); next == (parser.Token{Type: TokenOperator, Data: "**"}) {
 			nextIsDoubleStarred = true
 
 			break
 		} else if next.Type == TokenIdentifier {
-			q.Skip()
-			q.AcceptRunWhitespace()
+			r := q.NewGoal()
 
-			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "="}) {
+			r.Skip()
+			r.AcceptRunWhitespace()
+
+			if r.Peek() == (parser.Token{Type: TokenDelimiter, Data: "="}) {
 				nextIsKeywordItem = true
 
 				break
 			}
-
-			q = p.NewGoal()
 		}
 
 		var pa PositionalArgument
@@ -1417,7 +1418,7 @@ func (a *ArgumentList) parse(p *pyParser) error {
 
 		q.AcceptRunWhitespace()
 
-		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
 			break
 		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 			return p.Error("ArgumentList", ErrMissingComma)
@@ -1449,7 +1450,7 @@ func (a *ArgumentList) parse(p *pyParser) error {
 
 			q.AcceptRunWhitespace()
 
-			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
 				break
 			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				return p.Error("ArgumentList", ErrMissingComma)
@@ -1457,7 +1458,7 @@ func (a *ArgumentList) parse(p *pyParser) error {
 
 			q.AcceptRunWhitespace()
 
-			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
 				break
 			}
 
@@ -1482,7 +1483,7 @@ func (a *ArgumentList) parse(p *pyParser) error {
 
 			q.AcceptRunWhitespace()
 
-			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
 				break
 			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				return p.Error("ArgumentList", ErrMissingComma)
@@ -1490,7 +1491,7 @@ func (a *ArgumentList) parse(p *pyParser) error {
 
 			q.AcceptRunWhitespace()
 
-			if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
 				break
 			}
 
