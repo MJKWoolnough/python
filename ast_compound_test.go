@@ -223,6 +223,407 @@ func TestTypeParam(t *testing.T) {
 	})
 }
 
+func TestArgumentList(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a,`, func(t *test, tk Tokens) { // 2
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a,b`, func(t *test, tk Tokens) { // 3
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a , b`, func(t *test, tk Tokens) { // 4
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a,*b`, func(t *test, tk Tokens) { // 5
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[2:4],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a, *b`, func(t *test, tk Tokens) { // 6
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
+							}),
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[3:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a,b=c`, func(t *test, tk Tokens) { // 7
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarredAndKeywordArguments: []StarredOrKeyword{
+					{
+						KeywordItem: &KeywordItem{
+							Identifier: &tk[2],
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[2:5],
+						},
+						Tokens: tk[2:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a, b=c, *d`, func(t *test, tk Tokens) { // 8
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarredAndKeywordArguments: []StarredOrKeyword{
+					{
+						KeywordItem: &KeywordItem{
+							Identifier: &tk[3],
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[5],
+									Tokens:     tk[5:6],
+								}),
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[3:6],
+						},
+						Tokens: tk[3:6],
+					},
+					{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[9],
+								Tokens:     tk[9:10],
+							}),
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[8:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`a=b,*c`, func(t *test, tk Tokens) { // 9
+			t.Output = ArgumentList{
+				StarredAndKeywordArguments: []StarredOrKeyword{
+					{
+						KeywordItem: &KeywordItem{
+							Identifier: &tk[0],
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[:3],
+						},
+						Tokens: tk[:3],
+					},
+					{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[5],
+								Tokens:     tk[5:6],
+							}),
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[4:6],
+					},
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`a,b=c,**d`, func(t *test, tk Tokens) { // 10
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarredAndKeywordArguments: []StarredOrKeyword{
+					{
+						KeywordItem: &KeywordItem{
+							Identifier: &tk[2],
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[2:5],
+						},
+						Tokens: tk[2:5],
+					},
+				},
+				KeywordArguments: []KeywordArgument{
+					{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							}),
+							Tokens: tk[7:8],
+						},
+						Tokens: tk[6:8],
+					},
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{`a,**b,c=d`, func(t *test, tk Tokens) { // 11
+			t.Output = ArgumentList{
+				PositionalArguments: []PositionalArgument{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				KeywordArguments: []KeywordArgument{
+					{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[2:4],
+					},
+					{
+						KeywordItem: &KeywordItem{
+							Identifier: &tk[5],
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[7],
+									Tokens:     tk[7:8],
+								}),
+								Tokens: tk[7:8],
+							},
+							Tokens: tk[5:8],
+						},
+						Tokens: tk[5:8],
+					},
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{`**b`, func(t *test, tk Tokens) { // 12
+			t.Output = ArgumentList{
+				KeywordArguments: []KeywordArgument{
+					{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							}),
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[:2],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var a ArgumentList
+
+		err := a.parse(t.Tokens)
+
+		return a, err
+	})
+}
+
 func TestPositionalArgument(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
@@ -283,7 +684,7 @@ func TestPositionalArgument(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 4
+		{`*nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
