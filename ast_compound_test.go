@@ -264,6 +264,40 @@ func TestPositionalArgument(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						}),
+						Parsing: "Expression",
+						Token:   tk[0],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[0],
+				},
+				Parsing: "PositionalArgument",
+				Token:   tk[0],
+			}
+		}},
+		{`*nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[1],
+					}),
+					Parsing: "Expression",
+					Token:   tk[1],
+				},
+				Parsing: "PositionalArgument",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var p PositionalArgument
 
