@@ -648,7 +648,13 @@ func (s StarredItem) printSource(w io.Writer, v bool) {
 func (f StarredList) printSource(w io.Writer, v bool) {
 }
 
-func (f StarredOrKeyword) printSource(w io.Writer, v bool) {
+func (s StarredOrKeyword) printSource(w io.Writer, v bool) {
+	if s.Expression != nil {
+		io.WriteString(w, "*")
+		s.Expression.printSource(w, v)
+	} else if s.KeywordItem != nil {
+		s.KeywordItem.printSource(w, v)
+	}
 }
 
 func (f Statement) printSource(w io.Writer, v bool) {
