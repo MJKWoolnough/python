@@ -265,6 +265,32 @@ func TestStarredOrKeyword(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`*nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[1],
+					}),
+					Parsing: "Expression",
+					Token:   tk[1],
+				},
+				Parsing: "StarredOrKeyword",
+				Token:   tk[1],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "KeywordItem",
+					Token:   tk[0],
+				},
+				Parsing: "StarredOrKeyword",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s StarredOrKeyword
 
