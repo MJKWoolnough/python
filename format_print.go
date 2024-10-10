@@ -46,7 +46,38 @@ func (a AndTest) printSource(w io.Writer, v bool) {
 func (f AnnotatedAssignmentStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f ArgumentList) printSource(w io.Writer, v bool) {
+func (a ArgumentList) printSource(w io.Writer, v bool) {
+	first := true
+
+	for _, p := range a.PositionalArguments {
+		if !first {
+			io.WriteString(w, ", ")
+		}
+
+		p.printSource(w, v)
+
+		first = false
+	}
+
+	for _, s := range a.StarredAndKeywordArguments {
+		if !first {
+			io.WriteString(w, ", ")
+		}
+
+		s.printSource(w, v)
+
+		first = false
+	}
+
+	for _, k := range a.KeywordArguments {
+		if !first {
+			io.WriteString(w, ", ")
+		}
+
+		k.printSource(w, v)
+
+		first = false
+	}
 }
 
 func (a ArgumentListOrComprehension) printSource(w io.Writer, v bool) {
