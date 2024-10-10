@@ -487,7 +487,13 @@ func (f Parameter) printSource(w io.Writer, v bool) {
 func (f ParameterList) printSource(w io.Writer, v bool) {
 }
 
-func (f PositionalArgument) printSource(w io.Writer, v bool) {
+func (p PositionalArgument) printSource(w io.Writer, v bool) {
+	if p.AssignmentExpression != nil {
+		p.AssignmentExpression.printSource(w, v)
+	} else if p.Expression != nil {
+		io.WriteString(w, "*")
+		p.Expression.printSource(w, v)
+	}
 }
 
 func (p PowerExpression) printSource(w io.Writer, v bool) {
