@@ -223,6 +223,64 @@ func TestTypeParam(t *testing.T) {
 	})
 }
 
+func TestParameter(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = Parameter{
+				Identifier: &tk[0],
+				Tokens:     tk[:1],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 2
+			t.AllowTypeAnnotations = true
+			t.Output = Parameter{
+				Identifier: &tk[0],
+				Tokens:     tk[:1],
+			}
+		}},
+		{`a:b`, func(t *test, tk Tokens) { // 3
+			t.Output = Parameter{
+				Identifier: &tk[0],
+				Tokens:     tk[:1],
+			}
+		}},
+		{`a:b`, func(t *test, tk Tokens) { // 4
+			t.AllowTypeAnnotations = true
+			t.Output = Parameter{
+				Identifier: &tk[0],
+				Type: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a : b`, func(t *test, tk Tokens) { // 5
+			t.AllowTypeAnnotations = true
+			t.Output = Parameter{
+				Identifier: &tk[0],
+				Type: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					}),
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var p Parameter
+
+		err := p.parse(t.Tokens, t.AllowTypeAnnotations)
+
+		return p, err
+	})
+}
+
 func TestArgumentList(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
