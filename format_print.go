@@ -233,7 +233,13 @@ func (c ConditionalExpression) printSource(w io.Writer, v bool) {
 func (f Decorators) printSource(w io.Writer, v bool) {
 }
 
-func (f DefParameter) printSource(w io.Writer, v bool) {
+func (d DefParameter) printSource(w io.Writer, v bool) {
+	d.Parameter.printSource(w, v)
+
+	if d.Value != nil {
+		io.WriteString(w, " = ")
+		d.Value.printSource(w, v)
+	}
 }
 
 func (f DelStatement) printSource(w io.Writer, v bool) {
