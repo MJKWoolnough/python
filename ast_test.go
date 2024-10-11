@@ -20,6 +20,7 @@ type test struct {
 	Expression           *Expression
 	OrigTokens           *pyParser
 	TokenSkip            int
+	AllowTypeAnnotations bool
 	Err                  error
 }
 
