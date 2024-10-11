@@ -272,6 +272,29 @@ func TestParameter(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "Parameter",
+				Token:   tk[0],
+			}
+		}},
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 7
+			t.AllowTypeAnnotations = true
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[2],
+					}),
+					Parsing: "Expression",
+					Token:   tk[2],
+				},
+				Parsing: "Parameter",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var p Parameter
 
