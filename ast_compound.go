@@ -1159,7 +1159,7 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 		var df DefParameter
 
 		if err := df.parse(q, allowAnnotations); err != nil {
-			return p.Error("ParamaterList", err)
+			return p.Error("ParameterList", err)
 		}
 
 		p.Score(q)
@@ -1228,7 +1228,7 @@ func (l *ParameterList) parseStars(p, q *pyParser, target *[]DefParameter, allow
 		l.StarArg = new(Parameter)
 
 		if err := l.StarArg.parse(q, allowAnnotations); err != nil {
-			p.Error("ParamaterList", err)
+			return nil, p.Error("ParameterList", err)
 		}
 
 		p.Score(q)
@@ -1256,7 +1256,7 @@ func (l *ParameterList) parseStarStar(p, q *pyParser, target *[]DefParameter, al
 	l.StarStarArg = new(Parameter)
 
 	if err := l.StarStarArg.parse(q, allowAnnotations); err != nil {
-		p.Error("ParamaterList", err)
+		return nil, p.Error("ParameterList", err)
 	}
 
 	p.Score(q)
