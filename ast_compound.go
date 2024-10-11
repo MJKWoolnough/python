@@ -1144,137 +1144,28 @@ type ParameterList struct {
 func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 	q := p.NewGoal()
 
-	dps, err := paramList(q, allowAnnotations)
+	target, err := l.parseStars(p, q, &l.DefParameters, allowAnnotations)
 	if err != nil {
-		return p.Error("ParameterList", err)
+		return err
 	}
 
-	p.Score(q)
+	hasSlash := false
 
-	q = p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		q.AcceptRunWhitespace()
-
-		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) {
-			l.DefParameters = dps
-			dps = nil
-
-			p.Score(q)
-
-			q = p.NewGoal()
-
-			q.AcceptRunWhitespace()
-
-			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-				q.AcceptRunWhitespace()
-
-				if q.Peek().Type == TokenIdentifier {
-					dps, err = paramList(q, allowAnnotations)
-					if err != nil {
-						return p.Error("ParameterList", err)
-					}
-
-					p.Score(q)
-				}
-			}
-		}
-	}
-
-	if dps != nil {
-		l.NoPosOnly = dps
+	for target != nil && q.Peek().Type == TokenIdentifier {
+		p.Score(q)
 
 		q = p.NewGoal()
 
-		q.AcceptRunWhitespace()
+		var df DefParameter
 
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			q.AcceptRunWhitespace()
-
-			tryStarStar := true
-
-			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-				q.AcceptRunWhitespace()
-				p.Score(q)
-
-				q = p.NewGoal()
-				l.StarArg = new(Parameter)
-
-				if err := l.StarArg.parse(q, allowAnnotations); err != nil {
-					return p.Error("ParameterList", err)
-				}
-
-				p.Score(q)
-
-				q = p.NewGoal()
-
-				q.AcceptRunWhitespace()
-
-				if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-					q.AcceptRunWhitespace()
-
-					if q.Peek().Type == TokenIdentifier {
-						p.Score(q)
-
-						q = p.NewGoal()
-
-						dps, err := paramList(q, allowAnnotations)
-						if err != nil {
-							return p.Error("ParameterList", err)
-						}
-
-						p.Score(q)
-
-						l.StarArgs = dps
-						q = p.NewGoal()
-
-						q.AcceptRunWhitespace()
-
-						if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-							q.AcceptRunWhitespace()
-						} else {
-							tryStarStar = false
-						}
-					}
-				}
-			}
-
-			if tryStarStar && q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
-				q.AcceptRunWhitespace()
-				p.Score(q)
-
-				q = p.NewGoal()
-				l.StarStarArg = new(Parameter)
-
-				if err := l.StarStarArg.parse(q, allowAnnotations); err != nil {
-					return p.Error("ParameterList", err)
-				}
-			}
-		}
-	}
-
-	l.Tokens = p.ToTokens()
-
-	return nil
-}
-
-func paramList(p *pyParser, allowAnnotations bool) ([]DefParameter, error) {
-	var defParameters []DefParameter
-
-	for {
-		q := p.NewGoal()
-
-		var dp DefParameter
-
-		if err := dp.parse(q, allowAnnotations); err != nil {
-			return nil, err
+		if err := df.parse(q, allowAnnotations); err != nil {
+			return p.Error("ParamaterList", err)
 		}
 
 		p.Score(q)
 
-		defParameters = append(defParameters, dp)
+		*target = append(*target, df)
+
 		q = p.NewGoal()
 
 		q.AcceptRunWhitespace()
@@ -1285,14 +1176,101 @@ func paramList(p *pyParser, allowAnnotations bool) ([]DefParameter, error) {
 
 		q.AcceptRunWhitespace()
 
-		if q.Peek().Type != TokenIdentifier {
-			break
+		switch target {
+		case &l.DefParameters:
+			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) {
+				p.Score(q)
+
+				hasSlash = true
+				q = p.NewGoal()
+
+				q.AcceptRunWhitespace()
+
+				if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+					break
+				}
+
+				q.AcceptRunWhitespace()
+
+				target = &l.NoPosOnly
+			}
+
+			fallthrough
+		case &l.NoPosOnly:
+			if target, err = l.parseStars(p, q, target, allowAnnotations); err != nil {
+				return err
+			}
+		default:
+			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+				if target, err = l.parseStarStar(p, q, target, allowAnnotations); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	if !hasSlash {
+		l.NoPosOnly = l.DefParameters
+		l.DefParameters = nil
+	}
+
+	l.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func (l *ParameterList) parseStars(p, q *pyParser, target *[]DefParameter, allowAnnotations bool) (*[]DefParameter, error) {
+	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		q.AcceptRunWhitespace()
+		p.Score(q)
+
+		*q = *p.NewGoal()
+		l.StarArg = new(Parameter)
+
+		if err := l.StarArg.parse(q, allowAnnotations); err != nil {
+			p.Error("ParamaterList", err)
 		}
 
 		p.Score(q)
+
+		target = &l.StarArgs
+		*q = *p.NewGoal()
+
+		q.AcceptRunWhitespace()
+		q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
+		q.AcceptRunWhitespace()
 	}
 
-	return defParameters, nil
+	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+		return l.parseStarStar(p, q, target, allowAnnotations)
+	}
+
+	return target, nil
+}
+
+func (l *ParameterList) parseStarStar(p, q *pyParser, target *[]DefParameter, allowAnnotations bool) (*[]DefParameter, error) {
+	q.AcceptRunWhitespace()
+	p.Score(q)
+
+	*q = *p.NewGoal()
+	l.StarStarArg = new(Parameter)
+
+	if err := l.StarStarArg.parse(q, allowAnnotations); err != nil {
+		p.Error("ParamaterList", err)
+	}
+
+	p.Score(q)
+
+	target = nil
+	*q = *p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		p.Score(q)
+	}
+
+	return target, nil
 }
 
 type DefParameter struct {
