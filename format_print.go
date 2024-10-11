@@ -512,7 +512,13 @@ func (o OrTest) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f Parameter) printSource(w io.Writer, v bool) {
+func (p Parameter) printSource(w io.Writer, v bool) {
+	io.WriteString(w, p.Identifier.Data)
+
+	if p.Type != nil {
+		io.WriteString(w, ": ")
+		p.Type.printSource(w, v)
+	}
 }
 
 func (f ParameterList) printSource(w io.Writer, v bool) {
