@@ -223,6 +223,418 @@ func TestTypeParam(t *testing.T) {
 	})
 }
 
+func TestParameterList(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = ParameterList{
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a,b`, func(t *test, tk Tokens) { // 2
+			t.Output = ParameterList{
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Parameter: Parameter{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a , b`, func(t *test, tk Tokens) { // 3
+			t.Output = ParameterList{
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Parameter: Parameter{
+							Identifier: &tk[4],
+							Tokens:     tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`*a`, func(t *test, tk Tokens) { // 4
+			t.Output = ParameterList{
+				StarArg: &Parameter{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`a,*b`, func(t *test, tk Tokens) { // 5
+			t.Output = ParameterList{
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarArg: &Parameter{
+					Identifier: &tk[3],
+					Tokens:     tk[3:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`**a`, func(t *test, tk Tokens) { // 6
+			t.Output = ParameterList{
+				StarStarArg: &Parameter{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`a, ** b`, func(t *test, tk Tokens) { // 7
+			t.Output = ParameterList{
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarStarArg: &Parameter{
+					Identifier: &tk[5],
+					Tokens:     tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`a, ** b, c`, func(t *test, tk Tokens) { // 8
+			t.Output = ParameterList{
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarStarArg: &Parameter{
+					Identifier: &tk[5],
+					Tokens:     tk[5:6],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`**a`, func(t *test, tk Tokens) { // 9
+			t.Output = ParameterList{
+				StarStarArg: &Parameter{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`*a, **b`, func(t *test, tk Tokens) { // 10
+			t.Output = ParameterList{
+				StarArg: &Parameter{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				},
+				StarStarArg: &Parameter{
+					Identifier: &tk[5],
+					Tokens:     tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`a, *b, **c`, func(t *test, tk Tokens) { // 11
+			t.Output = ParameterList{
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarArg: &Parameter{
+					Identifier: &tk[4],
+					Tokens:     tk[4:5],
+				},
+				StarStarArg: &Parameter{
+					Identifier: &tk[8],
+					Tokens:     tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`a, b, *c, d, e, **f`, func(t *test, tk Tokens) { // 12
+			t.Output = ParameterList{
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Parameter: Parameter{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+				},
+				StarArg: &Parameter{
+					Identifier: &tk[7],
+					Tokens:     tk[7:8],
+				},
+				StarArgs: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[10],
+							Tokens:     tk[10:11],
+						},
+						Tokens: tk[10:11],
+					},
+					{
+						Parameter: Parameter{
+							Identifier: &tk[13],
+							Tokens:     tk[13:14],
+						},
+						Tokens: tk[13:14],
+					},
+				},
+				StarStarArg: &Parameter{
+					Identifier: &tk[17],
+					Tokens:     tk[17:18],
+				},
+				Tokens: tk[:18],
+			}
+		}},
+		{`a, /`, func(t *test, tk Tokens) { // 13
+			t.Output = ParameterList{
+				DefParameters: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a, b, /`, func(t *test, tk Tokens) { // 14
+			t.Output = ParameterList{
+				DefParameters: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Parameter: Parameter{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`a, b, /, c`, func(t *test, tk Tokens) { // 15
+			t.Output = ParameterList{
+				DefParameters: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Parameter: Parameter{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+				},
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[9],
+							Tokens:     tk[9:10],
+						},
+						Tokens: tk[9:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`a, /, *b`, func(t *test, tk Tokens) { // 16
+			t.Output = ParameterList{
+				DefParameters: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarArg: &Parameter{
+					Identifier: &tk[7],
+					Tokens:     tk[7:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{`a, /, **b`, func(t *test, tk Tokens) { // 17
+			t.Output = ParameterList{
+				DefParameters: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarStarArg: &Parameter{
+					Identifier: &tk[7],
+					Tokens:     tk[7:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{`a, /, *b, **c`, func(t *test, tk Tokens) { // 18
+			t.Output = ParameterList{
+				DefParameters: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarArg: &Parameter{
+					Identifier: &tk[7],
+					Tokens:     tk[7:8],
+				},
+				StarStarArg: &Parameter{
+					Identifier: &tk[11],
+					Tokens:     tk[11:12],
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`a, b, /, c, d, *e, f, g, **h`, func(t *test, tk Tokens) { // 19
+			t.Output = ParameterList{
+				DefParameters: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Parameter: Parameter{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+				},
+				NoPosOnly: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[9],
+							Tokens:     tk[9:10],
+						},
+						Tokens: tk[9:10],
+					},
+					{
+						Parameter: Parameter{
+							Identifier: &tk[12],
+							Tokens:     tk[12:13],
+						},
+						Tokens: tk[12:13],
+					},
+				},
+				StarArg: &Parameter{
+					Identifier: &tk[16],
+					Tokens:     tk[16:17],
+				},
+				StarArgs: []DefParameter{
+					{
+						Parameter: Parameter{
+							Identifier: &tk[19],
+							Tokens:     tk[19:20],
+						},
+						Tokens: tk[19:20],
+					},
+					{
+						Parameter: Parameter{
+							Identifier: &tk[22],
+							Tokens:     tk[22:23],
+						},
+						Tokens: tk[22:23],
+					},
+				},
+				StarStarArg: &Parameter{
+					Identifier: &tk[26],
+					Tokens:     tk[26:27],
+				},
+				Tokens: tk[:27],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var p ParameterList
+
+		err := p.parse(t.Tokens, t.AllowTypeAnnotations)
+
+		return p, err
+	})
+}
+
 func TestDefParameter(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
