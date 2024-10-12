@@ -626,6 +626,69 @@ func TestParameterList(t *testing.T) {
 				Tokens: tk[:27],
 			}
 		}},
+		{`a=nonlocal`, func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "DefParameter",
+					Token:   tk[2],
+				},
+				Parsing: "ParameterList",
+				Token:   tk[0],
+			}
+		}},
+		{`*nonlocal`, func(t *test, tk Tokens) { // 21
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "Parameter",
+					Token:   tk[1],
+				},
+				Parsing: "ParameterList",
+				Token:   tk[1],
+			}
+		}},
+		{`**nonlocal`, func(t *test, tk Tokens) { // 22
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "Parameter",
+					Token:   tk[1],
+				},
+				Parsing: "ParameterList",
+				Token:   tk[1],
+			}
+		}},
+		{`a,*nonlocal`, func(t *test, tk Tokens) { // 23
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "Parameter",
+					Token:   tk[3],
+				},
+				Parsing: "ParameterList",
+				Token:   tk[3],
+			}
+		}},
+		{`a,**nonlocal`, func(t *test, tk Tokens) { // 24
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "Parameter",
+					Token:   tk[3],
+				},
+				Parsing: "ParameterList",
+				Token:   tk[3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var p ParameterList
 
