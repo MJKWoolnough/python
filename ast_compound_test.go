@@ -2,6 +2,185 @@ package python
 
 import "testing"
 
+func TestTarget(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = Target{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`(a)`, func(t *test, tk Tokens) { // 2
+			t.Output = Target{
+				Tuple: &TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[1],
+									Tokens:     tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`( a )`, func(t *test, tk Tokens) { // 3
+			t.Output = Target{
+				Tuple: &TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`[a]`, func(t *test, tk Tokens) { // 4
+			t.Output = Target{
+				Array: &TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[1],
+									Tokens:     tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`[ a ]`, func(t *test, tk Tokens) { // 5
+			t.Output = Target{
+				Array: &TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a.b`, func(t *test, tk Tokens) { // 6
+			t.Output = Target{
+				PrimaryExpression: &PrimaryExpression{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					AttributeRef: &tk[2],
+					Tokens:       tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a[b]`, func(t *test, tk Tokens) { // 7
+			t.Output = Target{
+				PrimaryExpression: &PrimaryExpression{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Slicing: &SliceList{
+						SliceItems: []SliceItem{
+							{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[2],
+										Tokens:     tk[2:3],
+									}),
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[1:4],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`*a`, func(t *test, tk Tokens) { // 8
+			t.Output = Target{
+				Star: &Target{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[1],
+							Tokens:     tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`* a`, func(t *test, tk Tokens) { // 9
+			t.Output = Target{
+				Star: &Target{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var tt Target
+
+		err := tt.parse(t.Tokens)
+
+		return tt, err
+	})
+}
+
 func TestStarredList(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
