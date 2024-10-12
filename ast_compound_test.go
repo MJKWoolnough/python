@@ -172,6 +172,116 @@ func TestTarget(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						},
+						Parsing: "Atom",
+						Token:   tk[0],
+					},
+					Parsing: "PrimaryExpression",
+					Token:   tk[0],
+				},
+				Parsing: "Target",
+				Token:   tk[0],
+			}
+		}},
+		{`(nonlocal)`, func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[1],
+								},
+								Parsing: "Atom",
+								Token:   tk[1],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[1],
+						},
+						Parsing: "Target",
+						Token:   tk[1],
+					},
+					Parsing: "TargetList",
+					Token:   tk[1],
+				},
+				Parsing: "Target",
+				Token:   tk[1],
+			}
+		}},
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[1],
+								},
+								Parsing: "Atom",
+								Token:   tk[1],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[1],
+						},
+						Parsing: "Target",
+						Token:   tk[1],
+					},
+					Parsing: "TargetList",
+					Token:   tk[1],
+				},
+				Parsing: "Target",
+				Token:   tk[1],
+			}
+		}},
+		{`*nonlocal`, func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[1],
+							},
+							Parsing: "Atom",
+							Token:   tk[1],
+						},
+						Parsing: "PrimaryExpression",
+						Token:   tk[1],
+					},
+					Parsing: "Target",
+					Token:   tk[1],
+				},
+				Parsing: "Target",
+				Token:   tk[1],
+			}
+		}},
+		{`a()`, func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "Target",
+				Token:   tk[0],
+			}
+		}},
+		{`{a}`, func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "Target",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var tt Target
 
