@@ -130,6 +130,36 @@ func TestStarredList(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[0],
+							}),
+							Parsing: "Expression",
+							Token:   tk[0],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[0],
+					},
+					Parsing: "StarredItem",
+					Token:   tk[0],
+				},
+				Parsing: "StarredList",
+				Token:   tk[0],
+			}
+		}},
+		{`a b`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "StarredList",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s StarredList
 
