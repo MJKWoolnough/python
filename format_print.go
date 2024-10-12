@@ -741,7 +741,14 @@ func (s StarredItem) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f StarredList) printSource(w io.Writer, v bool) {
+func (s StarredList) printSource(w io.Writer, v bool) {
+	for n, si := range s.StarredItems {
+		if n > 0 {
+			io.WriteString(w, ", ")
+		}
+
+		si.printSource(w, v)
+	}
 }
 
 func (s StarredOrKeyword) printSource(w io.Writer, v bool) {
