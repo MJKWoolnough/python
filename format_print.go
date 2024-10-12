@@ -769,7 +769,21 @@ func (f StatementList) printSource(w io.Writer, v bool) {
 func (f Suite) printSource(w io.Writer, v bool) {
 }
 
-func (f Target) printSource(w io.Writer, v bool) {
+func (t Target) printSource(w io.Writer, v bool) {
+	if t.PrimaryExpression != nil {
+		t.PrimaryExpression.printSource(w, v)
+	} else if t.Tuple != nil {
+		io.WriteString(w, "(")
+		t.Tuple.printSource(w, v)
+		io.WriteString(w, ")")
+	} else if t.Array != nil {
+		io.WriteString(w, "[")
+		t.Array.printSource(w, v)
+		io.WriteString(w, "]")
+	} else if t.Star != nil {
+		io.WriteString(w, "*")
+		t.Star.printSource(w, v)
+	}
 }
 
 func (f TargetList) printSource(w io.Writer, v bool) {
