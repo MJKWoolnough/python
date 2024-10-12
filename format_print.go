@@ -527,7 +527,54 @@ func (p Parameter) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f ParameterList) printSource(w io.Writer, v bool) {
+func (p ParameterList) printSource(w io.Writer, v bool) {
+	first := len(p.DefParameters) == 0
+
+	if !first {
+		for _, d := range p.DefParameters {
+			d.printSource(w, v)
+			io.WriteString(w, ", ")
+		}
+
+		io.WriteString(w, "/")
+	}
+
+	for _, d := range p.DefParameters {
+		if first {
+			first = false
+		} else {
+			io.WriteString(w, ", ")
+		}
+
+		d.printSource(w, v)
+	}
+
+	if p.StarArg != nil {
+		if first {
+			first = false
+		} else {
+			io.WriteString(w, ", ")
+		}
+
+		io.WriteString(w, "*")
+		p.StarArg.printSource(w, v)
+
+		for _, d := range p.StarArgs {
+			io.WriteString(w, ", ")
+			d.printSource(w, v)
+		}
+	}
+
+	if p.StarStarArg != nil {
+		if first {
+			first = false
+		} else {
+			io.WriteString(w, ", ")
+		}
+
+		io.WriteString(w, "**")
+		p.StarStarArg.printSource(w, v)
+	}
 }
 
 func (p PositionalArgument) printSource(w io.Writer, v bool) {
