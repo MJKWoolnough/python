@@ -932,7 +932,7 @@ func (t *Target) parse(p *pyParser) error {
 
 		t.Tuple = new(TargetList)
 
-		if err := t.Tuple.parse(p); err != nil {
+		if err := t.Tuple.parse(q); err != nil {
 			return p.Error("Target", err)
 		}
 
@@ -952,7 +952,7 @@ func (t *Target) parse(p *pyParser) error {
 
 		t.Array = new(TargetList)
 
-		if err := t.Array.parse(p); err != nil {
+		if err := t.Array.parse(q); err != nil {
 			return p.Error("Target", err)
 		}
 
