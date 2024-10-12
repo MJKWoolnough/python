@@ -1033,6 +1033,7 @@ Loop:
 			return q.Error("StarredList", ErrMissingComma)
 		}
 
+		q.AcceptRunWhitespace()
 		p.Score(q)
 	}
 
