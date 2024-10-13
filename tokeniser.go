@@ -101,6 +101,12 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 			return t.Error()
 		}
 
+		if p.dedents = len(p.indents) - 1; p.dedents > 0 {
+			p.indents = p.indents[:1]
+
+			return p.dedent(t)
+		}
+
 		return t.Done()
 	}
 

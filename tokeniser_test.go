@@ -717,6 +717,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenLineTerminator, Data: "\n"},
 				{Type: TokenWhitespace, Data: "\t"},
 				{Type: TokenIdentifier, Data: "c"},
+				{Type: TokenDedent, Data: ""},
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
