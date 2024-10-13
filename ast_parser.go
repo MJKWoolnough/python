@@ -25,7 +25,11 @@ type Tokeniser interface {
 }
 
 func newPyParser(t Tokeniser) (*pyParser, error) {
-	t.TokeniserState(new(pyTokeniser).main)
+	p := &pyTokeniser{
+		indents: []string{""},
+	}
+
+	t.TokeniserState(p.main)
 
 	var (
 		tokens             Tokens
