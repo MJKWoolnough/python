@@ -1713,19 +1713,7 @@ func TestLambdaExpression(t *testing.T) {
 		}},
 		{`lambda nonlocal: a`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err:     ErrMissingIdentifier,
-							Parsing: "Parameter",
-							Token:   tk[2],
-						},
-						Parsing: "DefParameter",
-						Token:   tk[2],
-					},
-					Parsing: "ParameterList",
-					Token:   tk[2],
-				},
+				Err:     ErrMissingColon,
 				Parsing: "LambdaExpression",
 				Token:   tk[2],
 			}
