@@ -143,6 +143,29 @@ func TestTargetList(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[0],
+							},
+							Parsing: "Atom",
+							Token:   tk[0],
+						},
+						Parsing: "PrimaryExpression",
+						Token:   tk[0],
+					},
+					Parsing: "Target",
+					Token:   tk[0],
+				},
+				Parsing: "TargetList",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var tl TargetList
 
