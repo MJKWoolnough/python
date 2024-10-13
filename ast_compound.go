@@ -894,14 +894,17 @@ Loop:
 			break
 		}
 
+		q.AcceptRunWhitespace()
+
 		switch tk := q.Peek(); tk {
-		case parser.Token{Type: TokenDelimiter, Data: ";"}:
-		case parser.Token{Type: TokenDelimiter, Data: "="}:
-		case parser.Token{Type: TokenDelimiter, Data: "]"}:
-		case parser.Token{Type: TokenDelimiter, Data: ")"}:
-		case parser.Token{Type: TokenKeyword, Data: "in"}:
+		case parser.Token{Type: TokenDelimiter, Data: ";"},
+			parser.Token{Type: TokenDelimiter, Data: "="},
+			parser.Token{Type: TokenDelimiter, Data: "]"},
+			parser.Token{Type: TokenDelimiter, Data: ")"},
+			parser.Token{Type: TokenKeyword, Data: "in"}:
+			break Loop
 		default:
-			if tk.Type != TokenLineTerminator {
+			if tk.Type == TokenLineTerminator || tk.Type == parser.TokenDone {
 				break Loop
 			}
 		}
