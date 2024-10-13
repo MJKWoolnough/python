@@ -786,7 +786,14 @@ func (t Target) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f TargetList) printSource(w io.Writer, v bool) {
+func (t TargetList) printSource(w io.Writer, v bool) {
+	for n, tg := range t.Targets {
+		if n > 0 {
+			io.WriteString(w, ", ")
+		}
+
+		tg.printSource(w, v)
+	}
 }
 
 func (f TryStatement) printSource(w io.Writer, v bool) {
