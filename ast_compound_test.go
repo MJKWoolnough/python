@@ -166,6 +166,55 @@ func TestSuite(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingIdentifier,
+							Parsing: "NonLocalStatement",
+							Token:   tk[1],
+						},
+						Parsing: "SimpleStatement",
+						Token:   tk[0],
+					},
+					Parsing: "StatementList",
+					Token:   tk[0],
+				},
+				Parsing: "Suite",
+				Token:   tk[0],
+			}
+		}},
+		{"\n", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err:     ErrMissingIndent,
+				Parsing: "Suite",
+				Token:   tk[1],
+			}
+		}},
+		{"\n\tnonlocal", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[3],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[2],
+						},
+						Parsing: "StatementList",
+						Token:   tk[2],
+					},
+					Parsing: "Statement",
+					Token:   tk[2],
+				},
+				Parsing: "Suite",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s Suite
 
