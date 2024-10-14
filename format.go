@@ -3,6 +3,8 @@ package python
 import (
 	"fmt"
 	"io"
+
+	"vimagination.zapto.org/parser"
 )
 
 var indent = []byte{'\t'}
@@ -89,6 +91,10 @@ func (t Token) printType(w io.Writer, v bool) {
 		typ = "Indent"
 	case TokenDedent:
 		typ = "Dedent"
+	case parser.TokenDone:
+		typ = "Done"
+	case parser.TokenError:
+		typ = "Error"
 	default:
 		typ = "Unknown"
 	}
