@@ -101,6 +101,12 @@ func (t Token) printType(w io.Writer, v bool) {
 }
 
 func (t Tokens) printType(w io.Writer, v bool) {
+	if t == nil {
+		io.WriteString(w, "nil")
+
+		return
+	}
+
 	if len(t) == 0 {
 		io.WriteString(w, "[]")
 
