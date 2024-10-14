@@ -120,6 +120,48 @@ func TestAssignmentExpressionAndSuite(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
+		{`nonlocal:a`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						}),
+						Parsing: "Expression",
+						Token:   tk[0],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[0],
+				},
+				Parsing: "AssignmentExpressionAndSuite",
+				Token:   tk[0],
+			}
+		}},
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[3],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[2],
+						},
+						Parsing: "StatementList",
+						Token:   tk[2],
+					},
+					Parsing: "Suite",
+					Token:   tk[2],
+				},
+				Parsing: "AssignmentExpressionAndSuite",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a AssignmentExpressionAndSuite
 
