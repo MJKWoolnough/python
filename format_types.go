@@ -407,8 +407,12 @@ func (f *ClassDefinition) printType(w io.Writer, v bool) {
 		pp.Print("\nTypeParams: nil")
 	}
 
-	pp.Print("\nInheritance: ")
-	f.Inheritance.printType(&pp, v)
+	if f.Inheritance != nil {
+		pp.Print("\nInheritance: ")
+		f.Inheritance.printType(&pp, v)
+	} else if v {
+		pp.Print("\nInheritance: nil")
+	}
 
 	pp.Print("\nSuite: ")
 	f.Suite.printType(&pp, v)

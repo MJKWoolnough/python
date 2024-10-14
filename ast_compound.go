@@ -706,7 +706,7 @@ type ClassDefinition struct {
 	Decorators  *Decorators
 	ClassName   *Token
 	TypeParams  *TypeParams
-	Inheritance ArgumentList
+	Inheritance *ArgumentList
 	Suite       Suite
 	Tokens      Tokens
 }
@@ -722,6 +722,8 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 	}
 
 	c.ClassName = p.GetLastToken()
+
+	p.AcceptRunWhitespace()
 
 	if p.Peek() == (parser.Token{Type: TokenDelimiter, Data: "["}) {
 		q := p.NewGoal()
@@ -739,6 +741,8 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 		p.OpenBrackets()
 		p.AcceptRunWhitespace()
 
+		c.Inheritance = new(ArgumentList)
+
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			q := p.NewGoal()
 
@@ -746,6 +750,7 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 				return p.Error("ClassDefinition", err)
 			}
 
+			p.Score(q)
 			p.AcceptRunWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
@@ -753,10 +758,12 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 			}
 
 			p.CloseBrackets()
-			p.AcceptRunWhitespace()
 		} else {
+			c.Inheritance.Tokens = p.NewGoal().ToTokens()
 			p.CloseBrackets()
 		}
+
+		p.AcceptRunWhitespace()
 	}
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
