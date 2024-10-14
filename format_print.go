@@ -95,7 +95,10 @@ func (a ArgumentListOrComprehension) printSource(w io.Writer, v bool) {
 func (f AssertStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f AssignmentExpressionAndSuite) printSource(w io.Writer, v bool) {
+func (a AssignmentExpressionAndSuite) printSource(w io.Writer, v bool) {
+	a.AssignmentExpression.printSource(w, v)
+	io.WriteString(w, ":")
+	a.Suite.printSource(w, v)
 }
 
 func (a AssignmentExpression) printSource(w io.Writer, v bool) {
@@ -768,6 +771,10 @@ func (f StatementList) printSource(w io.Writer, v bool) {
 
 func (s Suite) printSource(w io.Writer, v bool) {
 	if s.StatementList != nil {
+		if v {
+			io.WriteString(w, " ")
+		}
+
 		s.StatementList.printSource(w, v)
 	} else {
 		ip := indentPrinter{Writer: w}
