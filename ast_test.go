@@ -19,6 +19,7 @@ type test struct {
 	AssignmentExpression *AssignmentExpression
 	Expression           *Expression
 	OrigTokens           *pyParser
+	Decorators           *Decorators
 	TokenSkip            int
 	AllowTypeAnnotations bool
 	Err                  error
