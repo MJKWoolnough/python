@@ -2,6 +2,381 @@ package python
 
 import "testing"
 
+func TestClassDefinition(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`class a:b`, func(t *test, tk Tokens) { // 1
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[4],
+											Tokens:     tk[4:5],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`class a:b`, func(t *test, tk Tokens) { // 2
+			t.Decorators = &Decorators{
+				Decorators: []AssignmentExpression{},
+			}
+			t.Output = ClassDefinition{
+				Decorators: t.Decorators,
+				ClassName:  &tk[2],
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[4],
+											Tokens:     tk[4:5],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`class a: b`, func(t *test, tk Tokens) { // 3
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[5],
+											Tokens:     tk[5:6],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[5:6],
+									},
+									Tokens: tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+						},
+						Tokens: tk[5:6],
+					},
+					Tokens: tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`class a :b`, func(t *test, tk Tokens) { // 4
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[5],
+											Tokens:     tk[5:6],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[5:6],
+									},
+									Tokens: tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+						},
+						Tokens: tk[5:6],
+					},
+					Tokens: tk[5:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"class a:\n\tb", func(t *test, tk Tokens) { // 5
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				Suite: Suite{
+					Statements: []Statement{
+						{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[6],
+													Tokens:     tk[6:7],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[6:7],
+											},
+											Tokens: tk[6:7],
+										},
+										Tokens: tk[6:7],
+									},
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+					},
+					Tokens: tk[4:8],
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{`class a():b`, func(t *test, tk Tokens) { // 6
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				Inheritance: &ArgumentList{
+					Tokens: tk[4:4],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[6],
+											Tokens:     tk[6:7],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[6:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`class a ( b ) : c`, func(t *test, tk Tokens) { // 7
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				Inheritance: &ArgumentList{
+					PositionalArguments: []PositionalArgument{
+						{
+							AssignmentExpression: &AssignmentExpression{
+								Expression: Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[6],
+										Tokens:     tk[6:7],
+									}),
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+					},
+					Tokens: tk[6:7],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[12],
+											Tokens:     tk[12:13],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:13],
+								},
+								Tokens: tk[12:13],
+							},
+						},
+						Tokens: tk[12:13],
+					},
+					Tokens: tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{`class a [b:c]: d`, func(t *test, tk Tokens) { // 8
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				TypeParams: &TypeParams{
+					TypeParams: []TypeParam{
+						{
+							Identifier: &tk[5],
+							Expression: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[7],
+									Tokens:     tk[7:8],
+								}),
+								Tokens: tk[7:8],
+							},
+							Tokens: tk[5:8],
+						},
+					},
+					Tokens: tk[4:9],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[11],
+											Tokens:     tk[11:12],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[11:12],
+									},
+									Tokens: tk[11:12],
+								},
+								Tokens: tk[11:12],
+							},
+						},
+						Tokens: tk[11:12],
+					},
+					Tokens: tk[11:12],
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`class a [ *b ] : c`, func(t *test, tk Tokens) { // 9
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				TypeParams: &TypeParams{
+					TypeParams: []TypeParam{
+						{
+							Type:       TypeParamVar,
+							Identifier: &tk[7],
+							Tokens:     tk[6:8],
+						},
+					},
+					Tokens: tk[4:10],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[13],
+											Tokens:     tk[13:14],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[13:14],
+									},
+									Tokens: tk[13:14],
+								},
+								Tokens: tk[13:14],
+							},
+						},
+						Tokens: tk[13:14],
+					},
+					Tokens: tk[13:14],
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{`class a[*b](c):d`, func(t *test, tk Tokens) { // 10
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				TypeParams: &TypeParams{
+					TypeParams: []TypeParam{
+						{
+							Type:       TypeParamVar,
+							Identifier: &tk[5],
+							Tokens:     tk[4:6],
+						},
+					},
+					Tokens: tk[3:7],
+				},
+				Inheritance: &ArgumentList{
+					PositionalArguments: []PositionalArgument{
+						{
+							AssignmentExpression: &AssignmentExpression{
+								Expression: Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[8],
+										Tokens:     tk[8:9],
+									}),
+									Tokens: tk[8:9],
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+					},
+					Tokens: tk[8:9],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[11],
+											Tokens:     tk[11:12],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[11:12],
+									},
+									Tokens: tk[11:12],
+								},
+								Tokens: tk[11:12],
+							},
+						},
+						Tokens: tk[11:12],
+					},
+					Tokens: tk[11:12],
+				},
+				Tokens: tk[:12],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var c ClassDefinition
+
+		err := c.parse(t.Tokens, t.Decorators)
+
+		return c, err
+	})
+}
+
 func TestAssignmentExpressionAndSuite(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a:b`, func(t *test, tk Tokens) { // 1
