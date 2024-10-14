@@ -752,17 +752,12 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 
 			p.Score(q)
 			p.AcceptRunWhitespace()
-
-			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-				return p.Error("ClassDefinition", ErrMissingClosingParen)
-			}
-
-			p.CloseBrackets()
+			p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"})
 		} else {
 			c.Inheritance.Tokens = p.NewGoal().ToTokens()
-			p.CloseBrackets()
 		}
 
+		p.CloseBrackets()
 		p.AcceptRunWhitespace()
 	}
 
