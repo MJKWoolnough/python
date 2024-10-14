@@ -766,7 +766,17 @@ func (f Statement) printSource(w io.Writer, v bool) {
 func (f StatementList) printSource(w io.Writer, v bool) {
 }
 
-func (f Suite) printSource(w io.Writer, v bool) {
+func (s Suite) printSource(w io.Writer, v bool) {
+	if s.StatementList != nil {
+		s.StatementList.printSource(w, v)
+	} else {
+		ip := indentPrinter{Writer: w}
+
+		for _, stmt := range s.Statements {
+			ip.WriteString("\n")
+			stmt.printSource(&ip, v)
+		}
+	}
 }
 
 func (t Target) printSource(w io.Writer, v bool) {
