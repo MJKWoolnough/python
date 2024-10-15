@@ -134,7 +134,23 @@ func (f AugmentedAssignmentStatement) printSource(w io.Writer, v bool) {
 func (f AugTarget) printSource(w io.Writer, v bool) {
 }
 
-func (f ClassDefinition) printSource(w io.Writer, v bool) {
+func (c ClassDefinition) printSource(w io.Writer, v bool) {
+	if c.Decorators != nil {
+		c.Decorators.printSource(w, v)
+	}
+
+	io.WriteString(w, "class ")
+	io.WriteString(w, c.ClassName.Data)
+
+	if c.TypeParams != nil {
+		c.TypeParams.printSource(w, v)
+	}
+
+	if c.Inheritance != nil {
+		c.Inheritance.printSource(w, v)
+	}
+
+	c.Suite.printSource(w, v)
 }
 
 func (c Comparison) printSource(w io.Writer, v bool) {
