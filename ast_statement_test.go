@@ -139,6 +139,51 @@ func TestYieldExpresson(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`yield nonlocal`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "ExpressionList",
+					Token:   tk[2],
+				},
+				Parsing: "YieldExpression",
+				Token:   tk[2],
+			}
+		}},
+		{`yield *a`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingComma,
+					Parsing: "StarredExpressionList",
+					Token:   tk[4],
+				},
+				Parsing: "YieldExpression",
+				Token:   tk[2],
+			}
+		}},
+		{`yield from nonlocal`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[4],
+					}),
+					Parsing: "Expression",
+					Token:   tk[4],
+				},
+				Parsing: "YieldExpression",
+				Token:   tk[4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var y YieldExpression
 
