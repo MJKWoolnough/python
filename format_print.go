@@ -917,5 +917,15 @@ func (x XorExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f YieldExpression) printSource(w io.Writer, v bool) {
+func (y YieldExpression) printSource(w io.Writer, v bool) {
+	if y.From != nil {
+		io.WriteString(w, "yield from")
+		y.From.printSource(w, v)
+	} else if y.ExpressionList != nil {
+		io.WriteString(w, "yield ")
+		y.ExpressionList.printSource(w, v)
+	} else if y.StarredList != nil {
+		io.WriteString(w, "yield ")
+		y.StarredList.printSource(w, v)
+	}
 }
