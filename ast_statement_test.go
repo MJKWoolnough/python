@@ -2,6 +2,152 @@ package python
 
 import "testing"
 
+func TestYieldExpresson(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`yield a`, func(t *test, tk Tokens) { // 1
+			t.Output = YieldExpression{
+				ExpressionList: &ExpressionList{
+					Expressions: []Expression{
+						{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}),
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`yield a,`, func(t *test, tk Tokens) { // 2
+			t.Output = YieldExpression{
+				StarredList: &StarredExpressionList{
+					StarredExpressions: []StarredExpression{
+						{
+							OrExpr: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`yield a, b`, func(t *test, tk Tokens) { // 3
+			t.Output = YieldExpression{
+				StarredList: &StarredExpressionList{
+					StarredExpressions: []StarredExpression{
+						{
+							OrExpr: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+							Tokens: tk[2:3],
+						},
+						{
+							OrExpr: WrapConditional(&Atom{
+								Identifier: &tk[5],
+								Tokens:     tk[5:6],
+							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+							Tokens: tk[5:6],
+						},
+					},
+					Tokens: tk[2:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{`yield a, b or c`, func(t *test, tk Tokens) { // 4
+			t.Output = YieldExpression{
+				ExpressionList: &ExpressionList{
+					Expressions: []Expression{
+						{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}),
+							Tokens: tk[2:3],
+						},
+						{
+							ConditionalExpression: &ConditionalExpression{
+								OrTest: OrTest{
+									AndTest: WrapConditional(&Atom{
+										Identifier: &tk[5],
+										Tokens:     tk[5:6],
+									}).OrTest.AndTest,
+									OrTest: &WrapConditional(&Atom{
+										Identifier: &tk[9],
+										Tokens:     tk[9:10],
+									}).OrTest,
+									Tokens: tk[5:10],
+								},
+								Tokens: tk[5:10],
+							},
+							Tokens: tk[5:10],
+						},
+					},
+					Tokens: tk[2:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`yield a, b | c`, func(t *test, tk Tokens) { // 5
+			t.Output = YieldExpression{
+				StarredList: &StarredExpressionList{
+					StarredExpressions: []StarredExpression{
+						{
+							OrExpr: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+							Tokens: tk[2:3],
+						},
+						{
+							OrExpr: OrExpression{
+								XorExpression: WrapConditional(&Atom{
+									Identifier: &tk[5],
+									Tokens:     tk[5:6],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression,
+								OrExpression: &WrapConditional(&Atom{
+									Identifier: &tk[9],
+									Tokens:     tk[9:10],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[5:10],
+							},
+							Tokens: tk[5:10],
+						},
+					},
+					Tokens: tk[2:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`yield from a`, func(t *test, tk Tokens) { // 6
+			t.Output = YieldExpression{
+				From: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					}),
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var y YieldExpression
+
+		err := y.parse(t.Tokens)
+
+		return y, err
+	})
+}
+
 func TestStarredExpressionList(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a,`, func(t *test, tk Tokens) { // 1
