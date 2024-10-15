@@ -21,6 +21,21 @@ func TestReturnStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`return nonlocal`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[2],
+					}),
+					Parsing: "Expression",
+					Token:   tk[2],
+				},
+				Parsing: "ReturnStatement",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var r ReturnStatement
 
