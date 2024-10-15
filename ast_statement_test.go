@@ -2,6 +2,34 @@ package python
 
 import "testing"
 
+func TestReturnStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`return`, func(t *test, tk Tokens) { // 1
+			t.Output = ReturnStatement{
+				Tokens: tk[:1],
+			}
+		}},
+		{`return a`, func(t *test, tk Tokens) { // 2
+			t.Output = ReturnStatement{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}),
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var r ReturnStatement
+
+		err := r.parse(t.Tokens)
+
+		return r, err
+	})
+}
+
 func TestYieldExpresson(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`yield a`, func(t *test, tk Tokens) { // 1
