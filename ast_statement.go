@@ -574,37 +574,25 @@ func (d *DelStatement) parse(p *pyParser) error {
 }
 
 type ReturnStatement struct {
-	Expression Expression
-	From       *Expression
+	Expression *Expression
 	Tokens     Tokens
 }
 
 func (r *ReturnStatement) parse(p *pyParser) error {
 	p.Skip()
 
-	p.AcceptRunWhitespace()
-
 	q := p.NewGoal()
-
-	if err := r.Expression.parse(q); err != nil {
-		return p.Error("ReturnStatement", err)
-	}
-
-	p.Score(q)
-
-	q = p.NewGoal()
 
 	q.AcceptRunWhitespace()
 
-	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
-		q.AcceptRunWhitespace()
+	if tk := q.Peek(); tk != (parser.Token{Type: TokenDelimiter, Data: "}"}) && tk != (parser.Token{Type: TokenDelimiter, Data: "]"}) && tk != (parser.Token{Type: TokenDelimiter, Data: ")"}) && tk.Type != TokenLineTerminator && tk.Type != parser.TokenDone {
 		p.Score(q)
 
 		q = p.NewGoal()
-		r.From = new(Expression)
+		r.Expression = new(Expression)
 
-		if err := r.From.parse(q); err != nil {
-			return p.Error("ReturnStatement", err)
+		if err := r.Expression.parse(q); err != nil {
+			return q.Error("ReturnStatement", err)
 		}
 
 		p.Score(q)

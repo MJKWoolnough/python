@@ -1706,14 +1706,11 @@ func (f *ReturnStatement) printType(w io.Writer, v bool) {
 
 	pp.Print("ReturnStatement {")
 
-	pp.Print("\nExpression: ")
-	f.Expression.printType(&pp, v)
-
-	if f.From != nil {
-		pp.Print("\nFrom: ")
-		f.From.printType(&pp, v)
+	if f.Expression != nil {
+		pp.Print("\nExpression: ")
+		f.Expression.printType(&pp, v)
 	} else if v {
-		pp.Print("\nFrom: nil")
+		pp.Print("\nExpression: nil")
 	}
 
 	pp.Print("\nTokens: ")
