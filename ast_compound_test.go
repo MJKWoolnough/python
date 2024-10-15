@@ -368,6 +368,85 @@ func TestClassDefinition(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
+		{`class nonlocal:b`, func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "ClassDefinition",
+				Token:   tk[2],
+			}
+		}},
+		{`class a[nonlocal]`, func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "TypeParam",
+						Token:   tk[4],
+					},
+					Parsing: "TypeParams",
+					Token:   tk[4],
+				},
+				Parsing: "ClassDefinition",
+				Token:   tk[3],
+			}
+		}},
+		{`class a(nonlocal)`, func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: wrapConditionalExpressionError(Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[4],
+								}),
+								Parsing: "Expression",
+								Token:   tk[4],
+							},
+							Parsing: "AssignmentExpression",
+							Token:   tk[4],
+						},
+						Parsing: "PositionalArgument",
+						Token:   tk[4],
+					},
+					Parsing: "ArgumentList",
+					Token:   tk[4],
+				},
+				Parsing: "ClassDefinition",
+				Token:   tk[4],
+			}
+		}},
+		{`class a(b)`, func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "ClassDefinition",
+				Token:   tk[6],
+			}
+		}},
+		{`class a:nonlocal`, func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[5],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[4],
+						},
+						Parsing: "StatementList",
+						Token:   tk[4],
+					},
+					Parsing: "Suite",
+					Token:   tk[4],
+				},
+				Parsing: "ClassDefinition",
+				Token:   tk[4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var c ClassDefinition
 
