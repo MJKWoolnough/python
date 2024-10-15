@@ -636,7 +636,7 @@ func (y *YieldExpression) parse(p *pyParser) error {
 			return p.Error("YieldExpression", err)
 		}
 
-		p.Score(p)
+		p.Score(q)
 	} else {
 		p.AcceptRunWhitespace()
 
