@@ -642,7 +642,7 @@ func (y *YieldExpression) parse(p *pyParser) error {
 
 		q := p.NewGoal()
 
-		if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) {
+		if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) || q.LookaheadLine(parser.Token{Type: TokenOperator, Data: "<"}, parser.Token{Type: TokenOperator, Data: ">"}, parser.Token{Type: TokenOperator, Data: "<="}, parser.Token{Type: TokenOperator, Data: ">="}, parser.Token{Type: TokenOperator, Data: "=="}, parser.Token{Type: TokenOperator, Data: "!="}, parser.Token{Type: TokenKeyword, Data: "is"}, parser.Token{Type: TokenKeyword, Data: "not"}, parser.Token{Type: TokenKeyword, Data: "in"}, parser.Token{Type: TokenKeyword, Data: "and"}, parser.Token{Type: TokenKeyword, Data: "or"}, parser.Token{Type: TokenKeyword, Data: "if"}, parser.Token{Type: TokenKeyword, Data: "lambda"}) == -1 && q.LookaheadLine(parser.Token{Type: TokenDelimiter, Data: ","}) == 0 {
 			y.StarredList = new(StarredExpressionList)
 
 			if err := y.StarredList.parse(q); err != nil {
