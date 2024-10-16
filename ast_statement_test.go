@@ -2,6 +2,37 @@ package python
 
 import "testing"
 
+func TestDelStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`del a`, func(t *test, tk Tokens) { // 1
+			t.Output = DelStatement{
+				TargetList: TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var d DelStatement
+
+		err := d.parse(t.Tokens)
+
+		return d, err
+	})
+}
+
 func TestReturnStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`return`, func(t *test, tk Tokens) { // 1
