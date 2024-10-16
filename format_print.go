@@ -742,7 +742,12 @@ func (s SliceList) printSource(w io.Writer, v bool) {
 	io.WriteString(w, "]")
 }
 
-func (f StarredExpression) printSource(w io.Writer, v bool) {
+func (s StarredExpression) printSource(w io.Writer, v bool) {
+	if s.Starred {
+		io.WriteString(w, "*")
+	}
+
+	s.OrExpr.printSource(w, v)
 }
 
 func (s StarredExpressionList) printSource(w io.Writer, v bool) {
