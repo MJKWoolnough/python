@@ -24,6 +24,33 @@ func TestDelStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`del nonlocal`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[2],
+								},
+								Parsing: "Atom",
+								Token:   tk[2],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[2],
+						},
+						Parsing: "Target",
+						Token:   tk[2],
+					},
+					Parsing: "TargetList",
+					Token:   tk[2],
+				},
+				Parsing: "DelStatement",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var d DelStatement
 
