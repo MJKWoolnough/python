@@ -43,7 +43,18 @@ func (a AndTest) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f AnnotatedAssignmentStatement) printSource(w io.Writer, v bool) {
+func (a AnnotatedAssignmentStatement) printSource(w io.Writer, v bool) {
+	a.AugTarget.printSource(w, v)
+	io.WriteString(w, ": ")
+	a.Expression.printSource(w, v)
+
+	if a.StarredExpression != nil {
+		io.WriteString(w, " = ")
+		a.StarredExpression.printSource(w, v)
+	} else if a.YieldExpression != nil {
+		io.WriteString(w, " = ")
+		a.YieldExpression.printSource(w, v)
+	}
 }
 
 func (a ArgumentList) printSource(w io.Writer, v bool) {
