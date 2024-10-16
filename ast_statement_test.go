@@ -2,6 +2,46 @@ package python
 
 import "testing"
 
+func TestStarredExpression(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = StarredExpression{
+				OrExpr: WrapConditional(&Atom{
+					Identifier: &tk[0],
+					Tokens:     tk[:1],
+				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+				Tokens: tk[:1],
+			}
+		}},
+		{`*a`, func(t *test, tk Tokens) { // 2
+			t.Output = StarredExpression{
+				Starred: true,
+				OrExpr: WrapConditional(&Atom{
+					Identifier: &tk[1],
+					Tokens:     tk[1:2],
+				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+				Tokens: tk[:2],
+			}
+		}},
+		{`* a`, func(t *test, tk Tokens) { // 3
+			t.Output = StarredExpression{
+				Starred: true,
+				OrExpr: WrapConditional(&Atom{
+					Identifier: &tk[2],
+					Tokens:     tk[2:3],
+				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+				Tokens: tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var s StarredExpression
+
+		err := s.parse(t.Tokens)
+
+		return s, err
+	})
+}
+
 func TestDelStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`del a`, func(t *test, tk Tokens) { // 1
