@@ -261,7 +261,9 @@ func (d DefParameter) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f DelStatement) printSource(w io.Writer, v bool) {
+func (d DelStatement) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "del ")
+	d.TargetList.printSource(w, v)
 }
 
 func (d DictDisplay) printSource(w io.Writer, v bool) {
