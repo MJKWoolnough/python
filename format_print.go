@@ -664,7 +664,13 @@ func (r RelativeModule) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f ReturnStatement) printSource(w io.Writer, v bool) {
+func (r ReturnStatement) printSource(w io.Writer, v bool) {
+	if r.Expression != nil {
+		io.WriteString(w, "return ")
+		r.Expression.printSource(w, v)
+	} else {
+		io.WriteString(w, "return")
+	}
 }
 
 func (s ShiftExpression) printSource(w io.Writer, v bool) {
