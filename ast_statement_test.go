@@ -2,6 +2,180 @@ package python
 
 import "testing"
 
+func TestAssignmentStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = AssignmentStatement{
+				StarredExpression: &StarredExpression{
+					OrExpr: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`yield a`, func(t *test, tk Tokens) { // 2
+			t.Output = AssignmentStatement{
+				YieldExpression: &YieldExpression{
+					ExpressionList: &ExpressionList{
+						Expressions: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a=b`, func(t *test, tk Tokens) { // 3
+			t.Output = AssignmentStatement{
+				TargetLists: []TargetList{
+					{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarredExpression: &StarredExpression{
+					OrExpr: WrapConditional(&Atom{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a,=b`, func(t *test, tk Tokens) { // 4
+			t.Output = AssignmentStatement{
+				TargetLists: []TargetList{
+					{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarredExpression: &StarredExpression{
+					OrExpr: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+					Tokens: tk[3:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`a = b`, func(t *test, tk Tokens) { // 5
+			t.Output = AssignmentStatement{
+				TargetLists: []TargetList{
+					{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+						},
+						Tokens: tk[:1],
+					},
+				},
+				StarredExpression: &StarredExpression{
+					OrExpr: WrapConditional(&Atom{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a=b=c`, func(t *test, tk Tokens) { // 6
+			t.Output = AssignmentStatement{
+				TargetLists: []TargetList{
+					{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[2],
+										Tokens:     tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				StarredExpression: &StarredExpression{
+					OrExpr: WrapConditional(&Atom{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var a AssignmentStatement
+
+		err := a.parse(t.Tokens)
+
+		return a, err
+	})
+}
+
 func TestAugmentedAssignmentStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a+=b`, func(t *test, tk Tokens) { // 1
