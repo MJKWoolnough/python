@@ -354,6 +354,11 @@ func (a *AssignmentStatement) parse(p *pyParser) error {
 
 		p.Score(q)
 		p.AcceptRunWhitespace()
+
+		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			p.AcceptRunWhitespace()
+		}
+
 		p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="})
 		p.AcceptRunWhitespace()
 
