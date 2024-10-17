@@ -142,7 +142,8 @@ func (a Atom) printSource(w io.Writer, v bool) {
 func (f AugmentedAssignmentStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f AugTarget) printSource(w io.Writer, v bool) {
+func (a AugTarget) printSource(w io.Writer, v bool) {
+	a.PrimaryExpression.printSource(w, v)
 }
 
 func (c ClassDefinition) printSource(w io.Writer, v bool) {
