@@ -16,6 +16,39 @@ func TestAugTarget(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						},
+						Parsing: "Atom",
+						Token:   tk[0],
+					},
+					Parsing: "PrimaryExpression",
+					Token:   tk[0],
+				},
+				Parsing: "AugTarget",
+				Token:   tk[0],
+			}
+		}},
+		{`a()`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "AugTarget",
+				Token:   tk[0],
+			}
+		}},
+		{`(a)`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "AugTarget",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a AugTarget
 
