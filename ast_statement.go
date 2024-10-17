@@ -451,7 +451,7 @@ func (a *AugTarget) parse(p *pyParser) error {
 
 	if err := a.PrimaryExpression.parse(q); err != nil {
 		return p.Error("AugTarget", err)
-	} else if a.PrimaryExpression.Call != nil || a.PrimaryExpression.Atom != nil && !a.PrimaryExpression.IsIdentifier() {
+	} else if a.PrimaryExpression.Call != nil || !a.PrimaryExpression.IsIdentifier() {
 		return p.Error("AugTarget", ErrMissingIdentifier)
 	}
 
