@@ -2,6 +2,29 @@ package python
 
 import "testing"
 
+func TestAugTarget(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = AugTarget{
+				PrimaryExpression: PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var a AugTarget
+
+		err := a.parse(t.Tokens)
+
+		return a, err
+	})
+}
+
 func TestAnnotatedAssignmentStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a:b`, func(t *test, tk Tokens) { // 1
