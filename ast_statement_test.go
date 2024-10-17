@@ -122,6 +122,78 @@ func TestAugmentedAssignmentStatement(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[0],
+							},
+							Parsing: "Atom",
+							Token:   tk[0],
+						},
+						Parsing: "PrimaryExpression",
+						Token:   tk[0],
+					},
+					Parsing: "AugTarget",
+					Token:   tk[0],
+				},
+				Parsing: "AugmentedAssignmentStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`a==b`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingOp,
+				Parsing: "AugmentedAssignmentStatement",
+				Token:   tk[1],
+			}
+		}},
+		{`a/=nonlocal`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "ExpressionList",
+					Token:   tk[2],
+				},
+				Parsing: "AugmentedAssignmentStatement",
+				Token:   tk[2],
+			}
+		}},
+		{`a/=yield nonlocal`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[4],
+							}),
+							Parsing: "Expression",
+							Token:   tk[4],
+						},
+						Parsing: "ExpressionList",
+						Token:   tk[4],
+					},
+					Parsing: "YieldExpression",
+					Token:   tk[4],
+				},
+				Parsing: "AugmentedAssignmentStatement",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a AugmentedAssignmentStatement
 
