@@ -2,6 +2,135 @@ package python
 
 import "testing"
 
+func TestAugmentedAssignmentStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a+=b`, func(t *test, tk Tokens) { // 1
+			t.Output = AugmentedAssignmentStatement{
+				AugTarget: AugTarget{
+					PrimaryExpression: PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AugOp: &tk[1],
+				ExpressionList: &ExpressionList{
+					Expressions: []Expression{
+						{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}),
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a -= b`, func(t *test, tk Tokens) { // 2
+			t.Output = AugmentedAssignmentStatement{
+				AugTarget: AugTarget{
+					PrimaryExpression: PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AugOp: &tk[2],
+				ExpressionList: &ExpressionList{
+					Expressions: []Expression{
+						{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
+							}),
+							Tokens: tk[4:5],
+						},
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a*=yield b`, func(t *test, tk Tokens) { // 3
+			t.Output = AugmentedAssignmentStatement{
+				AugTarget: AugTarget{
+					PrimaryExpression: PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AugOp: &tk[1],
+				YieldExpression: &YieldExpression{
+					ExpressionList: &ExpressionList{
+						Expressions: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[2:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a @= yield b`, func(t *test, tk Tokens) { // 4
+			t.Output = AugmentedAssignmentStatement{
+				AugTarget: AugTarget{
+					PrimaryExpression: PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AugOp: &tk[2],
+				YieldExpression: &YieldExpression{
+					ExpressionList: &ExpressionList{
+						Expressions: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[4:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var a AugmentedAssignmentStatement
+
+		err := a.parse(t.Tokens)
+
+		return a, err
+	})
+}
+
 func TestAugTarget(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
