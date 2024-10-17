@@ -400,8 +400,10 @@ func (a *AugmentedAssignmentStatement) parse(p *pyParser) error {
 	p.Score(q)
 	p.AcceptRunWhitespace()
 
-	if p.Accept(TokenDelimiter) {
-		t := p.GetLastToken()
+	q = p.NewGoal()
+
+	if q.Accept(TokenDelimiter) {
+		t := q.GetLastToken()
 
 		switch t.Data {
 		case "+=", "-=", "*=", "@=", "/=", "//=", "%=", "**=", ">>=", "<<=", "&=", "^=", "|=":
@@ -413,6 +415,7 @@ func (a *AugmentedAssignmentStatement) parse(p *pyParser) error {
 		return p.Error("AugmentedAssignmentStatement", ErrMissingOp)
 	}
 
+	p.Score(q)
 	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
