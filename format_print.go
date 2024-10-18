@@ -103,7 +103,18 @@ func (a ArgumentListOrComprehension) printSource(w io.Writer, v bool) {
 	io.WriteString(w, ")")
 }
 
-func (f AssertStatement) printSource(w io.Writer, v bool) {
+func (a AssertStatement) printSource(w io.Writer, v bool) {
+	if len(a.Expressions) > 0 {
+		io.WriteString(w, "assert ")
+
+		for n, e := range a.Expressions {
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+
+			e.printSource(w, v)
+		}
+	}
 }
 
 func (a AssignmentExpressionAndSuite) printSource(w io.Writer, v bool) {
