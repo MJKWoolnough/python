@@ -60,6 +60,21 @@ func TestAssertStatement(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{`assert nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[2],
+					}),
+					Parsing: "Expression",
+					Token:   tk[2],
+				},
+				Parsing: "AssertStatement",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a AssertStatement
 
