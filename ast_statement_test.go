@@ -167,6 +167,111 @@ func TestAssignmentStatement(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: Error{
+												Err: Error{
+													Err: Error{
+														Err: Error{
+															Err: Error{
+																Err:     ErrInvalidEnclosure,
+																Parsing: "Enclosure",
+																Token:   tk[0],
+															},
+															Parsing: "Atom",
+															Token:   tk[0],
+														},
+														Parsing: "PrimaryExpression",
+														Token:   tk[0],
+													},
+													Parsing: "PowerExpression",
+													Token:   tk[0],
+												},
+												Parsing: "UnaryExpression",
+												Token:   tk[0],
+											},
+											Parsing: "MultiplyExpression",
+											Token:   tk[0],
+										},
+										Parsing: "AddExpression",
+										Token:   tk[0],
+									},
+									Parsing: "ShiftExpression",
+									Token:   tk[0],
+								},
+								Parsing: "AndExpression",
+								Token:   tk[0],
+							},
+							Parsing: "XorExpression",
+							Token:   tk[0],
+						},
+						Parsing: "OrExpression",
+						Token:   tk[0],
+					},
+					Parsing: "StarredExpression",
+					Token:   tk[0],
+				},
+				Parsing: "AssignmentStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`nonlocal=a`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[0],
+								},
+								Parsing: "Atom",
+								Token:   tk[0],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[0],
+						},
+						Parsing: "Target",
+						Token:   tk[0],
+					},
+					Parsing: "TargetList",
+					Token:   tk[0],
+				},
+				Parsing: "AssignmentStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[4],
+							}),
+							Parsing: "Expression",
+							Token:   tk[4],
+						},
+						Parsing: "ExpressionList",
+						Token:   tk[4],
+					},
+					Parsing: "YieldExpression",
+					Token:   tk[4],
+				},
+				Parsing: "AssignmentStatement",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a AssignmentStatement
 
