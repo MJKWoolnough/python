@@ -246,7 +246,7 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	default:
 		q := p.NewGoal()
 
-		if n := p.LookaheadLine(
+		if n := q.LookaheadLine(
 			parser.Token{Type: TokenKeyword, Data: "lambda"},
 			parser.Token{Type: TokenDelimiter, Data: ":"},
 			parser.Token{Type: TokenDelimiter, Data: "+="},
@@ -273,7 +273,7 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 			s.Type = StatementAnnotatedAssignment
 			s.AnnotatedAssignmentStatement = new(AnnotatedAssignmentStatement)
 
-			if err := s.AugmentedAssignmentStatement.parse(q); err != nil {
+			if err := s.AnnotatedAssignmentStatement.parse(q); err != nil {
 				return p.Error("SimpleStatement", err)
 			}
 		} else {
