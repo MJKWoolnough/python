@@ -2,6 +2,294 @@ package python
 
 import "testing"
 
+func TestSimpleStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`assert a`, func(t *test, tk Tokens) { // 1
+			t.Output = SimpleStatement{
+				Type: StatementAssert,
+				AssertStatement: &AssertStatement{
+					Expressions: []Expression{
+						{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}),
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`pass`, func(t *test, tk Tokens) { // 2
+			t.Output = SimpleStatement{
+				Type:   StatementPass,
+				Tokens: tk[:1],
+			}
+		}},
+		{`del a`, func(t *test, tk Tokens) { // 3
+			t.Output = SimpleStatement{
+				Type: StatementDel,
+				DelStatement: &DelStatement{
+					TargetList: TargetList{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[2],
+										Tokens:     tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`return a`, func(t *test, tk Tokens) { // 4
+			t.Output = SimpleStatement{
+				Type: StatementReturn,
+				ReturnStatement: &ReturnStatement{
+					Expression: &Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`yield a`, func(t *test, tk Tokens) { // 5
+			t.Output = SimpleStatement{
+				Type: StatementYield,
+				YieldStatement: &YieldExpression{
+					ExpressionList: &ExpressionList{
+						Expressions: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`raise a`, func(t *test, tk Tokens) { // 6
+			t.Output = SimpleStatement{
+				Type: StatementRaise,
+				RaiseStatement: &RaiseStatement{
+					Expression: &Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`break`, func(t *test, tk Tokens) { // 7
+			t.Output = SimpleStatement{
+				Type:   StatementBreak,
+				Tokens: tk[:1],
+			}
+		}},
+		{`continue`, func(t *test, tk Tokens) { // 8
+			t.Output = SimpleStatement{
+				Type:   StatementContinue,
+				Tokens: tk[:1],
+			}
+		}},
+		{`import a`, func(t *test, tk Tokens) { // 9
+			t.Output = SimpleStatement{
+				Type: StatementImport,
+				ImportStatement: &ImportStatement{
+					Modules: []ModuleAs{
+						{
+							Module: Module{
+								Identifiers: []*Token{
+									&tk[2],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`from a import b`, func(t *test, tk Tokens) { // 10
+			t.Output = SimpleStatement{
+				Type: StatementImport,
+				ImportStatement: &ImportStatement{
+					RelativeModule: &RelativeModule{
+						Module: &Module{
+							Identifiers: []*Token{
+								&tk[2],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					Modules: []ModuleAs{
+						{
+							Module: Module{
+								Identifiers: []*Token{
+									&tk[6],
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+					},
+					Tokens: tk[:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`global a`, func(t *test, tk Tokens) { // 11
+			t.Output = SimpleStatement{
+				Type: StatementGlobal,
+				GlobalStatement: &GlobalStatement{
+					Identifiers: []*Token{
+						&tk[2],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`nonlocal a`, func(t *test, tk Tokens) { // 12
+			t.Output = SimpleStatement{
+				Type: StatementNonLocal,
+				NonLocalStatement: &NonLocalStatement{
+					Identifiers: []*Token{
+						&tk[2],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`type a=b`, func(t *test, tk Tokens) { // 13
+			t.Output = SimpleStatement{
+				Type: StatementTyp,
+				TypeStatement: &TypeStatement{
+					Identifier: &tk[2],
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[4],
+							Tokens:     tk[4:5],
+						}),
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 14
+			t.Output = SimpleStatement{
+				Type: StatementAssignment,
+				AssignmentStatement: &AssignmentStatement{
+					StarredExpression: &StarredExpression{
+						OrExpr: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a:b`, func(t *test, tk Tokens) { // 15
+			t.Output = SimpleStatement{
+				Type: StatementAnnotatedAssignment,
+				AnnotatedAssignmentStatement: &AnnotatedAssignmentStatement{
+					AugTarget: AugTarget{
+						PrimaryExpression: PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a+=b`, func(t *test, tk Tokens) { // 16
+			t.Output = SimpleStatement{
+				Type: StatementAugmentedAssignment,
+				AugmentedAssignmentStatement: &AugmentedAssignmentStatement{
+					AugTarget: AugTarget{
+						PrimaryExpression: PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					AugOp: &tk[1],
+					ExpressionList: &ExpressionList{
+						Expressions: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var s SimpleStatement
+
+		err := s.parse(t.Tokens)
+
+		return s, err
+	})
+}
+
 func TestAssertStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`assert a`, func(t *test, tk Tokens) { // 1
