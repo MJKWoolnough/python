@@ -284,6 +284,215 @@ func TestSimpleStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{`assert nonlocal`, func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "AssertStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`del nonlocal`, func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[2],
+									},
+									Parsing: "Atom",
+									Token:   tk[2],
+								},
+								Parsing: "PrimaryExpression",
+								Token:   tk[2],
+							},
+							Parsing: "Target",
+							Token:   tk[2],
+						},
+						Parsing: "TargetList",
+						Token:   tk[2],
+					},
+					Parsing: "DelStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`return nonlocal`, func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "ReturnStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`raise nonlocal from a`, func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "RaiseStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`import nonlocal`, func(t *test, tk Tokens) { // 21
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingIdentifier,
+							Parsing: "Module",
+							Token:   tk[2],
+						},
+						Parsing: "ModuleAs",
+						Token:   tk[2],
+					},
+					Parsing: "ImportStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`global nonlocal`, func(t *test, tk Tokens) { // 22
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "GlobalStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`nonlocal nonlocal`, func(t *test, tk Tokens) { // 23
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "NonLocalStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`type nonlocal[a] = b`, func(t *test, tk Tokens) { // 24
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "TypeStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 25
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: wrapConditionalExpressionError(Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[4],
+								}),
+								Parsing: "Expression",
+								Token:   tk[4],
+							},
+							Parsing: "ExpressionList",
+							Token:   tk[4],
+						},
+						Parsing: "YieldExpression",
+						Token:   tk[4],
+					},
+					Parsing: "AssignmentStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 26
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "AnnotatedAssignmentStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`a/=nonlocal`, func(t *test, tk Tokens) { // 27
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[2],
+							}),
+							Parsing: "Expression",
+							Token:   tk[2],
+						},
+						Parsing: "ExpressionList",
+						Token:   tk[2],
+					},
+					Parsing: "AugmentedAssignmentStatement",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s SimpleStatement
 
