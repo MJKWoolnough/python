@@ -106,12 +106,9 @@ func (a ArgumentListOrComprehension) printSource(w io.Writer, v bool) {
 func (a AssertStatement) printSource(w io.Writer, v bool) {
 	if len(a.Expressions) > 0 {
 		io.WriteString(w, "assert ")
+		a.Expressions[0].printSource(w, v)
 
-		for n, e := range a.Expressions {
-			if n > 0 {
-				io.WriteString(w, ", ")
-			}
-
+		for _, e := range a.Expressions[1:] {
 			e.printSource(w, v)
 		}
 	}
@@ -140,7 +137,6 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 func (a AssignmentStatement) printSource(w io.Writer, v bool) {
 	for _, t := range a.TargetLists {
 		t.printSource(w, v)
-
 		io.WriteString(w, " = ")
 	}
 
@@ -318,12 +314,13 @@ func (d DelStatement) printSource(w io.Writer, v bool) {
 }
 
 func (d DictDisplay) printSource(w io.Writer, v bool) {
-	for n, di := range d.DictItems {
-		if n > 0 {
-			io.WriteString(w, ", ")
-		}
+	if len(d.DictItems) > 0 {
+		d.DictItems[0].printSource(w, v)
 
-		di.printSource(w, v)
+		for _, di := range d.DictItems[1:] {
+			io.WriteString(w, ", ")
+			di.printSource(w, v)
+		}
 	}
 
 	if d.DictComprehension != nil {
@@ -377,12 +374,13 @@ func (e Expression) printSource(w io.Writer, v bool) {
 }
 
 func (e ExpressionList) printSource(w io.Writer, v bool) {
-	for n, ex := range e.Expressions {
-		if n > 0 {
-			io.WriteString(w, ", ")
-		}
+	if len(e.Expressions) > 0 {
+		e.Expressions[0].printSource(w, v)
 
-		ex.printSource(w, v)
+		for _, ex := range e.Expressions[1:] {
+			io.WriteString(w, ", ")
+			ex.printSource(w, v)
+		}
 	}
 }
 
@@ -398,12 +396,12 @@ func (f FlexibleExpressionListOrComprehension) printSource(w io.Writer, v bool) 
 }
 
 func (f FlexibleExpressionList) printSource(w io.Writer, v bool) {
-	for n, fe := range f.FlexibleExpressions {
-		if n > 0 {
+	if len(f.FlexibleExpressions) > 0 {
+		f.FlexibleExpressions[0].printSource(w, v)
+		for _, fe := range f.FlexibleExpressions[1:] {
 			io.WriteString(w, ", ")
+			fe.printSource(w, v)
 		}
-
-		fe.printSource(w, v)
 	}
 }
 
@@ -430,14 +428,13 @@ func (g GeneratorExpression) printSource(w io.Writer, v bool) {
 func (g GlobalStatement) printSource(w io.Writer, v bool) {
 	if len(g.Identifiers) > 0 {
 		io.WriteString(w, "global ")
+		io.WriteString(w, g.Identifiers[0].Data)
 
-		for n, t := range g.Identifiers {
-			if n > 0 {
-				if v {
-					io.WriteString(w, ", ")
-				} else {
-					io.WriteString(w, ",")
-				}
+		for _, t := range g.Identifiers[1:] {
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
 			}
 
 			io.WriteString(w, t.Data)
@@ -457,12 +454,13 @@ func (i ImportStatement) printSource(w io.Writer, v bool) {
 		io.WriteString(w, "import ")
 	}
 
-	for n, m := range i.Modules {
-		if n > 0 {
-			io.WriteString(w, ", ")
-		}
+	if len(i.Modules) > 0 {
+		i.Modules[0].printSource(w, v)
 
-		m.printSource(w, v)
+		for _, m := range i.Modules[1:] {
+			io.WriteString(w, ", ")
+			m.printSource(w, v)
+		}
 	}
 }
 
@@ -515,12 +513,13 @@ func (m ModuleAs) printSource(w io.Writer, v bool) {
 }
 
 func (m Module) printSource(w io.Writer, v bool) {
-	for n, i := range m.Identifiers {
-		if n > 0 {
-			io.WriteString(w, ".")
-		}
+	if len(m.Identifiers) > 0 {
+		io.WriteString(w, m.Identifiers[0].Data)
 
-		io.WriteString(w, i.Data)
+		for _, i := range m.Identifiers[1:] {
+			io.WriteString(w, ".")
+			io.WriteString(w, i.Data)
+		}
 	}
 }
 
@@ -545,14 +544,13 @@ func (m MultiplyExpression) printSource(w io.Writer, v bool) {
 func (n NonLocalStatement) printSource(w io.Writer, v bool) {
 	if len(n.Identifiers) > 0 {
 		io.WriteString(w, "nonlocal ")
+		io.WriteString(w, n.Identifiers[0].Data)
 
-		for n, t := range n.Identifiers {
-			if n > 0 {
-				if v {
-					io.WriteString(w, ", ")
-				} else {
-					io.WriteString(w, ",")
-				}
+		for _, t := range n.Identifiers[1:] {
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
 			}
 
 			io.WriteString(w, t.Data)
@@ -778,16 +776,18 @@ func (s SliceItem) printSource(w io.Writer, v bool) {
 func (s SliceList) printSource(w io.Writer, v bool) {
 	io.WriteString(w, "[")
 
-	for n, si := range s.SliceItems {
-		if n > 0 {
+	if len(s.SliceItems) > 0 {
+		s.SliceItems[0].printSource(w, v)
+
+		for _, si := range s.SliceItems[1:] {
 			if v {
 				io.WriteString(w, ", ")
 			} else {
 				io.WriteString(w, ",")
 			}
-		}
 
-		si.printSource(w, v)
+			si.printSource(w, v)
+		}
 	}
 
 	io.WriteString(w, "]")
@@ -802,16 +802,17 @@ func (s StarredExpression) printSource(w io.Writer, v bool) {
 }
 
 func (s StarredExpressionList) printSource(w io.Writer, v bool) {
-	for n, se := range s.StarredExpressions {
-		if n > 0 {
+	if len(s.StarredExpressions) > 0 {
+		s.StarredExpressions[0].printSource(w, v)
+
+		for _, se := range s.StarredExpressions[1:] {
 			io.WriteString(w, ", ")
+			se.printSource(w, v)
 		}
 
-		se.printSource(w, v)
-	}
-
-	if len(s.StarredExpressions) == 1 {
-		io.WriteString(w, ",")
+		if len(s.StarredExpressions) == 1 {
+			io.WriteString(w, ",")
+		}
 	}
 }
 
@@ -825,12 +826,13 @@ func (s StarredItem) printSource(w io.Writer, v bool) {
 }
 
 func (s StarredList) printSource(w io.Writer, v bool) {
-	for n, si := range s.StarredItems {
-		if n > 0 {
-			io.WriteString(w, ", ")
-		}
+	if len(s.StarredItems) > 0 {
+		s.StarredItems[0].printSource(w, v)
 
-		si.printSource(w, v)
+		for _, si := range s.StarredItems[1:] {
+			io.WriteString(w, ", ")
+			si.printSource(w, v)
+		}
 	}
 }
 
@@ -884,12 +886,13 @@ func (t Target) printSource(w io.Writer, v bool) {
 }
 
 func (t TargetList) printSource(w io.Writer, v bool) {
-	for n, tg := range t.Targets {
-		if n > 0 {
-			io.WriteString(w, ", ")
-		}
+	if len(t.Targets) > 0 {
+		t.Targets[0].printSource(w, v)
 
-		tg.printSource(w, v)
+		for _, tg := range t.Targets[1:] {
+			io.WriteString(w, ", ")
+			tg.printSource(w, v)
+		}
 	}
 }
 
@@ -919,16 +922,18 @@ func (t TypeParam) printSource(w io.Writer, v bool) {
 func (t TypeParams) printSource(w io.Writer, v bool) {
 	io.WriteString(w, "[")
 
-	for n, tp := range t.TypeParams {
-		if n > 0 {
+	if len(t.TypeParams) > 0 {
+		t.TypeParams[0].printSource(w, v)
+
+		for _, tp := range t.TypeParams[1:] {
 			if v {
 				io.WriteString(w, ", ")
 			} else {
 				io.WriteString(w, ",")
 			}
-		}
 
-		tp.printSource(w, v)
+			tp.printSource(w, v)
+		}
 	}
 
 	io.WriteString(w, "]")
