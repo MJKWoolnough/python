@@ -2,6 +2,73 @@ package python
 
 import "testing"
 
+func TestAssertStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`assert a`, func(t *test, tk Tokens) { // 1
+			t.Output = AssertStatement{
+				Expressions: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`assert a,b`, func(t *test, tk Tokens) { // 2
+			t.Output = AssertStatement{
+				Expressions: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[4],
+							Tokens:     tk[4:5],
+						}),
+						Tokens: tk[4:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`assert a , b`, func(t *test, tk Tokens) { // 3
+			t.Output = AssertStatement{
+				Expressions: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[6],
+							Tokens:     tk[6:7],
+						}),
+						Tokens: tk[6:7],
+					},
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var a AssertStatement
+
+		err := a.parse(t.Tokens)
+
+		return a, err
+	})
+}
+
 func TestAssignmentStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
