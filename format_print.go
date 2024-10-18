@@ -126,7 +126,18 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 	a.Expression.printSource(w, v)
 }
 
-func (f AssignmentStatement) printSource(w io.Writer, v bool) {
+func (a AssignmentStatement) printSource(w io.Writer, v bool) {
+	for _, t := range a.TargetLists {
+		t.printSource(w, v)
+
+		io.WriteString(w, " = ")
+	}
+
+	if a.StarredExpression != nil {
+		a.StarredExpression.printSource(w, v)
+	} else if a.YieldExpression != nil {
+		a.YieldExpression.printSource(w, v)
+	}
 }
 
 func (a Atom) printSource(w io.Writer, v bool) {
