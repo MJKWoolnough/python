@@ -1762,13 +1762,6 @@ func (f *SimpleStatement) printType(w io.Writer, v bool) {
 		pp.Print("\nAssertStatement: nil")
 	}
 
-	if f.ExpressionStatement != nil {
-		pp.Print("\nExpressionStatement: ")
-		f.ExpressionStatement.printType(&pp, v)
-	} else if v {
-		pp.Print("\nExpressionStatement: nil")
-	}
-
 	if f.AssignmentStatement != nil {
 		pp.Print("\nAssignmentStatement: ")
 		f.AssignmentStatement.printType(&pp, v)
