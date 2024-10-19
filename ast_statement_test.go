@@ -91,6 +91,40 @@ func TestStatement(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingIdentifier,
+							Parsing: "NonLocalStatement",
+							Token:   tk[1],
+						},
+						Parsing: "SimpleStatement",
+						Token:   tk[0],
+					},
+					Parsing: "StatementList",
+					Token:   tk[0],
+				},
+				Parsing: "Statement",
+				Token:   tk[0],
+			}
+		}},
+		{`class nonlocal: a`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "ClassDefinition",
+						Token:   tk[2],
+					},
+					Parsing: "CompoundStatement",
+					Token:   tk[0],
+				},
+				Parsing: "Statement",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s Statement
 
