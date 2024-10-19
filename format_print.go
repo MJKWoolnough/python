@@ -879,7 +879,15 @@ func (s StarredOrKeyword) printSource(w io.Writer, v bool) {
 func (f Statement) printSource(w io.Writer, v bool) {
 }
 
-func (f StatementList) printSource(w io.Writer, v bool) {
+func (s StatementList) printSource(w io.Writer, v bool) {
+	if len(s.Statements) > 0 {
+		s.Statements[0].printSource(w, v)
+
+		for _, ss := range s.Statements {
+			io.WriteString(w, "; ")
+			ss.printSource(w, v)
+		}
+	}
 }
 
 func (s Suite) printSource(w io.Writer, v bool) {
