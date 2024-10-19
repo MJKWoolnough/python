@@ -221,6 +221,36 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "NonLocalStatement",
+						Token:   tk[1],
+					},
+					Parsing: "SimpleStatement",
+					Token:   tk[0],
+				},
+				Parsing: "StatementList",
+				Token:   tk[0],
+			}
+		}},
+		{`a;nonlocal`, func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "NonLocalStatement",
+						Token:   tk[3],
+					},
+					Parsing: "SimpleStatement",
+					Token:   tk[2],
+				},
+				Parsing: "StatementList",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s StatementList
 
