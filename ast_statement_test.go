@@ -2,6 +2,234 @@ package python
 
 import "testing"
 
+func TestStatementList(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a;`, func(t *test, tk Tokens) { // 2
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`a ; `, func(t *test, tk Tokens) { // 3
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a #Comment`, func(t *test, tk Tokens) { // 4
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{"a\n", func(t *test, tk Tokens) { // 5
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a; #Comment`, func(t *test, tk Tokens) { // 6
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{"a;\n", func(t *test, tk Tokens) { // 7
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`a;b`, func(t *test, tk Tokens) { // 8
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a ; b `, func(t *test, tk Tokens) { // 9
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								OrExpr: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var s StatementList
+
+		err := s.parse(t.Tokens)
+
+		return s, err
+	})
+}
+
 func TestSimpleStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`assert a`, func(t *test, tk Tokens) { // 1
