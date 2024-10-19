@@ -20,27 +20,25 @@ type CompoundStatement struct {
 func (c *CompoundStatement) parser(p *pyParser) error {
 	var decorators *Decorators
 
-	if tk := p.Peek(); tk.Type == TokenDelimiter && tk.Data == "@" {
-		decorators = new(Decorators)
+	q := p.NewGoal()
 
-		q := p.NewGoal()
+	if tk := q.Peek(); tk == (parser.Token{Type: TokenOperator, Data: "@"}) {
+		decorators = new(Decorators)
 
 		if err := decorators.parse(q); err != nil {
 			return p.Error("CompoundStatement", err)
 		}
 
-		p.Score(q)
+		q.AcceptRunWhitespace()
 
-		if tk := p.Peek(); tk.Type != TokenKeyword {
+		if tk := q.Peek(); tk.Type != TokenKeyword {
 			return p.Error("CompoundStatement", ErrInvalidCompound)
 		}
 	}
 
 	var err error
 
-	q := p.NewGoal()
-
-	switch tk := p.Peek(); tk.Data {
+	switch tk := q.Peek(); tk.Data {
 	case "if":
 		c.If = new(IfStatement)
 		err = c.If.parse(q)
@@ -63,7 +61,7 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 		c.Class = new(ClassDefinition)
 		err = c.Class.parse(q, decorators)
 	case "async":
-		p.next()
+		p.Skip()
 		p.AcceptRunWhitespace()
 
 		switch tk := p.Peek(); tk.Data {
@@ -100,7 +98,7 @@ type Decorators struct {
 }
 
 func (d *Decorators) parse(p *pyParser) error {
-	for p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "@"}) {
+	for p.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) {
 		var ae AssignmentExpression
 
 		q := p.NewGoal()
@@ -109,12 +107,19 @@ func (d *Decorators) parse(p *pyParser) error {
 			return p.Error("Decorator", err)
 		}
 
+		d.Decorators = append(d.Decorators, ae)
+
 		q.AcceptRunWhitespace()
 		p.Score(q)
+
+		q = p.NewGoal()
 
 		if !q.Accept(TokenLineTerminator) {
 			return p.Error("Decorator", ErrMissingNewline)
 		}
+
+		q.AcceptRunWhitespace()
+		p.Score(q)
 	}
 
 	d.Tokens = p.ToTokens()
