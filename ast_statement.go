@@ -18,7 +18,7 @@ func (s *Statement) parse(p *pyParser) error {
 	q := p.NewGoal()
 
 	switch tk := p.Peek(); tk.Type {
-	case TokenDelimiter:
+	case TokenOperator:
 		isCompound = tk.Data == "@"
 	case TokenKeyword:
 		isCompound = slices.Contains(compounds[:], tk.Data)
