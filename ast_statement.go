@@ -64,9 +64,9 @@ type StatementList struct {
 
 func (s *StatementList) parse(p *pyParser) error {
 	for {
-		var ss SimpleStatement
-
 		q := p.NewGoal()
+
+		var ss SimpleStatement
 
 		if err := ss.parse(q); err != nil {
 			return p.Error("StatementList", err)
@@ -75,12 +75,19 @@ func (s *StatementList) parse(p *pyParser) error {
 		p.Score(q)
 
 		s.Statements = append(s.Statements, ss)
-
 		q = p.NewGoal()
 
 		q.AcceptRunWhitespace()
 
 		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ";"}) {
+			break
+		}
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		if tk := q.AcceptRunWhitespace(); tk == TokenComment || tk == TokenLineTerminator || tk == parser.TokenDone {
 			break
 		}
 
