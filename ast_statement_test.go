@@ -2,6 +2,104 @@ package python
 
 import "testing"
 
+func TestStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = Statement{
+				StatementList: &StatementList{
+					Statements: []SimpleStatement{
+						{
+							Type: StatementAssignment,
+							AssignmentStatement: &AssignmentStatement{
+								StarredExpression: &StarredExpression{
+									OrExpr: WrapConditional(&Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`class a: pass`, func(t *test, tk Tokens) { // 2
+			t.Output = Statement{
+				CompoundStatement: &CompoundStatement{
+					Class: &ClassDefinition{
+						ClassName: &tk[2],
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type:   StatementPass,
+										Tokens: tk[5:6],
+									},
+								},
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[:6],
+					},
+					Tokens: tk[:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"@decorator\nclass a: pass", func(t *test, tk Tokens) { // 3
+			t.Output = Statement{
+				CompoundStatement: &CompoundStatement{
+					Class: &ClassDefinition{
+						Decorators: &Decorators{
+							Decorators: []AssignmentExpression{
+								{
+									Expression: Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[1],
+											Tokens:     tk[1:2],
+										}),
+										Tokens: tk[1:2],
+									},
+									Tokens: tk[1:2],
+								},
+							},
+							Tokens: tk[:3],
+						},
+						ClassName: &tk[5],
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type:   StatementPass,
+										Tokens: tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[:9],
+					},
+					Tokens: tk[:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var s Statement
+
+		err := s.parse(t.Tokens)
+
+		return s, err
+	})
+}
+
 func TestStatementList(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
@@ -236,7 +334,7 @@ func TestStatementList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a;nonlocal`, func(t *test, tk Tokens) { // 10
+		{`a;nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
