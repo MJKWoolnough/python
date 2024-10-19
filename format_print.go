@@ -742,7 +742,38 @@ func (s ShiftExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f SimpleStatement) printSource(w io.Writer, v bool) {
+func (s SimpleStatement) printSource(w io.Writer, v bool) {
+	if s.AssertStatement != nil {
+		s.AssertStatement.printSource(w, v)
+	} else if s.DelStatement != nil {
+		s.DelStatement.printSource(w, v)
+	} else if s.ReturnStatement != nil {
+		s.ReturnStatement.printSource(w, v)
+	} else if s.YieldStatement != nil {
+		s.YieldStatement.printSource(w, v)
+	} else if s.RaiseStatement != nil {
+		s.RaiseStatement.printSource(w, v)
+	} else if s.ImportStatement != nil {
+		s.ImportStatement.printSource(w, v)
+	} else if s.GlobalStatement != nil {
+		s.GlobalStatement.printSource(w, v)
+	} else if s.NonLocalStatement != nil {
+		s.NonLocalStatement.printSource(w, v)
+	} else if s.TypeStatement != nil {
+		s.TypeStatement.printSource(w, v)
+	} else if s.AssignmentStatement != nil {
+		s.AssignmentStatement.printSource(w, v)
+	} else if s.AnnotatedAssignmentStatement != nil {
+		s.AnnotatedAssignmentStatement.printSource(w, v)
+	} else if s.AugmentedAssignmentStatement != nil {
+		s.AugmentedAssignmentStatement.printSource(w, v)
+	} else if s.Type == StatementPass {
+		io.WriteString(w, "pass")
+	} else if s.Type == StatementBreak {
+		io.WriteString(w, "break")
+	} else if s.Type == StatementContinue {
+		io.WriteString(w, "continue")
+	}
 }
 
 func (s SliceItem) printSource(w io.Writer, v bool) {
