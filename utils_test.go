@@ -58,6 +58,70 @@ func TestUnquote(t *testing.T) {
 			Input:  "R'abc\\'",
 			Output: "abc\\",
 		},
+		{ // 12
+			Input:  "\"\"",
+			Output: "",
+		},
+		{ // 13
+			Input:  "''",
+			Output: "",
+		},
+		{ // 14
+			Input: "\"\\09\"",
+			Err:   strconv.ErrSyntax,
+		},
+		{ // 15
+			Input:  "\"\\101\"",
+			Output: "A",
+		},
+		{ // 16
+			Input:  "\"\\a\"",
+			Output: "\a",
+		},
+		{ // 17
+			Input:  "\"\\b\"",
+			Output: "\b",
+		},
+		{ // 18
+			Input:  "\"\\f\"",
+			Output: "\f",
+		},
+		{ // 19
+			Input:  "\"\\n\"",
+			Output: "\n",
+		},
+		{ // 20
+			Input:  "\"\\r\"",
+			Output: "\r",
+		},
+		{ // 21
+			Input:  "\"\\t\"",
+			Output: "\t",
+		},
+		{ // 22
+			Input:  "\"\\v\"",
+			Output: "\v",
+		},
+		{ // 23
+			Input:  "\"\\x41\"",
+			Output: "A",
+		},
+		{ // 24
+			Input: "\"\\N\"",
+			Err:   strconv.ErrSyntax,
+		},
+		{ // 25
+			Input:  "\"\\u0041\"",
+			Output: "A",
+		},
+		{ // 26
+			Input:  "\"\\U00000041\"",
+			Output: "A",
+		},
+		{ // 24
+			Input: "\"\\B\"",
+			Err:   strconv.ErrSyntax,
+		},
 	} {
 		output, err := Unquote(test.Input)
 
