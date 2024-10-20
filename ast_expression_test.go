@@ -1523,7 +1523,27 @@ func TestFlexibleExpressionList(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
+		{`a,`, func(t *test, tk Tokens) { // 4
+			t.Output = FlexibleExpressionList{
+				FlexibleExpressions: []FlexibleExpression{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1546,7 +1566,7 @@ func TestFlexibleExpressionList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a,nonlocal`, func(t *test, tk Tokens) { // 4
+		{`a,nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
