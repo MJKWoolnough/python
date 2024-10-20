@@ -1591,3 +1591,13 @@ func TestUnwrapConditional(t *testing.T) {
 		}
 	}
 }
+
+func TestUnwrapConditionalExtra(t *testing.T) {
+	if res := UnwrapConditional(nil); res != nil {
+		t.Errorf("test 1: expecting nil, got %v", res)
+	}
+
+	if res := UnwrapConditional(WrapConditional(&UnaryExpression{})); res != nil {
+		t.Errorf("test 2: expecting nil, got %v", res)
+	}
+}
