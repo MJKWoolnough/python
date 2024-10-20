@@ -1468,7 +1468,37 @@ func TestAugTarget(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 2
+		{`a[b]`, func(t *test, tk Tokens) { // 2
+			t.Output = AugTarget{
+				PrimaryExpression: PrimaryExpression{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Slicing: &SliceList{
+						SliceItems: []SliceItem{
+							{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[2],
+										Tokens:     tk[2:3],
+									}),
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[1:4],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 3
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1487,14 +1517,14 @@ func TestAugTarget(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a()`, func(t *test, tk Tokens) { // 3
+		{`a()`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "AugTarget",
 				Token:   tk[0],
 			}
 		}},
-		{`(a)`, func(t *test, tk Tokens) { // 4
+		{`(a)`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "AugTarget",
