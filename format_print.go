@@ -876,7 +876,12 @@ func (s StarredOrKeyword) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f Statement) printSource(w io.Writer, v bool) {
+func (s Statement) printSource(w io.Writer, v bool) {
+	if s.StatementList != nil {
+		s.StatementList.printSource(w, v)
+	} else if s.CompoundStatement != nil {
+		s.CompoundStatement.printSource(w, v)
+	}
 }
 
 func (s StatementList) printSource(w io.Writer, v bool) {
