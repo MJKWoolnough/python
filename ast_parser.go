@@ -126,20 +126,6 @@ func (p *pyParser) Skip() {
 	p.next()
 }
 
-func (p *pyParser) ExceptRun(ts ...parser.TokenType) parser.TokenType {
-	for {
-		tt := p.next().Type
-
-		for _, pt := range ts {
-			if pt == tt || tt < 0 {
-				p.backup()
-
-				return tt
-			}
-		}
-	}
-}
-
 func (p *pyParser) AcceptToken(tk parser.Token) bool {
 	if p.next().Token == tk {
 		return true
