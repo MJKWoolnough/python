@@ -1767,6 +1767,13 @@ func TestAnnotatedAssignmentStatement(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
+		{`a`, func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "AnnotatedAssignmentStatement",
+				Token:   tk[1],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var a AnnotatedAssignmentStatement
 
