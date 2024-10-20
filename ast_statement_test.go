@@ -3160,6 +3160,13 @@ func TestTypeStatement(t *testing.T) {
 				Token:   tk[9],
 			}
 		}},
+		{`type a`, func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrMissingEquals,
+				Parsing: "TypeStatement",
+				Token:   tk[3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var ts TypeStatement
 
