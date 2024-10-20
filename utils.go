@@ -80,31 +80,31 @@ func unescapeEscaped(t *parser.Tokeniser) rune {
 	case '\\', '\'', '"':
 		return c
 	case 'a':
-		return 7
+		return '\a'
 	case 'b':
-		return 8
+		return '\b'
 	case 'f':
-		return 12
+		return '\f'
 	case 'n':
-		return 10
+		return '\n'
 	case 'r':
-		return 13
+		return '\r'
 	case 't':
-		return 8
+		return '\t'
 	case 'v':
-		return 11
+		return '\v'
 	case 'x':
-		t.Next()
+		t.Get()
 
 		return readEscapedDigits(t, hexDigit, 16, 2)
 	case 'N':
 		return -1 // currently unsupported
 	case 'u':
-		t.Next()
+		t.Get()
 
 		return readEscapedDigits(t, hexDigit, 16, 4)
 	case 'U':
-		t.Next()
+		t.Get()
 
 		return readEscapedDigits(t, hexDigit, 16, 8)
 	}
