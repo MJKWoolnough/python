@@ -330,6 +330,96 @@ func TestFuncDefinition(t *testing.T) {
 				Tokens: tk[:32],
 			}
 		}},
+		{"def nonlocal():a", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "FuncDefinition",
+				Token:   tk[2],
+			}
+		}},
+		{"def a[nonlocal]():b", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "TypeParam",
+						Token:   tk[4],
+					},
+					Parsing: "TypeParams",
+					Token:   tk[4],
+				},
+				Parsing: "FuncDefinition",
+				Token:   tk[3],
+			}
+		}},
+		{"def a(nonlocal):b", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err:     ErrMissingClosingParen,
+				Parsing: "FuncDefinition",
+				Token:   tk[4],
+			}
+		}},
+		{"def a(b=nonlocal):c", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[6],
+							}),
+							Parsing: "Expression",
+							Token:   tk[6],
+						},
+						Parsing: "DefParameter",
+						Token:   tk[6],
+					},
+					Parsing: "ParameterList",
+					Token:   tk[4],
+				},
+				Parsing: "FuncDefinition",
+				Token:   tk[4],
+			}
+		}},
+		{"def a()->nonlocal:b", func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[6],
+					}),
+					Parsing: "Expression",
+					Token:   tk[6],
+				},
+				Parsing: "FuncDefinition",
+				Token:   tk[6],
+			}
+		}},
+		{"def a():nonlocal", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[7],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[6],
+						},
+						Parsing: "StatementList",
+						Token:   tk[6],
+					},
+					Parsing: "Suite",
+					Token:   tk[6],
+				},
+				Parsing: "FuncDefinition",
+				Token:   tk[6],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f FuncDefinition
 
