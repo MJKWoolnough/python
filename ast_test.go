@@ -22,6 +22,7 @@ type test struct {
 	Decorators           *Decorators
 	TokenSkip            int
 	AllowTypeAnnotations bool
+	Async                bool
 	Err                  error
 }
 
