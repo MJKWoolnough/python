@@ -2,6 +2,51 @@ package python
 
 import "testing"
 
+func TestWithItem(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = WithItem{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a as b`, func(t *test, tk Tokens) { // 2
+			t.Output = WithItem{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					}),
+					Tokens: tk[:1],
+				},
+				Target: &Target{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[4],
+							Tokens:     tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var w WithItem
+
+		err := w.parse(t.Tokens)
+
+		return w, err
+	})
+}
+
 func TestFuncDefinition(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`def a():b`, func(t *test, tk Tokens) { // 1
