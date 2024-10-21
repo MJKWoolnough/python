@@ -38,6 +38,44 @@ func TestWithItem(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[0],
+					}),
+					Parsing: "Expression",
+					Token:   tk[0],
+				},
+				Parsing: "WithItem",
+				Token:   tk[0],
+			}
+		}},
+		{`a as nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[4],
+							},
+							Parsing: "Atom",
+							Token:   tk[4],
+						},
+						Parsing: "PrimaryExpression",
+						Token:   tk[4],
+					},
+					Parsing: "Target",
+					Token:   tk[4],
+				},
+				Parsing: "WithItem",
+				Token:   tk[4],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var w WithItem
 
