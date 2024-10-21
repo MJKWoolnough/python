@@ -637,6 +637,8 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 
 	f.FuncName = p.GetLastToken()
 
+	p.AcceptRunWhitespace()
+
 	if p.Peek() == (parser.Token{Type: TokenDelimiter, Data: "["}) {
 		q := p.NewGoal()
 		f.TypeParams = new(TypeParams)
