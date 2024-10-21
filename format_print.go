@@ -417,6 +417,36 @@ func (f ForStatement) printSource(w io.Writer, v bool) {
 }
 
 func (f FuncDefinition) printSource(w io.Writer, v bool) {
+	if f.Decorators != nil {
+		f.Decorators.printSource(w, v)
+	}
+
+	if f.Async {
+		io.WriteString(w, "async ")
+	}
+
+	io.WriteString(w, "def ")
+	io.WriteString(w, f.FuncName.Data)
+
+	if f.TypeParams != nil {
+		f.TypeParams.printSource(w, v)
+	}
+
+	io.WriteString(w, "(")
+	f.ParameterList.printSource(w, v)
+	io.WriteString(w, ")")
+
+	if f.Expression != nil {
+		if v {
+			io.WriteString(w, " -> ")
+		} else {
+			io.WriteString(w, "->")
+		}
+		f.Expression.printSource(w, v)
+	}
+
+	io.WriteString(w, ":")
+	f.Suite.printSource(w, v)
 }
 
 func (g GeneratorExpression) printSource(w io.Writer, v bool) {
