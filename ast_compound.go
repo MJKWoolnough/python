@@ -672,12 +672,13 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 		}
 
 		p.CloseBrackets()
-		p.AcceptRunWhitespace()
 	} else {
 		f.ParameterList.Tokens = p.NewGoal().ToTokens()
 
 		p.CloseBrackets()
 	}
+
+	p.AcceptRunWhitespace()
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "->"}) {
 		p.AcceptRunWhitespace()
