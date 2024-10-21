@@ -665,6 +665,7 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 			return p.Error("FuncDefinition", err)
 		}
 
+		p.Score(q)
 		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
@@ -690,6 +691,7 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 			return p.Error("FuncDefinition", err)
 		}
 
+		p.Score(q)
 		p.AcceptRunWhitespace()
 	}
 
