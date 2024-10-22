@@ -489,7 +489,7 @@ type WithStatement struct {
 func (w *WithStatement) parse(p *pyParser, async bool) error {
 	w.Async = async
 
-	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "while"})
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "with"})
 	p.AcceptRunWhitespace()
 
 	parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
