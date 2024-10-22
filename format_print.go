@@ -1037,7 +1037,13 @@ func (u UnaryExpression) printSource(w io.Writer, v bool) {
 func (f WhileStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f WithItem) printSource(w io.Writer, v bool) {
+func (wi WithItem) printSource(w io.Writer, v bool) {
+	wi.Expression.printSource(w, v)
+
+	if wi.Target != nil {
+		io.WriteString(w, " as ")
+		wi.Target.printSource(w, v)
+	}
 }
 
 func (f WithStatement) printSource(w io.Writer, v bool) {
