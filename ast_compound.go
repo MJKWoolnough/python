@@ -496,9 +496,8 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 
 	if parens {
 		p.OpenBrackets()
+		p.AcceptRunWhitespace()
 	}
-
-	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
 
@@ -521,6 +520,12 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 		p.CloseBrackets()
 		p.AcceptRunWhitespace()
 	}
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("WithStatement", ErrMissingColon)
+	}
+
+	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
 
