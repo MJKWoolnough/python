@@ -557,6 +557,7 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 		q.Score(r)
 		p.Score(q)
 
+		w.Items = append(w.Items, wi)
 		q = p.NewGoal()
 
 		q.AcceptRunWhitespace()
