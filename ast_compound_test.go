@@ -2,6 +2,257 @@ package python
 
 import "testing"
 
+func TestWithStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`with a:b`, func(t *test, tk Tokens) { // 1
+			t.Output = WithStatement{
+				Contents: WithStatementContents{
+					Items: []WithItem{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[4],
+											Tokens:     tk[4:5],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`with a : b`, func(t *test, tk Tokens) { // 2
+			t.Output = WithStatement{
+				Contents: WithStatementContents{
+					Items: []WithItem{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[6],
+											Tokens:     tk[6:7],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[6:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`with a,b:c`, func(t *test, tk Tokens) { // 3
+			t.Output = WithStatement{
+				Contents: WithStatementContents{
+					Items: []WithItem{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+					},
+					Tokens: tk[2:5],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[6],
+											Tokens:     tk[6:7],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[6:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`with (a,b):c`, func(t *test, tk Tokens) { // 4
+			t.Output = WithStatement{
+				Contents: WithStatementContents{
+					Items: []WithItem{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[3],
+									Tokens:     tk[3:4],
+								}),
+								Tokens: tk[3:4],
+							},
+							Tokens: tk[3:4],
+						},
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[5],
+									Tokens:     tk[5:6],
+								}),
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+					},
+					Tokens: tk[3:6],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[8],
+											Tokens:     tk[8:9],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[8:9],
+								},
+								Tokens: tk[8:9],
+							},
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`with (a,b , ):c`, func(t *test, tk Tokens) { // 4
+			t.Output = WithStatement{
+				Contents: WithStatementContents{
+					Items: []WithItem{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[3],
+									Tokens:     tk[3:4],
+								}),
+								Tokens: tk[3:4],
+							},
+							Tokens: tk[3:4],
+						},
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[5],
+									Tokens:     tk[5:6],
+								}),
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+					},
+					Tokens: tk[3:6],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[11],
+											Tokens:     tk[11:12],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[11:12],
+									},
+									Tokens: tk[11:12],
+								},
+								Tokens: tk[11:12],
+							},
+						},
+						Tokens: tk[11:12],
+					},
+					Tokens: tk[11:12],
+				},
+				Tokens: tk[:12],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var w WithStatement
+
+		err := w.parse(t.Tokens, t.Async)
+
+		return w, err
+	})
+}
+
 func TestWithStatementContents(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
