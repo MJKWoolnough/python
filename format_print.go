@@ -1049,7 +1049,14 @@ func (wi WithItem) printSource(w io.Writer, v bool) {
 func (f WithStatement) printSource(w io.Writer, v bool) {
 }
 
-func (f WithStatementContents) printSource(w io.Writer, v bool) {
+func (wc WithStatementContents) printSource(w io.Writer, v bool) {
+	if len(wc.Items) > 0 {
+		wc.Items[0].printSource(w, v)
+
+		for _, i := range wc.Items[1:] {
+			i.printSource(w, v)
+		}
+	}
 }
 
 func (x XorExpression) printSource(w io.Writer, v bool) {
