@@ -75,6 +75,25 @@ func TestWithStatementContents(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						}),
+						Parsing: "Expression",
+						Token:   tk[0],
+					},
+					Parsing: "WithItem",
+					Token:   tk[0],
+				},
+				Parsing: "WithStatementContents",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var w WithStatementContents
 
