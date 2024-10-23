@@ -347,6 +347,14 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 	q := p.NewGoal()
 
+	if err := t.Try.parse(q); err != nil {
+		return p.Error("TryStatement", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
 	q.OpenBrackets()
 	q.AcceptRunWhitespace()
 	q.CloseBrackets()
