@@ -1046,7 +1046,11 @@ func (wi WithItem) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f WithStatement) printSource(w io.Writer, v bool) {
+func (ws WithStatement) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "with ")
+	ws.Contents.printSource(w, v)
+	io.WriteString(w, ":")
+	ws.Suite.printSource(w, v)
 }
 
 func (wc WithStatementContents) printSource(w io.Writer, v bool) {
