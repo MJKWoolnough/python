@@ -2,6 +2,853 @@ package python
 
 import "testing"
 
+func TestTryStatement(t *testing.T) {
+	doTests(t, []sourceFn{
+		{"try:a\nexcept b:c", func(t *test, tk Tokens) { // 1
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[8],
+													Tokens:     tk[8:9],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[6:9],
+					},
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"try :a\nexcept b :c", func(t *test, tk Tokens) { // 2
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[3],
+											Tokens:     tk[3:4],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[3:4],
+									},
+									Tokens: tk[3:4],
+								},
+								Tokens: tk[3:4],
+							},
+						},
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[3:4],
+				},
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							}),
+							Tokens: tk[7:8],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[10],
+													Tokens:     tk[10:11],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[10:11],
+											},
+											Tokens: tk[10:11],
+										},
+										Tokens: tk[10:11],
+									},
+								},
+								Tokens: tk[10:11],
+							},
+							Tokens: tk[10:11],
+						},
+						Tokens: tk[7:11],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"try:a\nexcept b:c\nexcept d:e", func(t *test, tk Tokens) { // 3
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[8],
+													Tokens:     tk[8:9],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[6:9],
+					},
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[12],
+								Tokens:     tk[12:13],
+							}),
+							Tokens: tk[12:13],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[14],
+													Tokens:     tk[14:15],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[14:15],
+											},
+											Tokens: tk[14:15],
+										},
+										Tokens: tk[14:15],
+									},
+								},
+								Tokens: tk[14:15],
+							},
+							Tokens: tk[14:15],
+						},
+						Tokens: tk[12:15],
+					},
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{"try:a\nexcept *b:c", func(t *test, tk Tokens) { // 4
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Groups: true,
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							}),
+							Tokens: tk[7:8],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[9],
+													Tokens:     tk[9:10],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[9:10],
+											},
+											Tokens: tk[9:10],
+										},
+										Tokens: tk[9:10],
+									},
+								},
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[7:10],
+					},
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{"try:a\nexcept * b:c", func(t *test, tk Tokens) { // 5
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Groups: true,
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[8],
+								Tokens:     tk[8:9],
+							}),
+							Tokens: tk[8:9],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[10],
+													Tokens:     tk[10:11],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[10:11],
+											},
+											Tokens: tk[10:11],
+										},
+										Tokens: tk[10:11],
+									},
+								},
+								Tokens: tk[10:11],
+							},
+							Tokens: tk[10:11],
+						},
+						Tokens: tk[8:11],
+					},
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{"try:a\nexcept *b:c\nexcept *d:e", func(t *test, tk Tokens) { // 6
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Groups: true,
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							}),
+							Tokens: tk[7:8],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[9],
+													Tokens:     tk[9:10],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[9:10],
+											},
+											Tokens: tk[9:10],
+										},
+										Tokens: tk[9:10],
+									},
+								},
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[7:10],
+					},
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[14],
+								Tokens:     tk[14:15],
+							}),
+							Tokens: tk[14:15],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[16],
+													Tokens:     tk[16:17],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[16:17],
+											},
+											Tokens: tk[16:17],
+										},
+										Tokens: tk[16:17],
+									},
+								},
+								Tokens: tk[16:17],
+							},
+							Tokens: tk[16:17],
+						},
+						Tokens: tk[14:17],
+					},
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"try:a\nexcept b:c\nelse:d", func(t *test, tk Tokens) { // 7
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[8],
+													Tokens:     tk[8:9],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[6:9],
+					},
+				},
+				Else: &Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[12],
+											Tokens:     tk[12:13],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:13],
+								},
+								Tokens: tk[12:13],
+							},
+						},
+						Tokens: tk[12:13],
+					},
+					Tokens: tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"try:a\nexcept b:c\nelse :d", func(t *test, tk Tokens) { // 8
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[8],
+													Tokens:     tk[8:9],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[6:9],
+					},
+				},
+				Else: &Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[13],
+											Tokens:     tk[13:14],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[13:14],
+									},
+									Tokens: tk[13:14],
+								},
+								Tokens: tk[13:14],
+							},
+						},
+						Tokens: tk[13:14],
+					},
+					Tokens: tk[13:14],
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"try:a\nexcept b:c\nelse:d\nfinally:e", func(t *test, tk Tokens) { // 9
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[8],
+													Tokens:     tk[8:9],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[6:9],
+					},
+				},
+				Else: &Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[12],
+											Tokens:     tk[12:13],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:13],
+								},
+								Tokens: tk[12:13],
+							},
+						},
+						Tokens: tk[12:13],
+					},
+					Tokens: tk[12:13],
+				},
+				Finally: &Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[16],
+											Tokens:     tk[16:17],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[16:17],
+									},
+									Tokens: tk[16:17],
+								},
+								Tokens: tk[16:17],
+							},
+						},
+						Tokens: tk[16:17],
+					},
+					Tokens: tk[16:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
+		{"try:a\nexcept b:c\nfinally:e", func(t *test, tk Tokens) { // 10
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Except: []Except{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												OrExpr: WrapConditional(&Atom{
+													Identifier: &tk[8],
+													Tokens:     tk[8:9],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[6:9],
+					},
+				},
+				Finally: &Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[12],
+											Tokens:     tk[12:13],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:13],
+								},
+								Tokens: tk[12:13],
+							},
+						},
+						Tokens: tk[12:13],
+					},
+					Tokens: tk[12:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"try:a\nfinally:e", func(t *test, tk Tokens) { // 11
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Finally: &Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[6],
+											Tokens:     tk[6:7],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[6:7],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var ts TryStatement
+
+		err := ts.parse(t.Tokens)
+
+		return ts, err
+	})
+}
+
 func TestExcept(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a:b`, func(t *test, tk Tokens) { // 1
