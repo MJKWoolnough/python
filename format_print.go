@@ -979,7 +979,39 @@ func (t TargetList) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f TryStatement) printSource(w io.Writer, v bool) {
+func (t TryStatement) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "try:")
+	t.Try.printSource(w, v)
+
+	if len(t.Except) > 0 {
+		io.WriteString(w, "\nexcept ")
+
+		if t.Groups {
+			io.WriteString(w, "*")
+		}
+
+		t.Except[0].printSource(w, v)
+
+		for _, e := range t.Except[1:] {
+			io.WriteString(w, "\nexcept ")
+
+			if t.Groups {
+				io.WriteString(w, "*")
+			}
+
+			e.printSource(w, v)
+		}
+	}
+
+	if t.Else != nil {
+		io.WriteString(w, "\nelse:")
+		t.Else.printSource(w, v)
+	}
+
+	if t.Finally != nil {
+		io.WriteString(w, "\nfinally:")
+		t.Finally.printSource(w, v)
+	}
 }
 
 func (t TypeParam) printSource(w io.Writer, v bool) {
