@@ -244,7 +244,51 @@ func TestWithStatement(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
-		{`with nonlocal:a`, func(t *test, tk Tokens) { // 6
+		{`with a:b`, func(t *test, tk Tokens) { // 6
+			t.Async = true
+			t.Output = WithStatement{
+				Async: true,
+				Contents: WithStatementContents{
+					Items: []WithItem{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										OrExpr: WrapConditional(&Atom{
+											Identifier: &tk[4],
+											Tokens:     tk[4:5],
+										}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`with nonlocal:a`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -267,21 +311,21 @@ func TestWithStatement(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`with (a:):b`, func(t *test, tk Tokens) { // 7
+		{`with (a:):b`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     ErrMissingClosingParen,
 				Parsing: "WithStatement",
 				Token:   tk[4],
 			}
 		}},
-		{`with a b`, func(t *test, tk Tokens) { // 8
+		{`with a b`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "WithStatement",
 				Token:   tk[4],
 			}
 		}},
-		{`with a:nonlocal`, func(t *test, tk Tokens) { // 9
+		{`with a:nonlocal`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
