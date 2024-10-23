@@ -347,9 +347,11 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 	q := p.NewGoal()
 
-	q.AcceptRun(TokenLineTerminator)
+	q.OpenBrackets()
+	q.AcceptRunWhitespace()
+	q.CloseBrackets()
 
-	for p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "except"}) {
+	for q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "except"}) {
 		p.Score(q)
 		p.AcceptRunWhitespace()
 
@@ -372,14 +374,22 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 		t.Except = append(t.Except, except)
 
-		q.Score(p)
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.OpenBrackets()
+		q.AcceptRunWhitespace()
+		q.CloseBrackets()
 	}
 
 	q = p.NewGoal()
 
-	q.AcceptRun(TokenLineTerminator)
+	q.OpenBrackets()
+	q.AcceptRunWhitespace()
+	q.CloseBrackets()
 
-	if len(t.Except) > 0 && p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
+	if len(t.Except) > 0 && q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
 		p.AcceptRunWhitespace()
 
@@ -401,7 +411,9 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(TokenLineTerminator)
+	q.OpenBrackets()
+	q.AcceptRunWhitespace()
+	q.CloseBrackets()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "finally"}) {
 		p.Score(q)
