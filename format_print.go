@@ -362,7 +362,16 @@ func (e Enclosure) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f Except) printSource(w io.Writer, v bool) {
+func (e Except) printSource(w io.Writer, v bool) {
+	e.Expression.printSource(w, v)
+
+	if e.Identifier != nil {
+		io.WriteString(w, " as ")
+		io.WriteString(w, e.Identifier.Data)
+	}
+
+	io.WriteString(w, ":")
+	e.Suite.printSource(w, v)
 }
 
 func (e Expression) printSource(w io.Writer, v bool) {
