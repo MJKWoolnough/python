@@ -302,7 +302,9 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(TokenLineTerminator)
+	q.OpenBrackets()
+	q.AcceptRunWhitespace()
+	q.CloseBrackets()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
