@@ -1090,7 +1090,16 @@ func (u UnaryExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f WhileStatement) printSource(w io.Writer, v bool) {
+func (ws WhileStatement) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "while ")
+	ws.AssignmentExpression.printSource(w, v)
+	io.WriteString(w, ":")
+	ws.Suite.printSource(w, v)
+
+	if ws.Else != nil {
+		io.WriteString(w, "\nelse:")
+		ws.Else.printSource(w, v)
+	}
 }
 
 func (wi WithItem) printSource(w io.Writer, v bool) {
