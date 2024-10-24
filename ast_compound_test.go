@@ -708,7 +708,7 @@ func TestTryStatement(t *testing.T) {
 				Tokens: tk[:17],
 			}
 		}},
-		{"try:a\nexcept b:c\nfinally:e", func(t *test, tk Tokens) { // 10
+		{"try:a\nexcept b:c\nfinally:d", func(t *test, tk Tokens) { // 10
 			t.Output = TryStatement{
 				Try: Suite{
 					StatementList: &StatementList{
@@ -791,7 +791,7 @@ func TestTryStatement(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{"try:a\nfinally:e", func(t *test, tk Tokens) { // 11
+		{"try:a\nfinally:b", func(t *test, tk Tokens) { // 11
 			t.Output = TryStatement{
 				Try: Suite{
 					StatementList: &StatementList{
@@ -838,6 +838,136 @@ func TestTryStatement(t *testing.T) {
 					Tokens: tk[6:7],
 				},
 				Tokens: tk[:7],
+			}
+		}},
+		{"try a\nfinally:b", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "TryStatement",
+				Token:   tk[2],
+			}
+		}},
+		{"try:nonlocal\nfinally:b", func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[3],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[2],
+						},
+						Parsing: "StatementList",
+						Token:   tk[2],
+					},
+					Parsing: "Suite",
+					Token:   tk[2],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[2],
+			}
+		}},
+		{"try:a\nexcept nonlocal:b", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[6],
+						}),
+						Parsing: "Expression",
+						Token:   tk[6],
+					},
+					Parsing: "Except",
+					Token:   tk[6],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[6],
+			}
+		}},
+		{"try:a\nexcept b:c\nexcept *d:e", func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err:     ErrMismatchedGroups,
+				Parsing: "TryStatement",
+				Token:   tk[13],
+			}
+		}},
+		{"try:a\nexcept *b:c\nexcept d:e", func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err:     ErrMismatchedGroups,
+				Parsing: "TryStatement",
+				Token:   tk[13],
+			}
+		}},
+		{"try:a\nexcept b:c\nelse d\nfinally:e", func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "TryStatement",
+				Token:   tk[12],
+			}
+		}},
+		{"try:a\nexcept b:c\nelse:nonlocal\nfinally:e", func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[13],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[12],
+						},
+						Parsing: "StatementList",
+						Token:   tk[12],
+					},
+					Parsing: "Suite",
+					Token:   tk[12],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[12],
+			}
+		}},
+		{"try:a\nexcept b:c\nfinally d", func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "TryStatement",
+				Token:   tk[12],
+			}
+		}},
+		{"try:a\nexcept b:c\nfinally:nonlocal", func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[13],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[12],
+						},
+						Parsing: "StatementList",
+						Token:   tk[12],
+					},
+					Parsing: "Suite",
+					Token:   tk[12],
+				},
+				Parsing: "TryStatement",
+				Token:   tk[12],
+			}
+		}},
+		{"try:a", func(t *test, tk Tokens) { // 21
+			t.Err = Error{
+				Err:     ErrMissingFinally,
+				Parsing: "TryStatement",
+				Token:   tk[3],
 			}
 		}},
 	}, func(t *test) (Type, error) {
