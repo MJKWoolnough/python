@@ -258,12 +258,13 @@ type ForStatement struct {
 func (f *ForStatement) parse(p *pyParser, async bool) error {
 	f.Async = async
 
-	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "while"})
-	p.AcceptRunWhitespace()
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "for"}) {
+		p.AcceptRunWhitespace()
+	}
 
 	q := p.NewGoal()
 
-	if err := f.TargetList.parse(p); err != nil {
+	if err := f.TargetList.parse(q); err != nil {
 		return p.Error("ForStatement", err)
 	}
 
