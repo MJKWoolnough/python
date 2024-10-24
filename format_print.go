@@ -423,6 +423,21 @@ func (f FlexibleExpression) printSource(w io.Writer, v bool) {
 }
 
 func (f ForStatement) printSource(w io.Writer, v bool) {
+	if f.Async {
+		io.WriteString(w, "async ")
+	}
+
+	io.WriteString(w, "for ")
+	f.TargetList.printSource(w, v)
+	io.WriteString(w, " in")
+	f.StarredList.printSource(w, v)
+	io.WriteString(w, ":")
+	f.Suite.printSource(w, v)
+
+	if f.Else != nil {
+		io.WriteString(w, "\nelse:")
+		f.Else.printSource(w, v)
+	}
 }
 
 func (f FuncDefinition) printSource(w io.Writer, v bool) {
