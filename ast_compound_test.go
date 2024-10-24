@@ -37,7 +37,7 @@ func TestForStatement(t *testing.T) {
 							Tokens: tk[6:7],
 						},
 					},
-					Tokens: tk[:7],
+					Tokens: tk[6:7],
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -97,7 +97,7 @@ func TestForStatement(t *testing.T) {
 							Tokens: tk[6:7],
 						},
 					},
-					Tokens: tk[:7],
+					Tokens: tk[6:7],
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -159,7 +159,7 @@ func TestForStatement(t *testing.T) {
 							Tokens: tk[6:7],
 						},
 					},
-					Tokens: tk[:7],
+					Tokens: tk[6:7],
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -219,7 +219,7 @@ func TestForStatement(t *testing.T) {
 							Tokens: tk[6:7],
 						},
 					},
-					Tokens: tk[:7],
+					Tokens: tk[6:7],
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -301,7 +301,7 @@ func TestForStatement(t *testing.T) {
 							Tokens: tk[6:7],
 						},
 					},
-					Tokens: tk[:7],
+					Tokens: tk[6:7],
 				},
 				Suite: Suite{
 					StatementList: &StatementList{

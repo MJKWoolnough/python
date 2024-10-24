@@ -279,7 +279,7 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 
 	q = p.NewGoal()
 
-	if err := f.StarredList.parse(p); err != nil {
+	if err := f.StarredList.parse(q); err != nil {
 		return p.Error("ForStatement", err)
 	}
 
