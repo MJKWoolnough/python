@@ -2361,8 +2361,11 @@ func (f *WhileStatement) printType(w io.Writer, v bool) {
 
 	pp.Print("WhileStatement {")
 
-	pp.Print("\nWhile: ")
-	f.While.printType(&pp, v)
+	pp.Print("\nAssignmentExpression: ")
+	f.AssignmentExpression.printType(&pp, v)
+
+	pp.Print("\nSuite: ")
+	f.Suite.printType(&pp, v)
 
 	if f.Else != nil {
 		pp.Print("\nElse: ")

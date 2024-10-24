@@ -200,9 +200,10 @@ func (i *IfStatement) parse(p *pyParser) error {
 }
 
 type WhileStatement struct {
-	While  AssignmentExpressionAndSuite
-	Else   *Suite
-	Tokens Tokens
+	AssignmentExpression AssignmentExpression
+	Suite                Suite
+	Else                 *Suite
+	Tokens               Tokens
 }
 
 func (w *WhileStatement) parse(p *pyParser) error {
@@ -211,7 +212,22 @@ func (w *WhileStatement) parse(p *pyParser) error {
 
 	q := p.NewGoal()
 
-	if err := w.While.parse(q); err != nil {
+	if err := w.AssignmentExpression.parse(q); err != nil {
+		return p.Error("WhileStatement", err)
+	}
+
+	p.Score(q)
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("WhileStatement", ErrMissingColon)
+	}
+
+	p.AcceptRunWhitespace()
+
+	q = p.NewGoal()
+
+	if err := w.Suite.parse(q); err != nil {
 		return p.Error("WhileStatement", err)
 	}
 
@@ -219,7 +235,9 @@ func (w *WhileStatement) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(TokenLineTerminator)
+	q.OpenBrackets()
+	q.AcceptRunWhitespace()
+	q.CloseBrackets()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
