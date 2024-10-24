@@ -350,6 +350,106 @@ func TestForStatement(t *testing.T) {
 				Tokens: tk[:15],
 			}
 		}},
+		{"for nonlocal in a:b\nelse:c", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[2],
+								},
+								Parsing: "Atom",
+								Token:   tk[2],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[2],
+						},
+						Parsing: "Target",
+						Token:   tk[2],
+					},
+					Parsing: "TargetList",
+					Token:   tk[2],
+				},
+				Parsing: "ForStatement",
+				Token:   tk[2],
+			}
+		}},
+		{"for a in nonlocal:b\nelse:c", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: wrapConditionalExpressionError(Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[6],
+								}),
+								Parsing: "Expression",
+								Token:   tk[6],
+							},
+							Parsing: "AssignmentExpression",
+							Token:   tk[6],
+						},
+						Parsing: "StarredItem",
+						Token:   tk[6],
+					},
+					Parsing: "StarredList",
+					Token:   tk[6],
+				},
+				Parsing: "ForStatement",
+				Token:   tk[6],
+			}
+		}},
+		{"for a in b:nonlocal\nelse:c", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[9],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[8],
+						},
+						Parsing: "StatementList",
+						Token:   tk[8],
+					},
+					Parsing: "Suite",
+					Token:   tk[8],
+				},
+				Parsing: "ForStatement",
+				Token:   tk[8],
+			}
+		}},
+		{"for a in b:c\nelse:nonlocal", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[13],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[12],
+						},
+						Parsing: "StatementList",
+						Token:   tk[12],
+					},
+					Parsing: "Suite",
+					Token:   tk[12],
+				},
+				Parsing: "ForStatement",
+				Token:   tk[12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f ForStatement
 
