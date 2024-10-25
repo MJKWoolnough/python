@@ -496,7 +496,21 @@ func (g GlobalStatement) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f IfStatement) printSource(w io.Writer, v bool) {
+func (i IfStatement) printSource(w io.Writer, v bool) {
+	io.WriteString(w, "if ")
+	i.AssignmentExpression.printSource(w, v)
+	io.WriteString(w, ":")
+	i.Suite.printSource(w, v)
+
+	for _, e := range i.Elif {
+		io.WriteString(w, "\nelif ")
+		e.printSource(w, v)
+	}
+
+	if i.Else != nil {
+		io.WriteString(w, "\nelse:")
+		i.Else.printSource(w, v)
+	}
 }
 
 func (i ImportStatement) printSource(w io.Writer, v bool) {
