@@ -2,6 +2,114 @@ package python
 
 import "testing"
 
+func TestDecorators(t *testing.T) {
+	doTests(t, []sourceFn{
+		{"@a\n", func(t *test, tk Tokens) { // 1
+			t.Output = Decorators{
+				Decorators: []AssignmentExpression{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							}),
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"@a\n@b\n", func(t *test, tk Tokens) { // 2
+			t.Output = Decorators{
+				Decorators: []AssignmentExpression{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							}),
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
+							}),
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"@a\n#test\n@b\n", func(t *test, tk Tokens) { // 3
+			t.Output = Decorators{
+				Decorators: []AssignmentExpression{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							}),
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[6],
+								Tokens:     tk[6:7],
+							}),
+							Tokens: tk[6:7],
+						},
+						Tokens: tk[6:7],
+					},
+				},
+				Tokens: tk[:8],
+			}
+		}},
+		{"@nonlocal\n", func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[1],
+						}),
+						Parsing: "Expression",
+						Token:   tk[1],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[1],
+				},
+				Parsing: "Decorators",
+				Token:   tk[1],
+			}
+		}},
+		{"@a", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err:     ErrMissingNewline,
+				Parsing: "Decorators",
+				Token:   tk[2],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var d Decorators
+
+		err := d.parse(t.Tokens)
+
+		return d, err
+	})
+}
+
 func TestIfStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{"if a:b", func(t *test, tk Tokens) { // 1
