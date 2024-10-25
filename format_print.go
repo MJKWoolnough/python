@@ -296,7 +296,12 @@ func (c ConditionalExpression) printSource(w io.Writer, v bool) {
 	}
 }
 
-func (f Decorators) printSource(w io.Writer, v bool) {
+func (d Decorators) printSource(w io.Writer, v bool) {
+	for _, dc := range d.Decorators {
+		io.WriteString(w, "@")
+		dc.printSource(w, v)
+		io.WriteString(w, "\n")
+	}
 }
 
 func (d DefParameter) printSource(w io.Writer, v bool) {
