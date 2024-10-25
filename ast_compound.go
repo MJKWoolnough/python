@@ -108,7 +108,7 @@ func (d *Decorators) parse(p *pyParser) error {
 		q = p.NewGoal()
 
 		if err := ae.parse(q); err != nil {
-			return p.Error("Decorator", err)
+			return p.Error("Decorators", err)
 		}
 
 		d.Decorators = append(d.Decorators, ae)
@@ -117,7 +117,7 @@ func (d *Decorators) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		if !p.Accept(TokenLineTerminator) {
-			return p.Error("Decorator", ErrMissingNewline)
+			return p.Error("Decorators", ErrMissingNewline)
 		}
 
 		q = p.NewGoal()
