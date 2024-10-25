@@ -98,10 +98,14 @@ type Decorators struct {
 }
 
 func (d *Decorators) parse(p *pyParser) error {
-	for p.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) {
+	q := p.NewGoal()
+
+	for q.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) {
 		var ae AssignmentExpression
 
-		q := p.NewGoal()
+		p.Score(q)
+
+		q = p.NewGoal()
 
 		if err := ae.parse(q); err != nil {
 			return p.Error("Decorator", err)
@@ -109,17 +113,18 @@ func (d *Decorators) parse(p *pyParser) error {
 
 		d.Decorators = append(d.Decorators, ae)
 
-		q.AcceptRunWhitespace()
 		p.Score(q)
+		p.AcceptRunWhitespace()
 
-		q = p.NewGoal()
-
-		if !q.Accept(TokenLineTerminator) {
+		if !p.Accept(TokenLineTerminator) {
 			return p.Error("Decorator", ErrMissingNewline)
 		}
 
+		q = p.NewGoal()
+
+		q.OpenBrackets()
 		q.AcceptRunWhitespace()
-		p.Score(q)
+		q.CloseBrackets()
 	}
 
 	d.Tokens = p.ToTokens()
