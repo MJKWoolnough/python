@@ -18,67 +18,86 @@ type CompoundStatement struct {
 }
 
 func (c *CompoundStatement) parser(p *pyParser) error {
-	var decorators *Decorators
+	var (
+		decorators *Decorators
+		err        error
+	)
 
 	q := p.NewGoal()
 
 	if tk := q.Peek(); tk == (parser.Token{Type: TokenOperator, Data: "@"}) {
 		decorators = new(Decorators)
 
-		if err := decorators.parse(q); err != nil {
+		if err = decorators.parse(q); err != nil {
 			return p.Error("CompoundStatement", err)
 		}
 
 		q.AcceptRunWhitespace()
 
-		if tk := q.Peek(); tk.Type != TokenKeyword {
-			return p.Error("CompoundStatement", ErrInvalidCompound)
-		}
-	}
-
-	var err error
-
-	switch tk := q.Peek(); tk.Data {
-	case "if":
-		c.If = new(IfStatement)
-		err = c.If.parse(q)
-	case "while":
-		c.While = new(WhileStatement)
-		err = c.While.parse(q)
-	case "for":
-		c.For = new(ForStatement)
-		err = c.For.parse(q, false)
-	case "try":
-		c.Try = new(TryStatement)
-		err = c.Try.parse(q)
-	case "with":
-		c.With = new(WithStatement)
-		err = c.With.parse(q, false)
-	case "def":
-		c.Func = new(FuncDefinition)
-		err = c.Func.parse(q, false, decorators)
-	case "class":
-		c.Class = new(ClassDefinition)
-		err = c.Class.parse(q, decorators)
-	case "async":
-		p.Skip()
-		p.AcceptRunWhitespace()
-
-		switch tk := p.Peek(); tk.Data {
-		case "for":
-			c.For = new(ForStatement)
-			err = c.For.parse(q, true)
-		case "with":
-			c.With = new(WithStatement)
-			err = c.With.parse(q, true)
+		switch tk := q.Peek(); tk.Data {
 		case "def":
 			c.Func = new(FuncDefinition)
-			err = c.Func.parse(q, true, decorators)
+			err = c.Func.parse(q, false, decorators)
+		case "class":
+			c.Class = new(ClassDefinition)
+			err = c.Class.parse(q, decorators)
+		case "async":
+			p.Skip()
+			p.AcceptRunWhitespace()
+
+			switch tk := p.Peek(); tk.Data {
+			case "def":
+				c.Func = new(FuncDefinition)
+				err = c.Func.parse(q, true, decorators)
+			default:
+				err = ErrInvalidCompound
+			}
 		default:
 			err = ErrInvalidCompound
 		}
-	default:
-		err = ErrInvalidCompound
+	} else {
+		switch tk := q.Peek(); tk.Data {
+		case "if":
+			c.If = new(IfStatement)
+			err = c.If.parse(q)
+		case "while":
+			c.While = new(WhileStatement)
+			err = c.While.parse(q)
+		case "for":
+			c.For = new(ForStatement)
+			err = c.For.parse(q, false)
+		case "try":
+			c.Try = new(TryStatement)
+			err = c.Try.parse(q)
+		case "with":
+			c.With = new(WithStatement)
+			err = c.With.parse(q, false)
+		case "def":
+			c.Func = new(FuncDefinition)
+			err = c.Func.parse(q, false, decorators)
+		case "class":
+			c.Class = new(ClassDefinition)
+			err = c.Class.parse(q, decorators)
+		case "async":
+			p.Skip()
+			p.AcceptRunWhitespace()
+
+			switch tk := p.Peek(); tk.Data {
+			case "for":
+				c.For = new(ForStatement)
+				err = c.For.parse(q, true)
+			case "with":
+				c.With = new(WithStatement)
+				err = c.With.parse(q, true)
+			case "def":
+				c.Func = new(FuncDefinition)
+				err = c.Func.parse(q, true, decorators)
+			default:
+				err = ErrInvalidCompound
+			}
+		default:
+			err = ErrInvalidCompound
+		}
 	}
 
 	if err != nil {
