@@ -231,9 +231,6 @@ func (f *AssignmentExpressionAndSuite) printType(w io.Writer, v bool) {
 	pp.Print("\nSuite: ")
 	f.Suite.printType(&pp, v)
 
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
-
 	io.WriteString(w, "\n}")
 }
 
@@ -1157,8 +1154,11 @@ func (f *IfStatement) printType(w io.Writer, v bool) {
 
 	pp.Print("IfStatement {")
 
-	pp.Print("\nIf: ")
-	f.If.printType(&pp, v)
+	pp.Print("\nAssignmentExpression: ")
+	f.AssignmentExpression.printType(&pp, v)
+
+	pp.Print("\nSuite: ")
+	f.Suite.printType(&pp, v)
 
 	if f.Elif == nil {
 		pp.Print("\nElif: nil")

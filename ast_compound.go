@@ -128,10 +128,11 @@ func (d *Decorators) parse(p *pyParser) error {
 }
 
 type IfStatement struct {
-	If     AssignmentExpressionAndSuite
-	Elif   []AssignmentExpressionAndSuite
-	Else   *Suite
-	Tokens Tokens
+	AssignmentExpression AssignmentExpression
+	Suite                Suite
+	Elif                 []AssignmentExpressionAndSuite
+	Else                 *Suite
+	Tokens               Tokens
 }
 
 func (i *IfStatement) parse(p *pyParser) error {
@@ -140,7 +141,22 @@ func (i *IfStatement) parse(p *pyParser) error {
 
 	q := p.NewGoal()
 
-	if err := i.If.parse(q); err != nil {
+	if err := i.AssignmentExpression.parse(q); err != nil {
+		return p.Error("IfStatement", err)
+	}
+
+	p.Score(q)
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		return p.Error("IfStatement", ErrMissingColon)
+	}
+
+	p.AcceptRunWhitespace()
+
+	q = p.NewGoal()
+
+	if err := i.Suite.parse(q); err != nil {
 		return p.Error("IfStatement", err)
 	}
 
@@ -148,17 +164,34 @@ func (i *IfStatement) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	q.AcceptRun(TokenLineTerminator)
+	q.OpenBrackets()
+	q.AcceptRunWhitespace()
+	q.CloseBrackets()
 
 	for q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "elif"}) {
 		q.AcceptRunWhitespace()
 		p.Score(q)
 
-		q := p.NewGoal()
+		q = p.NewGoal()
 
 		var as AssignmentExpressionAndSuite
 
-		if err := as.parse(q); err != nil {
+		if err := as.AssignmentExpression.parse(q); err != nil {
+			return p.Error("IfStatement", err)
+		}
+
+		p.Score(q)
+		p.AcceptRunWhitespace()
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			return p.Error("IfStatement", ErrMissingColon)
+		}
+
+		p.AcceptRunWhitespace()
+
+		q = p.NewGoal()
+
+		if err := as.Suite.parse(q); err != nil {
 			return p.Error("IfStatement", err)
 		}
 
@@ -167,7 +200,9 @@ func (i *IfStatement) parse(p *pyParser) error {
 		i.Elif = append(i.Elif, as)
 		q = p.NewGoal()
 
-		q.AcceptRun(TokenLineTerminator)
+		q.OpenBrackets()
+		q.AcceptRunWhitespace()
+		q.CloseBrackets()
 	}
 
 	q = p.NewGoal()
@@ -197,6 +232,11 @@ func (i *IfStatement) parse(p *pyParser) error {
 	i.Tokens = p.ToTokens()
 
 	return nil
+}
+
+type AssignmentExpressionAndSuite struct {
+	AssignmentExpression AssignmentExpression
+	Suite                Suite
 }
 
 type WhileStatement struct {
@@ -835,41 +875,6 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 	p.Score(q)
 
 	c.Tokens = p.ToTokens()
-
-	return nil
-}
-
-type AssignmentExpressionAndSuite struct {
-	AssignmentExpression AssignmentExpression
-	Suite                Suite
-	Tokens               Tokens
-}
-
-func (a *AssignmentExpressionAndSuite) parse(p *pyParser) error {
-	q := p.NewGoal()
-
-	if err := a.AssignmentExpression.parse(q); err != nil {
-		return p.Error("AssignmentExpressionAndSuite", err)
-	}
-
-	p.Score(q)
-	p.AcceptRunWhitespace()
-
-	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-		return p.Error("AssignmentExpressionAndSuite", ErrMissingColon)
-	}
-
-	p.AcceptRunWhitespace()
-
-	q = p.NewGoal()
-
-	if err := a.Suite.parse(q); err != nil {
-		return p.Error("AssignmentExpressionAndSuite", err)
-	}
-
-	p.Score(q)
-
-	a.Tokens = p.ToTokens()
 
 	return nil
 }
