@@ -196,6 +196,85 @@ func TestWhileStatement(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
+		{"while nonlocal:a", func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[2],
+				},
+				Parsing: "WhileStatement",
+				Token:   tk[2],
+			}
+		}},
+		{"while a b", func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "WhileStatement",
+				Token:   tk[4],
+			}
+		}},
+		{"while a:nonlocal", func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[5],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[4],
+						},
+						Parsing: "StatementList",
+						Token:   tk[4],
+					},
+					Parsing: "Suite",
+					Token:   tk[4],
+				},
+				Parsing: "WhileStatement",
+				Token:   tk[4],
+			}
+		}},
+		{"while a:b\nelse c", func(t *test, tk Tokens) { // 8
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "WhileStatement",
+				Token:   tk[8],
+			}
+		}},
+		{"while a:b\nelse:nonlocal", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[9],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[8],
+						},
+						Parsing: "StatementList",
+						Token:   tk[8],
+					},
+					Parsing: "Suite",
+					Token:   tk[8],
+				},
+				Parsing: "WhileStatement",
+				Token:   tk[8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var w WhileStatement
 
