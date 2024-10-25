@@ -544,6 +544,134 @@ func TestIfStatement(t *testing.T) {
 				Tokens: tk[:15],
 			}
 		}},
+		{"if nonlocal:a", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[2],
+						}),
+						Parsing: "Expression",
+						Token:   tk[2],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[2],
+				},
+				Parsing: "IfStatement",
+				Token:   tk[2],
+			}
+		}},
+		{"if a b", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "IfStatement",
+				Token:   tk[4],
+			}
+		}},
+		{"if a:nonlocal", func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[5],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[4],
+						},
+						Parsing: "StatementList",
+						Token:   tk[4],
+					},
+					Parsing: "Suite",
+					Token:   tk[4],
+				},
+				Parsing: "IfStatement",
+				Token:   tk[4],
+			}
+		}},
+		{"if a:b\nelif nonlocal:c", func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[8],
+						}),
+						Parsing: "Expression",
+						Token:   tk[8],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[8],
+				},
+				Parsing: "IfStatement",
+				Token:   tk[8],
+			}
+		}},
+		{"if a:b\nelif c d", func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "IfStatement",
+				Token:   tk[10],
+			}
+		}},
+		{"if a:b\nelif c:nonlocal", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[11],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[10],
+						},
+						Parsing: "StatementList",
+						Token:   tk[10],
+					},
+					Parsing: "Suite",
+					Token:   tk[10],
+				},
+				Parsing: "IfStatement",
+				Token:   tk[10],
+			}
+		}},
+		{"if a:b\nelse c", func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "IfStatement",
+				Token:   tk[8],
+			}
+		}},
+		{"if a:b\nelse:nonlocal", func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[9],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[8],
+						},
+						Parsing: "StatementList",
+						Token:   tk[8],
+					},
+					Parsing: "Suite",
+					Token:   tk[8],
+				},
+				Parsing: "IfStatement",
+				Token:   tk[8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var i IfStatement
 
