@@ -243,7 +243,22 @@ func (c ComparisonExpression) printSource(w io.Writer, v bool) {
 	c.OrExpression.printSource(w, v)
 }
 
-func (f CompoundStatement) printSource(w io.Writer, v bool) {
+func (c CompoundStatement) printSource(w io.Writer, v bool) {
+	if c.If != nil {
+		c.If.printSource(w, v)
+	} else if c.While != nil {
+		c.While.printSource(w, v)
+	} else if c.For != nil {
+		c.For.printSource(w, v)
+	} else if c.Try != nil {
+		c.Try.printSource(w, v)
+	} else if c.With != nil {
+		c.With.printSource(w, v)
+	} else if c.Func != nil {
+		c.Func.printSource(w, v)
+	} else if c.Class != nil {
+		c.Class.printSource(w, v)
+	}
 }
 
 func (c Comprehension) printSource(w io.Writer, v bool) {
