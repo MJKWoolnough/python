@@ -42,10 +42,10 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 			c.Class = new(ClassDefinition)
 			err = c.Class.parse(q, decorators)
 		case "async":
-			p.Skip()
-			p.AcceptRunWhitespace()
+			q.Skip()
+			q.AcceptRunWhitespace()
 
-			switch tk := p.Peek(); tk.Data {
+			switch tk := q.Peek(); tk.Data {
 			case "def":
 				c.Func = new(FuncDefinition)
 				err = c.Func.parse(q, true, decorators)
@@ -79,10 +79,10 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 			c.Class = new(ClassDefinition)
 			err = c.Class.parse(q, decorators)
 		case "async":
-			p.Skip()
-			p.AcceptRunWhitespace()
+			q.Skip()
+			q.AcceptRunWhitespace()
 
-			switch tk := p.Peek(); tk.Data {
+			switch tk := q.Peek(); tk.Data {
 			case "for":
 				c.For = new(ForStatement)
 				err = c.For.parse(q, true)
