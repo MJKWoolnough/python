@@ -154,10 +154,14 @@ func (p *pyParser) CloseBrackets() {
 
 func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 	if p.inBrackets > 0 {
-		return p.AcceptRun(TokenWhitespace, TokenComment, TokenLineTerminator)
+		return p.AcceptRunAllWhitespace()
 	}
 
 	return p.AcceptRun(TokenWhitespace)
+}
+
+func (p *pyParser) AcceptRunAllWhitespace() parser.TokenType {
+	return p.AcceptRun(TokenWhitespace, TokenComment, TokenLineTerminator)
 }
 
 func (p *pyParser) LookaheadLine(tks ...parser.Token) int {
