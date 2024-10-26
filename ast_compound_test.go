@@ -2428,6 +2428,27 @@ func TestForStatement(t *testing.T) {
 				Token:   tk[12],
 			}
 		}},
+		{"for a:b", func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrMissingIn,
+				Parsing: "ForStatement",
+				Token:   tk[3],
+			}
+		}},
+		{"for a in b for", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "ForStatement",
+				Token:   tk[8],
+			}
+		}},
+		{"for a in b:c\nelse d", func(t *test, tk Tokens) { // 10
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "ForStatement",
+				Token:   tk[12],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f ForStatement
 
