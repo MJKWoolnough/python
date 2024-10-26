@@ -4297,6 +4297,78 @@ func TestSuite(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{"\n\t@a\n\t@b\n\tdef c():\n\t\td", func(t *test, tk Tokens) { // 9
+			t.Output = Suite{
+				Statements: []Statement{
+					{
+						CompoundStatement: &CompoundStatement{
+							Func: &FuncDefinition{
+								Decorators: &Decorators{
+									Decorators: []AssignmentExpression{
+										{
+											Expression: Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[3],
+													Tokens:     tk[3:4],
+												}),
+												Tokens: tk[3:4],
+											},
+											Tokens: tk[3:4],
+										},
+										{
+											Expression: Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[7],
+													Tokens:     tk[7:8],
+												}),
+												Tokens: tk[7:8],
+											},
+											Tokens: tk[7:8],
+										},
+									},
+									Tokens: tk[2:9],
+								},
+								FuncName: &tk[12],
+								ParameterList: ParameterList{
+									Tokens: tk[13:13],
+								},
+								Suite: Suite{
+									Statements: []Statement{
+										{
+											StatementList: &StatementList{
+												Statements: []SimpleStatement{
+													{
+														Type: StatementAssignment,
+														AssignmentStatement: &AssignmentStatement{
+															StarredExpression: &StarredExpression{
+																OrExpr: WrapConditional(&Atom{
+																	Identifier: &tk[18],
+																	Tokens:     tk[18:19],
+																}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+																Tokens: tk[18:19],
+															},
+															Tokens: tk[18:19],
+														},
+														Tokens: tk[18:19],
+													},
+												},
+												Tokens: tk[18:19],
+											},
+											Tokens: tk[18:19],
+										},
+									},
+									Tokens: tk[16:20],
+								},
+								Tokens: tk[2:20],
+							},
+							Tokens: tk[2:20],
+						},
+						Tokens: tk[2:20],
+					},
+				},
+				Tokens: tk[:21],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s Suite
 
