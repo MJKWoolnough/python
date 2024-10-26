@@ -399,6 +399,10 @@ func (e ExpressionList) printSource(w io.Writer, v bool) {
 }
 
 func (f File) printSource(w io.Writer, v bool) {
+	for _, s := range f.Statements {
+		s.printSource(w, v)
+		io.WriteString(w, "\n")
+	}
 }
 
 func (f FlexibleExpressionListOrComprehension) printSource(w io.Writer, v bool) {
