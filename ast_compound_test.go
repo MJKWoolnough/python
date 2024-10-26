@@ -596,6 +596,312 @@ func TestCompoundStatement(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{"@nonlocal\ndef a():b", func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[1],
+							}),
+							Parsing: "Expression",
+							Token:   tk[1],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[1],
+					},
+					Parsing: "Decorators",
+					Token:   tk[1],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"@a\ndef nonlocal():b", func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "FuncDefinition",
+					Token:   tk[5],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"@a\nclass nonlocal():b", func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "ClassDefinition",
+					Token:   tk[5],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"@a\nasync def nonlocal():b", func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "FuncDefinition",
+					Token:   tk[7],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"@a\nasync with a:b", func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err:     ErrInvalidCompound,
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"@a\nwith a:b", func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err:     ErrInvalidCompound,
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"if nonlocal:a", func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[2],
+							}),
+							Parsing: "Expression",
+							Token:   tk[2],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[2],
+					},
+					Parsing: "IfStatement",
+					Token:   tk[2],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"while nonlocal:a", func(t *test, tk Tokens) { // 21
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[2],
+							}),
+							Parsing: "Expression",
+							Token:   tk[2],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[2],
+					},
+					Parsing: "WhileStatement",
+					Token:   tk[2],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"for nonlocal in a:b", func(t *test, tk Tokens) { // 22
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[2],
+									},
+									Parsing: "Atom",
+									Token:   tk[2],
+								},
+								Parsing: "PrimaryExpression",
+								Token:   tk[2],
+							},
+							Parsing: "Target",
+							Token:   tk[2],
+						},
+						Parsing: "TargetList",
+						Token:   tk[2],
+					},
+					Parsing: "ForStatement",
+					Token:   tk[2],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"try:nonlocal\nfinally:b", func(t *test, tk Tokens) { // 23
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrMissingIdentifier,
+									Parsing: "NonLocalStatement",
+									Token:   tk[3],
+								},
+								Parsing: "SimpleStatement",
+								Token:   tk[2],
+							},
+							Parsing: "StatementList",
+							Token:   tk[2],
+						},
+						Parsing: "Suite",
+						Token:   tk[2],
+					},
+					Parsing: "TryStatement",
+					Token:   tk[2],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`with nonlocal:a`, func(t *test, tk Tokens) { // 24
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: wrapConditionalExpressionError(Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[2],
+								}),
+								Parsing: "Expression",
+								Token:   tk[2],
+							},
+							Parsing: "WithItem",
+							Token:   tk[2],
+						},
+						Parsing: "WithStatementContents",
+						Token:   tk[2],
+					},
+					Parsing: "WithStatement",
+					Token:   tk[2],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"def nonlocal():a", func(t *test, tk Tokens) { // 25
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "FuncDefinition",
+					Token:   tk[2],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"class nonlocal():a", func(t *test, tk Tokens) { // 26
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "ClassDefinition",
+					Token:   tk[2],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"async for nonlocal in a:b", func(t *test, tk Tokens) { // 27
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[4],
+									},
+									Parsing: "Atom",
+									Token:   tk[4],
+								},
+								Parsing: "PrimaryExpression",
+								Token:   tk[4],
+							},
+							Parsing: "Target",
+							Token:   tk[4],
+						},
+						Parsing: "TargetList",
+						Token:   tk[4],
+					},
+					Parsing: "ForStatement",
+					Token:   tk[4],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`async with nonlocal:a`, func(t *test, tk Tokens) { // 28
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: wrapConditionalExpressionError(Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[4],
+								}),
+								Parsing: "Expression",
+								Token:   tk[4],
+							},
+							Parsing: "WithItem",
+							Token:   tk[4],
+						},
+						Parsing: "WithStatementContents",
+						Token:   tk[4],
+					},
+					Parsing: "WithStatement",
+					Token:   tk[4],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"async def nonlocal():a", func(t *test, tk Tokens) { // 29
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "FuncDefinition",
+					Token:   tk[4],
+				},
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"async class a():b", func(t *test, tk Tokens) { // 30
+			t.Err = Error{
+				Err:     ErrInvalidCompound,
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
+		{"a", func(t *test, tk Tokens) { // 31
+			t.Err = Error{
+				Err:     ErrInvalidCompound,
+				Parsing: "CompoundStatement",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var c CompoundStatement
 
