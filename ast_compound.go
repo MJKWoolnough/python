@@ -361,7 +361,7 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-		return p.Error("ForStatement", ErrMissingIn)
+		return p.Error("ForStatement", ErrMissingColon)
 	}
 
 	p.AcceptRunWhitespace()
