@@ -141,9 +141,7 @@ func (d *Decorators) parse(p *pyParser) error {
 
 		q = p.NewGoal()
 
-		q.OpenBrackets()
-		q.AcceptRunWhitespace()
-		q.CloseBrackets()
+		q.AcceptRunAllWhitespace()
 	}
 
 	d.Tokens = p.ToTokens()
@@ -188,9 +186,7 @@ func (i *IfStatement) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	q.OpenBrackets()
-	q.AcceptRunWhitespace()
-	q.CloseBrackets()
+	q.AcceptRunAllWhitespace()
 
 	for q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "elif"}) {
 		q.AcceptRunWhitespace()
@@ -224,9 +220,7 @@ func (i *IfStatement) parse(p *pyParser) error {
 		i.Elif = append(i.Elif, as)
 		q = p.NewGoal()
 
-		q.OpenBrackets()
-		q.AcceptRunWhitespace()
-		q.CloseBrackets()
+		q.AcceptRunAllWhitespace()
 	}
 
 	q = p.NewGoal()
@@ -299,9 +293,7 @@ func (w *WhileStatement) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	q.OpenBrackets()
-	q.AcceptRunWhitespace()
-	q.CloseBrackets()
+	q.AcceptRunAllWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
@@ -384,9 +376,7 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 
 	q = p.NewGoal()
 
-	q.OpenBrackets()
-	q.AcceptRunWhitespace()
-	q.CloseBrackets()
+	q.AcceptRunAllWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
@@ -440,9 +430,7 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	q.OpenBrackets()
-	q.AcceptRunWhitespace()
-	q.CloseBrackets()
+	q.AcceptRunAllWhitespace()
 
 	for q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "except"}) {
 		p.Score(q)
@@ -471,16 +459,12 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 		q = p.NewGoal()
 
-		q.OpenBrackets()
-		q.AcceptRunWhitespace()
-		q.CloseBrackets()
+		q.AcceptRunAllWhitespace()
 	}
 
 	q = p.NewGoal()
 
-	q.OpenBrackets()
-	q.AcceptRunWhitespace()
-	q.CloseBrackets()
+	q.AcceptRunAllWhitespace()
 
 	if len(t.Except) > 0 && q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 		p.Score(q)
@@ -504,9 +488,7 @@ func (t *TryStatement) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	q.OpenBrackets()
-	q.AcceptRunWhitespace()
-	q.CloseBrackets()
+	q.AcceptRunAllWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "finally"}) {
 		p.Score(q)
@@ -931,13 +913,13 @@ func (s *Suite) parse(p *pyParser) error {
 			s.Statements = append(s.Statements, stmt)
 
 			p.Score(q)
-			p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
+			p.AcceptRunAllWhitespace()
 
 			if p.Accept(TokenDedent) {
 				break
 			}
 
-			p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
+			p.AcceptRunAllWhitespace()
 		}
 	} else {
 		s.StatementList = new(StatementList)
