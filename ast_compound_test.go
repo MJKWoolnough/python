@@ -3585,6 +3585,13 @@ func TestExcept(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
+		{`a b`, func(t *test, tk Tokens) { // 6
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "Except",
+				Token:   tk[2],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var w Except
 
