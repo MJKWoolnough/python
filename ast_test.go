@@ -471,6 +471,29 @@ func TestFile(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 7
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[1],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[0],
+						},
+						Parsing: "StatementList",
+						Token:   tk[0],
+					},
+					Parsing: "Statement",
+					Token:   tk[0],
+				},
+				Parsing: "File",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f File
 
