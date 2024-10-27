@@ -4558,6 +4558,20 @@ func TestFuncDefinition(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
+		{"def a:b", func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err:     ErrMissingOpeningParen,
+				Parsing: "FuncDefinition",
+				Token:   tk[3],
+			}
+		}},
+		{"def a() b", func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "FuncDefinition",
+				Token:   tk[6],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f FuncDefinition
 
