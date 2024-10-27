@@ -354,6 +354,55 @@ func TestPrimaryExpression(t *testing.T) {
 	})
 }
 
+func TestPrimaryExpressionIsIdentifier(t *testing.T) {
+	for n, test := range [...]struct {
+		Input       PrimaryExpression
+		IsIdentifer bool
+	}{
+		{
+			Input: PrimaryExpression{
+				Atom: &Atom{
+					Identifier: new(Token),
+				},
+			},
+			IsIdentifer: true,
+		},
+		{
+			Input: PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: new(Token),
+					},
+				},
+			},
+			IsIdentifer: true,
+		},
+		{
+			Input: PrimaryExpression{
+				Atom: &Atom{
+					Literal: new(Token),
+				},
+			},
+			IsIdentifer: false,
+		},
+		{
+			Input: PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Literal: new(Token),
+					},
+				},
+			},
+			IsIdentifer: false,
+		},
+		{},
+	} {
+		if test.Input.IsIdentifier() != test.IsIdentifer {
+			t.Errorf("test %d: expecting IsIdentifier() to return %v, got %v", n+1, test.IsIdentifer, !test.IsIdentifer)
+		}
+	}
+}
+
 func TestAtom(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
