@@ -5782,6 +5782,20 @@ func TestTarget(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{`(a b)`, func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err:     ErrMissingClosingParen,
+				Parsing: "Target",
+				Token:   tk[3],
+			}
+		}},
+		{`[a b]`, func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err:     ErrMissingClosingBracket,
+				Parsing: "Target",
+				Token:   tk[3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var tt Target
 
