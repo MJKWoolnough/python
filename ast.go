@@ -22,13 +22,16 @@ func Parse(t Tokeniser) (*File, error) {
 }
 
 func (f *File) parse(p *pyParser) error {
-	for p.AcceptRun(TokenLineTerminator) != parser.TokenDone {
+	for p.AcceptRunAllWhitespace() != parser.TokenDone {
 		var s Statement
 
 		q := p.NewGoal()
+
 		if err := s.parse(q); err != nil {
 			return p.Error("File", err)
 		}
+
+		f.Statements = append(f.Statements, s)
 
 		p.Score(q)
 	}
