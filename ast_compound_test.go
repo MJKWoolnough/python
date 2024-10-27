@@ -7246,7 +7246,7 @@ func TestArgumentList(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{`**b`, func(t *test, tk Tokens) { // 12
+		{`**a`, func(t *test, tk Tokens) { // 12
 			t.Output = ArgumentList{
 				KeywordArguments: []KeywordArgument{
 					{
@@ -7263,7 +7263,104 @@ func TestArgumentList(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 13
+		{`a=b`, func(t *test, tk Tokens) { // 13
+			t.Output = ArgumentList{
+				StarredAndKeywordArguments: []StarredOrKeyword{
+					{
+						KeywordItem: &KeywordItem{
+							Identifier: &tk[0],
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[:3],
+						},
+						Tokens: tk[:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a = b,`, func(t *test, tk Tokens) { // 14
+			t.Output = ArgumentList{
+				StarredAndKeywordArguments: []StarredOrKeyword{
+					{
+						KeywordItem: &KeywordItem{
+							Identifier: &tk[0],
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a=b,`, func(t *test, tk Tokens) { // 15
+			t.Output = ArgumentList{
+				StarredAndKeywordArguments: []StarredOrKeyword{
+					{
+						KeywordItem: &KeywordItem{
+							Identifier: &tk[0],
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[:3],
+						},
+						Tokens: tk[:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`** a`, func(t *test, tk Tokens) { // 16
+			t.Output = ArgumentList{
+				KeywordArguments: []KeywordArgument{
+					{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}),
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[:3],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`**a,`, func(t *test, tk Tokens) { // 17
+			t.Output = ArgumentList{
+				KeywordArguments: []KeywordArgument{
+					{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							}),
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[:2],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7286,14 +7383,14 @@ func TestArgumentList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a b`, func(t *test, tk Tokens) { // 14
+		{`a b`, func(t *test, tk Tokens) { // 19
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "ArgumentList",
 				Token:   tk[1],
 			}
 		}},
-		{`a=nonlocal`, func(t *test, tk Tokens) { // 15
+		{`a=nonlocal`, func(t *test, tk Tokens) { // 20
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7316,14 +7413,14 @@ func TestArgumentList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a=b c`, func(t *test, tk Tokens) { // 16
+		{`a=b c`, func(t *test, tk Tokens) { // 21
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "ArgumentList",
 				Token:   tk[3],
 			}
 		}},
-		{`**nonlocal`, func(t *test, tk Tokens) { // 17
+		{`**nonlocal`, func(t *test, tk Tokens) { // 22
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7342,7 +7439,7 @@ func TestArgumentList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`**a b`, func(t *test, tk Tokens) { // 16
+		{`**a b`, func(t *test, tk Tokens) { // 23
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "ArgumentList",
