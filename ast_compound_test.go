@@ -6659,6 +6659,17 @@ func TestParameterList(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
+		{`*a, b, **nonlocal`, func(t *test, tk Tokens) { // 25
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "Parameter",
+					Token:   tk[8],
+				},
+				Parsing: "ParameterList",
+				Token:   tk[8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var p ParameterList
 
