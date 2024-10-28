@@ -773,18 +773,6 @@ func (f StarredExpression) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
-func (f StarredExpressionList) Format(s fmt.State, v rune) {
-	if v == 'v' && s.Flag('#') {
-		type X = StarredExpressionList
-		type StarredExpressionList X
-
-		fmt.Fprintf(s, "%#v", (f))
-	} else {
-		format(&f, s, v)
-	}
-}
-
-// Format implements the fmt.Formatter interface
 func (f StarredItem) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = StarredItem

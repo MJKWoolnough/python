@@ -140,8 +140,6 @@ func (SliceList) pythonType() {}
 
 func (StarredExpression) pythonType() {}
 
-func (StarredExpressionList) pythonType() {}
-
 func (StarredItem) pythonType() {}
 
 func (StarredList) pythonType() {}

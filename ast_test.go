@@ -197,10 +197,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[0],
-												Tokens:     tk[:1],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[0],
+													Tokens:     tk[:1],
+												}),
+												Tokens: tk[:1],
+											},
 											Tokens: tk[:1],
 										},
 										Tokens: tk[:1],
@@ -226,10 +229,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[0],
-												Tokens:     tk[:1],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[0],
+													Tokens:     tk[:1],
+												}),
+												Tokens: tk[:1],
+											},
 											Tokens: tk[:1],
 										},
 										Tokens: tk[:1],
@@ -248,10 +254,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[2],
-												Tokens:     tk[2:3],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[2],
+													Tokens:     tk[2:3],
+												}),
+												Tokens: tk[2:3],
+											},
 											Tokens: tk[2:3],
 										},
 										Tokens: tk[2:3],
@@ -277,10 +286,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[0],
-												Tokens:     tk[:1],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[0],
+													Tokens:     tk[:1],
+												}),
+												Tokens: tk[:1],
+											},
 											Tokens: tk[:1],
 										},
 										Tokens: tk[:1],
@@ -299,10 +311,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[2],
-												Tokens:     tk[2:3],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[2],
+													Tokens:     tk[2:3],
+												}),
+												Tokens: tk[2:3],
+											},
 											Tokens: tk[2:3],
 										},
 										Tokens: tk[2:3],
@@ -328,10 +343,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[0],
-												Tokens:     tk[:1],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[0],
+													Tokens:     tk[:1],
+												}),
+												Tokens: tk[:1],
+											},
 											Tokens: tk[:1],
 										},
 										Tokens: tk[:1],
@@ -350,10 +368,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[3],
-												Tokens:     tk[3:4],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[3],
+													Tokens:     tk[3:4],
+												}),
+												Tokens: tk[3:4],
+											},
 											Tokens: tk[3:4],
 										},
 										Tokens: tk[3:4],
@@ -379,10 +400,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[0],
-												Tokens:     tk[:1],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[0],
+													Tokens:     tk[:1],
+												}),
+												Tokens: tk[:1],
+											},
 											Tokens: tk[:1],
 										},
 										Tokens: tk[:1],
@@ -401,10 +425,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[4],
-												Tokens:     tk[4:5],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[4],
+													Tokens:     tk[4:5],
+												}),
+												Tokens: tk[4:5],
+											},
 											Tokens: tk[4:5],
 										},
 										Tokens: tk[4:5],
@@ -430,10 +457,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[0],
-												Tokens:     tk[:1],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[0],
+													Tokens:     tk[:1],
+												}),
+												Tokens: tk[:1],
+											},
 											Tokens: tk[:1],
 										},
 										Tokens: tk[:1],
@@ -452,10 +482,13 @@ func TestFile(t *testing.T) {
 									Type: StatementAssignment,
 									AssignmentStatement: &AssignmentStatement{
 										StarredExpression: &StarredExpression{
-											OrExpr: WrapConditional(&Atom{
-												Identifier: &tk[4],
-												Tokens:     tk[4:5],
-											}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[4],
+													Tokens:     tk[4:5],
+												}),
+												Tokens: tk[4:5],
+											},
 											Tokens: tk[4:5],
 										},
 										Tokens: tk[4:5],

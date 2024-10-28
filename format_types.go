@@ -1917,39 +1917,18 @@ func (f *StarredExpression) printType(w io.Writer, v bool) {
 
 	pp.Print("StarredExpression {")
 
-	if f.Starred || v {
-		pp.Printf("\nStarred: %v", f.Starred)
+	if f.Expression != nil {
+		pp.Print("\nExpression: ")
+		f.Expression.printType(&pp, v)
+	} else if v {
+		pp.Print("\nExpression: nil")
 	}
 
-	pp.Print("\nOrExpr: ")
-	f.OrExpr.printType(&pp, v)
-
-	pp.Print("\nTokens: ")
-	f.Tokens.printType(&pp, v)
-
-	io.WriteString(w, "\n}")
-}
-
-func (f *StarredExpressionList) printType(w io.Writer, v bool) {
-	pp := indentPrinter{w}
-
-	pp.Print("StarredExpressionList {")
-
-	if f.StarredExpressions == nil {
-		pp.Print("\nStarredExpressions: nil")
-	} else if len(f.StarredExpressions) > 0 {
-		pp.Print("\nStarredExpressions: [")
-
-		ipp := indentPrinter{&pp}
-
-		for n, e := range f.StarredExpressions {
-			ipp.Printf("\n%d: ", n)
-			e.printType(&ipp, v)
-		}
-
-		pp.Print("\n]")
+	if f.StarredList != nil {
+		pp.Print("\nStarredList: ")
+		f.StarredList.printType(&pp, v)
 	} else if v {
-		pp.Print("\nStarredExpressions: []")
+		pp.Print("\nStarredList: nil")
 	}
 
 	pp.Print("\nTokens: ")
@@ -2481,13 +2460,6 @@ func (f *YieldExpression) printType(w io.Writer, v bool) {
 		f.ExpressionList.printType(&pp, v)
 	} else if v {
 		pp.Print("\nExpressionList: nil")
-	}
-
-	if f.StarredList != nil {
-		pp.Print("\nStarredList: ")
-		f.StarredList.printType(&pp, v)
-	} else if v {
-		pp.Print("\nStarredList: nil")
 	}
 
 	if f.From != nil {

@@ -1,6 +1,8 @@
 package python
 
-import "io"
+import (
+	"io"
+)
 
 func (a AddExpression) printSource(w io.Writer, v bool) {
 	a.MultiplyExpression.printSource(w, v)
@@ -917,25 +919,10 @@ func (s SliceList) printSource(w io.Writer, v bool) {
 }
 
 func (s StarredExpression) printSource(w io.Writer, v bool) {
-	if s.Starred {
-		io.WriteString(w, "*")
-	}
-
-	s.OrExpr.printSource(w, v)
-}
-
-func (s StarredExpressionList) printSource(w io.Writer, v bool) {
-	if len(s.StarredExpressions) > 0 {
-		s.StarredExpressions[0].printSource(w, v)
-
-		for _, se := range s.StarredExpressions[1:] {
-			io.WriteString(w, ", ")
-			se.printSource(w, v)
-		}
-
-		if len(s.StarredExpressions) == 1 {
-			io.WriteString(w, ",")
-		}
+	if s.Expression != nil {
+		s.Expression.printSource(w, v)
+	} else if s.StarredList != nil {
+		s.StarredList.printSource(w, v)
 	}
 }
 
@@ -1187,8 +1174,5 @@ func (y YieldExpression) printSource(w io.Writer, v bool) {
 	} else if y.ExpressionList != nil {
 		io.WriteString(w, "yield ")
 		y.ExpressionList.printSource(w, v)
-	} else if y.StarredList != nil {
-		io.WriteString(w, "yield ")
-		y.StarredList.printSource(w, v)
 	}
 }

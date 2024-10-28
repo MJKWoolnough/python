@@ -528,22 +528,26 @@ func (a *AnnotatedAssignmentStatement) parse(p *pyParser) error {
 }
 
 type StarredExpression struct {
-	Starred bool
-	OrExpr  OrExpression
-	Tokens  Tokens
+	Expression  *Expression
+	StarredList *StarredList
+	Tokens      Tokens
 }
 
 func (s *StarredExpression) parse(p *pyParser) error {
-	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		s.Starred = true
-
-		p.AcceptRunWhitespace()
-	}
-
 	q := p.NewGoal()
 
-	if err := s.OrExpr.parse(q); err != nil {
-		return p.Error("StarredExpression", err)
+	if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) || q.LookaheadLine(parser.Token{Type: TokenDelimiter, Data: ","}) == 0 {
+		s.StarredList = new(StarredList)
+
+		if err := s.StarredList.parse(q); err != nil {
+			return p.Error("StarredExpression", err)
+		}
+	} else {
+		s.Expression = new(Expression)
+
+		if err := s.Expression.parse(q); err != nil {
+			return p.Error("StarredExpression", err)
+		}
 	}
 
 	p.Score(q)
@@ -608,7 +612,6 @@ func (r *ReturnStatement) parse(p *pyParser) error {
 
 type YieldExpression struct {
 	ExpressionList *ExpressionList
-	StarredList    *StarredExpressionList
 	From           *Expression
 	Tokens         Tokens
 }
@@ -632,74 +635,24 @@ func (y *YieldExpression) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
+		y.ExpressionList = new(ExpressionList)
 
-		if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) || q.LookaheadLine(parser.Token{Type: TokenOperator, Data: "<"}, parser.Token{Type: TokenOperator, Data: ">"}, parser.Token{Type: TokenOperator, Data: "<="}, parser.Token{Type: TokenOperator, Data: ">="}, parser.Token{Type: TokenOperator, Data: "=="}, parser.Token{Type: TokenOperator, Data: "!="}, parser.Token{Type: TokenKeyword, Data: "is"}, parser.Token{Type: TokenKeyword, Data: "not"}, parser.Token{Type: TokenKeyword, Data: "in"}, parser.Token{Type: TokenKeyword, Data: "and"}, parser.Token{Type: TokenKeyword, Data: "or"}, parser.Token{Type: TokenKeyword, Data: "if"}, parser.Token{Type: TokenKeyword, Data: "lambda"}) == -1 && q.LookaheadLine(parser.Token{Type: TokenDelimiter, Data: ","}) == 0 {
-			y.StarredList = new(StarredExpressionList)
-
-			if err := y.StarredList.parse(q); err != nil {
-				return p.Error("YieldExpression", err)
-			}
-		} else {
-			y.ExpressionList = new(ExpressionList)
-
-			if err := y.ExpressionList.parse(q); err != nil {
-				return p.Error("YieldExpression", err)
-			}
+		if err := y.ExpressionList.parse(q); err != nil {
+			return p.Error("YieldExpression", err)
 		}
 
 		p.Score(q)
+
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			p.Score(q)
+		}
 	}
 
 	y.Tokens = p.ToTokens()
-
-	return nil
-}
-
-type StarredExpressionList struct {
-	StarredExpressions []StarredExpression
-	Tokens             Tokens
-}
-
-func (s *StarredExpressionList) parse(p *pyParser) error {
-Loop:
-	for {
-		var se StarredExpression
-
-		q := p.NewGoal()
-
-		if err := se.parse(q); err != nil {
-			return p.Error("StarredExpressionList", err)
-		}
-
-		p.Score(q)
-
-		s.StarredExpressions = append(s.StarredExpressions, se)
-		q = p.NewGoal()
-
-		q.AcceptRunWhitespace()
-
-		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			if len(s.StarredExpressions) == 1 {
-				return p.Error("StarredExpressionList", ErrMissingComma)
-			}
-
-			break
-		}
-
-		p.Score(q)
-
-		q = p.NewGoal()
-
-		q.AcceptRunWhitespace()
-
-		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "}"}) || tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == TokenLineTerminator || tk.Type == parser.TokenDone {
-			break Loop
-		}
-
-		p.Score(q)
-	}
-
-	s.Tokens = p.ToTokens()
 
 	return nil
 }
