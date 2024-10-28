@@ -980,7 +980,7 @@ func (s StatementList) printSource(w io.Writer, v bool) {
 	if len(s.Statements) > 0 {
 		s.Statements[0].printSource(w, v)
 
-		for _, ss := range s.Statements {
+		for _, ss := range s.Statements[1:] {
 			io.WriteString(w, "; ")
 			ss.printSource(w, v)
 		}
