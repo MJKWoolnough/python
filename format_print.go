@@ -653,7 +653,7 @@ func (n NonLocalStatement) printSource(w io.Writer, v bool) {
 }
 
 func (n NotTest) printSource(w io.Writer, v bool) {
-	for i := n.Nots; i >= 0; i-- {
+	for i := n.Nots; i > 0; i-- {
 		io.WriteString(w, "not ")
 	}
 
