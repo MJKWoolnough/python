@@ -65,19 +65,29 @@ func TestPrintSource(t *testing.T) {
 			"a & b & c\n",
 		},
 		{ // 12
-			"a = 1 and 2",
-			"a = 1 and 2\n",
-			"a = 1 and 2\n",
+			"1 and 2",
+			"1 and 2\n",
+			"1 and 2\n",
 		},
 		{ // 13
-			"a = a and 1",
-			"a = a and 1\n",
-			"a = a and 1\n",
+			"a and 1",
+			"a and 1\n",
+			"a and 1\n",
 		},
 		{ // 14
-			"a = a and b and c\n",
-			"a = a and b and c\n",
-			"a = a and b and c\n",
+			"a and b and c\n",
+			"a and b and c\n",
+			"a and b and c\n",
+		},
+		{ // 15
+			"a:b=c\n",
+			"a: b = c\n",
+			"a: b = c\n",
+		},
+		{ // 16
+			"a : b = yield c",
+			"a: b = yield c\n",
+			"a: b = yield c\n",
 		},
 	} {
 		for m, input := range test {
