@@ -3252,7 +3252,21 @@ func TestExpressionList(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{`a,b`, func(t *test, tk Tokens) { // 2
+		{"a\n", func(t *test, tk Tokens) { // 2
+			t.Output = ExpressionList{
+				Expressions: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}),
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a,b`, func(t *test, tk Tokens) { // 3
 			t.Output = ExpressionList{
 				Expressions: []Expression{
 					{
@@ -3273,7 +3287,7 @@ func TestExpressionList(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a, b`, func(t *test, tk Tokens) { // 3
+		{`a, b`, func(t *test, tk Tokens) { // 4
 			t.Output = ExpressionList{
 				Expressions: []Expression{
 					{
@@ -3294,7 +3308,7 @@ func TestExpressionList(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{`a,b,`, func(t *test, tk Tokens) { // 4
+		{`a,b,`, func(t *test, tk Tokens) { // 5
 			t.Output = ExpressionList{
 				Expressions: []Expression{
 					{
@@ -3315,7 +3329,7 @@ func TestExpressionList(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 5
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -3330,7 +3344,7 @@ func TestExpressionList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a,nonlocal`, func(t *test, tk Tokens) { // 6
+		{`a,nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -3345,7 +3359,7 @@ func TestExpressionList(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`a b`, func(t *test, tk Tokens) { // 6
+		{`a b`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "ExpressionList",
