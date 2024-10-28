@@ -8,7 +8,7 @@ types() {
 	done | sort;
 }
 
-(
+{
 	cat <<HEREDOC
 package python
 
@@ -70,9 +70,9 @@ HEREDOC
 		echo "	io.WriteString(w, \"\n}\")";
 		echo "}";
 	done < <(types);
-) > "format_types.go";
+} > "format_types.go";
 
-(
+{
 	cat <<HEREDOC
 package python
 
@@ -94,9 +94,9 @@ HEREDOC
 		echo "	}";
 		echo "}";
 	done < <(types);
-) > "format_format.go";
+} > "format_format.go";
 
-(
+{
 	cat <<HEREDOC
 package python
 
@@ -116,4 +116,4 @@ HEREDOC
 	while read type _; do
 		echo -e "\nfunc ($type) pythonType() {}";
 	done < <(types);
-) > "types.go";
+} > "types.go";
