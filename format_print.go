@@ -157,7 +157,12 @@ func (a AssignmentExpression) printSource(w io.Writer, v bool) {
 func (a AssignmentStatement) printSource(w io.Writer, v bool) {
 	for _, t := range a.TargetLists {
 		t.printSource(w, v)
-		io.WriteString(w, " = ")
+
+		if v {
+			io.WriteString(w, " = ")
+		} else {
+			io.WriteString(w, "=")
+		}
 	}
 
 	if a.StarredExpression != nil {
