@@ -134,6 +134,16 @@ func TestPrintSource(t *testing.T) {
 			"a(b for c in d)\n",
 			"a(b for c in d)\n",
 		},
+		{ // 26
+			"assert a",
+			"assert a\n",
+			"assert a\n",
+		},
+		{ // 27
+			"assert a,b",
+			"assert a,b\n",
+			"assert a, b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
