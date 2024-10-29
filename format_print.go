@@ -123,6 +123,12 @@ func (a AssertStatement) printSource(w io.Writer, v bool) {
 		a.Expressions[0].printSource(w, v)
 
 		for _, e := range a.Expressions[1:] {
+			io.WriteString(w, ",")
+
+			if v {
+				io.WriteString(w, " ")
+			}
+
 			e.printSource(w, v)
 		}
 	}
