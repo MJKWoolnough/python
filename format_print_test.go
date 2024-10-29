@@ -144,6 +144,11 @@ func TestPrintSource(t *testing.T) {
 			"assert a,b\n",
 			"assert a, b\n",
 		},
+		{ // 28
+			"if a:b\nelif c:d",
+			"if a:b\nelif c:d\n",
+			"if a: b\nelif c: d\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
