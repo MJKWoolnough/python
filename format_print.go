@@ -217,6 +217,7 @@ func (c ClassDefinition) printSource(w io.Writer, v bool) {
 		c.Inheritance.printSource(w, v)
 	}
 
+	io.WriteString(w, ":")
 	c.Suite.printSource(w, v)
 }
 
