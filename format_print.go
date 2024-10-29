@@ -64,7 +64,11 @@ func (a ArgumentList) printSource(w io.Writer, v bool) {
 
 	for _, p := range a.PositionalArguments {
 		if !first {
-			io.WriteString(w, ", ")
+			io.WriteString(w, ",")
+
+			if v {
+				io.WriteString(w, " ")
+			}
 		}
 
 		p.printSource(w, v)
@@ -74,7 +78,11 @@ func (a ArgumentList) printSource(w io.Writer, v bool) {
 
 	for _, s := range a.StarredAndKeywordArguments {
 		if !first {
-			io.WriteString(w, ", ")
+			io.WriteString(w, ",")
+
+			if v {
+				io.WriteString(w, " ")
+			}
 		}
 
 		s.printSource(w, v)
@@ -84,7 +92,11 @@ func (a ArgumentList) printSource(w io.Writer, v bool) {
 
 	for _, k := range a.KeywordArguments {
 		if !first {
-			io.WriteString(w, ", ")
+			io.WriteString(w, ",")
+
+			if v {
+				io.WriteString(w, " ")
+			}
 		}
 
 		k.printSource(w, v)
