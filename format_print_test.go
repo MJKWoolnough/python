@@ -89,6 +89,46 @@ func TestPrintSource(t *testing.T) {
 			"a: b = yield c\n",
 			"a: b = yield c\n",
 		},
+		{ // 17
+			"a()",
+			"a()\n",
+			"a()\n",
+		},
+		{ // 18
+			"a(b)",
+			"a(b)\n",
+			"a(b)\n",
+		},
+		{ // 19
+			"a(b,c)",
+			"a(b,c)\n",
+			"a(b, c)\n",
+		},
+		{ // 20
+			"a(b, *c)",
+			"a(b,*c)\n",
+			"a(b, *c)\n",
+		},
+		{ // 21
+			"a(*b)",
+			"a(*b)\n",
+			"a(*b)\n",
+		},
+		{ // 22
+			"a(b, **c)",
+			"a(b,**c)\n",
+			"a(b, **c)\n",
+		},
+		{ // 23
+			"a(*b,**c)",
+			"a(*b,**c)\n",
+			"a(*b, **c)\n",
+		},
+		{ // 24
+			"a(b, *c, **d)",
+			"a(b,*c,**d)\n",
+			"a(b, *c, **d)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
