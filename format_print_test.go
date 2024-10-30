@@ -184,6 +184,16 @@ func TestPrintSource(t *testing.T) {
 			"(a)\n",
 			"(a)\n",
 		},
+		{ // 36
+			"try:a\nexcept b:c",
+			"try:a\nexcept b:c\n",
+			"try: a\nexcept b: c\n",
+		},
+		{ // 37
+			"try:a\nexcept b as c:d",
+			"try:a\nexcept b as c:d\n",
+			"try: a\nexcept b as c: d\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
