@@ -169,6 +169,21 @@ func TestPrintSource(t *testing.T) {
 			"a=b=c\n",
 			"a = b = c\n",
 		},
+		{ // 33
+			"a",
+			"a\n",
+			"a\n",
+		},
+		{ // 34
+			"1",
+			"1\n",
+			"1\n",
+		},
+		{ // 35
+			"(a)",
+			"(a)\n",
+			"(a)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
