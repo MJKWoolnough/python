@@ -204,6 +204,16 @@ func TestPrintSource(t *testing.T) {
 			"assert lambda:a\n",
 			"assert lambda: a\n",
 		},
+		{ // 39
+			"yield a",
+			"yield a\n",
+			"yield a\n",
+		},
+		{ // 40
+			"yield a,b",
+			"yield a,b\n",
+			"yield a, b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
