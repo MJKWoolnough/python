@@ -445,7 +445,12 @@ func (e ExpressionList) printSource(w io.Writer, v bool) {
 		e.Expressions[0].printSource(w, v)
 
 		for _, ex := range e.Expressions[1:] {
-			io.WriteString(w, ", ")
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+
 			ex.printSource(w, v)
 		}
 	}
