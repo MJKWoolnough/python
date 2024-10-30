@@ -420,6 +420,8 @@ func (t *TryStatement) parse(p *pyParser) error {
 		return p.Error("TryStatement", ErrMissingColon)
 	}
 
+	p.AcceptRunAllWhitespace()
+
 	q := p.NewGoal()
 
 	if err := t.Try.parse(q); err != nil {
