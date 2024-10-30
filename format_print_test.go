@@ -194,6 +194,16 @@ func TestPrintSource(t *testing.T) {
 			"try:a\nexcept b as c:d\n",
 			"try: a\nexcept b as c: d\n",
 		},
+		{ // 38
+			"assert a",
+			"assert a\n",
+			"assert a\n",
+		},
+		{ // 38
+			"assert lambda:a",
+			"assert lambda:a\n",
+			"assert lambda: a\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
