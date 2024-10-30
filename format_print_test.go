@@ -214,6 +214,11 @@ func TestPrintSource(t *testing.T) {
 			"yield a,b\n",
 			"yield a, b\n",
 		},
+		{ // 41
+			"a\nb\nc",
+			"a\nb\nc\n",
+			"a\nb\nc\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
