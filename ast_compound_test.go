@@ -3512,14 +3512,69 @@ func TestTryStatement(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{"try a\nfinally:b", func(t *test, tk Tokens) { // 12
+		{"try: a\nfinally: b", func(t *test, tk Tokens) { // 12
+			t.Output = TryStatement{
+				Try: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[3],
+												Tokens:     tk[3:4],
+											}),
+											Tokens: tk[3:4],
+										},
+										Tokens: tk[3:4],
+									},
+									Tokens: tk[3:4],
+								},
+								Tokens: tk[3:4],
+							},
+						},
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[3:4],
+				},
+				Finally: &Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[8],
+												Tokens:     tk[8:9],
+											}),
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[8:9],
+								},
+								Tokens: tk[8:9],
+							},
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[8:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{"try a\nfinally:b", func(t *test, tk Tokens) { // 13
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "TryStatement",
 				Token:   tk[2],
 			}
 		}},
-		{"try:nonlocal\nfinally:b", func(t *test, tk Tokens) { // 13
+		{"try:nonlocal\nfinally:b", func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3542,7 +3597,7 @@ func TestTryStatement(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"try:a\nexcept nonlocal:b", func(t *test, tk Tokens) { // 14
+		{"try:a\nexcept nonlocal:b", func(t *test, tk Tokens) { // 15
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3561,28 +3616,28 @@ func TestTryStatement(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{"try:a\nexcept b:c\nexcept *d:e", func(t *test, tk Tokens) { // 15
+		{"try:a\nexcept b:c\nexcept *d:e", func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err:     ErrMismatchedGroups,
 				Parsing: "TryStatement",
 				Token:   tk[13],
 			}
 		}},
-		{"try:a\nexcept *b:c\nexcept d:e", func(t *test, tk Tokens) { // 16
+		{"try:a\nexcept *b:c\nexcept d:e", func(t *test, tk Tokens) { // 17
 			t.Err = Error{
 				Err:     ErrMismatchedGroups,
 				Parsing: "TryStatement",
 				Token:   tk[13],
 			}
 		}},
-		{"try:a\nexcept b:c\nelse d\nfinally:e", func(t *test, tk Tokens) { // 17
+		{"try:a\nexcept b:c\nelse d\nfinally:e", func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "TryStatement",
 				Token:   tk[12],
 			}
 		}},
-		{"try:a\nexcept b:c\nelse:nonlocal\nfinally:e", func(t *test, tk Tokens) { // 18
+		{"try:a\nexcept b:c\nelse:nonlocal\nfinally:e", func(t *test, tk Tokens) { // 19
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3605,14 +3660,14 @@ func TestTryStatement(t *testing.T) {
 				Token:   tk[12],
 			}
 		}},
-		{"try:a\nexcept b:c\nfinally d", func(t *test, tk Tokens) { // 19
+		{"try:a\nexcept b:c\nfinally d", func(t *test, tk Tokens) { // 20
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "TryStatement",
 				Token:   tk[12],
 			}
 		}},
-		{"try:a\nexcept b:c\nfinally:nonlocal", func(t *test, tk Tokens) { // 20
+		{"try:a\nexcept b:c\nfinally:nonlocal", func(t *test, tk Tokens) { // 21
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3635,7 +3690,7 @@ func TestTryStatement(t *testing.T) {
 				Token:   tk[12],
 			}
 		}},
-		{"try:a", func(t *test, tk Tokens) { // 21
+		{"try:a", func(t *test, tk Tokens) { // 22
 			t.Err = Error{
 				Err:     ErrMissingFinally,
 				Parsing: "TryStatement",
