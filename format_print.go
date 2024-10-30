@@ -618,10 +618,11 @@ func (k KeywordItem) printSource(w io.Writer, v bool) {
 }
 
 func (l LambdaExpression) printSource(w io.Writer, v bool) {
-	io.WriteString(w, "lambda ")
-
 	if l.ParameterList != nil {
+		io.WriteString(w, "lambda ")
 		l.ParameterList.printSource(w, v)
+	} else {
+		io.WriteString(w, "lambda")
 	}
 
 	if v {
