@@ -394,17 +394,29 @@ func (d DictItem) printSource(w io.Writer, v bool) {
 
 func (e Enclosure) printSource(w io.Writer, v bool) {
 	if e.ParenthForm != nil {
+		io.WriteString(w, "(")
 		e.ParenthForm.printSource(w, v)
+		io.WriteString(w, ")")
 	} else if e.ListDisplay != nil {
+		io.WriteString(w, "[")
 		e.ListDisplay.printSource(w, v)
+		io.WriteString(w, "]")
 	} else if e.DictDisplay != nil {
+		io.WriteString(w, "{")
 		e.DictDisplay.printSource(w, v)
+		io.WriteString(w, "}")
 	} else if e.SetDisplay != nil {
+		io.WriteString(w, "{")
 		e.SetDisplay.printSource(w, v)
+		io.WriteString(w, "}")
 	} else if e.GeneratorExpression != nil {
+		io.WriteString(w, "(")
 		e.GeneratorExpression.printSource(w, v)
+		io.WriteString(w, ")")
 	} else if e.YieldAtom != nil {
+		io.WriteString(w, "(")
 		e.YieldAtom.printSource(w, v)
+		io.WriteString(w, ")")
 	}
 }
 
