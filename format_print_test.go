@@ -239,10 +239,25 @@ func TestPrintSource(t *testing.T) {
 			"[a:=b]\n",
 			"[a := b]\n",
 		},
-		{ // 46
+		{ // 47
 			"[* a]",
 			"[*a]\n",
 			"[*a]\n",
+		},
+		{ // 48
+			"for a in b:c",
+			"for a in b:c\n",
+			"for a in b: c\n",
+		},
+		{ // 49
+			"async for a in b:c",
+			"async for a in b:c\n",
+			"async for a in b: c\n",
+		},
+		{ // 50
+			"for a in b:c\nelse:d\n",
+			"for a in b:c\nelse:d\n",
+			"for a in b: c\nelse: d\n",
 		},
 	} {
 		for m, input := range test {
