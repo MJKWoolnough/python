@@ -199,25 +199,35 @@ func TestPrintSource(t *testing.T) {
 			"assert a\n",
 			"assert a\n",
 		},
-		{ // 38
+		{ // 39
 			"assert lambda:a",
 			"assert lambda:a\n",
 			"assert lambda: a\n",
 		},
-		{ // 39
+		{ // 40
 			"yield a",
 			"yield a\n",
 			"yield a\n",
 		},
-		{ // 40
+		{ // 41
 			"yield a,b",
 			"yield a,b\n",
 			"yield a, b\n",
 		},
-		{ // 41
+		{ // 42
 			"a\nb\nc",
 			"a\nb\nc\n",
 			"a\nb\nc\n",
+		},
+		{ // 43
+			"[b]",
+			"[b]\n",
+			"[b]\n",
+		},
+		{ // 44
+			"[a for b in c]",
+			"[a for b in c]\n",
+			"[a for b in c]\n",
 		},
 	} {
 		for m, input := range test {
