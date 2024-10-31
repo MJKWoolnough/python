@@ -501,7 +501,7 @@ func (f ForStatement) printSource(w io.Writer, v bool) {
 
 	io.WriteString(w, "for ")
 	f.TargetList.printSource(w, v)
-	io.WriteString(w, " in")
+	io.WriteString(w, " in ")
 	f.StarredList.printSource(w, v)
 	io.WriteString(w, ":")
 	f.Suite.printSource(w, v)
