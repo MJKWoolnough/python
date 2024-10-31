@@ -475,7 +475,12 @@ func (f FlexibleExpressionList) printSource(w io.Writer, v bool) {
 	if len(f.FlexibleExpressions) > 0 {
 		f.FlexibleExpressions[0].printSource(w, v)
 		for _, fe := range f.FlexibleExpressions[1:] {
-			io.WriteString(w, ", ")
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+
 			fe.printSource(w, v)
 		}
 	}
