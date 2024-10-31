@@ -284,6 +284,16 @@ func TestPrintSource(t *testing.T) {
 			"(a for b in c)\n",
 			"(a for b in c)\n",
 		},
+		{ // 56
+			"global a",
+			"global a\n",
+			"global a\n",
+		},
+		{ // 57
+			"global a , b",
+			"global a,b\n",
+			"global a, b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
