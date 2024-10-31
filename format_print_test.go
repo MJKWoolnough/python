@@ -294,6 +294,31 @@ func TestPrintSource(t *testing.T) {
 			"global a,b\n",
 			"global a, b\n",
 		},
+		{ // 58
+			"if a:b",
+			"if a:b\n",
+			"if a: b\n",
+		},
+		{ // 59
+			"if a :b\nelse : c",
+			"if a:b\nelse:c\n",
+			"if a: b\nelse: c\n",
+		},
+		{ // 60
+			"if a :b\nelif c : d",
+			"if a:b\nelif c:d\n",
+			"if a: b\nelif c: d\n",
+		},
+		{ // 61
+			"if a :b\nelif c : d\nelif e:f",
+			"if a:b\nelif c:d\nelif e:f\n",
+			"if a: b\nelif c: d\nelif e: f\n",
+		},
+		{ // 62
+			"if a :b\nelif c : d\nelif e:f\nelse:g",
+			"if a:b\nelif c:d\nelif e:f\nelse:g\n",
+			"if a: b\nelif c: d\nelif e: f\nelse: g\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
