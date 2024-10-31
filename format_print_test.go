@@ -220,14 +220,19 @@ func TestPrintSource(t *testing.T) {
 			"a\nb\nc\n",
 		},
 		{ // 43
-			"[b]",
-			"[b]\n",
-			"[b]\n",
+			"[a]",
+			"[a]\n",
+			"[a]\n",
 		},
 		{ // 44
 			"[a for b in c]",
 			"[a for b in c]\n",
 			"[a for b in c]\n",
+		},
+		{ // 44
+			"[a,b]",
+			"[a,b]\n",
+			"[a, b]\n",
 		},
 	} {
 		for m, input := range test {
