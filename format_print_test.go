@@ -255,9 +255,29 @@ func TestPrintSource(t *testing.T) {
 			"async for a in b: c\n",
 		},
 		{ // 50
-			"for a in b:c\nelse:d\n",
+			"for a in b:c\nelse:d",
 			"for a in b:c\nelse:d\n",
 			"for a in b: c\nelse: d\n",
+		},
+		{ // 51
+			"def a():b",
+			"def a():b\n",
+			"def a(): b\n",
+		},
+		{ // 52
+			"def a():\n\tb",
+			"def a():\n\tb\n",
+			"def a():\n\tb\n",
+		},
+		{ // 53
+			"def a [b] ():c",
+			"def a[b]():c\n",
+			"def a[b](): c\n",
+		},
+		{ // 54
+			"def a() -> b:c",
+			"def a()->b:c\n",
+			"def a() -> b: c\n",
 		},
 	} {
 		for m, input := range test {
