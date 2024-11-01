@@ -757,14 +757,14 @@ func (p ParameterList) printSource(w io.Writer, v bool) {
 		io.WriteString(w, "/")
 	}
 
-	for _, d := range p.DefParameters {
+	for _, n := range p.NoPosOnly {
 		if first {
 			first = false
 		} else {
 			io.WriteString(w, ", ")
 		}
 
-		d.printSource(w, v)
+		n.printSource(w, v)
 	}
 
 	if p.StarArg != nil {
