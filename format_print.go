@@ -625,9 +625,9 @@ func (k KeywordItem) printSource(w io.Writer, v bool) {
 		io.WriteString(w, k.Identifier.Data)
 
 		if v {
-			io.WriteString(w, ": ")
+			io.WriteString(w, " = ")
 		} else {
-			io.WriteString(w, ":")
+			io.WriteString(w, "=")
 		}
 
 		k.Expression.printSource(w, v)
