@@ -319,6 +319,26 @@ func TestPrintSource(t *testing.T) {
 			"if a:b\nelif c:d\nelif e:f\nelse:g\n",
 			"if a: b\nelif c: d\nelif e: f\nelse: g\n",
 		},
+		{ // 63
+			"from a import b",
+			"from a import b\n",
+			"from a import b\n",
+		},
+		{ // 64
+			"from a import b,c",
+			"from a import b,c\n",
+			"from a import b, c\n",
+		},
+		{ // 65
+			"import a",
+			"import a\n",
+			"import a\n",
+		},
+		{ // 66
+			"import a , b",
+			"import a,b\n",
+			"import a, b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
