@@ -219,7 +219,9 @@ func (c ClassDefinition) printSource(w io.Writer, v bool) {
 	}
 
 	if c.Inheritance != nil {
+		io.WriteString(w, "(")
 		c.Inheritance.printSource(w, v)
+		io.WriteString(w, ")")
 	}
 
 	io.WriteString(w, ":")
