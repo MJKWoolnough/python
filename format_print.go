@@ -645,7 +645,7 @@ func (l LambdaExpression) printSource(w io.Writer, v bool) {
 }
 
 func (m ModuleAs) printSource(w io.Writer, v bool) {
-	m.Module.printType(w, v)
+	m.Module.printSource(w, v)
 
 	if m.As != nil {
 		io.WriteString(w, " as ")
