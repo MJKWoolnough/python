@@ -364,6 +364,16 @@ func TestPrintSource(t *testing.T) {
 			"import a as b\n",
 			"import a as b\n",
 		},
+		{ // 72
+			"import a.b",
+			"import a.b\n",
+			"import a.b\n",
+		},
+		{ // 73
+			"import a.b.c",
+			"import a.b.c\n",
+			"import a.b.c\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
