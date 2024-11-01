@@ -598,7 +598,12 @@ func (i ImportStatement) printSource(w io.Writer, v bool) {
 		i.Modules[0].printSource(w, v)
 
 		for _, m := range i.Modules[1:] {
-			io.WriteString(w, ", ")
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+
 			m.printSource(w, v)
 		}
 	}
