@@ -359,6 +359,11 @@ func TestPrintSource(t *testing.T) {
 			"assert lambda a:b\n",
 			"assert lambda a: b\n",
 		},
+		{ // 71
+			"import a as b",
+			"import a as b\n",
+			"import a as b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
