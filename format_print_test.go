@@ -349,6 +349,16 @@ func TestPrintSource(t *testing.T) {
 			"class a(**b,c=d):e\n",
 			"class a(**b, c = d): e\n",
 		},
+		{ // 69
+			"assert lambda:a",
+			"assert lambda:a\n",
+			"assert lambda: a\n",
+		},
+		{ // 70
+			"assert lambda a : b",
+			"assert lambda a:b\n",
+			"assert lambda a: b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
