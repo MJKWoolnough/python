@@ -389,6 +389,16 @@ func TestPrintSource(t *testing.T) {
 			"a*b/c*d\n",
 			"a * b / c * d\n",
 		},
+		{ // 77
+			"nonlocal a",
+			"nonlocal a\n",
+			"nonlocal a\n",
+		},
+		{ // 78
+			"nonlocal a,b , c",
+			"nonlocal a,b,c\n",
+			"nonlocal a, b, c\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
