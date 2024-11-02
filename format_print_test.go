@@ -409,6 +409,16 @@ func TestPrintSource(t *testing.T) {
 			"not not not not a\n",
 			"not not not not a\n",
 		},
+		{ // 81
+			"a|b",
+			"a|b\n",
+			"a | b\n",
+		},
+		{ // 82
+			"a|b | c",
+			"a|b|c\n",
+			"a | b | c\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
