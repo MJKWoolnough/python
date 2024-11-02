@@ -499,6 +499,16 @@ func TestPrintSource(t *testing.T) {
 			"a(*b)\n",
 			"a(*b)\n",
 		},
+		{ // 99
+			"a ** b",
+			"a**b\n",
+			"a ** b\n",
+		},
+		{ // 100
+			"await a**b",
+			"await a**b\n",
+			"await a ** b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
