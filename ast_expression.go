@@ -30,6 +30,8 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 		q.AcceptRunWhitespace()
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
+			q.AcceptRunWhitespace()
+
 			if !q.Accept(TokenIdentifier) {
 				return q.Error("PrimaryExpression", ErrMissingIdentifier)
 			}
