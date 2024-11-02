@@ -399,6 +399,16 @@ func TestPrintSource(t *testing.T) {
 			"nonlocal a,b,c\n",
 			"nonlocal a, b, c\n",
 		},
+		{ // 79
+			"not a",
+			"not a\n",
+			"not a\n",
+		},
+		{ // 80
+			"not not not not a",
+			"not not not not a\n",
+			"not not not not a\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
