@@ -419,6 +419,16 @@ func TestPrintSource(t *testing.T) {
 			"a|b|c\n",
 			"a | b | c\n",
 		},
+		{ // 83
+			"a or b",
+			"a or b\n",
+			"a or b\n",
+		},
+		{ // 84
+			"a or b or c",
+			"a or b or c\n",
+			"a or b or c\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
