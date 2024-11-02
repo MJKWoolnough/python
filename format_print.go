@@ -751,7 +751,12 @@ func (p ParameterList) printSource(w io.Writer, v bool) {
 	if !first {
 		for _, d := range p.DefParameters {
 			d.printSource(w, v)
-			io.WriteString(w, ", ")
+
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
 		}
 
 		io.WriteString(w, "/")
@@ -760,8 +765,10 @@ func (p ParameterList) printSource(w io.Writer, v bool) {
 	for _, n := range p.NoPosOnly {
 		if first {
 			first = false
-		} else {
+		} else if v {
 			io.WriteString(w, ", ")
+		} else {
+			io.WriteString(w, ",")
 		}
 
 		n.printSource(w, v)
@@ -770,15 +777,22 @@ func (p ParameterList) printSource(w io.Writer, v bool) {
 	if p.StarArg != nil {
 		if first {
 			first = false
-		} else {
+		} else if v {
 			io.WriteString(w, ", ")
+		} else {
+			io.WriteString(w, ",")
 		}
 
 		io.WriteString(w, "*")
 		p.StarArg.printSource(w, v)
 
 		for _, d := range p.StarArgs {
-			io.WriteString(w, ", ")
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+
 			d.printSource(w, v)
 		}
 	}
@@ -786,8 +800,10 @@ func (p ParameterList) printSource(w io.Writer, v bool) {
 	if p.StarStarArg != nil {
 		if first {
 			first = false
-		} else {
+		} else if v {
 			io.WriteString(w, ", ")
+		} else {
+			io.WriteString(w, ",")
 		}
 
 		io.WriteString(w, "**")
