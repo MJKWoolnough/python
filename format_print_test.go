@@ -429,6 +429,66 @@ func TestPrintSource(t *testing.T) {
 			"a or b or c\n",
 			"a or b or c\n",
 		},
+		{ // 85
+			"def a():b",
+			"def a():b\n",
+			"def a(): b\n",
+		},
+		{ // 86
+			"def a(b):c",
+			"def a(b):c\n",
+			"def a(b): c\n",
+		},
+		{ // 87
+			"def a(b,/,c):d",
+			"def a(b,/,c):d\n",
+			"def a(b, /, c): d\n",
+		},
+		{ // 88
+			"def a(b,c,/,d,e):f",
+			"def a(b,c,/,d,e):f\n",
+			"def a(b, c, /, d, e): f\n",
+		},
+		{ // 89
+			"def a(b, *c):d",
+			"def a(b,*c):d\n",
+			"def a(b, *c): d\n",
+		},
+		{ // 90
+			"def a(b, *c, d):e",
+			"def a(b,*c,d):e\n",
+			"def a(b, *c, d): e\n",
+		},
+		{ // 91
+			"def a(b,**c):d",
+			"def a(b,**c):d\n",
+			"def a(b, **c): d\n",
+		},
+		{ // 92
+			"def a(b , / , *c):d",
+			"def a(b,/,*c):d\n",
+			"def a(b, /, *c): d\n",
+		},
+		{ // 93
+			"def a(b , / , *c,d):e",
+			"def a(b,/,*c,d):e\n",
+			"def a(b, /, *c, d): e\n",
+		},
+		{ // 94
+			"def a(b , / , **c):d",
+			"def a(b,/,**c):d\n",
+			"def a(b, /, **c): d\n",
+		},
+		{ // 95
+			"def a(b , / , c, d, *e, f, g, **h):i",
+			"def a(b,/,c,d,*e,f,g,**h):i\n",
+			"def a(b, /, c, d, *e, f, g, **h): i\n",
+		},
+		{ // 96
+			"def a(b , c, d, *e, f, g, **h):i",
+			"def a(b,c,d,*e,f,g,**h):i\n",
+			"def a(b, c, d, *e, f, g, **h): i\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
