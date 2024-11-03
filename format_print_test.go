@@ -559,6 +559,26 @@ func TestPrintSource(t *testing.T) {
 			"raise a from b\n",
 			"raise a from b\n",
 		},
+		{ // 111
+			"from . a import b",
+			"from .a import b\n",
+			"from .a import b\n",
+		},
+		{ // 112
+			"from ..a import b",
+			"from ..a import b\n",
+			"from ..a import b\n",
+		},
+		{ // 113
+			"from ... import a",
+			"from ... import a\n",
+			"from ... import a\n",
+		},
+		{ // 114
+			"from ....a.b import c",
+			"from ....a.b import c\n",
+			"from ....a.b import c\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
