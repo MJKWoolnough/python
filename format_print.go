@@ -859,7 +859,7 @@ func (r RaiseStatement) printSource(w io.Writer, v bool) {
 	if r.Expression == nil {
 		io.WriteString(w, "raise")
 	} else {
-		io.WriteString(w, "raise")
+		io.WriteString(w, "raise ")
 		r.Expression.printSource(w, v)
 
 		if r.From != nil {
