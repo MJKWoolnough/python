@@ -26,7 +26,20 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens:       tk[:3],
 			}
 		}},
-		{`a[b]`, func(t *test, tk Tokens) { // 3
+		{`a . b`, func(t *test, tk Tokens) { // 3
+			t.Output = PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				AttributeRef: &tk[4],
+				Tokens:       tk[:5],
+			}
+		}},
+		{`a[b]`, func(t *test, tk Tokens) { // 4
 			t.Output = PrimaryExpression{
 				PrimaryExpression: &PrimaryExpression{
 					Atom: &Atom{
@@ -53,7 +66,7 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{`a(b)`, func(t *test, tk Tokens) { // 4
+		{`a(b)`, func(t *test, tk Tokens) { // 5
 			t.Output = PrimaryExpression{
 				PrimaryExpression: &PrimaryExpression{
 					Atom: &Atom{
@@ -86,7 +99,7 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 5
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -101,14 +114,14 @@ func TestPrimaryExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a.nonlocal`, func(t *test, tk Tokens) { // 6
+		{`a.nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "PrimaryExpression",
 				Token:   tk[2],
 			}
 		}},
-		{`a[nonlocal]`, func(t *test, tk Tokens) { // 7
+		{`a[nonlocal]`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -131,7 +144,7 @@ func TestPrimaryExpression(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`a(nonlocal)`, func(t *test, tk Tokens) { // 8
+		{`a(nonlocal)`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -162,7 +175,7 @@ func TestPrimaryExpression(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`a()`, func(t *test, tk Tokens) { // 9
+		{`a()`, func(t *test, tk Tokens) { // 10
 			t.Output = PrimaryExpression{
 				PrimaryExpression: &PrimaryExpression{
 					Atom: &Atom{
@@ -180,7 +193,7 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a(a for i in x)`, func(t *test, tk Tokens) { // 10
+		{`a(a for i in x)`, func(t *test, tk Tokens) { // 11
 			t.Output = PrimaryExpression{
 				PrimaryExpression: &PrimaryExpression{
 					Atom: &Atom{
@@ -230,7 +243,7 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
-		{`a(a for 1 in x)`, func(t *test, tk Tokens) { // 11
+		{`a(a for 1 in x)`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -257,7 +270,7 @@ func TestPrimaryExpression(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`a(a for i() in x)`, func(t *test, tk Tokens) { // 12
+		{`a(a for i() in x)`, func(t *test, tk Tokens) { // 13
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -284,7 +297,7 @@ func TestPrimaryExpression(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`a.b[c](d).e`, func(t *test, tk Tokens) { // 13
+		{`a.b[c](d).e`, func(t *test, tk Tokens) { // 14
 			t.Output = PrimaryExpression{
 				PrimaryExpression: &PrimaryExpression{
 					PrimaryExpression: &PrimaryExpression{
