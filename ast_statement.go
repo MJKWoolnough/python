@@ -175,6 +175,17 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	case parser.Token{Type: TokenKeyword, Data: "yield"}:
+		s.YieldStatement = new(YieldExpression)
+		s.Type = StatementYield
+
+		q := p.NewGoal()
+
+		if err := s.YieldStatement.parse(q); err != nil {
+			return p.Error("SimpleStatement", err)
+		}
+
+		p.Score(q)
 	case parser.Token{Type: TokenKeyword, Data: "raise"}:
 		s.RaiseStatement = new(RaiseStatement)
 		s.Type = StatementRaise

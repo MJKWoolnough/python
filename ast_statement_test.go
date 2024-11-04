@@ -496,22 +496,19 @@ func TestSimpleStatement(t *testing.T) {
 		}},
 		{`yield a`, func(t *test, tk Tokens) { // 5
 			t.Output = SimpleStatement{
-				Type: StatementAssignment,
-				AssignmentStatement: &AssignmentStatement{
-					YieldExpression: &YieldExpression{
-						ExpressionList: &ExpressionList{
-							Expressions: []Expression{
-								{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[2],
-										Tokens:     tk[2:3],
-									}),
-									Tokens: tk[2:3],
-								},
+				Type: StatementYield,
+				YieldStatement: &YieldExpression{
+					ExpressionList: &ExpressionList{
+						Expressions: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								}),
+								Tokens: tk[2:3],
 							},
-							Tokens: tk[2:3],
 						},
-						Tokens: tk[:3],
+						Tokens: tk[2:3],
 					},
 					Tokens: tk[:3],
 				},
