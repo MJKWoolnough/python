@@ -579,6 +579,16 @@ func TestPrintSource(t *testing.T) {
 			"from ....a.b import c\n",
 			"from ....a.b import c\n",
 		},
+		{ // 115
+			"def a():\n\treturn",
+			"def a():\n\treturn\n",
+			"def a():\n\treturn\n",
+		},
+		{ // 116
+			"def a():\n\treturn b",
+			"def a():\n\treturn b\n",
+			"def a():\n\treturn b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
