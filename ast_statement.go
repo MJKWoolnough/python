@@ -87,7 +87,7 @@ func (s *StatementList) parse(p *pyParser) error {
 
 		q = p.NewGoal()
 
-		if tk := q.AcceptRunWhitespace(); tk == TokenComment || tk == TokenLineTerminator || tk == parser.TokenDone {
+		if tk := q.AcceptRunWhitespace(); tk == TokenComment || tk == TokenLineTerminator || tk == TokenDedent || tk == parser.TokenDone {
 			break
 		}
 
