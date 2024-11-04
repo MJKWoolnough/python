@@ -592,7 +592,7 @@ func (r *ReturnStatement) parse(p *pyParser) error {
 
 	q.AcceptRunWhitespace()
 
-	if tk := q.Peek(); tk != (parser.Token{Type: TokenDelimiter, Data: "}"}) && tk != (parser.Token{Type: TokenDelimiter, Data: "]"}) && tk != (parser.Token{Type: TokenDelimiter, Data: ")"}) && tk.Type != TokenLineTerminator && tk.Type != parser.TokenDone {
+	if tk := q.Peek(); tk != (parser.Token{Type: TokenDelimiter, Data: "}"}) && tk != (parser.Token{Type: TokenDelimiter, Data: "]"}) && tk != (parser.Token{Type: TokenDelimiter, Data: ")"}) && tk.Type != TokenLineTerminator && tk.Type != parser.TokenDone && tk.Type != TokenDedent {
 		p.Score(q)
 
 		q = p.NewGoal()
