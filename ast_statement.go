@@ -670,7 +670,7 @@ func (r *RaiseStatement) parse(p *pyParser) error {
 	q := p.NewGoal()
 
 	switch q.AcceptRunWhitespace() {
-	case TokenLineTerminator, TokenComment, parser.TokenDone:
+	case TokenLineTerminator, TokenComment, TokenDedent, parser.TokenDone:
 	default:
 		p.Score(q)
 
