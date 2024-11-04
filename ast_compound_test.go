@@ -4949,6 +4949,58 @@ func TestFuncDefinition(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
+		{"def a():\n\tdef b():c;", func(t *test, tk Tokens) { // 14
+			t.Output = FuncDefinition{
+				FuncName: &tk[2],
+				ParameterList: ParameterList{
+					Tokens: tk[4:4],
+				},
+				Suite: Suite{
+					Statements: []Statement{
+						{
+							CompoundStatement: &CompoundStatement{
+								Func: &FuncDefinition{
+									FuncName: &tk[10],
+									ParameterList: ParameterList{
+										Tokens: tk[12:12],
+									},
+									Suite: Suite{
+										StatementList: &StatementList{
+											Statements: []SimpleStatement{
+												{
+													Type: StatementAssignment,
+													AssignmentStatement: &AssignmentStatement{
+														StarredExpression: &StarredExpression{
+															Expression: &Expression{
+																ConditionalExpression: WrapConditional(&Atom{
+																	Identifier: &tk[14],
+																	Tokens:     tk[14:15],
+																}),
+																Tokens: tk[14:15],
+															},
+															Tokens: tk[14:15],
+														},
+														Tokens: tk[14:15],
+													},
+													Tokens: tk[14:15],
+												},
+											},
+											Tokens: tk[14:16],
+										},
+										Tokens: tk[14:16],
+									},
+									Tokens: tk[8:16],
+								},
+								Tokens: tk[8:16],
+							},
+							Tokens: tk[8:16],
+						},
+					},
+					Tokens: tk[6:17],
+				},
+				Tokens: tk[:17],
+			}
+		}},
 		{"def nonlocal():a", func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
