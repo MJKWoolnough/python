@@ -798,7 +798,7 @@ func (e *ExpressionList) parse(p *pyParser) error {
 
 		q.AcceptRunWhitespace()
 
-		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone || tk.Type == TokenLineTerminator {
+		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone || tk.Type == TokenLineTerminator || tk.Type == TokenDedent {
 			break
 		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 			return p.Error("ExpressionList", ErrMissingComma)
@@ -806,7 +806,7 @@ func (e *ExpressionList) parse(p *pyParser) error {
 
 		q.AcceptRunWhitespace()
 
-		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone || tk.Type == TokenLineTerminator {
+		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone || tk.Type == TokenLineTerminator || tk.Type == TokenDedent {
 			break
 		}
 
