@@ -81,12 +81,12 @@ func TestPrintSource(t *testing.T) {
 		},
 		{ // 15
 			"a:b=c\n",
-			"a: b = c\n",
+			"a:b=c\n",
 			"a: b = c\n",
 		},
 		{ // 16
 			"a : b = yield c",
-			"a: b = yield c\n",
+			"a:b=yield c\n",
 			"a: b = yield c\n",
 		},
 		{ // 17
