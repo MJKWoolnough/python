@@ -6558,7 +6558,27 @@ func TestStarredList(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 6
+		{"a\n", func(t *test, tk Tokens) { // 6
+			t.Output = StarredList{
+				StarredItems: []StarredItem{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[0],
+									Tokens:     tk[:1],
+								}),
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -6581,7 +6601,7 @@ func TestStarredList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a b`, func(t *test, tk Tokens) { // 6
+		{`a b`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "StarredList",
