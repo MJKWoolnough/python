@@ -599,6 +599,81 @@ func TestPrintSource(t *testing.T) {
 			"a<<b\n",
 			"a << b\n",
 		},
+		{ // 119
+			"assert a",
+			"assert a\n",
+			"assert a\n",
+		},
+		{ // 120
+			"del b",
+			"del b\n",
+			"del b\n",
+		},
+		{ // 121
+			"return a",
+			"return a\n",
+			"return a\n",
+		},
+		{ // 122
+			"yield a",
+			"yield a\n",
+			"yield a\n",
+		},
+		{ // 123
+			"raise a",
+			"raise a\n",
+			"raise a\n",
+		},
+		{ // 124
+			"import a",
+			"import a\n",
+			"import a\n",
+		},
+		{ // 125
+			"global a",
+			"global a\n",
+			"global a\n",
+		},
+		{ // 126
+			"nonlocal a",
+			"nonlocal a\n",
+			"nonlocal a\n",
+		},
+		{ // 127
+			"type a = b",
+			"type a = b\n",
+			"type a = b\n",
+		},
+		{ // 128
+			"a = b",
+			"a=b\n",
+			"a = b\n",
+		},
+		{ // 129
+			"a: b = c",
+			"a:b=c\n",
+			"a: b = c\n",
+		},
+		{ // 130
+			"a += b",
+			"a+=b\n",
+			"a += b\n",
+		},
+		{ // 131
+			"pass",
+			"pass\n",
+			"pass\n",
+		},
+		{ // 132
+			"break",
+			"break\n",
+			"break\n",
+		},
+		{ // 133
+			"continue",
+			"continue\n",
+			"continue\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
