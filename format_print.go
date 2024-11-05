@@ -1026,7 +1026,12 @@ func (s StarredList) printSource(w io.Writer, v bool) {
 		s.StarredItems[0].printSource(w, v)
 
 		for _, si := range s.StarredItems[1:] {
-			io.WriteString(w, ", ")
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+
 			si.printSource(w, v)
 		}
 	}
