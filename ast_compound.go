@@ -1097,9 +1097,13 @@ Loop:
 			q.AcceptRunWhitespace()
 		}
 
-		switch q.Peek() {
+		switch tk := q.Peek(); tk {
 		case parser.Token{Type: TokenDelimiter, Data: "]"}, parser.Token{Type: TokenDelimiter, Data: "}"}, parser.Token{Type: TokenDelimiter, Data: ":"}, parser.Token{Type: TokenKeyword, Data: "for"}, parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: parser.TokenDone}:
 			break Loop
+		default:
+			if tk.Type == TokenLineTerminator || tk.Type == TokenDedent {
+				break Loop
+			}
 		}
 
 		q = p.NewGoal()
