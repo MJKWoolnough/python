@@ -1034,6 +1034,10 @@ func (s StarredList) printSource(w io.Writer, v bool) {
 
 			si.printSource(w, v)
 		}
+
+		if s.TrailingComma {
+			io.WriteString(w, ",")
+		}
 	}
 }
 
