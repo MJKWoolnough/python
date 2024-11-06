@@ -784,6 +784,31 @@ func TestPrintSource(t *testing.T) {
 			"if a:\n\tif b:\n\t\tc\n\t\td\n",
 			"if a:\n\tif b:\n\t\tc\n\t\td\n",
 		},
+		{ // 156
+			"a = b",
+			"a=b\n",
+			"a = b\n",
+		},
+		{ // 157
+			"a.b = c",
+			"a.b=c\n",
+			"a.b = c\n",
+		},
+		{ // 158
+			"(a) = b",
+			"(a)=b\n",
+			"(a) = b\n",
+		},
+		{ // 159
+			"[a] = b",
+			"[a]=b\n",
+			"[a] = b\n",
+		},
+		{ // 160
+			"*a = b",
+			"*a=b\n",
+			"*a = b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
