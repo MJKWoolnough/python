@@ -1071,8 +1071,9 @@ func (t *Target) parse(p *pyParser) error {
 }
 
 type StarredList struct {
-	StarredItems []StarredItem
-	Tokens       Tokens
+	StarredItems  []StarredItem
+	TrailingComma bool
+	Tokens        Tokens
 }
 
 func (s *StarredList) parse(p *pyParser) error {
@@ -1093,15 +1094,33 @@ Loop:
 
 		q.AcceptRunWhitespace()
 
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		hasComma := q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
+
+		if hasComma {
 			q.AcceptRunWhitespace()
 		}
 
 		switch tk := q.Peek(); tk {
 		case parser.Token{Type: TokenDelimiter, Data: "]"}, parser.Token{Type: TokenDelimiter, Data: "}"}, parser.Token{Type: TokenDelimiter, Data: ":"}, parser.Token{Type: TokenKeyword, Data: "for"}, parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: parser.TokenDone}:
+			if hasComma {
+				if len(s.StarredItems) == 1 {
+					s.TrailingComma = true
+				}
+
+				p.Score(q)
+			}
+
 			break Loop
 		default:
 			if tk.Type == TokenLineTerminator || tk.Type == TokenDedent {
+				if hasComma {
+					if len(s.StarredItems) == 1 {
+						s.TrailingComma = true
+					}
+
+					p.Score(q)
+				}
+
 				break Loop
 			}
 		}
