@@ -1063,7 +1063,12 @@ func (s StatementList) printSource(w io.Writer, v bool) {
 		s.Statements[0].printSource(w, v)
 
 		for _, ss := range s.Statements[1:] {
-			io.WriteString(w, "; ")
+			if v {
+				io.WriteString(w, "; ")
+			} else {
+				io.WriteString(w, ";")
+			}
+
 			ss.printSource(w, v)
 		}
 	}
