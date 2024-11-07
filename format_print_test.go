@@ -814,6 +814,41 @@ func TestPrintSource(t *testing.T) {
 			"a,b=c\n",
 			"a, b = c\n",
 		},
+		{ // 162
+			"try:a\nexcept b:c",
+			"try:a\nexcept b:c\n",
+			"try: a\nexcept b: c\n",
+		},
+		{ // 163
+			"try:a\nexcept b:c\nexcept d:e",
+			"try:a\nexcept b:c\nexcept d:e\n",
+			"try: a\nexcept b: c\nexcept d: e\n",
+		},
+		{ // 164
+			"try:a\nexcept *b:c",
+			"try:a\nexcept *b:c\n",
+			"try: a\nexcept *b: c\n",
+		},
+		{ // 165
+			"try:a\nexcept *b:c\nexcept *d:e",
+			"try:a\nexcept *b:c\nexcept *d:e\n",
+			"try: a\nexcept *b: c\nexcept *d: e\n",
+		},
+		{ // 166
+			"try:a\nexcept b:c\nelse: d",
+			"try:a\nexcept b:c\nelse:d\n",
+			"try: a\nexcept b: c\nelse: d\n",
+		},
+		{ // 167
+			"try:a\nexcept b:c\nfinally: d",
+			"try:a\nexcept b:c\nfinally:d\n",
+			"try: a\nexcept b: c\nfinally: d\n",
+		},
+		{ // 168
+			"try:a\nexcept b:c\nelse: d\nfinally:e",
+			"try:a\nexcept b:c\nelse:d\nfinally:e\n",
+			"try: a\nexcept b: c\nelse: d\nfinally: e\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
