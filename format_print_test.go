@@ -874,6 +874,16 @@ func TestPrintSource(t *testing.T) {
 			"class a[b,c,d]():e\n",
 			"class a[b, c, d](): e\n",
 		},
+		{ // 174
+			"type a = b",
+			"type a=b\n",
+			"type a = b\n",
+		},
+		{ // 175
+			"type a[b] = c",
+			"type a[b]=c\n",
+			"type a[b] = c\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
