@@ -884,6 +884,21 @@ func TestPrintSource(t *testing.T) {
 			"type a[b]=c\n",
 			"type a[b] = c\n",
 		},
+		{ // 176
+			"+a",
+			"+a\n",
+			"+a\n",
+		},
+		{ // 177
+			"-a",
+			"-a\n",
+			"-a\n",
+		},
+		{ // 178
+			"~a",
+			"~a\n",
+			"~a\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
