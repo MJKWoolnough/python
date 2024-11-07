@@ -1113,7 +1113,12 @@ func (t TargetList) printSource(w io.Writer, v bool) {
 		t.Targets[0].printSource(w, v)
 
 		for _, tg := range t.Targets[1:] {
-			io.WriteString(w, ", ")
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+
 			tg.printSource(w, v)
 		}
 	}
