@@ -641,7 +641,7 @@ func TestPrintSource(t *testing.T) {
 		},
 		{ // 127
 			"type a = b",
-			"type a = b\n",
+			"type a=b\n",
 			"type a = b\n",
 		},
 		{ // 128

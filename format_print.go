@@ -1207,7 +1207,12 @@ func (t TypeStatement) printSource(w io.Writer, v bool) {
 		t.TypeParams.printSource(w, v)
 	}
 
-	io.WriteString(w, " = ")
+	if v {
+		io.WriteString(w, " = ")
+	} else {
+		io.WriteString(w, "=")
+	}
+
 	t.Expression.printSource(w, v)
 }
 
