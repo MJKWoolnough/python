@@ -779,7 +779,30 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`raise nonlocal from a`, func(t *test, tk Tokens) { // 20
+		{`yield nonlocal`, func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[2],
+							}),
+							Parsing: "Expression",
+							Token:   tk[2],
+						},
+						Parsing: "ExpressionList",
+						Token:   tk[2],
+					},
+					Parsing: "YieldExpression",
+					Token:   tk[2],
+				},
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`raise nonlocal from a`, func(t *test, tk Tokens) { // 21
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -798,7 +821,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`import nonlocal`, func(t *test, tk Tokens) { // 21
+		{`import nonlocal`, func(t *test, tk Tokens) { // 22
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -817,7 +840,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`global nonlocal`, func(t *test, tk Tokens) { // 22
+		{`global nonlocal`, func(t *test, tk Tokens) { // 23
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -828,7 +851,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`nonlocal nonlocal`, func(t *test, tk Tokens) { // 23
+		{`nonlocal nonlocal`, func(t *test, tk Tokens) { // 24
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -839,7 +862,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`type nonlocal[a] = b`, func(t *test, tk Tokens) { // 24
+		{`type nonlocal[a] = b`, func(t *test, tk Tokens) { // 25
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -850,7 +873,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 25
+		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 26
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -877,7 +900,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a:nonlocal`, func(t *test, tk Tokens) { // 26
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 27
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -896,7 +919,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a/=nonlocal`, func(t *test, tk Tokens) { // 27
+		{`a/=nonlocal`, func(t *test, tk Tokens) { // 28
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
