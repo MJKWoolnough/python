@@ -849,6 +849,26 @@ func TestPrintSource(t *testing.T) {
 			"try:a\nexcept b:c\nelse:d\nfinally:e\n",
 			"try: a\nexcept b: c\nelse: d\nfinally: e\n",
 		},
+		{ // 169
+			"def a[b](): c",
+			"def a[b]():c\n",
+			"def a[b](): c\n",
+		},
+		{ // 170
+			"def a[b:c](): d",
+			"def a[b:c]():d\n",
+			"def a[b: c](): d\n",
+		},
+		{ // 171
+			"def a[*b](): c",
+			"def a[*b]():c\n",
+			"def a[*b](): c\n",
+		},
+		{ // 172
+			"def a[**b](): c",
+			"def a[**b]():c\n",
+			"def a[**b](): c\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
