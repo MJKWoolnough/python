@@ -2511,7 +2511,7 @@ func TestForStatement(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{"for a in b:nonlocal\nelse:c", func(t *test, tk Tokens) { // 7
+		{"for a in b:nonlocal\nelse:c", func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2534,7 +2534,7 @@ func TestForStatement(t *testing.T) {
 				Token:   tk[8],
 			}
 		}},
-		{"for a in b:c\nelse:nonlocal", func(t *test, tk Tokens) { // 8
+		{"for a in b:c\nelse:nonlocal", func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2557,21 +2557,21 @@ func TestForStatement(t *testing.T) {
 				Token:   tk[12],
 			}
 		}},
-		{"for a:b", func(t *test, tk Tokens) { // 9
+		{"for a:b", func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrMissingIn,
 				Parsing: "ForStatement",
 				Token:   tk[3],
 			}
 		}},
-		{"for a in b for", func(t *test, tk Tokens) { // 10
+		{"for a in b for", func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "ForStatement",
 				Token:   tk[8],
 			}
 		}},
-		{"for a in b:c\nelse d", func(t *test, tk Tokens) { // 10
+		{"for a in b:c\nelse d", func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "ForStatement",
@@ -3842,7 +3842,7 @@ func TestExcept(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{`a:nonlocal`, func(t *test, tk Tokens) { // 5
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3865,7 +3865,7 @@ func TestExcept(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`a b`, func(t *test, tk Tokens) { // 6
+		{`a b`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "Except",
