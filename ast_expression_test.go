@@ -1884,7 +1884,7 @@ func TestComprehension(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a for nonlocal in c`, func(t *test, tk Tokens) { // 3
+		{`a for nonlocal in c`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2143,7 +2143,7 @@ func TestComprehensionFor(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`for a in nonlocal if b`, func(t *test, tk Tokens) { // 7
+		{`for a in nonlocal if b`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: wrapConditionalExpressionError(Error{
 					Err:     ErrInvalidEnclosure,
@@ -2154,7 +2154,7 @@ func TestComprehensionFor(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{`for a in b if nonlocal`, func(t *test, tk Tokens) { // 8
+		{`for a in b if nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2173,7 +2173,7 @@ func TestComprehensionFor(t *testing.T) {
 				Token:   tk[8],
 			}
 		}},
-		{`for a`, func(t *test, tk Tokens) { // 8
+		{`for a`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrMissingIn,
 				Parsing: "ComprehensionFor",
@@ -2273,7 +2273,7 @@ func TestComprehensionIterator(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`for nonlocal in a`, func(t *test, tk Tokens) { // 4
+		{`for nonlocal in a`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3524,7 +3524,7 @@ func TestSliceList(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`[a b]`, func(t *test, tk Tokens) { // 8
+		{`[a b]`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "SliceList",
@@ -3674,7 +3674,7 @@ func TestSliceItem(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`a:b:nonlocal`, func(t *test, tk Tokens) { // 6
+		{`a:b:nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -5008,7 +5008,7 @@ func TestMultiplyExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`a @ b`, func(t *test, tk Tokens) { // 4
+		{`a @ b`, func(t *test, tk Tokens) { // 3
 			t.Output = MultiplyExpression{
 				UnaryExpression: UnaryExpression{
 					PowerExpression: &PowerExpression{
@@ -5043,7 +5043,7 @@ func TestMultiplyExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`a//b`, func(t *test, tk Tokens) { // 5
+		{`a//b`, func(t *test, tk Tokens) { // 4
 			t.Output = MultiplyExpression{
 				UnaryExpression: UnaryExpression{
 					PowerExpression: &PowerExpression{
@@ -5078,7 +5078,7 @@ func TestMultiplyExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a / b`, func(t *test, tk Tokens) { // 6
+		{`a / b`, func(t *test, tk Tokens) { // 5
 			t.Output = MultiplyExpression{
 				UnaryExpression: UnaryExpression{
 					PowerExpression: &PowerExpression{
@@ -5113,7 +5113,7 @@ func TestMultiplyExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`a % b`, func(t *test, tk Tokens) { // 7
+		{`a % b`, func(t *test, tk Tokens) { // 6
 			t.Output = MultiplyExpression{
 				UnaryExpression: UnaryExpression{
 					PowerExpression: &PowerExpression{
@@ -5148,7 +5148,7 @@ func TestMultiplyExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`a / b @ c * d`, func(t *test, tk Tokens) { // 8
+		{`a / b @ c * d`, func(t *test, tk Tokens) { // 7
 			t.Output = MultiplyExpression{
 				UnaryExpression: UnaryExpression{
 					PowerExpression: &PowerExpression{
@@ -5217,7 +5217,7 @@ func TestMultiplyExpression(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 9
+		{`nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5244,7 +5244,7 @@ func TestMultiplyExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`1 * nonlocal`, func(t *test, tk Tokens) { // 10
+		{`1 * nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5358,7 +5358,7 @@ func TestUnaryExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`~-a`, func(t *test, tk Tokens) { // 4
+		{`~-a`, func(t *test, tk Tokens) { // 5
 			t.Output = UnaryExpression{
 				Unary: &tk[0],
 				UnaryExpression: &UnaryExpression{
@@ -5381,7 +5381,7 @@ func TestUnaryExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 5
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5404,7 +5404,7 @@ func TestUnaryExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`+nonlocal`, func(t *test, tk Tokens) { // 6
+		{`+nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
