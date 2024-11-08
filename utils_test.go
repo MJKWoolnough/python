@@ -118,7 +118,7 @@ func TestUnquote(t *testing.T) {
 			Input:  "\"\\U00000041\"",
 			Output: "A",
 		},
-		{ // 24
+		{ // 27
 			Input: "\"\\B\"",
 			Err:   strconv.ErrSyntax,
 		},
