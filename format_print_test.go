@@ -919,6 +919,16 @@ func TestPrintSource(t *testing.T) {
 			"with a as b:c\n",
 			"with a as b: c\n",
 		},
+		{ // 183
+			"with a,b: c",
+			"with a,b:c\n",
+			"with a, b: c\n",
+		},
+		{ // 184
+			"with a as b, c,d as e:f",
+			"with a as b,c,d as e:f\n",
+			"with a as b, c, d as e: f\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
