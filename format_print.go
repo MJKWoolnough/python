@@ -1258,6 +1258,12 @@ func (wc WithStatementContents) printSource(w io.Writer, v bool) {
 		wc.Items[0].printSource(w, v)
 
 		for _, i := range wc.Items[1:] {
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+
 			i.printSource(w, v)
 		}
 	}
