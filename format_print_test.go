@@ -69,7 +69,7 @@ func TestPrintSource(t *testing.T) {
 			"1 and 2\n",
 			"1 and 2\n",
 		},
-		{ // 13
+		{ // 12
 			"a and 1",
 			"a and 1\n",
 			"a and 1\n",
@@ -898,6 +898,16 @@ func TestPrintSource(t *testing.T) {
 			"~a",
 			"~a\n",
 			"~a\n",
+		},
+		{ // 179
+			"while a:b",
+			"while a:b\n",
+			"while a: b\n",
+		},
+		{ // 180
+			"while a:b\nelse: c",
+			"while a:b\nelse:c\n",
+			"while a: b\nelse: c\n",
 		},
 	} {
 		for m, input := range test {
