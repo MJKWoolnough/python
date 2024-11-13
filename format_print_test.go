@@ -934,6 +934,16 @@ func TestPrintSource(t *testing.T) {
 			"a^b\n",
 			"a ^ b\n",
 		},
+		{ // 186
+			"yield a",
+			"yield a\n",
+			"yield a\n",
+		},
+		{ // 187
+			"yield from a",
+			"yield from a\n",
+			"yield from a\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
