@@ -270,6 +270,8 @@ func (c ComparisonExpression) printSource(w io.Writer, v bool) {
 		if v {
 			io.WriteString(w, " ")
 		}
+	case "in":
+		io.WriteString(w, " in ")
 	case "is":
 		if c.ComparisonOperator[len(c.ComparisonOperator)-1].Data == "not" {
 			io.WriteString(w, " is not ")
