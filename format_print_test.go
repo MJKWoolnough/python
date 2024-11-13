@@ -185,74 +185,74 @@ func TestPrintSource(t *testing.T) {
 			"(a)\n",
 		},
 		{ // 36
-			"a+=b",
-			"a+=b\n",
-			"a += b\n",
-		},
-		{ // 37
-			"a -= yield b",
-			"a-=yield b\n",
-			"a -= yield b\n",
-		},
-		{ // 38
-			"try:a\nexcept b:c",
-			"try:a\nexcept b:c\n",
-			"try: a\nexcept b: c\n",
-		},
-		{ // 39
 			"try:a\nexcept b as c:d",
 			"try:a\nexcept b as c:d\n",
 			"try: a\nexcept b as c: d\n",
 		},
-		{ // 40
+		{ // 37
 			"assert a",
 			"assert a\n",
 			"assert a\n",
 		},
-		{ // 41
+		{ // 38
 			"assert lambda:a",
 			"assert lambda:a\n",
 			"assert lambda: a\n",
 		},
-		{ // 42
+		{ // 39
 			"yield a",
 			"yield a\n",
 			"yield a\n",
 		},
-		{ // 43
+		{ // 40
 			"yield a,b",
 			"yield a,b\n",
 			"yield a, b\n",
 		},
-		{ // 44
+		{ // 41
 			"a\nb\nc",
 			"a\nb\nc\n",
 			"a\nb\nc\n",
 		},
-		{ // 45
+		{ // 42
 			"[a]",
 			"[a]\n",
 			"[a]\n",
 		},
-		{ // 46
+		{ // 43
 			"[a for b in c]",
 			"[a for b in c]\n",
 			"[a for b in c]\n",
 		},
-		{ // 47
+		{ // 44
 			"[a,b]",
 			"[a,b]\n",
 			"[a, b]\n",
 		},
-		{ // 48
+		{ // 45
 			"[a := b]",
 			"[a:=b]\n",
 			"[a := b]\n",
 		},
-		{ // 49
+		{ // 46
 			"[* a]",
 			"[*a]\n",
 			"[*a]\n",
+		},
+		{ // 47
+			"a+=b",
+			"a+=b\n",
+			"a += b\n",
+		},
+		{ // 48
+			"a -= yield b",
+			"a-=yield b\n",
+			"a -= yield b\n",
+		},
+		{ // 49
+			"try:a\nexcept b:c",
+			"try:a\nexcept b:c\n",
+			"try: a\nexcept b: c\n",
 		},
 		{ // 50
 			"for a in b:c",

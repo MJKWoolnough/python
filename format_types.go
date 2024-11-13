@@ -1984,6 +1984,10 @@ func (f *StarredList) printType(w io.Writer, v bool) {
 		pp.Print("\nStarredItems: []")
 	}
 
+	if f.TrailingComma || v {
+		pp.Printf("\nTrailingComma: %v", f.TrailingComma)
+	}
+
 	pp.Print("\nTokens: ")
 	f.Tokens.printType(&pp, v)
 
