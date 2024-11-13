@@ -929,6 +929,11 @@ func TestPrintSource(t *testing.T) {
 			"with a as b,c,d as e:f\n",
 			"with a as b, c, d as e: f\n",
 		},
+		{ // 185
+			"a^b",
+			"a^b\n",
+			"a ^ b\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
