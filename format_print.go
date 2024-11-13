@@ -253,17 +253,19 @@ func (c Comparison) printSource(w io.Writer, v bool) {
 }
 
 func (c ComparisonExpression) printSource(w io.Writer, v bool) {
-	if len(c.ComparisonOperator) == 0 {
-		return
+	var first string
+
+	if len(c.ComparisonOperator) > 0 {
+		first = c.ComparisonOperator[0].Data
 	}
 
-	switch c.ComparisonOperator[0].Data {
+	switch first {
 	case "<", ">", "==", ">=", "<=", "!=":
 		if v {
 			io.WriteString(w, " ")
 		}
 
-		io.WriteString(w, c.ComparisonOperator[0].Data)
+		io.WriteString(w, first)
 
 		if v {
 			io.WriteString(w, " ")
