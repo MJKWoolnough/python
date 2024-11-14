@@ -270,25 +270,25 @@ func (c ComparisonExpression) printSource(w io.Writer, v bool) {
 		if v {
 			io.WriteString(w, " ")
 		}
+
+		c.OrExpression.printSource(w, v)
 	case "in":
 		io.WriteString(w, " in ")
+		c.OrExpression.printSource(w, v)
 	case "is":
 		if c.ComparisonOperator[len(c.ComparisonOperator)-1].Data == "not" {
 			io.WriteString(w, " is not ")
 		} else {
 			io.WriteString(w, " is ")
 		}
+
+		c.OrExpression.printSource(w, v)
 	case "not":
 		if c.ComparisonOperator[len(c.ComparisonOperator)-1].Data == "in" {
 			io.WriteString(w, " not in ")
-		} else {
-			return
+			c.OrExpression.printSource(w, v)
 		}
-	default:
-		return
 	}
-
-	c.OrExpression.printSource(w, v)
 }
 
 func (c CompoundStatement) printSource(w io.Writer, v bool) {
