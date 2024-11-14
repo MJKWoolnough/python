@@ -1004,6 +1004,11 @@ func TestPrintSource(t *testing.T) {
 			"(a async for b in c if d)\n",
 			"(a async for b in c if d)\n",
 		},
+		{ // 200
+			"(a for b in c if d for e in f)",
+			"(a for b in c if d for e in f)\n",
+			"(a for b in c if d for e in f)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
