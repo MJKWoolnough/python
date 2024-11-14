@@ -539,6 +539,11 @@ func TestPrintSource(t *testing.T) {
 			"def a(b,c,d,*e,f,g,**h):i\n",
 			"def a(b, c, d, *e, f, g, **h): i\n",
 		},
+		{ // 106
+			"def a(b = c): d",
+			"def a(b=c):d\n",
+			"def a(b = c): d\n",
+		},
 		{ // 107
 			"a( b )",
 			"a(b)\n",
