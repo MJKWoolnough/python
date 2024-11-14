@@ -326,6 +326,7 @@ func (c ComprehensionFor) printSource(w io.Writer, v bool) {
 	c.OrTest.printSource(w, v)
 
 	if c.ComprehensionIterator != nil {
+		io.WriteString(w, " ")
 		c.ComprehensionIterator.printSource(w, v)
 	}
 }
