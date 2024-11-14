@@ -372,7 +372,12 @@ func (d DefParameter) printSource(w io.Writer, v bool) {
 	d.Parameter.printSource(w, v)
 
 	if d.Value != nil {
-		io.WriteString(w, " = ")
+		if v {
+			io.WriteString(w, " = ")
+		} else {
+			io.WriteString(w, "=")
+		}
+
 		d.Value.printSource(w, v)
 	}
 }
