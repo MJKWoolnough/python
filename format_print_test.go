@@ -994,6 +994,16 @@ func TestPrintSource(t *testing.T) {
 			"yield from a\n",
 			"yield from a\n",
 		},
+		{ // 198
+			"(a for b in c if d)",
+			"(a for b in c if d)\n",
+			"(a for b in c if d)\n",
+		},
+		{ // 199
+			"(a async for b in c if d)",
+			"(a async for b in c if d)\n",
+			"(a async for b in c if d)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
