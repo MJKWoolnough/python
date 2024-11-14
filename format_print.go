@@ -766,7 +766,11 @@ func (p Parameter) printSource(w io.Writer, v bool) {
 	io.WriteString(w, p.Identifier.Data)
 
 	if p.Type != nil {
-		io.WriteString(w, ": ")
+		if v {
+			io.WriteString(w, ": ")
+		} else {
+			io.WriteString(w, ":")
+		}
 		p.Type.printSource(w, v)
 	}
 }
