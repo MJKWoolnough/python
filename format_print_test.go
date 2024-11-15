@@ -539,492 +539,502 @@ func TestPrintSource(t *testing.T) {
 			"def a(b,c,d,*e,f,g,**h):i\n",
 			"def a(b, c, d, *e, f, g, **h): i\n",
 		},
-		{ // 106
+		{ // 107
+			"def a(*b, **c): d",
+			"def a(*b,**c):d\n",
+			"def a(*b, **c): d\n",
+		},
+		{ // 108
+			"def a(**b):c",
+			"def a(**b):c\n",
+			"def a(**b): c\n",
+		},
+		{ // 109
 			"def a(b = c): d",
 			"def a(b=c):d\n",
 			"def a(b = c): d\n",
 		},
-		{ // 107
+		{ // 110
 			"def a(b:c = d): e",
 			"def a(b:c=d):e\n",
 			"def a(b: c = d): e\n",
 		},
-		{ // 107
+		{ // 111
 			"async def a(b = c): d",
 			"async def a(b=c):d\n",
 			"async def a(b = c): d\n",
 		},
-		{ // 107
+		{ // 112
 			"a( b )",
 			"a(b)\n",
 			"a(b)\n",
 		},
-		{ // 108
+		{ // 113
 			"a( *b )",
 			"a(*b)\n",
 			"a(*b)\n",
 		},
-		{ // 109
+		{ // 114
 			"a ** b",
 			"a**b\n",
 			"a ** b\n",
 		},
-		{ // 110
+		{ // 115
 			"await a**b",
 			"await a**b\n",
 			"await a ** b\n",
 		},
-		{ // 111
+		{ // 116
 			"a",
 			"a\n",
 			"a\n",
 		},
-		{ // 112
+		{ // 117
 			"a.b",
 			"a.b\n",
 			"a.b\n",
 		},
-		{ // 113
+		{ // 118
 			"a . b",
 			"a.b\n",
 			"a.b\n",
 		},
-		{ // 114
+		{ // 119
 			"a[b]",
 			"a[b]\n",
 			"a[b]\n",
 		},
-		{ // 115
+		{ // 120
 			"a[ b ]",
 			"a[b]\n",
 			"a[b]\n",
 		},
-		{ // 116
+		{ // 121
 			"a(b)",
 			"a(b)\n",
 			"a(b)\n",
 		},
-		{ // 117
+		{ // 122
 			"a( b )",
 			"a(b)\n",
 			"a(b)\n",
 		},
-		{ // 118
+		{ // 123
 			"raise",
 			"raise\n",
 			"raise\n",
 		},
-		{ // 119
+		{ // 124
 			"raise a",
 			"raise a\n",
 			"raise a\n",
 		},
-		{ // 120
+		{ // 125
 			"raise a from b",
 			"raise a from b\n",
 			"raise a from b\n",
 		},
-		{ // 121
+		{ // 126
 			"from . a import b",
 			"from .a import b\n",
 			"from .a import b\n",
 		},
-		{ // 122
+		{ // 127
 			"from ..a import b",
 			"from ..a import b\n",
 			"from ..a import b\n",
 		},
-		{ // 123
+		{ // 128
 			"from ... import a",
 			"from ... import a\n",
 			"from ... import a\n",
 		},
-		{ // 124
+		{ // 129
 			"from ....a.b import c",
 			"from ....a.b import c\n",
 			"from ....a.b import c\n",
 		},
-		{ // 125
+		{ // 130
 			"def a():\n\treturn",
 			"def a():\n\treturn\n",
 			"def a():\n\treturn\n",
 		},
-		{ // 126
+		{ // 131
 			"def a():\n\treturn b",
 			"def a():\n\treturn b\n",
 			"def a():\n\treturn b\n",
 		},
-		{ // 127
+		{ // 132
 			"a>>b",
 			"a>>b\n",
 			"a >> b\n",
 		},
-		{ // 128
+		{ // 133
 			"a << b",
 			"a<<b\n",
 			"a << b\n",
 		},
-		{ // 129
+		{ // 134
 			"assert a",
 			"assert a\n",
 			"assert a\n",
 		},
-		{ // 130
+		{ // 135
 			"del b",
 			"del b\n",
 			"del b\n",
 		},
-		{ // 131
+		{ // 136
 			"return a",
 			"return a\n",
 			"return a\n",
 		},
-		{ // 132
+		{ // 137
 			"yield a",
 			"yield a\n",
 			"yield a\n",
 		},
-		{ // 133
+		{ // 138
 			"raise a",
 			"raise a\n",
 			"raise a\n",
 		},
-		{ // 134
+		{ // 139
 			"import a",
 			"import a\n",
 			"import a\n",
 		},
-		{ // 135
+		{ // 140
 			"global a",
 			"global a\n",
 			"global a\n",
 		},
-		{ // 136
+		{ // 141
 			"nonlocal a",
 			"nonlocal a\n",
 			"nonlocal a\n",
 		},
-		{ // 137
+		{ // 142
 			"type a = b",
 			"type a=b\n",
 			"type a = b\n",
 		},
-		{ // 138
+		{ // 143
 			"a = b",
 			"a=b\n",
 			"a = b\n",
 		},
-		{ // 139
+		{ // 144
 			"a: b = c",
 			"a:b=c\n",
 			"a: b = c\n",
 		},
-		{ // 140
+		{ // 145
 			"a += b",
 			"a+=b\n",
 			"a += b\n",
 		},
-		{ // 141
+		{ // 146
 			"pass",
 			"pass\n",
 			"pass\n",
 		},
-		{ // 142
+		{ // 147
 			"break",
 			"break\n",
 			"break\n",
 		},
-		{ // 143
+		{ // 148
 			"continue",
 			"continue\n",
 			"continue\n",
 		},
-		{ // 144
+		{ // 149
 			"a[b]",
 			"a[b]\n",
 			"a[b]\n",
 		},
-		{ // 145
+		{ // 150
 			"a [ b : c ] ",
 			"a[b:c]\n",
 			"a[b : c]\n",
 		},
-		{ // 146
+		{ // 151
 			"a[ b : c : d]",
 			"a[b:c:d]\n",
 			"a[b : c : d]\n",
 		},
-		{ // 147
+		{ // 152
 			"a[ b,c ]",
 			"a[b,c]\n",
 			"a[b, c]\n",
 		},
-		{ // 148
+		{ // 153
 			"a[ b,c ,d]",
 			"a[b,c,d]\n",
 			"a[b, c, d]\n",
 		},
-		{ // 149
+		{ // 154
 			"a = b",
 			"a=b\n",
 			"a = b\n",
 		},
-		{ // 150
+		{ // 155
 			"a = *b",
 			"a=*b\n",
 			"a = *b\n",
 		},
-		{ // 151
+		{ // 156
 			"a = *b, c",
 			"a=*b,c\n",
 			"a = *b, c\n",
 		},
-		{ // 152
+		{ // 157
 			"a = b ,",
 			"a=b,\n",
 			"a = b,\n",
 		},
-		{ // 153
+		{ // 158
 			"a = *b,",
 			"a=*b,\n",
 			"a = *b,\n",
 		},
-		{ // 154
+		{ // 159
 			"a = *b, c",
 			"a=*b,c\n",
 			"a = *b, c\n",
 		},
-		{ // 155
+		{ // 160
 			"a(*b)",
 			"a(*b)\n",
 			"a(*b)\n",
 		},
-		{ // 156
+		{ // 161
 			"a(*b, c)",
 			"a(*b,c)\n",
 			"a(*b, c)\n",
 		},
-		{ // 157
+		{ // 162
 			"a(*b, *c)",
 			"a(*b,*c)\n",
 			"a(*b, *c)\n",
 		},
-		{ // 158
+		{ // 163
 			"a(*b, c = d)",
 			"a(*b,c=d)\n",
 			"a(*b, c = d)\n",
 		},
-		{ // 159
+		{ // 164
 			"a",
 			"a\n",
 			"a\n",
 		},
-		{ // 160
+		{ // 165
 			"if a: b",
 			"if a:b\n",
 			"if a: b\n",
 		},
-		{ // 161
+		{ // 166
 			"a;b",
 			"a;b\n",
 			"a; b\n",
 		},
-		{ // 162
+		{ // 167
 			"if a: \n\tb",
 			"if a:\n\tb\n",
 			"if a:\n\tb\n",
 		},
-		{ // 163
+		{ // 168
 			"if a: \n\tb\n\tc",
 			"if a:\n\tb\n\tc\n",
 			"if a:\n\tb\n\tc\n",
 		},
-		{ // 164
+		{ // 169
 			"if a:\n\t(\nb\n)",
 			"if a:\n\t(b)\n",
 			"if a:\n\t(b)\n",
 		},
-		{ // 165
+		{ // 170
 			"if a:\n\tif b:\n\t\tc\n\t\td",
 			"if a:\n\tif b:\n\t\tc\n\t\td\n",
 			"if a:\n\tif b:\n\t\tc\n\t\td\n",
 		},
-		{ // 166
+		{ // 171
 			"a = b",
 			"a=b\n",
 			"a = b\n",
 		},
-		{ // 167
+		{ // 172
 			"a.b = c",
 			"a.b=c\n",
 			"a.b = c\n",
 		},
-		{ // 168
+		{ // 173
 			"(a) = b",
 			"(a)=b\n",
 			"(a) = b\n",
 		},
-		{ // 169
+		{ // 174
 			"[a] = b",
 			"[a]=b\n",
 			"[a] = b\n",
 		},
-		{ // 170
+		{ // 175
 			"*a = b",
 			"*a=b\n",
 			"*a = b\n",
 		},
-		{ // 171
+		{ // 176
 			"a, b = c",
 			"a,b=c\n",
 			"a, b = c\n",
 		},
-		{ // 172
+		{ // 177
 			"try:a\nexcept b:c",
 			"try:a\nexcept b:c\n",
 			"try: a\nexcept b: c\n",
 		},
-		{ // 173
+		{ // 178
 			"try:a\nexcept b:c\nexcept d:e",
 			"try:a\nexcept b:c\nexcept d:e\n",
 			"try: a\nexcept b: c\nexcept d: e\n",
 		},
-		{ // 174
+		{ // 179
 			"try:a\nexcept *b:c",
 			"try:a\nexcept *b:c\n",
 			"try: a\nexcept *b: c\n",
 		},
-		{ // 175
+		{ // 180
 			"try:a\nexcept *b:c\nexcept *d:e",
 			"try:a\nexcept *b:c\nexcept *d:e\n",
 			"try: a\nexcept *b: c\nexcept *d: e\n",
 		},
-		{ // 176
+		{ // 181
 			"try:a\nexcept b:c\nelse: d",
 			"try:a\nexcept b:c\nelse:d\n",
 			"try: a\nexcept b: c\nelse: d\n",
 		},
-		{ // 177
+		{ // 182
 			"try:a\nexcept b:c\nfinally: d",
 			"try:a\nexcept b:c\nfinally:d\n",
 			"try: a\nexcept b: c\nfinally: d\n",
 		},
-		{ // 178
+		{ // 183
 			"try:a\nexcept b:c\nelse: d\nfinally:e",
 			"try:a\nexcept b:c\nelse:d\nfinally:e\n",
 			"try: a\nexcept b: c\nelse: d\nfinally: e\n",
 		},
-		{ // 179
+		{ // 184
 			"def a[b](): c",
 			"def a[b]():c\n",
 			"def a[b](): c\n",
 		},
-		{ // 180
+		{ // 185
 			"def a[b:c](): d",
 			"def a[b:c]():d\n",
 			"def a[b: c](): d\n",
 		},
-		{ // 181
+		{ // 186
 			"def a[*b](): c",
 			"def a[*b]():c\n",
 			"def a[*b](): c\n",
 		},
-		{ // 182
+		{ // 187
 			"def a[**b](): c",
 			"def a[**b]():c\n",
 			"def a[**b](): c\n",
 		},
-		{ // 183
+		{ // 188
 			"class a[b,c, d ](): e",
 			"class a[b,c,d]():e\n",
 			"class a[b, c, d](): e\n",
 		},
-		{ // 184
+		{ // 189
 			"type a = b",
 			"type a=b\n",
 			"type a = b\n",
 		},
-		{ // 185
+		{ // 190
 			"type a[b] = c",
 			"type a[b]=c\n",
 			"type a[b] = c\n",
 		},
-		{ // 186
+		{ // 191
 			"+a",
 			"+a\n",
 			"+a\n",
 		},
-		{ // 187
+		{ // 192
 			"-a",
 			"-a\n",
 			"-a\n",
 		},
-		{ // 188
+		{ // 193
 			"~a",
 			"~a\n",
 			"~a\n",
 		},
-		{ // 189
+		{ // 194
 			"while a:b",
 			"while a:b\n",
 			"while a: b\n",
 		},
-		{ // 190
+		{ // 195
 			"while a:b\nelse: c",
 			"while a:b\nelse:c\n",
 			"while a: b\nelse: c\n",
 		},
-		{ // 191
+		{ // 196
 			"with a: b",
 			"with a:b\n",
 			"with a: b\n",
 		},
-		{ // 192
+		{ // 197
 			"with a as b:c",
 			"with a as b:c\n",
 			"with a as b: c\n",
 		},
-		{ // 193
+		{ // 198
 			"with a,b: c",
 			"with a,b:c\n",
 			"with a, b: c\n",
 		},
-		{ // 194
+		{ // 199
 			"with a as b, c,d as e:f",
 			"with a as b,c,d as e:f\n",
 			"with a as b, c, d as e: f\n",
 		},
-		{ // 195
+		{ // 200
 			"a^b",
 			"a^b\n",
 			"a ^ b\n",
 		},
-		{ // 196
+		{ // 201
 			"yield a",
 			"yield a\n",
 			"yield a\n",
 		},
-		{ // 197
+		{ // 202
 			"yield from a",
 			"yield from a\n",
 			"yield from a\n",
 		},
-		{ // 198
+		{ // 203
 			"(a for b in c if d)",
 			"(a for b in c if d)\n",
 			"(a for b in c if d)\n",
 		},
-		{ // 199
+		{ // 204
 			"(a async for b in c if d)",
 			"(a async for b in c if d)\n",
 			"(a async for b in c if d)\n",
 		},
-		{ // 200
+		{ // 205
 			"(a for b in c if d for e in f)",
 			"(a for b in c if d for e in f)\n",
 			"(a for b in c if d for e in f)\n",
 		},
-		{ // 201
+		{ // 206
 			"a if b else c",
 			"a if b else c\n",
 			"a if b else c\n",
