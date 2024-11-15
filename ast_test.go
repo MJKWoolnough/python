@@ -185,6 +185,35 @@ func wrapConditionalExpressionError(err Error) Error {
 	return err
 }
 
+func TestParse(t *testing.T) {
+	const (
+		errorA = "Tokens: error at position 1 (1:1):\ninvalid character"
+		errorB = "File: error at position 1 (1:1):\nStatement: error at position 1 (1:1):\nStatementList: error at position 1 (1:1):\nSimpleStatement: error at position 1 (1:1):\nNonLocalStatement: error at position 9 (1:9):\nmissing identifier"
+	)
+
+	var e Error
+
+	tk := parser.NewStringTokeniser("!")
+
+	if _, err := Parse(&tk); err == nil {
+		t.Error("1: expecting error, got nil")
+	} else if !errors.As(err, &e) {
+		t.Errorf("1: expecting Error type, got %T", err)
+	} else if errStr := e.Error(); errStr != errorA {
+		t.Errorf("1: expecting error %q, got %q", errorA, errStr)
+	}
+
+	tk = parser.NewStringTokeniser("nonlocal")
+
+	if _, err := Parse(&tk); err == nil {
+		t.Error("2: expecting error, got nil")
+	} else if !errors.As(err, &e) {
+		t.Errorf("2: expecting Error type, got %T", err)
+	} else if errStr := e.Error(); errStr != errorB {
+		t.Errorf("2: expecting error %q, got %q", errorB, errStr)
+	}
+}
+
 func TestFile(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
