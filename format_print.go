@@ -392,7 +392,12 @@ func (d DictDisplay) printSource(w io.Writer, v bool) {
 		d.DictItems[0].printSource(w, v)
 
 		for _, di := range d.DictItems[1:] {
-			io.WriteString(w, ", ")
+			if v {
+				io.WriteString(w, ", ")
+			} else {
+				io.WriteString(w, ",")
+			}
+
 			di.printSource(w, v)
 		}
 	}
