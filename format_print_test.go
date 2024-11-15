@@ -1060,6 +1060,16 @@ func TestPrintSource(t *testing.T) {
 			"(a for b in c if d for e in f)\n",
 		},
 		{ // 211
+			"(yield a)",
+			"(yield a)\n",
+			"(yield a)\n",
+		},
+		{ // 212
+			"{a for b in c}",
+			"{a for b in c}\n",
+			"{a for b in c}\n",
+		},
+		{ // 213
 			"a if b else c",
 			"a if b else c\n",
 			"a if b else c\n",
