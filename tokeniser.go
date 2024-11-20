@@ -199,6 +199,7 @@ func (p *pyTokeniser) indent(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 				Data: indent,
 			}, p.main
 		}
+
 		t.Err = ErrInvalidIndent
 
 		return t.Error()
