@@ -455,12 +455,6 @@ func (p *pyTokeniser) floatOrImaginary(t *parser.Tokeniser) (parser.Token, parse
 }
 
 func (p *pyTokeniser) float(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
-	if !t.Accept(decimalDigit) {
-		t.Err = ErrInvalidNumber
-
-		return t.Error()
-	}
-
 	t.AcceptRun(decimalDigit)
 
 	if !numberWithGrouping(t, decimalDigit) {
