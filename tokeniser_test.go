@@ -607,7 +607,7 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{ // 67
-			"3.14 10. .001 1e100 3.14e-10 0e0 3.14_15_93",
+			"3.14 10. .001 1e100 3.14e-10 0e0 3.14_15_93 1_b",
 			[]parser.Token{
 				{Type: TokenNumericLiteral, Data: "3.14"},
 				{Type: TokenWhitespace, Data: " "},
@@ -622,7 +622,8 @@ func TestTokeniser(t *testing.T) {
 				{Type: TokenNumericLiteral, Data: "0e0"},
 				{Type: TokenWhitespace, Data: " "},
 				{Type: TokenNumericLiteral, Data: "3.14_15_93"},
-				{Type: parser.TokenDone, Data: ""},
+				{Type: TokenWhitespace, Data: " "},
+				{Type: parser.TokenError, Data: "invalid number"},
 			},
 		},
 		{ // 68
