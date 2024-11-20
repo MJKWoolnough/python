@@ -681,6 +681,12 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 		{ // 75
+			"1eb",
+			[]parser.Token{
+				{Type: parser.TokenError, Data: "invalid number"},
+			},
+		},
+		{ // 76
 			"a(1,\n2, \n3\n )\nb()",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -701,7 +707,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 76
+		{ // 77
 			"a[1,\n2, \n3\n ]\n",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -719,7 +725,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 77
+		{ // 78
 			"a\\\nb",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -728,7 +734,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 78
+		{ // 79
 			"a\n\tb\n\t\tc\nd",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -745,7 +751,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 79
+		{ // 80
 			"a\n\tb\n\tc",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -759,7 +765,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 80
+		{ // 81
 			"a\n\tb\n\tc\n",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -774,7 +780,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 81
+		{ // 82
 			"a\n\tb\n\t\tc\n\td\n\t\te\n",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -796,7 +802,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 82
+		{ // 83
 			"a\n  b\n  \tc\n  d\n    e\n",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -818,7 +824,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 83
+		{ // 84
 			"a\n\tb\n# A comment\n\tc\n  # Another comment\n\td\n\te\n",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -844,7 +850,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 84
+		{ // 85
 			"a\n\tb\n\n\n\tc\n  \n\n\td\n\te\n",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -867,7 +873,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 85
+		{ // 86
 			"a\n\tb\n\\\n\n\tc\n  \\\n\n\td\n\te\n",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -893,7 +899,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenDone, Data: ""},
 			},
 		},
-		{ // 86
+		{ // 87
 			"a\n\tb\n  c",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
@@ -904,7 +910,7 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenError, Data: "invalid indent"},
 			},
 		},
-		{ // 87
+		{ // 88
 			"a\n  b\n\tc",
 			[]parser.Token{
 				{Type: TokenIdentifier, Data: "a"},
