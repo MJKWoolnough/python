@@ -564,3 +564,26 @@ func TestFile(t *testing.T) {
 		return f, err
 	})
 }
+
+func TestErrUnwrap(t *testing.T) {
+	err := Error{
+		Err: Error{
+			Err: Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "NonLocalStatement",
+					},
+					Parsing: "SimpleStatement",
+				},
+				Parsing: "StatementList",
+			},
+			Parsing: "Statement",
+		},
+		Parsing: "File",
+	}
+
+	if !errors.Is(err, ErrMissingIdentifier) {
+		t.Errorf("error could not be correctly unwrapped")
+	}
+}
