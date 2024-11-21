@@ -7,6 +7,7 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// Unquote takes a python quoted string and returns the unquoted string.
 func Unquote(str string) (string, error) {
 	t := parser.NewStringTokeniser(str)
 
@@ -124,6 +125,41 @@ func readEscapedDigits(t *parser.Tokeniser, digits string, base, num int) rune {
 	return rune(n)
 }
 
+// WrapConditional takes one of many types and wraps it in a
+// *ConditionalExpression.
+//
+// The accepted types/pointers are as follows:
+//
+//	ConditionalExpression
+//	*ConditionalExpression
+//	OrTest
+//	*OrTest
+//	AndTest
+//	*AndTest
+//	NotTest
+//	*NotTest
+//	Comparison
+//	*Comparison
+//	OrExpression
+//	*OrExpression
+//	XorExpression
+//	*XorExpression
+//	AndExpression
+//	*AndExpression
+//	ShiftExpression
+//	*ShiftExpression
+//	AddExpression
+//	*AddExpression
+//	MultiplyExpression
+//	*MultiplyExpression
+//	UnaryExpression
+//	*UnaryExpression
+//	PowerExpression
+//	*PowerExpression
+//	PrimaryExpression
+//	*PrimaryExpression
+//	Atom
+//	*Atom
 func WrapConditional(p ConditionalWrappable) *ConditionalExpression {
 	if c, ok := p.(*ConditionalExpression); ok {
 		return c
@@ -289,6 +325,24 @@ OrTest:
 	return c
 }
 
+// UnwrapConditional returns the first value up the ConditionalExpression chain
+// that contains all of the information required to rebuild the lower chain.
+//
+//	*ConditionalExpression
+//	*OrTest
+//	*AndTest
+//	*NotTest
+//	*Comparison
+//	*OrExpression
+//	*XorExpression
+//	*AndExpression
+//	*ShiftExpression
+//	*AddExpression
+//	*MultiplyExpression
+//	*UnaryExpression
+//	*PowerExpression
+//	*PrimaryExpression
+//	*Atom
 func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 	if c == nil {
 		return nil
