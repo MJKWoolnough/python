@@ -927,6 +927,12 @@ func TestTokeniser(t *testing.T) {
 				{Type: parser.TokenError, Data: "invalid indent"},
 			},
 		},
+		{ // 90
+			"`",
+			[]parser.Token{
+				{Type: parser.TokenError, Data: "invalid character"},
+			},
+		},
 	} {
 		p := parser.NewStringTokeniser(test.Input)
 
