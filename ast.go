@@ -2,11 +2,13 @@ package python
 
 import "vimagination.zapto.org/parser"
 
+// File represents a parsed Python file.
 type File struct {
 	Statements []Statement
 	Tokens     Tokens
 }
 
+// Parse parses Python input into AST.
 func Parse(t Tokeniser) (*File, error) {
 	p, err := newPyParser(t)
 	if err != nil {
