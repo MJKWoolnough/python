@@ -6,11 +6,13 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// Token represents a parser.Token combined with positioning information.
 type Token struct {
 	parser.Token
 	Pos, Line, LinePos uint64
 }
 
+// Tokens represents a list ok tokens that have been parsed.
 type Tokens []Token
 
 type pyParser struct {
@@ -18,6 +20,7 @@ type pyParser struct {
 	Tokens
 }
 
+// Tokeniser represents the methods required by the python tokeniser.
 type Tokeniser interface {
 	GetToken() (parser.Token, error)
 	GetError() error
@@ -199,16 +202,19 @@ Loop:
 	return -1
 }
 
+// Error represents a Python parsing error.
 type Error struct {
 	Err     error
 	Parsing string
 	Token   Token
 }
 
+// Error implements the error interface.
 func (e Error) Error() string {
 	return fmt.Sprintf("%s: error at position %d (%d:%d):\n%s", e.Parsing, e.Token.Pos+1, e.Token.Line+1, e.Token.LinePos+1, e.Err)
 }
 
+// Unwrap returns the underlying error.
 func (e Error) Unwrap() error {
 	return e.Err
 }
