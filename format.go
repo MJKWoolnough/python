@@ -135,6 +135,7 @@ func (s StatementType) printType(w io.Writer, _ bool) {
 	io.WriteString(w, s.String())
 }
 
+// String implements the fmt.Stringer interface.
 func (s StatementType) String() string {
 	switch s {
 	case StatementAssert:
@@ -176,6 +177,7 @@ func (t TypeParamType) printType(w io.Writer, _ bool) {
 	io.WriteString(w, t.String())
 }
 
+// String implements the fmt.Stringer interface.
 func (t TypeParamType) String() string {
 	switch t {
 	case TypeParamIdentifer:
