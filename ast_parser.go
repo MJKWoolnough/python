@@ -69,10 +69,6 @@ func (p *pyParser) Score(k *pyParser) {
 
 func (p *pyParser) next() Token {
 	l := len(p.Tokens)
-	if l == cap(p.Tokens) {
-		return p.Tokens[l-1]
-	}
-
 	p.Tokens = p.Tokens[:l+1]
 	tk := p.Tokens[l]
 
