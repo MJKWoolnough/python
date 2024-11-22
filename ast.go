@@ -1,3 +1,4 @@
+// Package python implements a python tokeniser and parser.
 package python
 
 import "vimagination.zapto.org/parser"
