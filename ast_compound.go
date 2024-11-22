@@ -6,6 +6,8 @@ import (
 
 var compounds = [...]string{"if", "while", "for", "try", "with", "func", "class", "async", "def"}
 
+// CompoundStatement as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-compound_stmt
 type CompoundStatement struct {
 	If     *IfStatement
 	While  *WhileStatement
@@ -111,6 +113,8 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 	return nil
 }
 
+// Decorators as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorators
 type Decorators struct {
 	Decorators []AssignmentExpression
 	Tokens
@@ -149,6 +153,8 @@ func (d *Decorators) parse(p *pyParser) error {
 	return nil
 }
 
+// IfStatement as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-if_stmt
 type IfStatement struct {
 	AssignmentExpression AssignmentExpression
 	Suite                Suite
@@ -252,11 +258,14 @@ func (i *IfStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// AssignmentExpressionAndSuite is a combination of the AssignmentExpression and Suite types.
 type AssignmentExpressionAndSuite struct {
 	AssignmentExpression AssignmentExpression
 	Suite                Suite
 }
 
+// WhileStatement as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-while_stmt
 type WhileStatement struct {
 	AssignmentExpression AssignmentExpression
 	Suite                Suite
@@ -320,6 +329,8 @@ func (w *WhileStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// ForStatement as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-for_stmt
 type ForStatement struct {
 	Async       bool
 	TargetList  TargetList
@@ -403,6 +414,8 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 	return nil
 }
 
+// TryStatement as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try_stmt
 type TryStatement struct {
 	Try     Suite
 	Groups  bool
@@ -519,6 +532,8 @@ func (t *TryStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// Except as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try1_stmt
 type Except struct {
 	Expression Expression
 	Identifier *Token
@@ -568,6 +583,8 @@ func (e *Except) parse(p *pyParser) error {
 	return nil
 }
 
+// WithStatement as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt
 type WithStatement struct {
 	Async    bool
 	Contents WithStatementContents
@@ -629,6 +646,8 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 	return nil
 }
 
+// WithStatementContents as defined in python:3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt_contents
 type WithStatementContents struct {
 	Items  []WithItem
 	Tokens Tokens
@@ -670,6 +689,8 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 	return nil
 }
 
+// WithItem as defined in python@3.13:
+// https://docs.python.org/3.13/reference/compound_stmts.html#grammar-token-python-grammar-with_item
 type WithItem struct {
 	Expression Expression
 	Target     *Target
@@ -708,6 +729,8 @@ func (w *WithItem) parse(p *pyParser) error {
 	return nil
 }
 
+// FuncDefinition as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-funcdef
 type FuncDefinition struct {
 	Decorators    *Decorators
 	Async         bool
@@ -809,6 +832,8 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 	return nil
 }
 
+// ClassDefinition as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-classdef
 type ClassDefinition struct {
 	Decorators  *Decorators
 	ClassName   *Token
@@ -887,6 +912,8 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 	return nil
 }
 
+// Suite as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-suite
 type Suite struct {
 	StatementList *StatementList
 	Statements    []Statement
@@ -940,6 +967,8 @@ func (s *Suite) parse(p *pyParser) error {
 	return nil
 }
 
+// TargetList as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
 type TargetList struct {
 	Targets []Target
 	Tokens  Tokens
@@ -992,6 +1021,8 @@ Loop:
 	return nil
 }
 
+// Target as defined in python@3.13.0:
+// https://docs.python.org/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
 type Target struct {
 	PrimaryExpression *PrimaryExpression
 	Tuple             *TargetList
@@ -1070,6 +1101,8 @@ func (t *Target) parse(p *pyParser) error {
 	return nil
 }
 
+// StarredList as defined in python@3.12.6:
+// https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_list
 type StarredList struct {
 	StarredItems  []StarredItem
 	TrailingComma bool
@@ -1142,6 +1175,8 @@ Loop:
 	return nil
 }
 
+// StarredItem as defined in python@3.12.6:
+// https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_item
 type StarredItem struct {
 	AssignmentExpression *AssignmentExpression
 	OrExpr               *OrExpression
@@ -1176,6 +1211,7 @@ func (s *StarredItem) parse(p *pyParser) error {
 	return nil
 }
 
+// TypeParamType determines the type of a TypeParam.
 type TypeParamType byte
 
 const (
@@ -1184,6 +1220,8 @@ const (
 	TypeParamVarTuple
 )
 
+// TypeParam as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-type_param
 type TypeParam struct {
 	Type       TypeParamType
 	Identifier *Token
@@ -1233,6 +1271,8 @@ func (t *TypeParam) parse(p *pyParser) error {
 	return nil
 }
 
+// ParameterList as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-parameter_list
 type ParameterList struct {
 	DefParameters []DefParameter
 	NoPosOnly     []DefParameter
@@ -1374,6 +1414,8 @@ func (l *ParameterList) parseStarStar(p, q *pyParser, target *[]DefParameter, al
 	return target, nil
 }
 
+// DefParameter as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-defparameter
 type DefParameter struct {
 	Parameter Parameter
 	Value     *Expression
@@ -1412,6 +1454,8 @@ func (d *DefParameter) parse(p *pyParser, allowAnnotations bool) error {
 	return nil
 }
 
+// Parameter as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-parameter
 type Parameter struct {
 	Identifier *Token
 	Type       *Expression
@@ -1454,6 +1498,8 @@ type ArgumentList struct {
 	Tokens                     Tokens
 }
 
+// ArgumentList as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-argument_list
 func (a *ArgumentList) parse(p *pyParser) error {
 	var nextIsKeywordItem, nextIsDoubleStarred bool
 
@@ -1583,6 +1629,8 @@ func (a *ArgumentList) parse(p *pyParser) error {
 	return nil
 }
 
+// PositionalArgument as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-positional_arguments
 type PositionalArgument struct {
 	AssignmentExpression *AssignmentExpression
 	Expression           *Expression
@@ -1617,6 +1665,8 @@ func (pa *PositionalArgument) parse(p *pyParser) error {
 	return nil
 }
 
+// StarredOrKeyword as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-starred_and_keywords
 type StarredOrKeyword struct {
 	Expression  *Expression
 	KeywordItem *KeywordItem
@@ -1651,6 +1701,8 @@ func (s *StarredOrKeyword) parse(p *pyParser) error {
 	return nil
 }
 
+// KeywordItem as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-keyword_item
 type KeywordItem struct {
 	Identifier *Token
 	Expression Expression
@@ -1685,6 +1737,8 @@ func (k *KeywordItem) parse(p *pyParser) error {
 	return nil
 }
 
+// KeywordArgument as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-keywords_arguments
 type KeywordArgument struct {
 	KeywordItem *KeywordItem
 	Expression  *Expression
