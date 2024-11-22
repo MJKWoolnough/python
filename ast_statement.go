@@ -6,6 +6,8 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// Statement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-statement
 type Statement struct {
 	StatementList     *StatementList
 	CompoundStatement *CompoundStatement
@@ -57,6 +59,8 @@ func (s *Statement) parse(p *pyParser) error {
 	return nil
 }
 
+// StatementList as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-stmt_list
 type StatementList struct {
 	Statements []SimpleStatement
 	Tokens
@@ -99,6 +103,7 @@ func (s *StatementList) parse(p *pyParser) error {
 	return nil
 }
 
+// StatementType specifies the type of a SimpleStatment.
 type StatementType uint8
 
 const (
@@ -119,6 +124,8 @@ const (
 	StatementTyp
 )
 
+// SimpleStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-simple_stmt
 type SimpleStatement struct {
 	Type                         StatementType
 	AssertStatement              *AssertStatement
@@ -299,6 +306,8 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// AssertStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-assert_stmt
 type AssertStatement struct {
 	Expressions []Expression
 	Tokens      Tokens
@@ -337,6 +346,8 @@ func (a *AssertStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// AssignmentStatement as defined in python:3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-assignment_stmt
 type AssignmentStatement struct {
 	TargetLists       []TargetList
 	StarredExpression *StarredExpression
@@ -393,6 +404,8 @@ func (a *AssignmentStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// AugmentedAssignmentStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-augmented_assignment_stmt
 type AugmentedAssignmentStatement struct {
 	AugTarget       AugTarget
 	AugOp           *Token
@@ -452,6 +465,8 @@ func (a *AugmentedAssignmentStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// AugTarget as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-augtarget
 type AugTarget struct {
 	PrimaryExpression PrimaryExpression
 	Tokens            Tokens
@@ -473,6 +488,8 @@ func (a *AugTarget) parse(p *pyParser) error {
 	return nil
 }
 
+// AnnotatedAssignmentStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-annotated_assignment_stmt
 type AnnotatedAssignmentStatement struct {
 	AugTarget         AugTarget
 	Expression        Expression
@@ -538,6 +555,8 @@ func (a *AnnotatedAssignmentStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// StarredExpression as defined in python@3.12.6:
+// https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_expression
 type StarredExpression struct {
 	Expression  *Expression
 	StarredList *StarredList
@@ -568,6 +587,8 @@ func (s *StarredExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// DelStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-del_stmt
 type DelStatement struct {
 	TargetList TargetList
 	Tokens     Tokens
@@ -591,6 +612,8 @@ func (d *DelStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// ReturnStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-return_stmt
 type ReturnStatement struct {
 	Expression *Expression
 	Tokens     Tokens
@@ -621,6 +644,8 @@ func (r *ReturnStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// YieldExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-yield_stmt
 type YieldExpression struct {
 	ExpressionList *ExpressionList
 	From           *Expression
@@ -668,6 +693,8 @@ func (y *YieldExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// RaiseStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-raise_stmt
 type RaiseStatement struct {
 	Expression *Expression
 	From       *Expression
@@ -718,6 +745,8 @@ func (r *RaiseStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// ImportStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-import_stmt
 type ImportStatement struct {
 	RelativeModule *RelativeModule
 	Modules        []ModuleAs
@@ -793,6 +822,8 @@ func (i *ImportStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// RelativeModule as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-relative_module
 type RelativeModule struct {
 	Dots   int
 	Module *Module
@@ -834,6 +865,8 @@ func (r *RelativeModule) parse(p *pyParser) error {
 	return nil
 }
 
+// ModuleAs as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-import_stmt
 type ModuleAs struct {
 	Module Module
 	As     *Token
@@ -869,6 +902,8 @@ func (m *ModuleAs) parse(p *pyParser) error {
 	return nil
 }
 
+// Module as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-module
 type Module struct {
 	Identifiers []*Token
 	Tokens      Tokens
@@ -898,6 +933,8 @@ func (m *Module) parse(p *pyParser) error {
 	return nil
 }
 
+// GlobalStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-global_stmt
 type GlobalStatement struct {
 	Identifiers []*Token
 	Tokens      Tokens
@@ -931,6 +968,8 @@ func (g *GlobalStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// NonLocalStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-nonlocal_stmt
 type NonLocalStatement struct {
 	Identifiers []*Token
 	Tokens      Tokens
@@ -964,6 +1003,8 @@ func (n *NonLocalStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// TypeStatement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-type_stmt
 type TypeStatement struct {
 	Identifier *Token
 	TypeParams *TypeParams
@@ -1013,6 +1054,8 @@ func (t *TypeStatement) parse(p *pyParser) error {
 	return nil
 }
 
+// TypeParams as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-type_params
 type TypeParams struct {
 	TypeParams []TypeParam
 	Tokens     Tokens
@@ -1052,6 +1095,8 @@ func (t *TypeParams) parse(p *pyParser) error {
 	return nil
 }
 
+// AssignmentExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-assignment_expression
 type AssignmentExpression struct {
 	Identifier *Token
 	Expression Expression
@@ -1086,6 +1131,8 @@ func (a *AssignmentExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// Expression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-expression
 type Expression struct {
 	ConditionalExpression *ConditionalExpression
 	LambdaExpression      *LambdaExpression
@@ -1118,6 +1165,8 @@ func (e *Expression) parse(p *pyParser) error {
 	return nil
 }
 
+// ConditionalExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-conditional_expression
 type ConditionalExpression struct {
 	OrTest OrTest
 	If     *OrTest
@@ -1173,6 +1222,8 @@ func (c *ConditionalExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// LambdaExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-lambda_expr
 type LambdaExpression struct {
 	ParameterList *ParameterList
 	Expression    Expression
@@ -1216,6 +1267,8 @@ func (l *LambdaExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// OrTest as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-or_test
 type OrTest struct {
 	AndTest AndTest
 	OrTest  *OrTest
@@ -1254,6 +1307,8 @@ func (o *OrTest) parse(p *pyParser) error {
 	return nil
 }
 
+// AndTest as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-and_test
 type AndTest struct {
 	NotTest NotTest
 	AndTest *AndTest
@@ -1292,6 +1347,8 @@ func (a *AndTest) parse(p *pyParser) error {
 	return nil
 }
 
+// NotTest as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-not_test
 type NotTest struct {
 	Nots       uint
 	Comparison Comparison
@@ -1322,6 +1379,8 @@ func (n *NotTest) parse(p *pyParser) error {
 	return nil
 }
 
+// Comparison as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comparison
 type Comparison struct {
 	OrExpression OrExpression
 	Comparisons  []ComparisonExpression
@@ -1426,6 +1485,7 @@ Loop:
 	return nil
 }
 
+// ComparisonExpression combines combines the operators with an OrExpression.
 type ComparisonExpression struct {
 	ComparisonOperator []Token
 	OrExpression       OrExpression
