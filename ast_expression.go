@@ -4,6 +4,8 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
+// PrimaryExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-primary
 type PrimaryExpression struct {
 	PrimaryExpression *PrimaryExpression
 	Atom              *Atom
@@ -87,6 +89,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// IsIdentifier returns true if the Primary expression is based on an Identifier.
 func (pr *PrimaryExpression) IsIdentifier() bool {
 	if pr.Atom != nil {
 		return pr.Atom.IsIdentifier()
@@ -97,6 +100,8 @@ func (pr *PrimaryExpression) IsIdentifier() bool {
 	return false
 }
 
+// Atom as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-atom
 type Atom struct {
 	Identifier *Token
 	Literal    *Token
@@ -126,10 +131,13 @@ func (a *Atom) parse(p *pyParser) error {
 	return nil
 }
 
+// IsIdentifier returns true if the Atom contains an Idneitifer.
 func (a *Atom) IsIdentifier() bool {
 	return a.Identifier != nil
 }
 
+// Enclosure as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-enclosure
 type Enclosure struct {
 	ParenthForm         *StarredExpression
 	ListDisplay         *FlexibleExpressionListOrComprehension
@@ -277,6 +285,8 @@ func (e *Enclosure) parse(p *pyParser) error {
 	return nil
 }
 
+// FlexibleExpressionListOrComprehension as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-list_display
 type FlexibleExpressionListOrComprehension struct {
 	FlexibleExpressionList *FlexibleExpressionList
 	Comprehension          *Comprehension
@@ -329,6 +339,8 @@ func (f *FlexibleExpressionListOrComprehension) parse(p *pyParser, ae *Assignmen
 	return nil
 }
 
+// FlexibleExpressionList as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-flexible_expression_list
 type FlexibleExpressionList struct {
 	FlexibleExpressions []FlexibleExpression
 	Tokens
@@ -373,6 +385,8 @@ func (f *FlexibleExpressionList) parse(p *pyParser) error {
 	return nil
 }
 
+// FlexibleExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-flexible_expression
 type FlexibleExpression struct {
 	AssignmentExpression *AssignmentExpression
 	StarredExpression    *StarredExpression
@@ -402,6 +416,8 @@ func (f *FlexibleExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// Comprehension as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comprehension
 type Comprehension struct {
 	AssignmentExpression AssignmentExpression
 	ComprehensionFor     ComprehensionFor
@@ -435,6 +451,8 @@ func (c *Comprehension) parse(p *pyParser, ae *AssignmentExpression) error {
 	return nil
 }
 
+// ComprehensionFor as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comp_for
 type ComprehensionFor struct {
 	Async                 bool
 	TargetList            TargetList
@@ -500,6 +518,8 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 	return nil
 }
 
+// ComprehensionIterator as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comp_iter
 type ComprehensionIterator struct {
 	ComprehensionFor *ComprehensionFor
 	ComprehensionIf  *ComprehensionIf
@@ -530,6 +550,8 @@ func (c *ComprehensionIterator) parse(p *pyParser) error {
 	return nil
 }
 
+// ComprehensionIf as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comp_if
 type ComprehensionIf struct {
 	OrTest                OrTest
 	ComprehensionIterator *ComprehensionIterator
@@ -575,6 +597,8 @@ func (c *ComprehensionIf) parse(p *pyParser) error {
 	return nil
 }
 
+// DictDisplay as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-dict_display
 type DictDisplay struct {
 	DictItems         []DictItem
 	DictComprehension *ComprehensionFor
@@ -649,6 +673,8 @@ Loop:
 	return nil
 }
 
+// DictItem as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-dict_item
 type DictItem struct {
 	Key          *Expression
 	Value        *Expression
@@ -705,6 +731,8 @@ func (d *DictItem) parse(p *pyParser, e *Expression) error {
 	return nil
 }
 
+// GeneratorExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-generator_expression
 type GeneratorExpression struct {
 	Expression       Expression
 	ComprehensionFor ComprehensionFor
@@ -735,6 +763,8 @@ func (g *GeneratorExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// ArgumentListOrComprehension as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-call
 type ArgumentListOrComprehension struct {
 	ArgumentList  *ArgumentList
 	Comprehension *Comprehension
@@ -776,6 +806,8 @@ func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 	return nil
 }
 
+// ExpressionList as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-expression_list
 type ExpressionList struct {
 	Expressions []Expression
 	Tokens      Tokens
@@ -818,6 +850,8 @@ func (e *ExpressionList) parse(p *pyParser) error {
 	return nil
 }
 
+// SliceList as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-slice_list
 type SliceList struct {
 	SliceItems []SliceItem
 	Tokens     Tokens
@@ -859,6 +893,8 @@ func (s *SliceList) parse(p *pyParser) error {
 	return nil
 }
 
+// SliceItem as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-slice_item
 type SliceItem struct {
 	Expression *Expression
 	LowerBound *Expression
@@ -922,6 +958,8 @@ func (s *SliceItem) parse(p *pyParser) error {
 	return nil
 }
 
+// OrExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-or_expr
 type OrExpression struct {
 	XorExpression XorExpression
 	OrExpression  *OrExpression
@@ -961,6 +999,8 @@ func (o *OrExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// XorExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-xor_expr
 type XorExpression struct {
 	AndExpression AndExpression
 	XorExpression *XorExpression
@@ -1000,6 +1040,8 @@ func (x *XorExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// AndExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-and_expr
 type AndExpression struct {
 	ShiftExpression ShiftExpression
 	AndExpression   *AndExpression
@@ -1039,6 +1081,8 @@ func (a *AndExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// ShiftExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-shift_expr
 type ShiftExpression struct {
 	AddExpression   AddExpression
 	Shift           *Token
@@ -1081,6 +1125,8 @@ func (s *ShiftExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// AddExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-a_expr
 type AddExpression struct {
 	MultiplyExpression MultiplyExpression
 	Add                *Token
@@ -1123,6 +1169,8 @@ func (a *AddExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// MultiplyExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-m_expr
 type MultiplyExpression struct {
 	UnaryExpression    UnaryExpression
 	Multiply           *Token
@@ -1167,6 +1215,8 @@ func (m *MultiplyExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// UnaryExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-u_expr
 type UnaryExpression struct {
 	PowerExpression *PowerExpression
 	Unary           *Token
@@ -1206,6 +1256,8 @@ func (u *UnaryExpression) parse(p *pyParser) error {
 	return nil
 }
 
+// PowerExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-power
 type PowerExpression struct {
 	AwaitExpression   bool
 	PrimaryExpression PrimaryExpression
