@@ -100,9 +100,7 @@ func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser {
 func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Peek() == -1 {
 		if len(p.tokenDepth) > 0 {
-			t.Err = io.ErrUnexpectedEOF
-
-			return t.Error()
+			return t.ReturnError(io.ErrUnexpectedEOF)
 		}
 
 		if p.dedents = len(p.indents) - 1; p.dedents > 0 {
@@ -134,9 +132,7 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 
 	if t.Accept("\\") {
 		if !t.Accept(lineTerminator) {
-			t.Err = ErrInvalidCharacter
-
-			return t.Error()
+			return t.ReturnError(ErrInvalidCharacter)
 		}
 
 		return t.Return(TokenWhitespace, p.main)
@@ -204,9 +200,7 @@ func (p *pyTokeniser) indent(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 			}, p.main
 		}
 
-		t.Err = ErrInvalidIndent
-
-		return t.Error()
+		return t.ReturnError(ErrInvalidIndent)
 	}
 
 	for n, i := range p.indents[1:] {
@@ -221,9 +215,7 @@ func (p *pyTokeniser) indent(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 		}
 	}
 
-	t.Err = ErrInvalidIndent
-
-	return t.Error()
+	return t.ReturnError(ErrInvalidIndent)
 }
 
 func (p *pyTokeniser) dedent(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
@@ -350,17 +342,13 @@ Loop:
 	for {
 		switch t.ExceptRun(except) {
 		default:
-			t.Err = io.ErrUnexpectedEOF
-
-			return t.Error()
+			return t.ReturnError(io.ErrUnexpectedEOF)
 		case '\\':
 			t.Next()
 			t.Next()
 		case '\n':
 			if !triple {
-				t.Err = ErrInvalidCharacter
-
-				return t.Error()
+				return t.ReturnError(ErrInvalidCharacter)
 			}
 
 			t.Next()
@@ -428,9 +416,7 @@ func (p *pyTokeniser) baseNumber(t *parser.Tokeniser) (parser.Token, parser.Toke
 	t.AcceptRun(digits)
 
 	if !numberWithGrouping(t, digits) {
-		t.Err = ErrInvalidNumber
-
-		return t.Error()
+		return t.ReturnError(ErrInvalidNumber)
 	}
 
 	if digits == "0" {
@@ -438,9 +424,7 @@ func (p *pyTokeniser) baseNumber(t *parser.Tokeniser) (parser.Token, parser.Toke
 	}
 
 	if t.Len() == 2 {
-		t.Err = ErrInvalidNumber
-
-		return t.Error()
+		return t.ReturnError(ErrInvalidNumber)
 	}
 
 	return t.Return(TokenNumericLiteral, p.main)
@@ -462,9 +446,7 @@ func (p *pyTokeniser) float(t *parser.Tokeniser) (parser.Token, parser.TokenFunc
 	t.AcceptRun(decimalDigit)
 
 	if !numberWithGrouping(t, decimalDigit) {
-		t.Err = ErrInvalidNumber
-
-		return t.Error()
+		return t.ReturnError(ErrInvalidNumber)
 	}
 
 	if t.Accept("eE") {
@@ -478,17 +460,13 @@ func (p *pyTokeniser) exponential(t *parser.Tokeniser) (parser.Token, parser.Tok
 	t.Accept("+-")
 
 	if !t.Accept(decimalDigit) {
-		t.Err = ErrInvalidNumber
-
-		return t.Error()
+		return t.ReturnError(ErrInvalidNumber)
 	}
 
 	t.AcceptRun(decimalDigit)
 
 	if !numberWithGrouping(t, decimalDigit) {
-		t.Err = ErrInvalidNumber
-
-		return t.Error()
+		return t.ReturnError(ErrInvalidNumber)
 	}
 
 	return p.imaginary(t)
@@ -504,9 +482,7 @@ func (p *pyTokeniser) number(t *parser.Tokeniser) (parser.Token, parser.TokenFun
 	t.AcceptRun(decimalDigit)
 
 	if !numberWithGrouping(t, decimalDigit) {
-		t.Err = ErrInvalidNumber
-
-		return t.Error()
+		return t.ReturnError(ErrInvalidNumber)
 	}
 
 	return p.floatOrImaginary(t)
@@ -530,9 +506,7 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 
 	switch c := t.Peek(); c {
 	default:
-		t.Err = ErrInvalidCharacter
-
-		return t.Error()
+		return t.ReturnError(ErrInvalidCharacter)
 	case '+', '%', '@', '&', '|', '^', ':', '=':
 		t.Next()
 
@@ -557,15 +531,11 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 		t.Next()
 
 		if !t.Accept("=") {
-			t.Err = ErrInvalidCharacter
-
-			return t.Error()
+			return t.ReturnError(ErrInvalidCharacter)
 		}
 	case ')', '}', ']':
 		if len(p.tokenDepth) == 0 || p.tokenDepth[len(p.tokenDepth)-1] != byte(c) {
-			t.Err = ErrInvalidCharacter
-
-			return t.Error()
+			return t.ReturnError(ErrInvalidCharacter)
 		}
 
 		t.Next()
