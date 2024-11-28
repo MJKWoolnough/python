@@ -22,9 +22,9 @@ type pyParser struct {
 
 // Tokeniser represents the methods required by the python tokeniser.
 type Tokeniser interface {
-	GetToken() (parser.Token, error)
-	GetError() error
+	Iter(func(parser.Token) bool)
 	TokeniserState(parser.TokenFunc)
+	GetError() error
 }
 
 func newPyParser(t Tokeniser) (*pyParser, error) {
@@ -36,18 +36,17 @@ func newPyParser(t Tokeniser) (*pyParser, error) {
 
 	var (
 		tokens             Tokens
+		err                error
 		pos, line, linePos uint64
 	)
 
-	for {
-		tk, _ := t.GetToken()
+	for tk := range t.Iter {
 		tokens = append(tokens, Token{Token: tk, Pos: pos, Line: line, LinePos: linePos})
 
 		switch tk.Type {
 		case parser.TokenDone:
-			return &pyParser{Tokens: tokens[0:0:len(tokens)]}, nil
 		case parser.TokenError:
-			return nil, Error{Err: t.GetError(), Parsing: "Tokens", Token: tokens[len(tokens)-1]}
+			err = Error{Err: t.GetError(), Parsing: "Tokens", Token: tokens[len(tokens)-1]}
 		case TokenLineTerminator:
 			line += uint64(len(tk.Data))
 			linePos = 0
@@ -57,6 +56,8 @@ func newPyParser(t Tokeniser) (*pyParser, error) {
 
 		pos += uint64(len(tk.Data))
 	}
+
+	return &pyParser{Tokens: tokens[0:0:len(tokens)]}, err
 }
 
 func (p pyParser) NewGoal() *pyParser {
