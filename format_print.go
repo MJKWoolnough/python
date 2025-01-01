@@ -192,6 +192,15 @@ func (a Atom) printSource(w io.Writer, v bool) {
 	if a.Identifier != nil {
 		io.WriteString(w, a.Identifier.Data)
 	} else if a.Literal != nil {
+		for {
+			x, ok := w.(*indentPrinter)
+			if !ok {
+				break
+			}
+
+			w = x.Writer
+		}
+
 		io.WriteString(w, a.Literal.Data)
 	} else if a.Enclosure != nil {
 		a.Enclosure.printSource(w, v)
