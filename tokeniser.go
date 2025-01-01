@@ -53,7 +53,7 @@ var (
 	}
 )
 
-// TokensType IDs
+// TokenType IDs.
 const (
 	TokenWhitespace parser.TokenType = iota
 	TokenLineTerminator
