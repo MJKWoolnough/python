@@ -1,7 +1,7 @@
 package python
 
 // ConditionalWrappable represents the types that can be wrapped with
-// WrapConditional and unwrapped to with UnwrapConditional.
+// WrapConditional and unwrapped with UnwrapConditional.
 type ConditionalWrappable interface {
 	Type
 	conditionalWrapabble()
