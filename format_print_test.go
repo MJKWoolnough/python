@@ -1074,6 +1074,16 @@ func TestPrintSource(t *testing.T) {
 			"a if b else c\n",
 			"a if b else c\n",
 		},
+		{ // 214
+			"if a:\n\t\"\"",
+			"if a:\n\t\"\"\n",
+			"if a:\n\t\"\"\n",
+		},
+		{ // 215
+			"if a:\n\t\"\"\"a\nb\"\"\"",
+			"if a:\n\t\"\"\"a\nb\"\"\"\n",
+			"if a:\n\t\"\"\"a\nb\"\"\"\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
