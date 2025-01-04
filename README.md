@@ -23,7 +23,7 @@ const (
 	TokenDedent
 )
 ```
-TokensType IDs
+TokenType IDs.
 
 ```go
 var (
@@ -582,15 +582,14 @@ type ConditionalWrappable interface {
 ```
 
 ConditionalWrappable represents the types that can be wrapped with
-WrapConditional and unwrapped to with UnwrapConditional.
+WrapConditional and unwrapped with UnwrapConditional.
 
 #### func  UnwrapConditional
 
 ```go
 func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable
 ```
-UnwrapConditional returns the first value up the ConditionalExpression chain
-that contains all of the information required to rebuild the lower chain.
+Possible returns types are as follows:
 
     *ConditionalExpression
     *OrTest
@@ -1725,9 +1724,9 @@ Token represents a parser.Token combined with positioning information.
 
 ```go
 type Tokeniser interface {
-	GetToken() (parser.Token, error)
-	GetError() error
+	Iter(func(parser.Token) bool)
 	TokeniserState(parser.TokenFunc)
+	GetError() error
 }
 ```
 
