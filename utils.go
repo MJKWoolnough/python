@@ -327,6 +327,8 @@ OrTest:
 
 // UnwrapConditional returns the first value up the ConditionalExpression chain
 // that contains all of the information required to rebuild the lower chain.
+
+// Possible returns types are as follows:
 //
 //	*ConditionalExpression
 //	*OrTest
