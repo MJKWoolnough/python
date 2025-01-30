@@ -52,7 +52,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.AssignmentExpressionAndSuite:
 		return walkAssignmentExpressionAndSuite(t, fn)
 	case python.AssignmentExpression:
+		return walkAssignmentExpression(&t, fn)
 	case *python.AssignmentExpression:
+		return walkAssignmentExpression(t, fn)
 	case python.AssignmentStatement:
 	case *python.AssignmentStatement:
 	case python.Atom:
@@ -310,7 +312,9 @@ func walkAssignmentExpressionAndSuite(t *python.AssignmentExpressionAndSuite, fn
 	return fn.Handle(&t.Suite)
 }
 
-func walkAssignmentExpression(t *python.AssignmentExpression, fn Handler) error { return nil }
+func walkAssignmentExpression(t *python.AssignmentExpression, fn Handler) error {
+	return fn.Handle(&t.Expression)
+}
 
 func walkAssignmentStatement(t *python.AssignmentStatement, fn Handler) error { return nil }
 
