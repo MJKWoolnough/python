@@ -48,7 +48,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.AssertStatement:
 		return walkAssertStatement(t, fn)
 	case python.AssignmentExpressionAndSuite:
+		return walkAssignmentExpressionAndSuite(&t, fn)
 	case *python.AssignmentExpressionAndSuite:
+		return walkAssignmentExpressionAndSuite(t, fn)
 	case python.AssignmentExpression:
 	case *python.AssignmentExpression:
 	case python.AssignmentStatement:
@@ -301,7 +303,11 @@ func walkAssertStatement(t *python.AssertStatement, fn Handler) error {
 }
 
 func walkAssignmentExpressionAndSuite(t *python.AssignmentExpressionAndSuite, fn Handler) error {
-	return nil
+	if err := fn.Handle(&t.AssignmentExpression); err != nil {
+		return err
+	}
+
+	return fn.Handle(&t.Suite)
 }
 
 func walkAssignmentExpression(t *python.AssignmentExpression, fn Handler) error { return nil }
