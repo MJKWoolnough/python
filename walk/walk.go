@@ -20,7 +20,9 @@ func (h HandlerFunc) Handle(t python.Type) error {
 func Walk(t python.Type, fn Handler) error {
 	switch t := t.(type) {
 	case python.AddExpression:
+		return walkAddExpression(&t, fn)
 	case *python.AddExpression:
+		return walkAddExpression(t, fn)
 	case python.AndExpression:
 	case *python.AndExpression:
 	case python.AndTest:
@@ -190,7 +192,17 @@ func Walk(t python.Type, fn Handler) error {
 	return nil
 }
 
-func walkAddExpression(t *python.AddExpression, fn Handler) error { return nil }
+func walkAddExpression(t *python.AddExpression, fn Handler) error {
+	if err := fn.Handle(&t.MultiplyExpression); err != nil {
+		return err
+	}
+
+	if t.AddExpression != nil {
+		return fn.Handle(t.AddExpression)
+	}
+
+	return nil
+}
 
 func walkAndExpression(t *python.AndExpression, fn Handler) error { return nil }
 
