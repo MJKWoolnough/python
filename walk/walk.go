@@ -36,7 +36,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.AnnotatedAssignmentStatement:
 		return walkAnnotatedAssignmentStatement(t, fn)
 	case python.ArgumentList:
+		return walkArgumentList(&t, fn)
 	case *python.ArgumentList:
+		return walkArgumentList(t, fn)
 	case python.ArgumentListOrComprehension:
 	case *python.ArgumentListOrComprehension:
 	case python.AssertStatement:
@@ -252,7 +254,27 @@ func walkAnnotatedAssignmentStatement(t *python.AnnotatedAssignmentStatement, fn
 	return nil
 }
 
-func walkArgumentList(t *python.ArgumentList, fn Handler) error { return nil }
+func walkArgumentList(t *python.ArgumentList, fn Handler) error {
+	for n := range t.PositionalArguments {
+		if err := fn.Handle(&t.PositionalArguments[n]); err != nil {
+			return err
+		}
+	}
+
+	for n := range t.StarredAndKeywordArguments {
+		if err := fn.Handle(&t.StarredAndKeywordArguments[n]); err != nil {
+			return err
+		}
+	}
+
+	for n := range t.KeywordArguments {
+		if err := fn.Handle(&t.KeywordArguments[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func walkArgumentListOrComprehension(t *python.ArgumentListOrComprehension, fn Handler) error {
 	return nil
