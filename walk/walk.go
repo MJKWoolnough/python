@@ -32,7 +32,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.AndTest:
 		return walkAndTest(t, fn)
 	case python.AnnotatedAssignmentStatement:
+		return walkAnnotatedAssignmentStatement(&t, fn)
 	case *python.AnnotatedAssignmentStatement:
+		return walkAnnotatedAssignmentStatement(t, fn)
 	case python.ArgumentList:
 	case *python.ArgumentList:
 	case python.ArgumentListOrComprehension:
@@ -233,6 +235,20 @@ func walkAndTest(t *python.AndTest, fn Handler) error {
 }
 
 func walkAnnotatedAssignmentStatement(t *python.AnnotatedAssignmentStatement, fn Handler) error {
+	if err := fn.Handle(&t.AugTarget); err != nil {
+		return err
+	}
+
+	if err := fn.Handle(&t.Expression); err != nil {
+		return err
+	}
+
+	if t.StarredExpression != nil {
+		return fn.Handle(t.StarredExpression)
+	} else if t.YieldExpression != nil {
+		return fn.Handle(t.YieldExpression)
+	}
+
 	return nil
 }
 
