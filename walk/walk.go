@@ -24,7 +24,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.AddExpression:
 		return walkAddExpression(t, fn)
 	case python.AndExpression:
+		return walkAndExpression(&t, fn)
 	case *python.AndExpression:
+		return walkAndExpression(t, fn)
 	case python.AndTest:
 	case *python.AndTest:
 	case python.AnnotatedAssignmentStatement:
@@ -204,7 +206,17 @@ func walkAddExpression(t *python.AddExpression, fn Handler) error {
 	return nil
 }
 
-func walkAndExpression(t *python.AndExpression, fn Handler) error { return nil }
+func walkAndExpression(t *python.AndExpression, fn Handler) error {
+	if err := fn.Handle(&t.ShiftExpression); err != nil {
+		return err
+	}
+
+	if t.AndExpression != nil {
+		return fn.Handle(t.AndExpression)
+	}
+
+	return nil
+}
 
 func walkAndTest(t *python.AndTest, fn Handler) error { return nil }
 
