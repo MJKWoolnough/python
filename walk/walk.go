@@ -40,7 +40,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.ArgumentList:
 		return walkArgumentList(t, fn)
 	case python.ArgumentListOrComprehension:
+		return walkArgumentListOrComprehension(&t, fn)
 	case *python.ArgumentListOrComprehension:
+		return walkArgumentListOrComprehension(t, fn)
 	case python.AssertStatement:
 	case *python.AssertStatement:
 	case python.AssignmentExpressionAndSuite:
@@ -277,6 +279,12 @@ func walkArgumentList(t *python.ArgumentList, fn Handler) error {
 }
 
 func walkArgumentListOrComprehension(t *python.ArgumentListOrComprehension, fn Handler) error {
+	if t.ArgumentList != nil {
+		return fn.Handle(t.ArgumentList)
+	} else if t.Comprehension != nil {
+		return fn.Handle(t.Comprehension)
+	}
+
 	return nil
 }
 
