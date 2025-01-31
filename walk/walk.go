@@ -56,7 +56,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.AssignmentExpression:
 		return walkAssignmentExpression(t, fn)
 	case python.AssignmentStatement:
+		return walkAssignmentStatement(&t, fn)
 	case *python.AssignmentStatement:
+		return walkAssignmentStatement(t, fn)
 	case python.Atom:
 	case *python.Atom:
 	case python.AugmentedAssignmentStatement:
@@ -316,7 +318,21 @@ func walkAssignmentExpression(t *python.AssignmentExpression, fn Handler) error 
 	return fn.Handle(&t.Expression)
 }
 
-func walkAssignmentStatement(t *python.AssignmentStatement, fn Handler) error { return nil }
+func walkAssignmentStatement(t *python.AssignmentStatement, fn Handler) error {
+	for n := range t.TargetLists {
+		if err := fn.Handle(&t.TargetLists[n]); err != nil {
+			return err
+		}
+	}
+
+	if t.StarredExpression != nil {
+		return fn.Handle(t.StarredExpression)
+	} else if t.YieldExpression != nil {
+		return fn.Handle(t.YieldExpression)
+	}
+
+	return nil
+}
 
 func walkAtom(t *python.Atom, fn Handler) error { return nil }
 
