@@ -72,7 +72,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.AugTarget:
 		return walkAugTarget(t, fn)
 	case python.ClassDefinition:
+		return walkClassDefinition(&t, fn)
 	case *python.ClassDefinition:
+		return walkClassDefinition(t, fn)
 	case python.Comparison:
 	case *python.Comparison:
 	case python.ComparisonExpression:
@@ -366,7 +368,27 @@ func walkAugTarget(t *python.AugTarget, fn Handler) error {
 	return fn.Handle(&t.PrimaryExpression)
 }
 
-func walkClassDefinition(t *python.ClassDefinition, fn Handler) error { return nil }
+func walkClassDefinition(t *python.ClassDefinition, fn Handler) error {
+	if t.Decorators != nil {
+		if err := fn.Handle(t.Decorators); err != nil {
+			return err
+		}
+	}
+
+	if t.TypeParams != nil {
+		if err := fn.Handle(t.TypeParams); err != nil {
+			return err
+		}
+	}
+
+	if t.Inheritance != nil {
+		if err := fn.Handle(t.Inheritance); err != nil {
+			return err
+		}
+	}
+
+	return fn.Handle(&t.Suite)
+}
 
 func walkComparison(t *python.Comparison, fn Handler) error { return nil }
 
