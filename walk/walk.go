@@ -64,7 +64,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.Atom:
 		return walkAtom(t, fn)
 	case python.AugmentedAssignmentStatement:
+		return walkAugmentedAssignmentStatement(&t, fn)
 	case *python.AugmentedAssignmentStatement:
+		return walkAugmentedAssignmentStatement(t, fn)
 	case python.AugTarget:
 	case *python.AugTarget:
 	case python.ClassDefinition:
@@ -345,6 +347,16 @@ func walkAtom(t *python.Atom, fn Handler) error {
 }
 
 func walkAugmentedAssignmentStatement(t *python.AugmentedAssignmentStatement, fn Handler) error {
+	if err := fn.Handle(&t.AugTarget); err != nil {
+		return err
+	}
+
+	if t.ExpressionList != nil {
+		return fn.Handle(t.ExpressionList)
+	} else if t.YieldExpression != nil {
+		return fn.Handle(t.YieldExpression)
+	}
+
 	return nil
 }
 
