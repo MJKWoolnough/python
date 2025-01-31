@@ -84,7 +84,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.ComparisonExpression:
 		return walkComparisonExpression(t, fn)
 	case python.CompoundStatement:
+		return walkCompoundStatement(&t, fn)
 	case *python.CompoundStatement:
+		return walkCompoundStatement(t, fn)
 	case python.Comprehension:
 	case *python.Comprehension:
 	case python.ComprehensionFor:
@@ -412,7 +414,25 @@ func walkComparisonExpression(t *python.ComparisonExpression, fn Handler) error 
 	return fn.Handle(&t.OrExpression)
 }
 
-func walkCompoundStatement(t *python.CompoundStatement, fn Handler) error { return nil }
+func walkCompoundStatement(t *python.CompoundStatement, fn Handler) error {
+	if t.If != nil {
+		return fn.Handle(t.If)
+	} else if t.While != nil {
+		return fn.Handle(t.While)
+	} else if t.For != nil {
+		return fn.Handle(t.For)
+	} else if t.Try != nil {
+		return fn.Handle(t.Try)
+	} else if t.With != nil {
+		return fn.Handle(t.With)
+	} else if t.Func != nil {
+		return fn.Handle(t.Func)
+	} else if t.Class != nil {
+		return fn.Handle(t.Class)
+	}
+
+	return nil
+}
 
 func walkComprehension(t *python.Comprehension, fn Handler) error { return nil }
 
