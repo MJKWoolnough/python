@@ -68,7 +68,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.AugmentedAssignmentStatement:
 		return walkAugmentedAssignmentStatement(t, fn)
 	case python.AugTarget:
+		return walkAugTarget(&t, fn)
 	case *python.AugTarget:
+		return walkAugTarget(t, fn)
 	case python.ClassDefinition:
 	case *python.ClassDefinition:
 	case python.Comparison:
@@ -360,7 +362,9 @@ func walkAugmentedAssignmentStatement(t *python.AugmentedAssignmentStatement, fn
 	return nil
 }
 
-func walkAugTarget(t *python.AugTarget, fn Handler) error { return nil }
+func walkAugTarget(t *python.AugTarget, fn Handler) error {
+	return fn.Handle(&t.PrimaryExpression)
+}
 
 func walkClassDefinition(t *python.ClassDefinition, fn Handler) error { return nil }
 
