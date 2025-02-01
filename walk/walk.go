@@ -120,7 +120,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.DelStatement:
 		return walkDelStatement(t, fn)
 	case python.DictDisplay:
+		return walkDictDisplay(&t, fn)
 	case *python.DictDisplay:
+		return walkDictDisplay(t, fn)
 	case python.DictItem:
 	case *python.DictItem:
 	case python.Enclosure:
@@ -542,7 +544,19 @@ func walkDelStatement(t *python.DelStatement, fn Handler) error {
 	return fn.Handle(&t.TargetList)
 }
 
-func walkDictDisplay(t *python.DictDisplay, fn Handler) error { return nil }
+func walkDictDisplay(t *python.DictDisplay, fn Handler) error {
+	for n := range t.DictItems {
+		if err := fn.Handle(&t.DictItems[n]); err != nil {
+			return err
+		}
+	}
+
+	if t.DictComprehension != nil {
+		return fn.Handle(t.DictComprehension)
+	}
+
+	return nil
+}
 
 func walkDictItem(t *python.DictItem, fn Handler) error { return nil }
 
