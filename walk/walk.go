@@ -132,7 +132,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.Enclosure:
 		return walkEnclosure(t, fn)
 	case python.Except:
+		return walkExcept(&t, fn)
 	case *python.Except:
+		return walkExcept(t, fn)
 	case python.Expression:
 	case *python.Expression:
 	case python.ExpressionList:
@@ -596,7 +598,13 @@ func walkEnclosure(t *python.Enclosure, fn Handler) error {
 	return nil
 }
 
-func walkExcept(t *python.Except, fn Handler) error { return nil }
+func walkExcept(t *python.Except, fn Handler) error {
+	if err := fn.Handle(&t.Expression); err != nil {
+		return err
+	}
+
+	return fn.Handle(&t.Suite)
+}
 
 func walkExpression(t *python.Expression, fn Handler) error { return nil }
 
