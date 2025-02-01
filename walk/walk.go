@@ -112,7 +112,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.Decorators:
 		return walkDecorators(t, fn)
 	case python.DefParameter:
+		return walkDefParameter(&t, fn)
 	case *python.DefParameter:
+		return walkDefParameter(t, fn)
 	case python.DelStatement:
 	case *python.DelStatement:
 	case python.DictDisplay:
@@ -522,7 +524,17 @@ func walkDecorators(t *python.Decorators, fn Handler) error {
 	return nil
 }
 
-func walkDefParameter(t *python.DefParameter, fn Handler) error { return nil }
+func walkDefParameter(t *python.DefParameter, fn Handler) error {
+	if err := fn.Handle(&t.Parameter); err != nil {
+		return err
+	}
+
+	if t.Value != nil {
+		return fn.Handle(t.Value)
+	}
+
+	return nil
+}
 
 func walkDelStatement(t *python.DelStatement, fn Handler) error { return nil }
 
