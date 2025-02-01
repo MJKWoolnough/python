@@ -128,7 +128,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.DictItem:
 		return walkDictItem(t, fn)
 	case python.Enclosure:
+		return walkEnclosure(&t, fn)
 	case *python.Enclosure:
+		return walkEnclosure(t, fn)
 	case python.Except:
 	case *python.Except:
 	case python.Expression:
@@ -576,7 +578,23 @@ func walkDictItem(t *python.DictItem, fn Handler) error {
 	return nil
 }
 
-func walkEnclosure(t *python.Enclosure, fn Handler) error { return nil }
+func walkEnclosure(t *python.Enclosure, fn Handler) error {
+	if t.ParenthForm != nil {
+		return fn.Handle(t.ParenthForm)
+	} else if t.ListDisplay != nil {
+		return fn.Handle(t.ListDisplay)
+	} else if t.DictDisplay != nil {
+		return fn.Handle(t.DictDisplay)
+	} else if t.SetDisplay != nil {
+		return fn.Handle(t.SetDisplay)
+	} else if t.GeneratorExpression != nil {
+		return fn.Handle(t.GeneratorExpression)
+	} else if t.YieldAtom != nil {
+		return fn.Handle(t.YieldAtom)
+	}
+
+	return nil
+}
 
 func walkExcept(t *python.Except, fn Handler) error { return nil }
 
