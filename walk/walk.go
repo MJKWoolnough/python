@@ -96,7 +96,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.ComprehensionFor:
 		return walkComprehensionFor(t, fn)
 	case python.ComprehensionIf:
+		return walkComprehensionIf(&t, fn)
 	case *python.ComprehensionIf:
+		return walkComprehensionIf(t, fn)
 	case python.ComprehensionIterator:
 	case *python.ComprehensionIterator:
 	case python.ConditionalExpression:
@@ -462,7 +464,17 @@ func walkComprehensionFor(t *python.ComprehensionFor, fn Handler) error {
 	return nil
 }
 
-func walkComprehensionIf(t *python.ComprehensionIf, fn Handler) error { return nil }
+func walkComprehensionIf(t *python.ComprehensionIf, fn Handler) error {
+	if err := fn.Handle(&t.OrTest); err != nil {
+		return err
+	}
+
+	if t.ComprehensionIterator != nil {
+		return fn.Handle(t.ComprehensionIterator)
+	}
+
+	return nil
+}
 
 func walkComprehensionIterator(t *python.ComprehensionIterator, fn Handler) error { return nil }
 
