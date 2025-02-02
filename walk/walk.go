@@ -136,7 +136,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.Except:
 		return walkExcept(t, fn)
 	case python.Expression:
+		return walkExpression(&t, fn)
 	case *python.Expression:
+		return walkExpression(t, fn)
 	case python.ExpressionList:
 	case *python.ExpressionList:
 	case python.File:
@@ -606,7 +608,15 @@ func walkExcept(t *python.Except, fn Handler) error {
 	return fn.Handle(&t.Suite)
 }
 
-func walkExpression(t *python.Expression, fn Handler) error { return nil }
+func walkExpression(t *python.Expression, fn Handler) error {
+	if t.ConditionalExpression != nil {
+		return fn.Handle(t.ConditionalExpression)
+	} else if t.LambdaExpression != nil {
+		return fn.Handle(t.LambdaExpression)
+	}
+
+	return nil
+}
 
 func walkExpressionList(t *python.ExpressionList, fn Handler) error { return nil }
 
