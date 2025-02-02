@@ -140,7 +140,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.Expression:
 		return walkExpression(t, fn)
 	case python.ExpressionList:
+		return walkExpressionList(&t, fn)
 	case *python.ExpressionList:
+		return walkExpressionList(t, fn)
 	case python.File:
 	case *python.File:
 	case python.FlexibleExpression:
@@ -618,7 +620,15 @@ func walkExpression(t *python.Expression, fn Handler) error {
 	return nil
 }
 
-func walkExpressionList(t *python.ExpressionList, fn Handler) error { return nil }
+func walkExpressionList(t *python.ExpressionList, fn Handler) error {
+	for n := range t.Expressions {
+		if err := fn.Handle(&t.Expressions[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func walkFile(t *python.File, fn Handler) error { return nil }
 
