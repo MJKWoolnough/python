@@ -172,7 +172,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.GeneratorExpression:
 		return walkGeneratorExpression(t, fn)
 	case python.GlobalStatement:
+		return walkGlobalStatement(&t, fn)
 	case *python.GlobalStatement:
+		return walkGlobalStatement(t, fn)
 	case python.IfStatement:
 	case *python.IfStatement:
 	case python.ImportStatement:
@@ -737,7 +739,9 @@ func walkGeneratorExpression(t *python.GeneratorExpression, fn Handler) error {
 	return fn.Handle(&t.ComprehensionFor)
 }
 
-func walkGlobalStatement(t *python.GlobalStatement, fn Handler) error { return nil }
+func walkGlobalStatement(t *python.GlobalStatement, fn Handler) error {
+	return nil
+}
 
 func walkIfStatement(t *python.IfStatement, fn Handler) error { return nil }
 
