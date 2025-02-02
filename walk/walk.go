@@ -160,7 +160,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.FlexibleExpressionListOrComprehension:
 		return walkFlexibleExpressionListOrComprehension(t, fn)
 	case python.ForStatement:
+		return walkForStatement(&t, fn)
 	case *python.ForStatement:
+		return walkForStatement(t, fn)
 	case python.FuncDefinition:
 	case *python.FuncDefinition:
 	case python.GeneratorExpression:
@@ -678,7 +680,25 @@ func walkFlexibleExpressionListOrComprehension(t *python.FlexibleExpressionListO
 	return nil
 }
 
-func walkForStatement(t *python.ForStatement, fn Handler) error { return nil }
+func walkForStatement(t *python.ForStatement, fn Handler) error {
+	if err := fn.Handle(&t.TargetList); err != nil {
+		return err
+	}
+
+	if err := fn.Handle(&t.StarredList); err != nil {
+		return err
+	}
+
+	if err := fn.Handle(&t.Suite); err != nil {
+		return err
+	}
+
+	if t.Else != nil {
+		return fn.Handle(t.Else)
+	}
+
+	return nil
+}
 
 func walkFuncDefinition(t *python.FuncDefinition, fn Handler) error { return nil }
 
