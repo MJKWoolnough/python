@@ -168,7 +168,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.FuncDefinition:
 		return walkFuncDefinition(t, fn)
 	case python.GeneratorExpression:
+		return walkGeneratorExpression(&t, fn)
 	case *python.GeneratorExpression:
+		return walkGeneratorExpression(t, fn)
 	case python.GlobalStatement:
 	case *python.GlobalStatement:
 	case python.IfStatement:
@@ -728,7 +730,12 @@ func walkFuncDefinition(t *python.FuncDefinition, fn Handler) error {
 	return fn.Handle(&t.Suite)
 }
 
-func walkGeneratorExpression(t *python.GeneratorExpression, fn Handler) error { return nil }
+func walkGeneratorExpression(t *python.GeneratorExpression, fn Handler) error {
+	if err := fn.Handle(&t.Expression); err != nil {
+	}
+
+	return fn.Handle(&t.ComprehensionFor)
+}
 
 func walkGlobalStatement(t *python.GlobalStatement, fn Handler) error { return nil }
 
