@@ -204,7 +204,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.Module:
 		return walkModule(t, fn)
 	case python.MultiplyExpression:
+		return walkMultiplyExpression(&t, fn)
 	case *python.MultiplyExpression:
+		return walkMultiplyExpression(t, fn)
 	case python.NonLocalStatement:
 	case *python.NonLocalStatement:
 	case python.NotTest:
@@ -827,7 +829,17 @@ func walkModule(t *python.Module, fn Handler) error {
 	return nil
 }
 
-func walkMultiplyExpression(t *python.MultiplyExpression, fn Handler) error { return nil }
+func walkMultiplyExpression(t *python.MultiplyExpression, fn Handler) error {
+	if err := fn.Handle(&t.UnaryExpression); err != nil {
+		return err
+	}
+
+	if t.MultiplyExpression != nil {
+		return fn.Handle(t.MultiplyExpression)
+	}
+
+	return nil
+}
 
 func walkNonLocalStatement(t *python.NonLocalStatement, fn Handler) error { return nil }
 
