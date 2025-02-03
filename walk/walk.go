@@ -180,7 +180,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.IfStatement:
 		return walkIfStatement(t, fn)
 	case python.ImportStatement:
+		return walkImportStatement(&t, fn)
 	case *python.ImportStatement:
+		return walkImportStatement(t, fn)
 	case python.KeywordArgument:
 	case *python.KeywordArgument:
 	case python.KeywordItem:
@@ -767,7 +769,21 @@ func walkIfStatement(t *python.IfStatement, fn Handler) error {
 	return nil
 }
 
-func walkImportStatement(t *python.ImportStatement, fn Handler) error { return nil }
+func walkImportStatement(t *python.ImportStatement, fn Handler) error {
+	if t.RelativeModule != nil {
+		if err := fn.Handle(t.RelativeModule); err != nil {
+			return err
+		}
+	}
+
+	for n := range t.Modules {
+		if err := fn.Handle(&t.Modules[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func walkKeywordArgument(t *python.KeywordArgument, fn Handler) error { return nil }
 
