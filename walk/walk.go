@@ -192,7 +192,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.KeywordItem:
 		return walkKeywordItem(t, fn)
 	case python.LambdaExpression:
+		return walkLambdaExpression(&t, fn)
 	case *python.LambdaExpression:
+		return walkLambdaExpression(t, fn)
 	case python.ModuleAs:
 	case *python.ModuleAs:
 	case python.Module:
@@ -803,7 +805,15 @@ func walkKeywordItem(t *python.KeywordItem, fn Handler) error {
 	return fn.Handle(&t.Expression)
 }
 
-func walkLambdaExpression(t *python.LambdaExpression, fn Handler) error { return nil }
+func walkLambdaExpression(t *python.LambdaExpression, fn Handler) error {
+	if t.ParameterList != nil {
+		if err := fn.Handle(t.ParameterList); err != nil {
+			return err
+		}
+	}
+
+	return fn.Handle(&t.Expression)
+}
 
 func walkModuleAs(t *python.ModuleAs, fn Handler) error { return nil }
 
