@@ -196,7 +196,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.LambdaExpression:
 		return walkLambdaExpression(t, fn)
 	case python.ModuleAs:
+		return walkModuleAs(&t, fn)
 	case *python.ModuleAs:
+		return walkModuleAs(t, fn)
 	case python.Module:
 	case *python.Module:
 	case python.MultiplyExpression:
@@ -815,7 +817,9 @@ func walkLambdaExpression(t *python.LambdaExpression, fn Handler) error {
 	return fn.Handle(&t.Expression)
 }
 
-func walkModuleAs(t *python.ModuleAs, fn Handler) error { return nil }
+func walkModuleAs(t *python.ModuleAs, fn Handler) error {
+	return fn.Handle(&t.Module)
+}
 
 func walkModule(t *python.Module, fn Handler) error { return nil }
 
