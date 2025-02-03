@@ -184,7 +184,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.ImportStatement:
 		return walkImportStatement(t, fn)
 	case python.KeywordArgument:
+		return walkKeywordArgument(&t, fn)
 	case *python.KeywordArgument:
+		return walkKeywordArgument(t, fn)
 	case python.KeywordItem:
 	case *python.KeywordItem:
 	case python.LambdaExpression:
@@ -785,7 +787,15 @@ func walkImportStatement(t *python.ImportStatement, fn Handler) error {
 	return nil
 }
 
-func walkKeywordArgument(t *python.KeywordArgument, fn Handler) error { return nil }
+func walkKeywordArgument(t *python.KeywordArgument, fn Handler) error {
+	if t.KeywordItem != nil {
+		return fn.Handle(t.KeywordItem)
+	} else if t.Expression != nil {
+		return fn.Handle(t.Expression)
+	}
+
+	return nil
+}
 
 func walkKeywordItem(t *python.KeywordItem, fn Handler) error { return nil }
 
