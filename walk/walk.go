@@ -176,7 +176,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.GlobalStatement:
 		return walkGlobalStatement(t, fn)
 	case python.IfStatement:
+		return walkIfStatement(&t, fn)
 	case *python.IfStatement:
+		return walkIfStatement(t, fn)
 	case python.ImportStatement:
 	case *python.ImportStatement:
 	case python.KeywordArgument:
@@ -743,7 +745,27 @@ func walkGlobalStatement(t *python.GlobalStatement, fn Handler) error {
 	return nil
 }
 
-func walkIfStatement(t *python.IfStatement, fn Handler) error { return nil }
+func walkIfStatement(t *python.IfStatement, fn Handler) error {
+	if err := fn.Handle(&t.AssignmentExpression); err != nil {
+		return err
+	}
+
+	if err := fn.Handle(&t.Suite); err != nil {
+		return err
+	}
+
+	for n := range t.Elif {
+		if err := fn.Handle(&t.Elif[n]); err != nil {
+			return err
+		}
+	}
+
+	if t.Else != nil {
+		return fn.Handle(t.Else)
+	}
+
+	return nil
+}
 
 func walkImportStatement(t *python.ImportStatement, fn Handler) error { return nil }
 
