@@ -208,7 +208,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.MultiplyExpression:
 		return walkMultiplyExpression(t, fn)
 	case python.NonLocalStatement:
+		return walkNonLocalStatement(&t, fn)
 	case *python.NonLocalStatement:
+		return walkNonLocalStatement(t, fn)
 	case python.NotTest:
 	case *python.NotTest:
 	case python.OrExpression:
@@ -841,7 +843,9 @@ func walkMultiplyExpression(t *python.MultiplyExpression, fn Handler) error {
 	return nil
 }
 
-func walkNonLocalStatement(t *python.NonLocalStatement, fn Handler) error { return nil }
+func walkNonLocalStatement(t *python.NonLocalStatement, fn Handler) error {
+	return nil
+}
 
 func walkNotTest(t *python.NotTest, fn Handler) error { return nil }
 
