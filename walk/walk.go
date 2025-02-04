@@ -220,7 +220,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.OrExpression:
 		return walkOrExpression(t, fn)
 	case python.OrTest:
+		return walkOrTest(&t, fn)
 	case *python.OrTest:
+		return walkOrTest(t, fn)
 	case python.Parameter:
 	case *python.Parameter:
 	case python.ParameterList:
@@ -867,7 +869,17 @@ func walkOrExpression(t *python.OrExpression, fn Handler) error {
 	return nil
 }
 
-func walkOrTest(t *python.OrTest, fn Handler) error { return nil }
+func walkOrTest(t *python.OrTest, fn Handler) error {
+	if err := fn.Handle(&t.AndTest); err != nil {
+		return err
+	}
+
+	if t.OrTest != nil {
+		return fn.Handle(t.OrTest)
+	}
+
+	return nil
+}
 
 func walkParameter(t *python.Parameter, fn Handler) error { return nil }
 
