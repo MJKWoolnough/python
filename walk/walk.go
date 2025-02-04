@@ -212,7 +212,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.NonLocalStatement:
 		return walkNonLocalStatement(t, fn)
 	case python.NotTest:
+		return walkNotTest(&t, fn)
 	case *python.NotTest:
+		return walkNotTest(t, fn)
 	case python.OrExpression:
 	case *python.OrExpression:
 	case python.OrTest:
@@ -847,7 +849,9 @@ func walkNonLocalStatement(t *python.NonLocalStatement, fn Handler) error {
 	return nil
 }
 
-func walkNotTest(t *python.NotTest, fn Handler) error { return nil }
+func walkNotTest(t *python.NotTest, fn Handler) error {
+	return fn.Handle(&t.Comparison)
+}
 
 func walkOrExpression(t *python.OrExpression, fn Handler) error { return nil }
 
