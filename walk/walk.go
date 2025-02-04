@@ -224,7 +224,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.OrTest:
 		return walkOrTest(t, fn)
 	case python.Parameter:
+		return walkParameter(&t, fn)
 	case *python.Parameter:
+		return walkParameter(t, fn)
 	case python.ParameterList:
 	case *python.ParameterList:
 	case python.PositionalArgument:
@@ -881,7 +883,13 @@ func walkOrTest(t *python.OrTest, fn Handler) error {
 	return nil
 }
 
-func walkParameter(t *python.Parameter, fn Handler) error { return nil }
+func walkParameter(t *python.Parameter, fn Handler) error {
+	if t.Type != nil {
+		return fn.Handle(t.Type)
+	}
+
+	return nil
+}
 
 func walkParameterList(t *python.ParameterList, fn Handler) error { return nil }
 
