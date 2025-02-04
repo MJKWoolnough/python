@@ -240,7 +240,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.PowerExpression:
 		return walkPowerExpression(t, fn)
 	case python.PrimaryExpression:
+		return walkPrimaryExpression(&t, fn)
 	case *python.PrimaryExpression:
+		return walkPrimaryExpression(t, fn)
 	case python.RaiseStatement:
 	case *python.RaiseStatement:
 	case python.RelativeModule:
@@ -951,7 +953,23 @@ func walkPowerExpression(t *python.PowerExpression, fn Handler) error {
 	return nil
 }
 
-func walkPrimaryExpression(t *python.PrimaryExpression, fn Handler) error { return nil }
+func walkPrimaryExpression(t *python.PrimaryExpression, fn Handler) error {
+	if t.Atom != nil {
+		return fn.Handle(t.Atom)
+	} else if t.PrimaryExpression != nil {
+		if err := fn.Handle(t.PrimaryExpression); err != nil {
+			return err
+		}
+
+		if t.Slicing != nil {
+			return fn.Handle(t.Slicing)
+		} else if t.Call != nil {
+			return fn.Handle(t.Call)
+		}
+	}
+
+	return nil
+}
 
 func walkRaiseStatement(t *python.RaiseStatement, fn Handler) error { return nil }
 
