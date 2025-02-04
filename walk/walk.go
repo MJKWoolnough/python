@@ -228,7 +228,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.Parameter:
 		return walkParameter(t, fn)
 	case python.ParameterList:
+		return walkParameterList(&t, fn)
 	case *python.ParameterList:
+		return walkParameterList(t, fn)
 	case python.PositionalArgument:
 	case *python.PositionalArgument:
 	case python.PowerExpression:
@@ -891,7 +893,37 @@ func walkParameter(t *python.Parameter, fn Handler) error {
 	return nil
 }
 
-func walkParameterList(t *python.ParameterList, fn Handler) error { return nil }
+func walkParameterList(t *python.ParameterList, fn Handler) error {
+	for n := range t.DefParameters {
+		if err := fn.Handle(&t.DefParameters[n]); err != nil {
+			return err
+		}
+	}
+
+	for n := range t.NoPosOnly {
+		if err := fn.Handle(&t.NoPosOnly[n]); err != nil {
+			return err
+		}
+	}
+
+	if t.StarArg != nil {
+		if err := fn.Handle(t.StarArg); err != nil {
+			return err
+		}
+	}
+
+	for n := range t.StarArgs {
+		if err := fn.Handle(&t.StarArgs[n]); err != nil {
+			return err
+		}
+	}
+
+	if t.StarStarArg != nil {
+		return fn.Handle(t.StarStarArg)
+	}
+
+	return nil
+}
 
 func walkPositionalArgument(t *python.PositionalArgument, fn Handler) error { return nil }
 
