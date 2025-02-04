@@ -232,7 +232,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.ParameterList:
 		return walkParameterList(t, fn)
 	case python.PositionalArgument:
+		return walkPositionalArgument(&t, fn)
 	case *python.PositionalArgument:
+		return walkPositionalArgument(t, fn)
 	case python.PowerExpression:
 	case *python.PowerExpression:
 	case python.PrimaryExpression:
@@ -925,7 +927,15 @@ func walkParameterList(t *python.ParameterList, fn Handler) error {
 	return nil
 }
 
-func walkPositionalArgument(t *python.PositionalArgument, fn Handler) error { return nil }
+func walkPositionalArgument(t *python.PositionalArgument, fn Handler) error {
+	if t.AssignmentExpression != nil {
+		return fn.Handle(t.AssignmentExpression)
+	} else if t.Expression != nil {
+		return fn.Handle(t.Expression)
+	}
+
+	return nil
+}
 
 func walkPowerExpression(t *python.PowerExpression, fn Handler) error { return nil }
 
