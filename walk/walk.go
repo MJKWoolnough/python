@@ -236,7 +236,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.PositionalArgument:
 		return walkPositionalArgument(t, fn)
 	case python.PowerExpression:
+		return walkPowerExpression(&t, fn)
 	case *python.PowerExpression:
+		return walkPowerExpression(t, fn)
 	case python.PrimaryExpression:
 	case *python.PrimaryExpression:
 	case python.RaiseStatement:
@@ -937,7 +939,17 @@ func walkPositionalArgument(t *python.PositionalArgument, fn Handler) error {
 	return nil
 }
 
-func walkPowerExpression(t *python.PowerExpression, fn Handler) error { return nil }
+func walkPowerExpression(t *python.PowerExpression, fn Handler) error {
+	if err := fn.Handle(&t.PrimaryExpression); err != nil {
+		return err
+	}
+
+	if t.UnaryExpression != nil {
+		return fn.Handle(t.UnaryExpression)
+	}
+
+	return nil
+}
 
 func walkPrimaryExpression(t *python.PrimaryExpression, fn Handler) error { return nil }
 
