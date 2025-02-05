@@ -256,7 +256,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.ReturnStatement:
 		return walkReturnStatement(t, fn)
 	case python.ShiftExpression:
+		return walkShiftExpression(&t, fn)
 	case *python.ShiftExpression:
+		return walkShiftExpression(t, fn)
 	case python.SimpleStatement:
 	case *python.SimpleStatement:
 	case python.SliceItem:
@@ -1007,7 +1009,17 @@ func walkReturnStatement(t *python.ReturnStatement, fn Handler) error {
 	return nil
 }
 
-func walkShiftExpression(t *python.ShiftExpression, fn Handler) error { return nil }
+func walkShiftExpression(t *python.ShiftExpression, fn Handler) error {
+	if err := fn.Handle(&t.AddExpression); err != nil {
+		return err
+	}
+
+	if t.ShiftExpression != nil {
+		return fn.Handle(t.ShiftExpression)
+	}
+
+	return nil
+}
 
 func walkSimpleStatement(t *python.SimpleStatement, fn Handler) error { return nil }
 
