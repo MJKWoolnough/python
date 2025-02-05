@@ -264,7 +264,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.SimpleStatement:
 		return walkSimpleStatement(t, fn)
 	case python.SliceItem:
+		return walkSliceItem(&t, fn)
 	case *python.SliceItem:
+		return walkSliceItem(t, fn)
 	case python.SliceList:
 	case *python.SliceList:
 	case python.StarredExpression:
@@ -1053,7 +1055,25 @@ func walkSimpleStatement(t *python.SimpleStatement, fn Handler) error {
 	return nil
 }
 
-func walkSliceItem(t *python.SliceItem, fn Handler) error { return nil }
+func walkSliceItem(t *python.SliceItem, fn Handler) error {
+	if t.Expression != nil {
+		return fn.Handle(t.Expression)
+	} else if t.LowerBound != nil && t.UpperBound != nil {
+		if err := fn.Handle(t.LowerBound); err != nil {
+			return err
+		}
+
+		if err := fn.Handle(t.UpperBound); err != nil {
+			return err
+		}
+
+		if t.Stride != nil {
+			return fn.Handle(t.Stride)
+		}
+	}
+
+	return nil
+}
 
 func walkSliceList(t *python.SliceList, fn Handler) error { return nil }
 
