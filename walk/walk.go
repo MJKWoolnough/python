@@ -260,7 +260,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.ShiftExpression:
 		return walkShiftExpression(t, fn)
 	case python.SimpleStatement:
+		return walkSimpleStatement(&t, fn)
 	case *python.SimpleStatement:
+		return walkSimpleStatement(t, fn)
 	case python.SliceItem:
 	case *python.SliceItem:
 	case python.SliceList:
@@ -1021,7 +1023,35 @@ func walkShiftExpression(t *python.ShiftExpression, fn Handler) error {
 	return nil
 }
 
-func walkSimpleStatement(t *python.SimpleStatement, fn Handler) error { return nil }
+func walkSimpleStatement(t *python.SimpleStatement, fn Handler) error {
+	if t.AssertStatement != nil {
+		return fn.Handle(t.AssertStatement)
+	} else if t.AssignmentStatement != nil {
+		return fn.Handle(t.AssignmentStatement)
+	} else if t.AugmentedAssignmentStatement != nil {
+		return fn.Handle(t.AugmentedAssignmentStatement)
+	} else if t.AnnotatedAssignmentStatement != nil {
+		return fn.Handle(t.AnnotatedAssignmentStatement)
+	} else if t.DelStatement != nil {
+		return fn.Handle(t.DelStatement)
+	} else if t.ReturnStatement != nil {
+		return fn.Handle(t.ReturnStatement)
+	} else if t.YieldStatement != nil {
+		return fn.Handle(t.YieldStatement)
+	} else if t.RaiseStatement != nil {
+		return fn.Handle(t.RaiseStatement)
+	} else if t.ImportStatement != nil {
+		return fn.Handle(t.ImportStatement)
+	} else if t.GlobalStatement != nil {
+		return fn.Handle(t.GlobalStatement)
+	} else if t.NonLocalStatement != nil {
+		return fn.Handle(t.NonLocalStatement)
+	} else if t.TypeStatement != nil {
+		return fn.Handle(t.TypeStatement)
+	}
+
+	return nil
+}
 
 func walkSliceItem(t *python.SliceItem, fn Handler) error { return nil }
 
