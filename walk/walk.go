@@ -268,7 +268,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.SliceItem:
 		return walkSliceItem(t, fn)
 	case python.SliceList:
+		return walkSliceList(&t, fn)
 	case *python.SliceList:
+		return walkSliceList(t, fn)
 	case python.StarredExpression:
 	case *python.StarredExpression:
 	case python.StarredItem:
@@ -1075,7 +1077,15 @@ func walkSliceItem(t *python.SliceItem, fn Handler) error {
 	return nil
 }
 
-func walkSliceList(t *python.SliceList, fn Handler) error { return nil }
+func walkSliceList(t *python.SliceList, fn Handler) error {
+	for n := range t.SliceItems {
+		if err := fn.Handle(&t.SliceItems[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func walkStarredExpression(t *python.StarredExpression, fn Handler) error { return nil }
 
