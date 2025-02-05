@@ -252,7 +252,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.RelativeModule:
 		return walkRelativeModule(t, fn)
 	case python.ReturnStatement:
+		return walkReturnStatement(&t, fn)
 	case *python.ReturnStatement:
+		return walkReturnStatement(t, fn)
 	case python.ShiftExpression:
 	case *python.ShiftExpression:
 	case python.SimpleStatement:
@@ -997,7 +999,13 @@ func walkRelativeModule(t *python.RelativeModule, fn Handler) error {
 	return nil
 }
 
-func walkReturnStatement(t *python.ReturnStatement, fn Handler) error { return nil }
+func walkReturnStatement(t *python.ReturnStatement, fn Handler) error {
+	if t.Expression != nil {
+		return fn.Handle(t.Expression)
+	}
+
+	return nil
+}
 
 func walkShiftExpression(t *python.ShiftExpression, fn Handler) error { return nil }
 
