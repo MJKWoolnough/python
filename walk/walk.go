@@ -284,7 +284,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.StarredList:
 		return walkStarredList(t, fn)
 	case python.StarredOrKeyword:
+		return walkStarredOrKeyword(&t, fn)
 	case *python.StarredOrKeyword:
+		return walkStarredOrKeyword(t, fn)
 	case python.Statement:
 	case *python.Statement:
 	case python.StatementList:
@@ -1123,7 +1125,15 @@ func walkStarredList(t *python.StarredList, fn Handler) error {
 	return nil
 }
 
-func walkStarredOrKeyword(t *python.StarredOrKeyword, fn Handler) error { return nil }
+func walkStarredOrKeyword(t *python.StarredOrKeyword, fn Handler) error {
+	if t.Expression != nil {
+		return fn.Handle(t.Expression)
+	} else if t.KeywordItem != nil {
+		return fn.Handle(t.KeywordItem)
+	}
+
+	return nil
+}
 
 func walkStatement(t *python.Statement, fn Handler) error { return nil }
 
