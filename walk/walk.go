@@ -288,7 +288,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.StarredOrKeyword:
 		return walkStarredOrKeyword(t, fn)
 	case python.Statement:
+		return walkStatement(&t, fn)
 	case *python.Statement:
+		return walkStatement(t, fn)
 	case python.StatementList:
 	case *python.StatementList:
 	case python.Suite:
@@ -1135,7 +1137,15 @@ func walkStarredOrKeyword(t *python.StarredOrKeyword, fn Handler) error {
 	return nil
 }
 
-func walkStatement(t *python.Statement, fn Handler) error { return nil }
+func walkStatement(t *python.Statement, fn Handler) error {
+	if t.CompoundStatement != nil {
+		return fn.Handle(t.CompoundStatement)
+	} else if t.StatementList != nil {
+		return fn.Handle(t.StatementList)
+	}
+
+	return nil
+}
 
 func walkStatementList(t *python.StatementList, fn Handler) error { return nil }
 
