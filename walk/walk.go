@@ -312,7 +312,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.TryStatement:
 		return walkTryStatement(t, fn)
 	case python.TypeParam:
+		return walkTypeParam(&t, fn)
 	case *python.TypeParam:
+		return walkTypeParam(t, fn)
 	case python.TypeParams:
 	case *python.TypeParams:
 	case python.TypeStatement:
@@ -1229,7 +1231,13 @@ func walkTryStatement(t *python.TryStatement, fn Handler) error {
 	return nil
 }
 
-func walkTypeParam(t *python.TypeParam, fn Handler) error { return nil }
+func walkTypeParam(t *python.TypeParam, fn Handler) error {
+	if t.Expression != nil {
+		return fn.Handle(t.Expression)
+	}
+
+	return nil
+}
 
 func walkTypeParams(t *python.TypeParams, fn Handler) error { return nil }
 
