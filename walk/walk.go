@@ -308,7 +308,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.TargetList:
 		return walkTargetList(t, fn)
 	case python.TryStatement:
+		return walkTryStatement(&t, fn)
 	case *python.TryStatement:
+		return walkTryStatement(t, fn)
 	case python.TypeParam:
 	case *python.TypeParam:
 	case python.TypeParams:
@@ -1203,7 +1205,29 @@ func walkTargetList(t *python.TargetList, fn Handler) error {
 	return nil
 }
 
-func walkTryStatement(t *python.TryStatement, fn Handler) error { return nil }
+func walkTryStatement(t *python.TryStatement, fn Handler) error {
+	if err := fn.Handle(&t.Try); err != nil {
+		return err
+	}
+
+	for n := range t.Except {
+		if err := fn.Handle(&t.Except[n]); err != nil {
+			return err
+		}
+	}
+
+	if t.Else != nil {
+		if err := fn.Handle(t.Else); err != nil {
+			return err
+		}
+	}
+
+	if t.Finally != nil {
+		return fn.Handle(t.Finally)
+	}
+
+	return nil
+}
 
 func walkTypeParam(t *python.TypeParam, fn Handler) error { return nil }
 
