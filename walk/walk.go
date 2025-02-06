@@ -296,7 +296,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.StatementList:
 		return walkStatementList(t, fn)
 	case python.Suite:
+		return walkSuite(&t, fn)
 	case *python.Suite:
+		return walkSuite(t, fn)
 	case python.Target:
 	case *python.Target:
 	case python.TargetList:
@@ -1159,7 +1161,19 @@ func walkStatementList(t *python.StatementList, fn Handler) error {
 	return nil
 }
 
-func walkSuite(t *python.Suite, fn Handler) error { return nil }
+func walkSuite(t *python.Suite, fn Handler) error {
+	if t.StatementList != nil {
+		return fn.Handle(t.StatementList)
+	}
+
+	for n := range t.Statements {
+		if err := fn.Handle(&t.Statements[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func walkTarget(t *python.Target, fn Handler) error { return nil }
 
