@@ -292,7 +292,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.Statement:
 		return walkStatement(t, fn)
 	case python.StatementList:
+		return walkStatementList(&t, fn)
 	case *python.StatementList:
+		return walkStatementList(t, fn)
 	case python.Suite:
 	case *python.Suite:
 	case python.Target:
@@ -1147,7 +1149,15 @@ func walkStatement(t *python.Statement, fn Handler) error {
 	return nil
 }
 
-func walkStatementList(t *python.StatementList, fn Handler) error { return nil }
+func walkStatementList(t *python.StatementList, fn Handler) error {
+	for n := range t.Statements {
+		if err := fn.Handle(&t.Statements[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func walkSuite(t *python.Suite, fn Handler) error { return nil }
 
