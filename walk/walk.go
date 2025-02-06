@@ -300,7 +300,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.Suite:
 		return walkSuite(t, fn)
 	case python.Target:
+		return walkTarget(&t, fn)
 	case *python.Target:
+		return walkTarget(t, fn)
 	case python.TargetList:
 	case *python.TargetList:
 	case python.TryStatement:
@@ -1175,7 +1177,19 @@ func walkSuite(t *python.Suite, fn Handler) error {
 	return nil
 }
 
-func walkTarget(t *python.Target, fn Handler) error { return nil }
+func walkTarget(t *python.Target, fn Handler) error {
+	if t.PrimaryExpression != nil {
+		return fn.Handle(t.PrimaryExpression)
+	} else if t.Tuple != nil {
+		return fn.Handle(t.Tuple)
+	} else if t.Array != nil {
+		return fn.Handle(t.Array)
+	} else if t.Star != nil {
+		return fn.Handle(t.Star)
+	}
+
+	return nil
+}
 
 func walkTargetList(t *python.TargetList, fn Handler) error { return nil }
 
