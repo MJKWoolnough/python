@@ -324,7 +324,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.TypeStatement:
 		return walkTypeStatement(t, fn)
 	case python.UnaryExpression:
+		return walkUnaryExpression(&t, fn)
 	case *python.UnaryExpression:
+		return walkUnaryExpression(t, fn)
 	case python.WhileStatement:
 	case *python.WhileStatement:
 	case python.WithItem:
@@ -1263,7 +1265,15 @@ func walkTypeStatement(t *python.TypeStatement, fn Handler) error {
 	return fn.Handle(&t.Expression)
 }
 
-func walkUnaryExpression(t *python.UnaryExpression, fn Handler) error { return nil }
+func walkUnaryExpression(t *python.UnaryExpression, fn Handler) error {
+	if t.PowerExpression != nil {
+		return fn.Handle(t.PowerExpression)
+	} else if t.UnaryExpression != nil {
+		return fn.Handle(t.UnaryExpression)
+	}
+
+	return nil
+}
 
 func walkWhileStatement(t *python.WhileStatement, fn Handler) error { return nil }
 
