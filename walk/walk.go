@@ -827,7 +827,7 @@ func walkGeneratorExpression(t *python.GeneratorExpression, fn Handler) error {
 	return fn.Handle(&t.ComprehensionFor)
 }
 
-func walkGlobalStatement(t *python.GlobalStatement, fn Handler) error {
+func walkGlobalStatement(_ *python.GlobalStatement, _ Handler) error {
 	return nil
 }
 
@@ -897,7 +897,7 @@ func walkModuleAs(t *python.ModuleAs, fn Handler) error {
 	return fn.Handle(&t.Module)
 }
 
-func walkModule(t *python.Module, fn Handler) error {
+func walkModule(_ *python.Module, _ Handler) error {
 	return nil
 }
 
@@ -913,7 +913,7 @@ func walkMultiplyExpression(t *python.MultiplyExpression, fn Handler) error {
 	return nil
 }
 
-func walkNonLocalStatement(t *python.NonLocalStatement, fn Handler) error {
+func walkNonLocalStatement(_ *python.NonLocalStatement, _ Handler) error {
 	return nil
 }
 
