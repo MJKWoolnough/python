@@ -344,7 +344,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.WithStatementContents:
 		return walkWithStatementContents(t, fn)
 	case python.XorExpression:
+		return walkXorExpression(&t, fn)
 	case *python.XorExpression:
+		return walkXorExpression(t, fn)
 	case python.YieldExpression:
 	case *python.YieldExpression:
 	}
@@ -1329,6 +1331,16 @@ func walkWithStatementContents(t *python.WithStatementContents, fn Handler) erro
 	return nil
 }
 
-func walkXorExpression(t *python.XorExpression, fn Handler) error { return nil }
+func walkXorExpression(t *python.XorExpression, fn Handler) error {
+	if err := fn.Handle(&t.AndExpression); err != nil {
+		return err
+	}
+
+	if t.XorExpression != nil {
+		return fn.Handle(t.XorExpression)
+	}
+
+	return nil
+}
 
 func walkYieldExpression(t *python.YieldExpression, fn Handler) error { return nil }
