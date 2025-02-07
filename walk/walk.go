@@ -348,7 +348,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.XorExpression:
 		return walkXorExpression(t, fn)
 	case python.YieldExpression:
+		return walkYieldExpression(&t, fn)
 	case *python.YieldExpression:
+		return walkYieldExpression(t, fn)
 	}
 
 	return nil
@@ -1343,4 +1345,12 @@ func walkXorExpression(t *python.XorExpression, fn Handler) error {
 	return nil
 }
 
-func walkYieldExpression(t *python.YieldExpression, fn Handler) error { return nil }
+func walkYieldExpression(t *python.YieldExpression, fn Handler) error {
+	if t.From != nil {
+		return fn.Handle(t.From)
+	} else if t.ExpressionList != nil {
+		return fn.Handle(t.ExpressionList)
+	}
+
+	return nil
+}
