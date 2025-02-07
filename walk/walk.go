@@ -332,7 +332,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.WhileStatement:
 		return walkWhileStatement(t, fn)
 	case python.WithItem:
+		return walkWithItem(&t, fn)
 	case *python.WithItem:
+		return walkWithItem(t, fn)
 	case python.WithStatement:
 	case *python.WithStatement:
 	case python.WithStatementContents:
@@ -1293,7 +1295,17 @@ func walkWhileStatement(t *python.WhileStatement, fn Handler) error {
 	return nil
 }
 
-func walkWithItem(t *python.WithItem, fn Handler) error { return nil }
+func walkWithItem(t *python.WithItem, fn Handler) error {
+	if err := fn.Handle(&t.Expression); err != nil {
+		return err
+	}
+
+	if t.Target != nil {
+		return fn.Handle(t.Target)
+	}
+
+	return nil
+}
 
 func walkWithStatement(t *python.WithStatement, fn Handler) error { return nil }
 
