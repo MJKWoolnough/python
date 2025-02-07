@@ -340,7 +340,9 @@ func Walk(t python.Type, fn Handler) error {
 	case *python.WithStatement:
 		return walkWithStatement(t, fn)
 	case python.WithStatementContents:
+		return walkWithStatementContents(&t, fn)
 	case *python.WithStatementContents:
+		return walkWithStatementContents(t, fn)
 	case python.XorExpression:
 	case *python.XorExpression:
 	case python.YieldExpression:
@@ -1317,7 +1319,15 @@ func walkWithStatement(t *python.WithStatement, fn Handler) error {
 	return fn.Handle(&t.Suite)
 }
 
-func walkWithStatementContents(t *python.WithStatementContents, fn Handler) error { return nil }
+func walkWithStatementContents(t *python.WithStatementContents, fn Handler) error {
+	for n := range t.Items {
+		if err := fn.Handle(&t.Items[n]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func walkXorExpression(t *python.XorExpression, fn Handler) error { return nil }
 
