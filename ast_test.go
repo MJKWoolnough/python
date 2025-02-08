@@ -591,6 +591,40 @@ func TestFile(t *testing.T) {
 				Tokens:   tk[:3],
 			}
 		}},
+		{"a # A Comment\n# B Comment\n\n# EOF Comment", func(t *test, tk Tokens) { // 9
+			t.Output = File{
+				Statements: []Statement{
+					{
+						StatementList: &StatementList{
+							Statements: []SimpleStatement{
+								{
+									Type: StatementAssignment,
+									AssignmentStatement: &AssignmentStatement{
+										StarredExpression: &StarredExpression{
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[0],
+													Tokens:     tk[:1],
+												}),
+												Tokens: tk[:1],
+											},
+											Tokens: tk[:1],
+										},
+										Tokens: tk[:1],
+									},
+									Comments: Comments{tk[2], tk[4]},
+									Tokens:   tk[:5],
+								},
+							},
+							Tokens: tk[:5],
+						},
+						Tokens: tk[:5],
+					},
+				},
+				Comments: Comments{tk[7]},
+				Tokens:   tk[:8],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f File
 

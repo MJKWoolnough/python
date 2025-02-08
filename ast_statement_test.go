@@ -257,10 +257,11 @@ func TestStatementList(t *testing.T) {
 							},
 							Tokens: tk[:1],
 						},
-						Tokens: tk[:1],
+						Comments: Comments{tk[2]},
+						Tokens:   tk[:3],
 					},
 				},
-				Tokens: tk[:1],
+				Tokens: tk[:3],
 			}
 		}},
 		{"a\n", func(t *test, tk Tokens) { // 5
@@ -968,6 +969,26 @@ func TestSimpleStatement(t *testing.T) {
 				},
 				Parsing: "SimpleStatement",
 				Token:   tk[0],
+			}
+		}},
+		{`a # A comment`, func(t *test, tk Tokens) { // 29
+			t.Output = SimpleStatement{
+				Type: StatementAssignment,
+				AssignmentStatement: &AssignmentStatement{
+					StarredExpression: &StarredExpression{
+						Expression: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							}),
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Comments: Comments{tk[2]},
+				Tokens:   tk[:3],
 			}
 		}},
 	}, func(t *test) (Type, error) {
