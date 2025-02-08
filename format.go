@@ -3,6 +3,7 @@ package python
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"vimagination.zapto.org/parser"
 )
@@ -129,6 +130,44 @@ func (t Tokens) printType(w io.Writer, v bool) {
 	}
 
 	io.WriteString(w, "\n]")
+}
+
+func (c Comments) printType(w io.Writer, v bool) {
+	Tokens(c).printType(w, v)
+}
+
+func (c Comments) printSource(w io.Writer, v bool) {
+	if len(c) > 0 {
+		printComment(w, c[0].Data)
+
+		line := c[0].Line
+
+		for _, c := range c[1:] {
+			io.WriteString(w, "\n")
+
+			line++
+
+			if line < c.Line {
+				io.WriteString(w, "\n")
+
+				line++
+			}
+
+			printComment(w, c.Data)
+		}
+
+		if v {
+			io.WriteString(w, "\n")
+		}
+	}
+}
+
+func printComment(w io.Writer, c string) {
+	if !strings.HasPrefix(c, "#") {
+		io.WriteString(w, "#")
+	}
+
+	io.WriteString(w, c)
 }
 
 func (s StatementType) printType(w io.Writer, _ bool) {
