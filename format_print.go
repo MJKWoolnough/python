@@ -504,7 +504,8 @@ func (f File) printSource(w io.Writer, v bool) {
 		io.WriteString(w, "\n")
 	}
 
-	if v {
+	if v && len(f.Comments) > 0 {
+		io.WriteString(w, "\n")
 		f.Comments.printSource(w, v)
 	}
 }
@@ -985,6 +986,11 @@ func (s SimpleStatement) printSource(w io.Writer, v bool) {
 		io.WriteString(w, "break")
 	} else if s.Type == StatementContinue {
 		io.WriteString(w, "continue")
+	}
+
+	if v && len(s.Comments) > 0 {
+		io.WriteString(w, " ")
+		s.Comments.printSource(w, false)
 	}
 }
 
