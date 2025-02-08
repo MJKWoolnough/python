@@ -11,11 +11,16 @@ import (
 type Statement struct {
 	StatementList     *StatementList
 	CompoundStatement *CompoundStatement
+	Comments          Comments
 	Tokens            Tokens
 }
 
 func (s *Statement) parse(p *pyParser) error {
 	var isCompound, isSoftCompound bool
+
+	s.Comments = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunAllWhitespace()
 
 	q := p.NewGoal()
 
