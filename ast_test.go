@@ -48,7 +48,7 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 		ts.Tokens = ts.Tokens.NewGoal()
 
 		for range ts.TokenSkip {
-			ts.Tokens.Skip()
+			ts.Tokens.Next()
 		}
 
 		if output, err := fn(&ts); !errors.Is(err, ts.Err) {

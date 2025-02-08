@@ -122,8 +122,8 @@ Loop:
 	}
 }
 
-func (p *pyParser) Skip() {
-	p.next()
+func (p *pyParser) Next() Token {
+	return p.next()
 }
 
 func (p *pyParser) AcceptToken(tk parser.Token) bool {

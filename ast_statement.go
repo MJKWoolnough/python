@@ -157,7 +157,7 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 
 		p.Score(q)
 	case parser.Token{Type: TokenKeyword, Data: "pass"}:
-		p.Skip()
+		p.Next()
 
 		s.Type = StatementPass
 	case parser.Token{Type: TokenKeyword, Data: "del"}:
@@ -205,11 +205,11 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 
 		p.Score(q)
 	case parser.Token{Type: TokenKeyword, Data: "break"}:
-		p.Skip()
+		p.Next()
 
 		s.Type = StatementBreak
 	case parser.Token{Type: TokenKeyword, Data: "continue"}:
-		p.Skip()
+		p.Next()
 
 		s.Type = StatementContinue
 	case parser.Token{Type: TokenKeyword, Data: "import"}, parser.Token{Type: TokenKeyword, Data: "from"}:
@@ -314,7 +314,7 @@ type AssertStatement struct {
 }
 
 func (a *AssertStatement) parse(p *pyParser) error {
-	p.Skip()
+	p.Next()
 
 	for {
 		p.AcceptRunWhitespace()
@@ -595,7 +595,7 @@ type DelStatement struct {
 }
 
 func (d *DelStatement) parse(p *pyParser) error {
-	p.Skip()
+	p.Next()
 
 	p.AcceptRunWhitespace()
 
@@ -620,7 +620,7 @@ type ReturnStatement struct {
 }
 
 func (r *ReturnStatement) parse(p *pyParser) error {
-	p.Skip()
+	p.Next()
 
 	q := p.NewGoal()
 
@@ -653,7 +653,7 @@ type YieldExpression struct {
 }
 
 func (y *YieldExpression) parse(p *pyParser) error {
-	p.Skip()
+	p.Next()
 	p.AcceptRunWhitespace()
 
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
@@ -702,7 +702,7 @@ type RaiseStatement struct {
 }
 
 func (r *RaiseStatement) parse(p *pyParser) error {
-	p.Skip()
+	p.Next()
 	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
@@ -771,7 +771,7 @@ func (i *ImportStatement) parse(p *pyParser) error {
 			return p.Error("ImportStatement", ErrMissingImport)
 		}
 	} else {
-		p.Skip()
+		p.Next()
 	}
 
 	p.AcceptRunWhitespace()
@@ -941,7 +941,7 @@ type GlobalStatement struct {
 }
 
 func (g *GlobalStatement) parse(p *pyParser) error {
-	p.Skip()
+	p.Next()
 	p.AcceptRunWhitespace()
 
 	for {
@@ -976,7 +976,7 @@ type NonLocalStatement struct {
 }
 
 func (n *NonLocalStatement) parse(p *pyParser) error {
-	p.Skip()
+	p.Next()
 	p.AcceptRunWhitespace()
 
 	for {
@@ -1013,7 +1013,7 @@ type TypeStatement struct {
 }
 
 func (t *TypeStatement) parse(p *pyParser) error {
-	p.Skip()
+	p.Next()
 	p.AcceptRunWhitespace()
 
 	if !p.Accept(TokenIdentifier) {
@@ -1231,7 +1231,7 @@ type LambdaExpression struct {
 }
 
 func (l *LambdaExpression) parse(p *pyParser) error {
-	p.Skip()
+	p.Next()
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
@@ -1415,7 +1415,7 @@ Loop:
 
 			q = p.NewGoal()
 
-			q.Skip()
+			q.Next()
 
 			ce.ComparisonOperator = q.ToTokens()
 
@@ -1425,7 +1425,7 @@ Loop:
 
 			q = p.NewGoal()
 
-			q.Skip()
+			q.Next()
 
 			r := q.NewGoal()
 
@@ -1443,7 +1443,7 @@ Loop:
 
 			q = p.NewGoal()
 
-			q.Skip()
+			q.Next()
 			q.AcceptRunWhitespace()
 
 			if !q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
@@ -1458,7 +1458,7 @@ Loop:
 
 			q = p.NewGoal()
 
-			q.Skip()
+			q.Next()
 
 			ce.ComparisonOperator = q.ToTokens()
 

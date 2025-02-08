@@ -44,7 +44,7 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 			c.Class = new(ClassDefinition)
 			err = c.Class.parse(q, decorators)
 		case "async":
-			q.Skip()
+			q.Next()
 			q.AcceptRunWhitespace()
 
 			switch tk := q.Peek(); tk.Data {
@@ -81,7 +81,7 @@ func (c *CompoundStatement) parser(p *pyParser) error {
 			c.Class = new(ClassDefinition)
 			err = c.Class.parse(q, decorators)
 		case "async":
-			q.Skip()
+			q.Next()
 			q.AcceptRunWhitespace()
 
 			switch tk := q.Peek(); tk.Data {
@@ -1520,7 +1520,7 @@ func (a *ArgumentList) parse(p *pyParser) error {
 		} else if next.Type == TokenIdentifier {
 			r := q.NewGoal()
 
-			r.Skip()
+			r.Next()
 			r.AcceptRunWhitespace()
 
 			if r.Peek() == (parser.Token{Type: TokenDelimiter, Data: "="}) {
