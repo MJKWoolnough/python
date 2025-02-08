@@ -128,6 +128,34 @@ func TestStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"#A comment\na", func(t *test, tk Tokens) { // 6
+			t.Output = Statement{
+				StatementList: &StatementList{
+					Statements: []SimpleStatement{
+						{
+							Type: StatementAssignment,
+							AssignmentStatement: &AssignmentStatement{
+								StarredExpression: &StarredExpression{
+									Expression: &Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}),
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Comments: Comments{tk[0]},
+				Tokens:   tk[:3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s Statement
 
