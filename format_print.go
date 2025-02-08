@@ -1083,6 +1083,10 @@ func (s StarredOrKeyword) printSource(w io.Writer, v bool) {
 }
 
 func (s Statement) printSource(w io.Writer, v bool) {
+	if v {
+		s.Comments.printSource(w, v)
+	}
+
 	if s.StatementList != nil {
 		s.StatementList.printSource(w, v)
 	} else if s.CompoundStatement != nil {
