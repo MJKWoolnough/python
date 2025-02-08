@@ -15,6 +15,8 @@ type Token struct {
 // Tokens represents a list ok tokens that have been parsed.
 type Tokens []Token
 
+type Comments []Token
+
 type pyParser struct {
 	inBrackets uint
 	Tokens
@@ -158,6 +160,43 @@ func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 	}
 
 	return p.AcceptRun(TokenWhitespace)
+}
+
+func (p *pyParser) AcceptRunWhitespaceNoComment() parser.TokenType {
+	return p.AcceptRun(TokenWhitespace, TokenLineTerminator)
+}
+
+func (p *pyParser) AcceptRunWhitespaceComments() Comments {
+	var c Comments
+
+	s := p.NewGoal()
+
+	for s.AcceptRunWhitespaceNoComment() == TokenComment {
+		c = append(c, s.Next())
+
+		p.Score(s)
+
+		s = p.NewGoal()
+	}
+
+	return c
+}
+
+func (p *pyParser) AcceptRunWhitespaceCommentsNoNewline() Comments {
+	var c Comments
+
+	s := p.NewGoal()
+
+	for s.AcceptRun(TokenWhitespace) == TokenComment {
+		p.Score(s)
+
+		c = append(c, p.Next())
+		s = p.NewGoal()
+
+		s.Accept(TokenLineTerminator)
+	}
+
+	return c
 }
 
 func (p *pyParser) AcceptRunAllWhitespace() parser.TokenType {
