@@ -145,6 +145,7 @@ type SimpleStatement struct {
 	GlobalStatement              *GlobalStatement
 	NonLocalStatement            *NonLocalStatement
 	TypeStatement                *TypeStatement
+	Comments                     Comments
 	Tokens                       Tokens
 }
 
@@ -306,6 +307,7 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 		p.Score(q)
 	}
 
+	s.Comments = p.AcceptRunWhitespaceCommentsNoNewline()
 	s.Tokens = p.ToTokens()
 
 	return nil
