@@ -342,24 +342,24 @@ func TestFile(t *testing.T) {
 										StarredExpression: &StarredExpression{
 											Expression: &Expression{
 												ConditionalExpression: WrapConditional(&Atom{
-													Identifier: &tk[2],
-													Tokens:     tk[2:3],
+													Identifier: &tk[3],
+													Tokens:     tk[3:4],
 												}),
-												Tokens: tk[2:3],
+												Tokens: tk[3:4],
 											},
-											Tokens: tk[2:3],
+											Tokens: tk[3:4],
 										},
-										Tokens: tk[2:3],
+										Tokens: tk[3:4],
 									},
-									Tokens: tk[2:3],
+									Tokens: tk[3:4],
 								},
 							},
-							Tokens: tk[2:3],
+							Tokens: tk[3:4],
 						},
-						Tokens: tk[2:3],
+						Tokens: tk[3:4],
 					},
 				},
-				Tokens: tk[:3],
+				Tokens: tk[:4],
 			}
 		}},
 		{"a \nb", func(t *test, tk Tokens) { // 4
@@ -419,122 +419,122 @@ func TestFile(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		/*
-			{"a\n#A comment\nb", func(t *test, tk Tokens) { // 5
-				t.Output = File{
-					Statements: []Statement{
-						{
-							StatementList: &StatementList{
-								Statements: []SimpleStatement{
-									{
-										Type: StatementAssignment,
-										AssignmentStatement: &AssignmentStatement{
-											StarredExpression: &StarredExpression{
-												Expression: &Expression{
-													ConditionalExpression: WrapConditional(&Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													}),
-													Tokens: tk[:1],
-												},
+		{"a\n#A comment\nb", func(t *test, tk Tokens) { // 5
+			t.Output = File{
+				Statements: []Statement{
+					{
+						StatementList: &StatementList{
+							Statements: []SimpleStatement{
+								{
+									Type: StatementAssignment,
+									AssignmentStatement: &AssignmentStatement{
+										StarredExpression: &StarredExpression{
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[0],
+													Tokens:     tk[:1],
+												}),
 												Tokens: tk[:1],
 											},
 											Tokens: tk[:1],
 										},
 										Tokens: tk[:1],
 									},
+									Tokens: tk[:1],
 								},
-								Tokens: tk[:1],
 							},
 							Tokens: tk[:1],
 						},
-						{
-							StatementList: &StatementList{
-								Statements: []SimpleStatement{
-									{
-										Type: StatementAssignment,
-										AssignmentStatement: &AssignmentStatement{
-											StarredExpression: &StarredExpression{
-												Expression: &Expression{
-													ConditionalExpression: WrapConditional(&Atom{
-														Identifier: &tk[4],
-														Tokens:     tk[4:5],
-													}),
-													Tokens: tk[4:5],
-												},
+						Tokens: tk[:1],
+					},
+					{
+						StatementList: &StatementList{
+							Statements: []SimpleStatement{
+								{
+									Type: StatementAssignment,
+									AssignmentStatement: &AssignmentStatement{
+										StarredExpression: &StarredExpression{
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[4],
+													Tokens:     tk[4:5],
+												}),
 												Tokens: tk[4:5],
 											},
 											Tokens: tk[4:5],
 										},
 										Tokens: tk[4:5],
 									},
+									Tokens: tk[4:5],
 								},
-								Tokens: tk[4:5],
 							},
 							Tokens: tk[4:5],
 						},
+						Comments: Comments{tk[2]},
+						Tokens:   tk[2:5],
 					},
-					Tokens: tk[:5],
-				}
-			}},
-			{"a #A comment\nb", func(t *test, tk Tokens) { // 6
-				t.Output = File{
-					Statements: []Statement{
-						{
-							StatementList: &StatementList{
-								Statements: []SimpleStatement{
-									{
-										Type: StatementAssignment,
-										AssignmentStatement: &AssignmentStatement{
-											StarredExpression: &StarredExpression{
-												Expression: &Expression{
-													ConditionalExpression: WrapConditional(&Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													}),
-													Tokens: tk[:1],
-												},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{"a #A comment\nb", func(t *test, tk Tokens) { // 6
+			t.Output = File{
+				Statements: []Statement{
+					{
+						StatementList: &StatementList{
+							Statements: []SimpleStatement{
+								{
+									Type: StatementAssignment,
+									AssignmentStatement: &AssignmentStatement{
+										StarredExpression: &StarredExpression{
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[0],
+													Tokens:     tk[:1],
+												}),
 												Tokens: tk[:1],
 											},
 											Tokens: tk[:1],
 										},
 										Tokens: tk[:1],
 									},
+									Comments: Comments{tk[2]},
+									Tokens:   tk[:3],
 								},
-								Tokens: tk[:1],
 							},
-							Tokens: tk[:1],
+							Tokens: tk[:3],
 						},
-						{
-							StatementList: &StatementList{
-								Statements: []SimpleStatement{
-									{
-										Type: StatementAssignment,
-										AssignmentStatement: &AssignmentStatement{
-											StarredExpression: &StarredExpression{
-												Expression: &Expression{
-													ConditionalExpression: WrapConditional(&Atom{
-														Identifier: &tk[4],
-														Tokens:     tk[4:5],
-													}),
-													Tokens: tk[4:5],
-												},
+						Tokens: tk[:3],
+					},
+					{
+						StatementList: &StatementList{
+							Statements: []SimpleStatement{
+								{
+									Type: StatementAssignment,
+									AssignmentStatement: &AssignmentStatement{
+										StarredExpression: &StarredExpression{
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[4],
+													Tokens:     tk[4:5],
+												}),
 												Tokens: tk[4:5],
 											},
 											Tokens: tk[4:5],
 										},
 										Tokens: tk[4:5],
 									},
+									Tokens: tk[4:5],
 								},
-								Tokens: tk[4:5],
 							},
 							Tokens: tk[4:5],
 						},
+						Tokens: tk[4:5],
 					},
-					Tokens: tk[:5],
-				}
-			}},
-		*/
+				},
+				Tokens: tk[:5],
+			}
+		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{

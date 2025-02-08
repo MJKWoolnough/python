@@ -125,8 +125,6 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 	}
 
 	if t.Accept(lineTerminator) {
-		t.AcceptRun(lineTerminator)
-
 		return t.Return(TokenLineTerminator, p.indent)
 	}
 
