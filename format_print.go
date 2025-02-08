@@ -503,6 +503,10 @@ func (f File) printSource(w io.Writer, v bool) {
 		s.printSource(w, v)
 		io.WriteString(w, "\n")
 	}
+
+	if v {
+		f.Comments.printSource(w, v)
+	}
 }
 
 func (f FlexibleExpressionListOrComprehension) printSource(w io.Writer, v bool) {
