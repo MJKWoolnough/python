@@ -6,6 +6,7 @@ import "vimagination.zapto.org/parser"
 // File represents a parsed Python file.
 type File struct {
 	Statements []Statement
+	Comments   Comments
 	Tokens     Tokens
 }
 
@@ -25,10 +26,14 @@ func Parse(t Tokeniser) (*File, error) {
 }
 
 func (f *File) parse(p *pyParser) error {
-	for p.AcceptRunAllWhitespace() != parser.TokenDone {
+	q := p.NewGoal()
+
+	for q.AcceptRunAllWhitespace() != parser.TokenDone {
+		p.AcceptRunWhitespaceNoComment()
+
 		var s Statement
 
-		q := p.NewGoal()
+		q = p.NewGoal()
 
 		if err := s.parse(q); err != nil {
 			return p.Error("File", err)
@@ -37,8 +42,11 @@ func (f *File) parse(p *pyParser) error {
 		f.Statements = append(f.Statements, s)
 
 		p.Score(q)
+
+		q = p.NewGoal()
 	}
 
+	f.Comments = p.AcceptRunWhitespaceComments()
 	f.Tokens = p.ToTokens()
 
 	return nil
