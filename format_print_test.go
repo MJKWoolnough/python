@@ -1088,12 +1088,22 @@ func TestPrintSource(t *testing.T) {
 		{ // 216
 			"a\n# A Comment",
 			"a\n",
-			"a\n# A Comment\n",
+			"a\n\n# A Comment\n",
 		},
 		{ // 217
 			"# A comment\na",
 			"a\n",
 			"# A comment\na\n",
+		},
+		{ // 218
+			"a # A comment",
+			"a\n",
+			"a # A comment\n",
+		},
+		{ // 219
+			"a # A comment\n# B comment\n\n# EOF Comment",
+			"a\n",
+			"a # A comment\n# B comment\n\n# EOF Comment\n",
 		},
 	} {
 		for m, input := range test {
