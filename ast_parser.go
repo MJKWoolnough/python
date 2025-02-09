@@ -52,6 +52,15 @@ func newPyParser(t Tokeniser) (*pyParser, error) {
 		case TokenLineTerminator:
 			line += uint64(len(tk.Data))
 			linePos = 0
+		case TokenWhitespace:
+			for _, c := range tk.Data {
+				if c == '\n' {
+					line++
+					linePos = 0
+				} else {
+					linePos++
+				}
+			}
 		default:
 			linePos += uint64(len(tk.Data))
 		}
