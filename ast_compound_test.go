@@ -5946,6 +5946,72 @@ func TestSuite(t *testing.T) {
 				Tokens: tk[:21],
 			}
 		}},
+		{"# a Comment\n\ta", func(t *test, tk Tokens) { // 10
+			t.Output = Suite{
+				Statements: []Statement{
+					{
+						StatementList: &StatementList{
+							Statements: []SimpleStatement{
+								{
+									Type: StatementAssignment,
+									AssignmentStatement: &AssignmentStatement{
+										StarredExpression: &StarredExpression{
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[3],
+													Tokens:     tk[3:4],
+												}),
+												Tokens: tk[3:4],
+											},
+											Tokens: tk[3:4],
+										},
+										Tokens: tk[3:4],
+									},
+									Tokens: tk[3:4],
+								},
+							},
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+				},
+				Comments: [2]Comments{{tk[0]}},
+				Tokens:   tk[:5],
+			}
+		}},
+		{"# a Comment\n# b Comment\n\t# c Comment\n\ta\n\t# d Comment", func(t *test, tk Tokens) { // 10
+			t.Output = Suite{
+				Statements: []Statement{
+					{
+						StatementList: &StatementList{
+							Statements: []SimpleStatement{
+								{
+									Type: StatementAssignment,
+									AssignmentStatement: &AssignmentStatement{
+										StarredExpression: &StarredExpression{
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[8],
+													Tokens:     tk[8:9],
+												}),
+												Tokens: tk[8:9],
+											},
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[8:9],
+								},
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[8:9],
+					},
+				},
+				Comments: [2]Comments{{tk[0], tk[2], tk[5]}, {tk[11]}},
+				Tokens:   tk[:13],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var s Suite
 
