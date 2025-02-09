@@ -5786,7 +5786,8 @@ func TestSuite(t *testing.T) {
 						Tokens: tk[3:4],
 					},
 				},
-				Tokens: tk[:5],
+				Comments: [2]Comments{{tk[0]}},
+				Tokens:   tk[:5],
 			}
 		}},
 		{"\n\ta\nb", func(t *test, tk Tokens) { // 5

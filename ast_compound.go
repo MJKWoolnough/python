@@ -917,20 +917,23 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 type Suite struct {
 	StatementList *StatementList
 	Statements    []Statement
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 
 func (s *Suite) parse(p *pyParser) error {
-	if p.Accept(TokenLineTerminator, TokenComment) {
-		p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
+	if tk := p.Peek(); tk.Type == TokenLineTerminator || tk.Type == TokenComment {
+		s.Comments[0] = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunAllWhitespace()
 
 		if !p.Accept(TokenIndent) {
 			return p.Error("Suite", ErrMissingIndent)
 		}
 
-		p.AcceptRun(TokenLineTerminator, TokenWhitespace, TokenComment)
-
 		for {
+			p.AcceptRunWhitespaceNoComment()
+
 			q := p.NewGoal()
 
 			var stmt Statement
@@ -942,24 +945,26 @@ func (s *Suite) parse(p *pyParser) error {
 			s.Statements = append(s.Statements, stmt)
 
 			p.Score(q)
-			p.AcceptRunAllWhitespace()
 
-			if p.Accept(TokenDedent) {
+			q = p.NewGoal()
+
+			q.AcceptRunAllWhitespace()
+
+			if q.Accept(TokenDedent) {
+				s.Comments[1] = p.AcceptRunWhitespaceComments()
+
+				p.AcceptRunAllWhitespace()
+				p.Accept(TokenDedent)
+
 				break
 			}
-
-			p.AcceptRunAllWhitespace()
 		}
 	} else {
 		s.StatementList = new(StatementList)
 
-		q := p.NewGoal()
-
 		if err := s.StatementList.parse(p); err != nil {
 			return p.Error("Suite", err)
 		}
-
-		p.Score(q)
 	}
 
 	s.Tokens = p.ToTokens()
