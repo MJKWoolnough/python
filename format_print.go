@@ -1126,9 +1126,25 @@ func (s Suite) printSource(w io.Writer, v bool) {
 	} else {
 		ip := indentPrinter{Writer: w}
 
+		if v && len(s.Comments[0]) > 0 {
+			if len(s.Tokens) > 0 && len(s.Comments[0]) > 0 && s.Comments[0][0].Line > s.Tokens[0].Line {
+				ip.WriteString("\n")
+			} else {
+				io.WriteString(w, " ")
+			}
+
+			s.Comments[0].printSource(&ip, false)
+		}
+
 		for _, stmt := range s.Statements {
 			ip.WriteString("\n")
 			stmt.printSource(&ip, v)
+		}
+
+		if v && len(s.Comments[1]) > 0 {
+			io.WriteString(w, "\n")
+			ip.WriteString("\n")
+			s.Comments[1].printSource(&ip, v)
 		}
 	}
 }
