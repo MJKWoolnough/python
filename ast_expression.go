@@ -145,13 +145,17 @@ type Enclosure struct {
 	SetDisplay          *FlexibleExpressionListOrComprehension
 	GeneratorExpression *GeneratorExpression
 	YieldAtom           *YieldExpression
+	Comments            [2]Comments
 	Tokens              Tokens
 }
 
 func (e *Enclosure) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 		p.OpenBrackets()
-		p.AcceptRunWhitespace()
+
+		e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+
+		p.AcceptRunAllWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			e.ParenthForm = &StarredExpression{
@@ -160,19 +164,30 @@ func (e *Enclosure) parse(p *pyParser) error {
 		} else {
 			q := p.NewGoal()
 
+			q.AcceptRunAllWhitespace()
+
 			if q.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
+				p.AcceptRunWhitespaceNoComment()
+
+				q = p.NewGoal()
 				e.YieldAtom = new(YieldExpression)
 
 				if err := e.YieldAtom.parse(q); err != nil {
 					return p.Error("Enclosure", err)
 				}
 			} else if q.LookaheadLine(parser.Token{Type: TokenKeyword, Data: "for"}) == 0 {
+				p.AcceptRunWhitespaceNoComment()
+
+				q = p.NewGoal()
 				e.GeneratorExpression = new(GeneratorExpression)
 
 				if err := e.GeneratorExpression.parse(q); err != nil {
 					return p.Error("Enclosure", err)
 				}
 			} else {
+				p.AcceptRunWhitespaceNoComment()
+
+				q = p.NewGoal()
 				e.ParenthForm = new(StarredExpression)
 
 				if err := e.ParenthForm.parse(q); err != nil {
@@ -181,6 +196,9 @@ func (e *Enclosure) parse(p *pyParser) error {
 			}
 
 			p.Score(q)
+
+			e.Comments[1] = p.AcceptRunWhitespaceComments()
+
 			p.AcceptRunWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
@@ -191,13 +209,18 @@ func (e *Enclosure) parse(p *pyParser) error {
 		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 		p.OpenBrackets()
-		p.AcceptRunWhitespace()
+
+		e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+
+		p.AcceptRunAllWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 			e.ListDisplay = &FlexibleExpressionListOrComprehension{
 				Tokens: p.NewGoal().ToTokens(),
 			}
 		} else {
+			p.AcceptRunWhitespaceNoComment()
+
 			q := p.NewGoal()
 			e.ListDisplay = new(FlexibleExpressionListOrComprehension)
 
@@ -206,7 +229,10 @@ func (e *Enclosure) parse(p *pyParser) error {
 			}
 
 			p.Score(q)
-			p.AcceptRunWhitespace()
+
+			e.Comments[1] = p.AcceptRunWhitespaceComments()
+
+			p.AcceptRunAllWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 				return p.Error("Enclosure", ErrMissingClosingBracket)
@@ -216,7 +242,10 @@ func (e *Enclosure) parse(p *pyParser) error {
 		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "{"}) {
 		p.OpenBrackets()
-		p.AcceptRunWhitespace()
+
+		e.Comments[0] = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunAllWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
 			e.DictDisplay = &DictDisplay{
@@ -225,14 +254,24 @@ func (e *Enclosure) parse(p *pyParser) error {
 		} else {
 			q := p.NewGoal()
 
+			q.AcceptRunAllWhitespace()
+
 			var isDict bool
 			var ae *AssignmentExpression
 
 			switch q.Peek() {
 			case parser.Token{Type: TokenOperator, Data: "**"}:
 				isDict = true
+
+				fallthrough
 			case parser.Token{Type: TokenOperator, Data: "*"}:
+				p.AcceptRunWhitespaceNoComment()
+
+				q = p.NewGoal()
 			default:
+				p.AcceptRunWhitespaceNoComment()
+
+				q = p.NewGoal()
 				ae = new(AssignmentExpression)
 
 				if err := ae.parse(q); err != nil {
@@ -269,7 +308,10 @@ func (e *Enclosure) parse(p *pyParser) error {
 			}
 
 			p.Score(q)
-			p.AcceptRunWhitespace()
+
+			e.Comments[1] = p.AcceptRunWhitespaceComments()
+
+			p.AcceptRunAllWhitespace()
 
 			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
 				return p.Error("Enclosure", ErrMissingClosingBrace)
