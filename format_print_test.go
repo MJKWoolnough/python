@@ -1115,7 +1115,40 @@ func TestPrintSource(t *testing.T) {
 			"while a:\n\tb\n",
 			"while a:\n\t# A comment\n\t# B comment\n\t#abc\n\tb #def\n\n\t#efg\n\t\n",
 		},
+		{ // 222
+			"(#abc\n)",
+			"()\n",
+			"( #abc\n)\n",
+		},
+		{ // 223
+			"[#abc\n]",
+			"[]\n",
+			"[ #abc\n]\n",
+		},
+		{ // 224
+			"[#abc\n]",
+			"[]\n",
+			"[ #abc\n]\n",
+		},
+		{ // 225
+			"(\n#abc\n)",
+			"()\n",
+			"(\n#abc\n)\n",
+		},
+		{ // 226
+			"[\n#abc\n]",
+			"[]\n",
+			"[\n#abc\n]\n",
+		},
+		{ // 227
+			"[\n#abc\n]",
+			"[]\n",
+			"[\n#abc\n]\n",
+		},
 	} {
+		if n < 224 {
+			continue
+		}
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
 
