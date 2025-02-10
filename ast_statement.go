@@ -1072,26 +1072,35 @@ func (t *TypeParams) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
 	p.OpenBrackets()
 
-	for {
-		p.AcceptRunWhitespace()
-		q := p.NewGoal()
+	q := p.NewGoal()
 
-		var tp TypeParam
+	q.AcceptRunAllWhitespace()
 
-		if err := tp.parse(q); err != nil {
-			return p.Error("TypeParams", err)
-		}
-
-		t.TypeParams = append(t.TypeParams, tp)
-
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 		p.Score(q)
+	} else {
+		for {
+			p.AcceptRunWhitespace()
 
-		p.AcceptRunWhitespace()
+			q := p.NewGoal()
 
-		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			break
-		} else if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			return p.Error("TypeParams", ErrMissingComma)
+			var tp TypeParam
+
+			if err := tp.parse(q); err != nil {
+				return p.Error("TypeParams", err)
+			}
+
+			t.TypeParams = append(t.TypeParams, tp)
+
+			p.Score(q)
+
+			p.AcceptRunWhitespace()
+
+			if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+				break
+			} else if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				return p.Error("TypeParams", ErrMissingComma)
+			}
 		}
 	}
 
