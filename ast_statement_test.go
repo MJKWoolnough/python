@@ -3103,7 +3103,17 @@ func TestTypeParams(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`[ a ]`, func(t *test, tk Tokens) { // 2
+		{`[]`, func(t *test, tk Tokens) { // 2
+			t.Output = TypeParams{
+				Tokens: tk[:2],
+			}
+		}},
+		{`[ ]`, func(t *test, tk Tokens) { // 3
+			t.Output = TypeParams{
+				Tokens: tk[:3],
+			}
+		}},
+		{`[ a ]`, func(t *test, tk Tokens) { // 4
 			t.Output = TypeParams{
 				TypeParams: []TypeParam{
 					{
@@ -3114,7 +3124,7 @@ func TestTypeParams(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`[a, b]`, func(t *test, tk Tokens) { // 3
+		{`[a, b]`, func(t *test, tk Tokens) { // 5
 			t.Output = TypeParams{
 				TypeParams: []TypeParam{
 					{
@@ -3129,7 +3139,7 @@ func TestTypeParams(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{`[nonlocal]`, func(t *test, tk Tokens) { // 4
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -3140,7 +3150,7 @@ func TestTypeParams(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`[a b]`, func(t *test, tk Tokens) { // 5
+		{`[a b]`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "TypeParams",
