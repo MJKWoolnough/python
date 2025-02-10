@@ -435,31 +435,53 @@ func (d DictItem) printSource(w io.Writer, v bool) {
 }
 
 func (e Enclosure) printSource(w io.Writer, v bool) {
+	var (
+		t  interface{ printSource(io.Writer, bool) }
+		oc string
+	)
+
 	if e.ParenthForm != nil {
-		io.WriteString(w, "(")
-		e.ParenthForm.printSource(w, v)
-		io.WriteString(w, ")")
+		t = e.ParenthForm
+		oc = "()"
 	} else if e.ListDisplay != nil {
-		io.WriteString(w, "[")
-		e.ListDisplay.printSource(w, v)
-		io.WriteString(w, "]")
+		t = e.ListDisplay
+		oc = "[]"
 	} else if e.DictDisplay != nil {
-		io.WriteString(w, "{")
-		e.DictDisplay.printSource(w, v)
-		io.WriteString(w, "}")
+		t = e.DictDisplay
+		oc = "{}"
 	} else if e.SetDisplay != nil {
-		io.WriteString(w, "{")
-		e.SetDisplay.printSource(w, v)
-		io.WriteString(w, "}")
+		t = e.SetDisplay
+		oc = "{}"
 	} else if e.GeneratorExpression != nil {
-		io.WriteString(w, "(")
-		e.GeneratorExpression.printSource(w, v)
-		io.WriteString(w, ")")
+		t = e.GeneratorExpression
+		oc = "()"
 	} else if e.YieldAtom != nil {
-		io.WriteString(w, "(")
-		e.YieldAtom.printSource(w, v)
-		io.WriteString(w, ")")
+		t = e.YieldAtom
+		oc = "()"
+	} else {
+		return
 	}
+
+	io.WriteString(w, oc[:1])
+
+	if v && len(e.Comments[0]) > 0 {
+		if len(e.Tokens) > 0 && e.Comments[0][0].Line > e.Tokens[0].Line {
+			io.WriteString(w, "\n")
+		} else {
+			io.WriteString(w, " ")
+		}
+
+		e.Comments[0].printSource(w, v)
+	}
+
+	t.printSource(w, v)
+
+	if v && len(e.Comments[1]) > 0 {
+		io.WriteString(w, "\n")
+		e.Comments[1].printSource(w, v)
+	}
+
+	io.WriteString(w, oc[1:])
 }
 
 func (e Except) printSource(w io.Writer, v bool) {
