@@ -1151,6 +1151,154 @@ func TestEnclosure(t *testing.T) {
 				Token:   tk[11],
 			}
 		}},
+		{"(#abc\n)", func(t *test, tk Tokens) { // 33
+			t.Output = Enclosure{
+				ParenthForm: &StarredExpression{
+					Tokens: tk[1:1],
+				},
+				Comments: [2]Comments{{tk[1]}},
+				Tokens:   tk[:4],
+			}
+		}},
+		{"[#abc\n]", func(t *test, tk Tokens) { // 34
+			t.Output = Enclosure{
+				ListDisplay: &FlexibleExpressionListOrComprehension{
+					Tokens: tk[1:1],
+				},
+				Comments: [2]Comments{{tk[1]}},
+				Tokens:   tk[:4],
+			}
+		}},
+		{"{#abc\n}", func(t *test, tk Tokens) { // 35
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					Tokens: tk[1:1],
+				},
+				Comments: [2]Comments{{tk[1]}},
+				Tokens:   tk[:4],
+			}
+		}},
+		{"(#abc\na\n#def\n)", func(t *test, tk Tokens) { // 36
+			t.Output = Enclosure{
+				ParenthForm: &StarredExpression{
+					Expression: &Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						}),
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[3:4],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[5]}},
+				Tokens:   tk[:8],
+			}
+		}},
+		{"[#abc\na\n#def\n]", func(t *test, tk Tokens) { // 37
+			t.Output = Enclosure{
+				ListDisplay: &FlexibleExpressionListOrComprehension{
+					FlexibleExpressionList: &FlexibleExpressionList{
+						FlexibleExpressions: []FlexibleExpression{
+							{
+								AssignmentExpression: &AssignmentExpression{
+									Expression: Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[3],
+											Tokens:     tk[3:4],
+										}),
+										Tokens: tk[3:4],
+									},
+									Tokens: tk[3:4],
+								},
+								Tokens: tk[3:4],
+							},
+						},
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[3:4],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[5]}},
+				Tokens:   tk[:8],
+			}
+		}},
+		{"{#abc\n**a\n#def\n}", func(t *test, tk Tokens) { // 38
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					DictItems: []DictItem{
+						{
+							OrExpression: &WrapConditional(&Atom{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
+							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+							Tokens: tk[3:5],
+						},
+					},
+					Tokens: tk[3:5],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[6]}},
+				Tokens:   tk[:9],
+			}
+		}},
+		{"{#abc\n*a\n#def\n}", func(t *test, tk Tokens) { // 39
+			t.Output = Enclosure{
+				SetDisplay: &FlexibleExpressionListOrComprehension{
+					FlexibleExpressionList: &FlexibleExpressionList{
+						FlexibleExpressions: []FlexibleExpression{
+							{
+								StarredExpression: &StarredExpression{
+									StarredList: &StarredList{
+										StarredItems: []StarredItem{
+											{
+												OrExpr: &WrapConditional(&Atom{
+													Identifier: &tk[4],
+													Tokens:     tk[4:5],
+												}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+												Tokens: tk[3:5],
+											},
+										},
+										Tokens: tk[3:5],
+									},
+									Tokens: tk[3:5],
+								},
+								Tokens: tk[3:5],
+							},
+						},
+						Tokens: tk[3:5],
+					},
+					Tokens: tk[3:5],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[6]}},
+				Tokens:   tk[:9],
+			}
+		}},
+		{"{#abc\na:b\n#def\n}", func(t *test, tk Tokens) { // 40
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					DictItems: []DictItem{
+						{
+							Key: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[3],
+									Tokens:     tk[3:4],
+								}),
+								Tokens: tk[3:4],
+							},
+							Value: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[5],
+									Tokens:     tk[5:6],
+								}),
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[3:6],
+						},
+					},
+					Tokens: tk[3:6],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[7]}},
+				Tokens:   tk[:10],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var e Enclosure
 
