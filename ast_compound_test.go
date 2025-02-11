@@ -6220,6 +6220,70 @@ func TestTargetList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
+		{"#abc\na\n#def\n", func(t *test, tk Tokens) { // 9
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[4]}},
+				Tokens:   tk[:5],
+			}
+		}},
+		{"#abc\na,b\n#def", func(t *test, tk Tokens) { // 10
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[6]}},
+				Tokens:   tk[:7],
+			}
+		}},
+		{"#abc\na,#def", func(t *test, tk Tokens) { // 11
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Comments: [2]Comments{{tk[0]}},
+				Tokens:   tk[:3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var tl TargetList
 
