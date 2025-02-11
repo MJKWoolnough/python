@@ -1195,6 +1195,10 @@ func (t Target) printSource(w io.Writer, v bool) {
 }
 
 func (t TargetList) printSource(w io.Writer, v bool) {
+	if v {
+		t.Comments[0].printSource(w, v)
+	}
+
 	if len(t.Targets) > 0 {
 		t.Targets[0].printSource(w, v)
 
@@ -1206,6 +1210,11 @@ func (t TargetList) printSource(w io.Writer, v bool) {
 			}
 
 			tg.printSource(w, v)
+		}
+
+		if v && len(t.Comments[1]) > 0 {
+			io.WriteString(w, " ")
+			t.Comments[1].printSource(w, v)
 		}
 	}
 }
