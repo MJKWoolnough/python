@@ -5146,6 +5146,41 @@ func TestFuncDefinition(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
+		{"def a(#abc\n):b", func(t *test, tk Tokens) { // 24
+			t.Output = FuncDefinition{
+				FuncName: &tk[2],
+				ParameterList: ParameterList{
+					Tokens: tk[6:6],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[8],
+												Tokens:     tk[8:9],
+											}),
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[8:9],
+								},
+								Tokens: tk[8:9],
+							},
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[8:9],
+				},
+				Comments: Comments{tk[4]},
+				Tokens:   tk[:9],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f FuncDefinition
 
