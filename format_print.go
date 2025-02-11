@@ -598,6 +598,12 @@ func (f FuncDefinition) printSource(w io.Writer, v bool) {
 	}
 
 	io.WriteString(w, "(")
+
+	if v && len(f.Comments) > 0 {
+		io.WriteString(w, " ")
+		f.Comments.printSource(w, v)
+	}
+
 	f.ParameterList.printSource(w, v)
 	io.WriteString(w, ")")
 
