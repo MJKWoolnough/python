@@ -1150,6 +1150,11 @@ func TestPrintSource(t *testing.T) {
 			"[]\n",
 			"[\n#abc\n]\n",
 		},
+		{ // 229
+			"def a(#abc\n): b",
+			"def a():b\n",
+			"def a( #abc\n): b\n",
+		},
 	} {
 		if n < 224 {
 			continue
