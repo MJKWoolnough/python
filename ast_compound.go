@@ -739,6 +739,7 @@ type FuncDefinition struct {
 	ParameterList ParameterList
 	Expression    *Expression
 	Suite         Suite
+	Comments      Comments
 	Tokens        Tokens
 }
 
@@ -774,10 +775,15 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 	}
 
 	p.OpenBrackets()
-	p.AcceptRunWhitespace()
 
-	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-		q := p.NewGoal()
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		p.AcceptRunWhitespaceNoComment()
+
+		q = p.NewGoal()
 
 		if err := f.ParameterList.parse(q, true); err != nil {
 			return p.Error("FuncDefinition", err)
@@ -792,6 +798,11 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 
 		p.CloseBrackets()
 	} else {
+		f.Comments = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunWhitespace()
+		p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"})
+
 		f.ParameterList.Tokens = p.NewGoal().ToTokens()
 
 		p.CloseBrackets()
@@ -819,7 +830,7 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 
 	p.AcceptRunWhitespace()
 
-	q := p.NewGoal()
+	q = p.NewGoal()
 
 	if err := f.Suite.parse(q); err != nil {
 		return p.Error("FuncDefinition", err)
