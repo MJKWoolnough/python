@@ -168,7 +168,7 @@ func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 		return p.AcceptRunAllWhitespace()
 	}
 
-	return p.AcceptRun(TokenWhitespace)
+	return p.AcceptRun(TokenWhitespace, TokenComment)
 }
 
 func (p *pyParser) AcceptRunWhitespaceNoComment() parser.TokenType {

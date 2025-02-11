@@ -986,11 +986,16 @@ func (s *Suite) parse(p *pyParser) error {
 // TargetList as defined in python@3.13.0:
 // https://docs.python.org/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
 type TargetList struct {
-	Targets []Target
-	Tokens  Tokens
+	Targets  []Target
+	Comments [2]Comments
+	Tokens   Tokens
 }
 
 func (t *TargetList) parse(p *pyParser) error {
+	t.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunAllWhitespace()
+
 Loop:
 	for {
 		q := p.NewGoal()
@@ -1032,6 +1037,7 @@ Loop:
 		p.Score(q)
 	}
 
+	t.Comments[1] = p.AcceptRunWhitespaceComments()
 	t.Tokens = p.ToTokens()
 
 	return nil
@@ -1050,7 +1056,7 @@ type Target struct {
 func (t *Target) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 		p.OpenBrackets()
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		q := p.NewGoal()
 
@@ -1070,7 +1076,7 @@ func (t *Target) parse(p *pyParser) error {
 		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 		p.OpenBrackets()
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		q := p.NewGoal()
 
