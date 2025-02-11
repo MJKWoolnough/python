@@ -1155,6 +1155,11 @@ func TestPrintSource(t *testing.T) {
 			"def a():b\n",
 			"def a( #abc\n): b\n",
 		},
+		{ // 230
+			"[#abc\na#def\n] = b",
+			"[a]=b\n",
+			"[#abc\na #def\n] = b\n",
+		},
 	} {
 		if n < 224 {
 			continue
