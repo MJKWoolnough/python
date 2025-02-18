@@ -1,5 +1,5 @@
 // Package python implements a python tokeniser and parser.
-package python
+package python // import "vimagination.zapto.org/python"
 
 import "vimagination.zapto.org/parser"
 
