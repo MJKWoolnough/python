@@ -86,7 +86,7 @@ type pyTokeniser struct {
 
 // SetTokeniser sets the initial tokeniser state of a parser.Tokeniser.
 //
-// Used if you want to manually tokeniser python source code.
+// Used if you want to manually tokenise python source code.
 func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser {
 	p := &pyTokeniser{
 		indents: []string{""},
