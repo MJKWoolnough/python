@@ -94,10 +94,10 @@ func (p *pyParser) backup() {
 	p.Tokens = p.Tokens[:len(p.Tokens)-1]
 }
 
-func (j *pyParser) Peek() parser.Token {
-	tk := j.next().Token
+func (p *pyParser) Peek() parser.Token {
+	tk := p.next().Token
 
-	j.backup()
+	p.backup()
 
 	return tk
 }
