@@ -63,7 +63,7 @@ func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser
 ```
 SetTokeniser sets the initial tokeniser state of a parser.Tokeniser.
 
-Used if you want to manually tokeniser python source code.
+Used if you want to manually tokenise python source code.
 
 #### func  Unquote
 
@@ -364,6 +364,13 @@ https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-pytho
 func (f ClassDefinition) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
+
+#### type Comments
+
+```go
+type Comments []Token
+```
+
 
 #### type Comparison
 
@@ -716,6 +723,7 @@ type Enclosure struct {
 	SetDisplay          *FlexibleExpressionListOrComprehension
 	GeneratorExpression *GeneratorExpression
 	YieldAtom           *YieldExpression
+	Comments            [2]Comments
 	Tokens              Tokens
 }
 ```
@@ -821,6 +829,7 @@ Format implements the fmt.Formatter interface
 ```go
 type File struct {
 	Statements []Statement
+	Comments   Comments
 	Tokens     Tokens
 }
 ```
@@ -934,6 +943,7 @@ type FuncDefinition struct {
 	ParameterList ParameterList
 	Expression    *Expression
 	Suite         Suite
+	Comments      Comments
 	Tokens        Tokens
 }
 ```
@@ -1439,6 +1449,7 @@ type SimpleStatement struct {
 	GlobalStatement              *GlobalStatement
 	NonLocalStatement            *NonLocalStatement
 	TypeStatement                *TypeStatement
+	Comments                     Comments
 	Tokens                       Tokens
 }
 ```
@@ -1580,6 +1591,7 @@ Format implements the fmt.Formatter interface
 type Statement struct {
 	StatementList     *StatementList
 	CompoundStatement *CompoundStatement
+	Comments          Comments
 	Tokens            Tokens
 }
 ```
@@ -1654,6 +1666,7 @@ String implements the fmt.Stringer interface.
 type Suite struct {
 	StatementList *StatementList
 	Statements    []Statement
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 ```
@@ -1694,8 +1707,9 @@ Format implements the fmt.Formatter interface
 
 ```go
 type TargetList struct {
-	Targets []Target
-	Tokens  Tokens
+	Targets  []Target
+	Comments [2]Comments
+	Tokens   Tokens
 }
 ```
 
