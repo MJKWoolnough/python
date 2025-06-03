@@ -1752,7 +1752,7 @@ Tokeniser represents the methods required by the python tokeniser.
 type Tokens []Token
 ```
 
-Tokens represents a list ok tokens that have been parsed.
+Tokens represents a list of tokens that have been parsed.
 
 #### type TryStatement
 
