@@ -1161,9 +1161,6 @@ func TestPrintSource(t *testing.T) {
 			"[#abc\na #def\n] = b\n",
 		},
 	} {
-		if n < 224 {
-			continue
-		}
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
 
