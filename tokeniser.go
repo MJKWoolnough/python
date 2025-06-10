@@ -20,7 +20,7 @@ const (
 	octalDigit                   = "01234567"
 	decimalDigit                 = "0123456789"
 	hexDigit                     = "0123456789abcdefABCDEF"
-	stringPrefix                 = "rRuUfFbB"
+	stringPrefix                 = "rRuUfFbBt"
 	stringStart                  = "\"'"
 
 	singleQuotedExcept = "\\\n'"
@@ -79,9 +79,9 @@ func isIDContinue(c rune) bool {
 }
 
 type pyTokeniser struct {
-	tokenDepth []byte
-	indents    []string
-	dedents    int
+	state   []byte
+	indents []string
+	dedents int
 }
 
 // SetTokeniser sets the initial tokeniser state of a parser.Tokeniser.
@@ -99,7 +99,7 @@ func SetTokeniser(t *parser.Tokeniser) *parser.Tokeniser {
 
 func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	if t.Peek() == -1 {
-		if len(p.tokenDepth) > 0 {
+		if len(p.state) > 0 {
 			return t.ReturnError(io.ErrUnexpectedEOF)
 		}
 
@@ -114,7 +114,7 @@ func (p *pyTokeniser) main(t *parser.Tokeniser) (parser.Token, parser.TokenFunc)
 
 	ws := whitespace
 
-	if len(p.tokenDepth) > 0 {
+	if len(p.state) > 0 {
 		ws = whitespaceWithLineTerminator
 	}
 
@@ -237,7 +237,7 @@ func parseStringRaw(t *parser.Tokeniser) bool {
 		t.Next()
 
 		return t.Accept("rR")
-	case 'u', 'U':
+	case 'u', 'U', 't':
 		t.Next()
 	}
 
@@ -532,12 +532,12 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 			return t.ReturnError(ErrInvalidCharacter)
 		}
 	case ')', '}', ']':
-		if len(p.tokenDepth) == 0 || p.tokenDepth[len(p.tokenDepth)-1] != byte(c) {
+		if len(p.state) == 0 || p.state[len(p.state)-1] != byte(c) {
 			return t.ReturnError(ErrInvalidCharacter)
 		}
 
 		t.Next()
-		p.tokenDepth = p.tokenDepth[:len(p.tokenDepth)-1]
+		p.state = p.state[:len(p.state)-1]
 
 		typ = TokenDelimiter
 	case '(':
@@ -549,7 +549,7 @@ func (p *pyTokeniser) operatorOrDelimiter(t *parser.Tokeniser) (parser.Token, pa
 
 		fallthrough
 	case '{':
-		p.tokenDepth = append(p.tokenDepth, brackets[bracket])
+		p.state = append(p.state, brackets[bracket])
 
 		fallthrough
 	case ',', '.', ';':
