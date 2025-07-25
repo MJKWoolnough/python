@@ -180,7 +180,7 @@ func (i *IfStatement) parse(p *pyParser) error {
 		return p.Error("IfStatement", ErrMissingColon)
 	}
 
-	p.AcceptRunWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q = p.NewGoal()
 
@@ -213,7 +213,7 @@ func (i *IfStatement) parse(p *pyParser) error {
 			return p.Error("IfStatement", ErrMissingColon)
 		}
 
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		q = p.NewGoal()
 
@@ -241,7 +241,7 @@ func (i *IfStatement) parse(p *pyParser) error {
 			return p.Error("IfStatement", ErrMissingColon)
 		}
 
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		i.Else = new(Suite)
 		q = p.NewGoal()
@@ -290,7 +290,7 @@ func (w *WhileStatement) parse(p *pyParser) error {
 		return p.Error("WhileStatement", ErrMissingColon)
 	}
 
-	p.AcceptRunWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q = p.NewGoal()
 
@@ -312,7 +312,7 @@ func (w *WhileStatement) parse(p *pyParser) error {
 			return p.Error("WhileStatement", ErrMissingColon)
 		}
 
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		w.Else = new(Suite)
 		q = p.NewGoal()
@@ -375,7 +375,7 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 		return p.Error("ForStatement", ErrMissingColon)
 	}
 
-	p.AcceptRunWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q = p.NewGoal()
 
@@ -397,7 +397,7 @@ func (f *ForStatement) parse(p *pyParser, async bool) error {
 			return p.Error("ForStatement", ErrMissingColon)
 		}
 
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		f.Else = new(Suite)
 		q = p.NewGoal()
@@ -433,7 +433,7 @@ func (t *TryStatement) parse(p *pyParser) error {
 		return p.Error("TryStatement", ErrMissingColon)
 	}
 
-	p.AcceptRunAllWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q := p.NewGoal()
 
@@ -489,7 +489,7 @@ func (t *TryStatement) parse(p *pyParser) error {
 			return p.Error("TryStatement", ErrMissingColon)
 		}
 
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		t.Else = new(Suite)
 		q := p.NewGoal()
@@ -513,7 +513,7 @@ func (t *TryStatement) parse(p *pyParser) error {
 			return p.Error("TryStatement", ErrMissingColon)
 		}
 
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		t.Finally = new(Suite)
 		q := p.NewGoal()
@@ -568,7 +568,7 @@ func (e *Except) parse(p *pyParser) error {
 		return p.Error("Except", ErrMissingColon)
 	}
 
-	p.AcceptRunWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q = p.NewGoal()
 
@@ -631,7 +631,7 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 		return p.Error("WithStatement", ErrMissingColon)
 	}
 
-	p.AcceptRunWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q = p.NewGoal()
 
@@ -828,7 +828,7 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 		return p.Error("FuncDefinition", ErrMissingColon)
 	}
 
-	p.AcceptRunWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q = p.NewGoal()
 
@@ -908,7 +908,7 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 		return p.Error("ClassDefinition", ErrMissingColon)
 	}
 
-	p.AcceptRunWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q := p.NewGoal()
 
@@ -943,7 +943,7 @@ func (s *Suite) parse(p *pyParser) error {
 		}
 
 		for {
-			p.AcceptRunWhitespaceNoComment()
+			p.AcceptRunAllWhitespaceNoComment()
 
 			q := p.NewGoal()
 
