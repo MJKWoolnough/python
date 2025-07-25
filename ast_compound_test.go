@@ -2000,7 +2000,145 @@ func TestWhileStatement(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"while nonlocal:a", func(t *test, tk Tokens) { // 5
+		{"while a: # A\n# B\n\tb", func(t *test, tk Tokens) { // 5
+			t.Output = WhileStatement{
+				AssignmentExpression: AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Suite: Suite{
+					Statements: []Statement{
+						{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												Expression: &Expression{
+													ConditionalExpression: WrapConditional(&Atom{
+														Identifier: &tk[10],
+														Tokens:     tk[10:11],
+													}),
+													Tokens: tk[10:11],
+												},
+												Tokens: tk[10:11],
+											},
+											Tokens: tk[10:11],
+										},
+										Tokens: tk[10:11],
+									},
+								},
+								Tokens: tk[10:11],
+							},
+							Tokens: tk[10:11],
+						},
+					},
+					Comments: [2]Comments{{tk[5], tk[7]}},
+					Tokens:   tk[5:12],
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{"while a:\n\t# A\n\t# B\n\tb", func(t *test, tk Tokens) { // 6
+			t.Output = WhileStatement{
+				AssignmentExpression: AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Suite: Suite{
+					Statements: []Statement{
+						{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												Expression: &Expression{
+													ConditionalExpression: WrapConditional(&Atom{
+														Identifier: &tk[12],
+														Tokens:     tk[12:13],
+													}),
+													Tokens: tk[12:13],
+												},
+												Tokens: tk[12:13],
+											},
+											Tokens: tk[12:13],
+										},
+										Tokens: tk[12:13],
+									},
+								},
+								Tokens: tk[12:13],
+							},
+							Tokens: tk[12:13],
+						},
+					},
+					Comments: [2]Comments{{tk[6], tk[9]}},
+					Tokens:   tk[4:14],
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"while a: # A\n\t# B\n\tb", func(t *test, tk Tokens) { // 7
+			t.Output = WhileStatement{
+				AssignmentExpression: AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Suite: Suite{
+					Statements: []Statement{
+						{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type: StatementAssignment,
+										AssignmentStatement: &AssignmentStatement{
+											StarredExpression: &StarredExpression{
+												Expression: &Expression{
+													ConditionalExpression: WrapConditional(&Atom{
+														Identifier: &tk[11],
+														Tokens:     tk[11:12],
+													}),
+													Tokens: tk[11:12],
+												},
+												Tokens: tk[11:12],
+											},
+											Tokens: tk[11:12],
+										},
+										Tokens: tk[11:12],
+									},
+								},
+								Tokens: tk[11:12],
+							},
+							Tokens: tk[11:12],
+						},
+					},
+					Comments: [2]Comments{{tk[5], tk[8]}},
+					Tokens:   tk[5:13],
+				},
+				Tokens: tk[:13],
+			}
+		}},
+		{"while nonlocal:a", func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2019,14 +2157,14 @@ func TestWhileStatement(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{"while a b", func(t *test, tk Tokens) { // 6
+		{"while a b", func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "WhileStatement",
 				Token:   tk[4],
 			}
 		}},
-		{"while a:nonlocal", func(t *test, tk Tokens) { // 7
+		{"while a:nonlocal", func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2049,14 +2187,14 @@ func TestWhileStatement(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{"while a:b\nelse c", func(t *test, tk Tokens) { // 8
+		{"while a:b\nelse c", func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "WhileStatement",
 				Token:   tk[8],
 			}
 		}},
-		{"while a:b\nelse:nonlocal", func(t *test, tk Tokens) { // 9
+		{"while a:b\nelse:nonlocal", func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -6014,7 +6152,7 @@ func TestSuite(t *testing.T) {
 				Tokens:   tk[:5],
 			}
 		}},
-		{"# a Comment\n# b Comment\n\t# c Comment\n\ta\n\t# d Comment", func(t *test, tk Tokens) { // 10
+		{"# a Comment\n# b Comment\n\t# c Comment\n\ta\n\t# d Comment", func(t *test, tk Tokens) { // 11
 			t.Output = Suite{
 				Statements: []Statement{
 					{
