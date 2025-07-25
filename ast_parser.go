@@ -172,7 +172,7 @@ func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 }
 
 func (p *pyParser) AcceptRunWhitespaceNoComment() parser.TokenType {
-	return p.AcceptRun(TokenWhitespace, TokenLineTerminator)
+	return p.AcceptRun(TokenWhitespace)
 }
 
 func (p *pyParser) AcceptRunWhitespaceComments() Comments {
@@ -180,7 +180,7 @@ func (p *pyParser) AcceptRunWhitespaceComments() Comments {
 
 	s := p.NewGoal()
 
-	for s.AcceptRunWhitespaceNoComment() == TokenComment {
+	for s.AcceptRunAllWhitespaceNoComment() == TokenComment {
 		c = append(c, s.Next())
 
 		p.Score(s)
@@ -210,6 +210,10 @@ func (p *pyParser) AcceptRunWhitespaceCommentsNoNewline() Comments {
 
 func (p *pyParser) AcceptRunAllWhitespace() parser.TokenType {
 	return p.AcceptRun(TokenWhitespace, TokenComment, TokenLineTerminator)
+}
+
+func (p *pyParser) AcceptRunAllWhitespaceNoComment() parser.TokenType {
+	return p.AcceptRun(TokenWhitespace, TokenLineTerminator)
 }
 
 func (p *pyParser) LookaheadLine(tks ...parser.Token) int {
