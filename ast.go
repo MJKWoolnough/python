@@ -29,7 +29,7 @@ func (f *File) parse(p *pyParser) error {
 	q := p.NewGoal()
 
 	for q.AcceptRunAllWhitespace() != parser.TokenDone {
-		p.AcceptRunWhitespaceNoComment()
+		p.AcceptRunAllWhitespaceNoComment()
 
 		var s Statement
 
