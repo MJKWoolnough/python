@@ -1113,12 +1113,12 @@ func TestPrintSource(t *testing.T) {
 		{ // 221
 			"while a: # A comment\n# B comment\n\t#abc\n\tb #def\n\n#efg",
 			"while a:\n\tb\n",
-			"while a: # A comment\n\t# B comment\n\t#abc\n\tb #def\n\n\t#efg\n\t\n",
+			"while a: # A comment\n\t# B comment\n\t#abc\n\tb #def\n\n\t#efg\n\n",
 		},
 		{ // 222
 			"while a:\n# A comment\n# B comment\n\t#abc\n\tb #def\n\n#efg",
 			"while a:\n\tb\n",
-			"while a:\n\t# A comment\n\t# B comment\n\t#abc\n\tb #def\n\n\t#efg\n\t\n",
+			"while a:\n\t# A comment\n\t# B comment\n\t#abc\n\tb #def\n\n\t#efg\n\n",
 		},
 		{ // 223
 			"(#abc\n)",
