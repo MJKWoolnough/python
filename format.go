@@ -18,7 +18,6 @@ type writer interface {
 	io.Writer
 	io.StringWriter
 	Underlying() writer
-	Pos() int
 	Indent() writer
 	Printf(string, ...any)
 }
@@ -113,10 +112,6 @@ func (c *countPrinter) Write(p []byte) (int, error) {
 
 func (c *countPrinter) WriteString(s string) (int, error) {
 	return c.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
-}
-
-func (c *countPrinter) Pos() int {
-	return c.pos
 }
 
 func (c *countPrinter) Underlying() writer {
