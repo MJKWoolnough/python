@@ -18,10 +18,10 @@ import "io"
 HEREDOC
 
 	while read type file; do
-		echo -e "\nfunc (f *$type) printType(w io.Writer, v bool) {";
-		echo "	pp := indentPrinter{w}";
+		echo -e "\nfunc (f *$type) printType(w writer, v bool) {";
+		echo "	pp := indentPrinter{writer: w}";
 		echo;
-		echo "	pp.Print(\"$type {\")";
+		echo "	pp.WriteString(\"$type {\")";
 		while read fieldName fieldType; do
 			if [ "$fieldType" = "bool" ]; then
 				echo;
@@ -36,43 +36,43 @@ HEREDOC
 			elif [ "${fieldType:0:2}" = "[]" ]; then
 				echo;
 				echo "	if f.$fieldName == nil {";
-				echo "		pp.Print(\"\\n$fieldName: nil\")";
+				echo "		pp.WriteString(\"\\n$fieldName: nil\")";
 				echo "	} else if len(f.$fieldName) > 0 {";
-				echo "		pp.Print(\"\\n$fieldName: [\")";
+				echo "		pp.WriteString(\"\\n$fieldName: [\")";
 				echo;
-				echo "		ipp := indentPrinter{&pp}";
+				echo "		ipp := indentPrinter{writer: &pp}";
 				echo;
 				echo "		for n, e := range f.$fieldName {";
 				echo "			ipp.Printf(\"\n%d: \", n)";
 				echo "			e.printType(&ipp, v)";
 				echo "		}";
 				echo;
-				echo "		pp.Print(\"\\n]\")";
+				echo "		pp.WriteString(\"\\n]\")";
 				echo "	} else if v {";
-				echo "		pp.Print(\"\\n$fieldName: []\")";
+				echo "		pp.WriteString(\"\\n$fieldName: []\")";
 				echo "	}";
 			elif [ "${fieldType:0:1}" = "[" ]; then
-				echo "	pp.Print(\"\\n$fieldName: [\")";
+				echo "	pp.WriteString(\"\\n$fieldName: [\")";
 				echo;
-				echo "	ipp := indentPrinter{&pp}";
+				echo "	ipp := indentPrinter{writer: &pp}";
 				echo;
 				echo "	for n, e := range f.$fieldName {";
 				echo "		ipp.Printf(\"\n%d: \", n)";
 				echo "		e.printType(&ipp, v)";
 				echo "	}";
 				echo;
-				echo "	pp.Print(\"\n]\")";
+				echo "	pp.WriteString(\"\n]\")";
 			elif [ "${fieldType:0:1}" = "*" ]; then
 				echo;
 				echo "	if f.$fieldName != nil {";
-				echo "		pp.Print(\"\\n$fieldName: \")";
+				echo "		pp.WriteString(\"\\n$fieldName: \")";
 				echo "		f.$fieldName.printType(&pp, v)";
 				echo "	} else if v {";
-				echo "		pp.Print(\"\\n$fieldName: nil\")";
+				echo "		pp.WriteString(\"\\n$fieldName: nil\")";
 				echo "	}";
 			else
 				echo;
-				echo "	pp.Print(\"\\n$fieldName: \")";
+				echo "	pp.WriteString(\"\\n$fieldName: \")";
 				echo "	f.$fieldName.printType(&pp, v)";
 			fi;
 		done < <(sed '/^type '$type' struct {$/,/^}$/!d;//d' "$file");
