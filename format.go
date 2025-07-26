@@ -4,14 +4,26 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"unsafe"
 
 	"vimagination.zapto.org/parser"
 )
 
-var indent = []byte{'\t'}
+var (
+	indent = []byte{'\t'}
+	space  = []byte{' '}
+)
+
+type writer interface {
+	io.Writer
+	io.StringWriter
+	Underlying() writer
+	Pos() int
+}
 
 type indentPrinter struct {
-	io.Writer
+	writer
+	hadNewline bool
 }
 
 func (i *indentPrinter) Write(p []byte) (int, error) {
@@ -22,24 +34,30 @@ func (i *indentPrinter) Write(p []byte) (int, error) {
 
 	for n, c := range p {
 		if c == '\n' {
-			m, err := i.Writer.Write(p[last : n+1])
+			if last != n {
+				if err := i.printIndent(); err != nil {
+					return total, err
+				}
+			}
+
+			m, err := i.writer.Write(p[last : n+1])
 			total += m
 
 			if err != nil {
 				return total, err
 			}
 
-			_, err = i.Writer.Write(indent)
-			if err != nil {
-				return total, err
-			}
-
+			i.hadNewline = true
 			last = n + 1
 		}
 	}
 
 	if last != len(p) {
-		m, err := i.Writer.Write(p[last:])
+		if err := i.printIndent(); err != nil {
+			return total, err
+		}
+
+		m, err := i.writer.Write(p[last:])
 		total += m
 
 		if err != nil {
@@ -50,8 +68,16 @@ func (i *indentPrinter) Write(p []byte) (int, error) {
 	return total, nil
 }
 
-func (i *indentPrinter) Print(args ...interface{}) {
-	fmt.Fprint(i, args...)
+func (i *indentPrinter) printIndent() error {
+	if i.hadNewline {
+		if _, err := i.writer.Write(indent); err != nil {
+			return err
+		}
+
+		i.hadNewline = false
+	}
+
+	return nil
 }
 
 func (i *indentPrinter) Printf(format string, args ...interface{}) {
@@ -59,10 +85,39 @@ func (i *indentPrinter) Printf(format string, args ...interface{}) {
 }
 
 func (i *indentPrinter) WriteString(s string) (int, error) {
-	return i.Write([]byte(s))
+	return i.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
 }
 
-func (t Token) printType(w io.Writer, v bool) {
+type countPrinter struct {
+	io.Writer
+	pos int
+}
+
+func (c *countPrinter) Write(p []byte) (int, error) {
+	for _, b := range p {
+		if b == '\n' {
+			c.pos = 0
+		} else if b != '\t' || c.pos > 0 {
+			c.pos++
+		}
+	}
+
+	return c.Writer.Write(p)
+}
+
+func (c *countPrinter) WriteString(s string) (int, error) {
+	return c.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
+}
+
+func (c *countPrinter) Pos() int {
+	return c.pos
+}
+
+func (c *countPrinter) Underlying() writer {
+	return c
+}
+
+func (t Token) printType(w writer, v bool) {
 	var typ string
 
 	switch t.Type {
@@ -107,7 +162,7 @@ func (t Token) printType(w io.Writer, v bool) {
 	}
 }
 
-func (t Tokens) printType(w io.Writer, v bool) {
+func (t Tokens) printType(w writer, v bool) {
 	if t == nil {
 		io.WriteString(w, "nil")
 
@@ -122,7 +177,7 @@ func (t Tokens) printType(w io.Writer, v bool) {
 
 	io.WriteString(w, "[")
 
-	ipp := indentPrinter{w}
+	ipp := indentPrinter{writer: w}
 
 	for n, t := range t {
 		ipp.Printf("\n%d: ", n)
@@ -132,11 +187,11 @@ func (t Tokens) printType(w io.Writer, v bool) {
 	io.WriteString(w, "\n]")
 }
 
-func (c Comments) printType(w io.Writer, v bool) {
+func (c Comments) printType(w writer, v bool) {
 	Tokens(c).printType(w, v)
 }
 
-func (c Comments) printSource(w io.Writer, v bool) {
+func (c Comments) printSource(w writer, v bool) {
 	if len(c) > 0 {
 		printComment(w, c[0].Data)
 
@@ -162,7 +217,7 @@ func (c Comments) printSource(w io.Writer, v bool) {
 	}
 }
 
-func printComment(w io.Writer, c string) {
+func printComment(w writer, c string) {
 	if !strings.HasPrefix(c, "#") {
 		io.WriteString(w, "#")
 	}
@@ -170,7 +225,7 @@ func printComment(w io.Writer, c string) {
 	io.WriteString(w, c)
 }
 
-func (s StatementType) printType(w io.Writer, _ bool) {
+func (s StatementType) printType(w writer, _ bool) {
 	io.WriteString(w, s.String())
 }
 
@@ -212,7 +267,7 @@ func (s StatementType) String() string {
 	}
 }
 
-func (t TypeParamType) printType(w io.Writer, _ bool) {
+func (t TypeParamType) printType(w writer, _ bool) {
 	io.WriteString(w, t.String())
 }
 
@@ -231,15 +286,15 @@ func (t TypeParamType) String() string {
 }
 
 type formatter interface {
-	printType(io.Writer, bool)
-	printSource(io.Writer, bool)
+	printType(writer, bool)
+	printSource(writer, bool)
 }
 
 func format(f formatter, s fmt.State, v rune) {
 	switch v {
 	case 'v':
-		f.printType(s, s.Flag('+'))
+		f.printType(&countPrinter{Writer: s}, s.Flag('+'))
 	case 's':
-		f.printSource(s, s.Flag('+'))
+		f.printSource(&countPrinter{Writer: s}, s.Flag('+'))
 	}
 }
