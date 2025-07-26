@@ -1,21 +1,17 @@
 package python
 
-import (
-	"io"
-)
-
 func (a AddExpression) printSource(w writer, v bool) {
 	a.MultiplyExpression.printSource(w, v)
 
 	if a.Add != nil && a.AddExpression != nil {
 		if v {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
-		io.WriteString(w, a.Add.Data)
+		w.WriteString(a.Add.Data)
 
 		if v {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
 		a.AddExpression.printSource(w, v)
@@ -27,9 +23,9 @@ func (a AndExpression) printSource(w writer, v bool) {
 
 	if a.AndExpression != nil {
 		if v {
-			io.WriteString(w, " & ")
+			w.WriteString(" & ")
 		} else {
-			io.WriteString(w, "&")
+			w.WriteString("&")
 		}
 
 		a.AndExpression.printSource(w, v)
@@ -40,7 +36,7 @@ func (a AndTest) printSource(w writer, v bool) {
 	a.NotTest.printSource(w, v)
 
 	if a.AndTest != nil {
-		io.WriteString(w, " and ")
+		w.WriteString(" and ")
 		a.AndTest.printSource(w, v)
 	}
 }
@@ -49,26 +45,26 @@ func (a AnnotatedAssignmentStatement) printSource(w writer, v bool) {
 	a.AugTarget.printSource(w, v)
 
 	if v {
-		io.WriteString(w, ": ")
+		w.WriteString(": ")
 	} else {
-		io.WriteString(w, ":")
+		w.WriteString(":")
 	}
 
 	a.Expression.printSource(w, v)
 
 	if a.StarredExpression != nil {
 		if v {
-			io.WriteString(w, " = ")
+			w.WriteString(" = ")
 		} else {
-			io.WriteString(w, "=")
+			w.WriteString("=")
 		}
 
 		a.StarredExpression.printSource(w, v)
 	} else if a.YieldExpression != nil {
 		if v {
-			io.WriteString(w, " = ")
+			w.WriteString(" = ")
 		} else {
-			io.WriteString(w, "=")
+			w.WriteString("=")
 		}
 
 		a.YieldExpression.printSource(w, v)
@@ -80,10 +76,10 @@ func (a ArgumentList) printSource(w writer, v bool) {
 
 	for _, p := range a.PositionalArguments {
 		if !first {
-			io.WriteString(w, ",")
+			w.WriteString(",")
 
 			if v {
-				io.WriteString(w, " ")
+				w.WriteString(" ")
 			}
 		}
 
@@ -94,10 +90,10 @@ func (a ArgumentList) printSource(w writer, v bool) {
 
 	for _, s := range a.StarredAndKeywordArguments {
 		if !first {
-			io.WriteString(w, ",")
+			w.WriteString(",")
 
 			if v {
-				io.WriteString(w, " ")
+				w.WriteString(" ")
 			}
 		}
 
@@ -108,10 +104,10 @@ func (a ArgumentList) printSource(w writer, v bool) {
 
 	for _, k := range a.KeywordArguments {
 		if !first {
-			io.WriteString(w, ",")
+			w.WriteString(",")
 
 			if v {
-				io.WriteString(w, " ")
+				w.WriteString(" ")
 			}
 		}
 
@@ -122,7 +118,7 @@ func (a ArgumentList) printSource(w writer, v bool) {
 }
 
 func (a ArgumentListOrComprehension) printSource(w writer, v bool) {
-	io.WriteString(w, "(")
+	w.WriteString("(")
 
 	if a.ArgumentList != nil {
 		a.ArgumentList.printSource(w, v)
@@ -130,19 +126,19 @@ func (a ArgumentListOrComprehension) printSource(w writer, v bool) {
 		a.Comprehension.printSource(w, v)
 	}
 
-	io.WriteString(w, ")")
+	w.WriteString(")")
 }
 
 func (a AssertStatement) printSource(w writer, v bool) {
 	if len(a.Expressions) > 0 {
-		io.WriteString(w, "assert ")
+		w.WriteString("assert ")
 		a.Expressions[0].printSource(w, v)
 
 		for _, e := range a.Expressions[1:] {
-			io.WriteString(w, ",")
+			w.WriteString(",")
 
 			if v {
-				io.WriteString(w, " ")
+				w.WriteString(" ")
 			}
 
 			e.printSource(w, v)
@@ -152,18 +148,18 @@ func (a AssertStatement) printSource(w writer, v bool) {
 
 func (a AssignmentExpressionAndSuite) printSource(w writer, v bool) {
 	a.AssignmentExpression.printSource(w, v)
-	io.WriteString(w, ":")
+	w.WriteString(":")
 	a.Suite.printSource(w, v)
 }
 
 func (a AssignmentExpression) printSource(w writer, v bool) {
 	if a.Identifier != nil {
-		io.WriteString(w, a.Identifier.Data)
+		w.WriteString(a.Identifier.Data)
 
 		if v {
-			io.WriteString(w, " := ")
+			w.WriteString(" := ")
 		} else {
-			io.WriteString(w, ":=")
+			w.WriteString(":=")
 		}
 	}
 
@@ -175,9 +171,9 @@ func (a AssignmentStatement) printSource(w writer, v bool) {
 		t.printSource(w, v)
 
 		if v {
-			io.WriteString(w, " = ")
+			w.WriteString(" = ")
 		} else {
-			io.WriteString(w, "=")
+			w.WriteString("=")
 		}
 	}
 
@@ -190,13 +186,13 @@ func (a AssignmentStatement) printSource(w writer, v bool) {
 
 func (a Atom) printSource(w writer, v bool) {
 	if a.Identifier != nil {
-		io.WriteString(w, a.Identifier.Data)
+		w.WriteString(a.Identifier.Data)
 	} else if a.Literal != nil && len(a.Literal.Data) > 0 {
-		io.WriteString(w, a.Literal.Data[:1])
+		w.WriteString(a.Literal.Data[:1])
 
 		w = w.Underlying()
 
-		io.WriteString(w, a.Literal.Data[1:])
+		w.WriteString(a.Literal.Data[1:])
 	} else if a.Enclosure != nil {
 		a.Enclosure.printSource(w, v)
 	}
@@ -206,13 +202,13 @@ func (a AugmentedAssignmentStatement) printSource(w writer, v bool) {
 	a.AugTarget.printSource(w, v)
 
 	if v {
-		io.WriteString(w, " ")
+		w.WriteString(" ")
 	}
 
-	io.WriteString(w, a.AugOp.Data)
+	w.WriteString(a.AugOp.Data)
 
 	if v {
-		io.WriteString(w, " ")
+		w.WriteString(" ")
 	}
 
 	if a.ExpressionList != nil {
@@ -231,20 +227,20 @@ func (c ClassDefinition) printSource(w writer, v bool) {
 		c.Decorators.printSource(w, v)
 	}
 
-	io.WriteString(w, "class ")
-	io.WriteString(w, c.ClassName.Data)
+	w.WriteString("class ")
+	w.WriteString(c.ClassName.Data)
 
 	if c.TypeParams != nil {
 		c.TypeParams.printSource(w, v)
 	}
 
 	if c.Inheritance != nil {
-		io.WriteString(w, "(")
+		w.WriteString("(")
 		c.Inheritance.printSource(w, v)
-		io.WriteString(w, ")")
+		w.WriteString(")")
 	}
 
-	io.WriteString(w, ":")
+	w.WriteString(":")
 	c.Suite.printSource(w, v)
 }
 
@@ -266,30 +262,30 @@ func (c ComparisonExpression) printSource(w writer, v bool) {
 	switch first {
 	case "<", ">", "==", ">=", "<=", "!=":
 		if v {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
-		io.WriteString(w, first)
+		w.WriteString(first)
 
 		if v {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
 		c.OrExpression.printSource(w, v)
 	case "in":
-		io.WriteString(w, " in ")
+		w.WriteString(" in ")
 		c.OrExpression.printSource(w, v)
 	case "is":
 		if c.ComparisonOperator[len(c.ComparisonOperator)-1].Data == "not" {
-			io.WriteString(w, " is not ")
+			w.WriteString(" is not ")
 		} else {
-			io.WriteString(w, " is ")
+			w.WriteString(" is ")
 		}
 
 		c.OrExpression.printSource(w, v)
 	case "not":
 		if c.ComparisonOperator[len(c.ComparisonOperator)-1].Data == "in" {
-			io.WriteString(w, " not in ")
+			w.WriteString(" not in ")
 			c.OrExpression.printSource(w, v)
 		}
 	}
@@ -315,32 +311,32 @@ func (c CompoundStatement) printSource(w writer, v bool) {
 
 func (c Comprehension) printSource(w writer, v bool) {
 	c.AssignmentExpression.printSource(w, v)
-	io.WriteString(w, " ")
+	w.WriteString(" ")
 	c.ComprehensionFor.printSource(w, v)
 }
 
 func (c ComprehensionFor) printSource(w writer, v bool) {
 	if c.Async {
-		io.WriteString(w, "async ")
+		w.WriteString("async ")
 	}
 
-	io.WriteString(w, "for ")
+	w.WriteString("for ")
 	c.TargetList.printSource(w, v)
-	io.WriteString(w, " in ")
+	w.WriteString(" in ")
 	c.OrTest.printSource(w, v)
 
 	if c.ComprehensionIterator != nil {
-		io.WriteString(w, " ")
+		w.WriteString(" ")
 		c.ComprehensionIterator.printSource(w, v)
 	}
 }
 
 func (c ComprehensionIf) printSource(w writer, v bool) {
-	io.WriteString(w, "if ")
+	w.WriteString("if ")
 	c.OrTest.printSource(w, v)
 
 	if c.ComprehensionIterator != nil {
-		io.WriteString(w, " ")
+		w.WriteString(" ")
 		c.ComprehensionIterator.printSource(w, v)
 	}
 }
@@ -357,18 +353,18 @@ func (c ConditionalExpression) printSource(w writer, v bool) {
 	c.OrTest.printSource(w, v)
 
 	if c.If != nil && c.Else != nil {
-		io.WriteString(w, " if ")
+		w.WriteString(" if ")
 		c.If.printSource(w, v)
-		io.WriteString(w, " else ")
+		w.WriteString(" else ")
 		c.Else.printSource(w, v)
 	}
 }
 
 func (d Decorators) printSource(w writer, v bool) {
 	for _, dc := range d.Decorators {
-		io.WriteString(w, "@")
+		w.WriteString("@")
 		dc.printSource(w, v)
-		io.WriteString(w, "\n")
+		w.WriteString("\n")
 	}
 }
 
@@ -377,9 +373,9 @@ func (d DefParameter) printSource(w writer, v bool) {
 
 	if d.Value != nil {
 		if v {
-			io.WriteString(w, " = ")
+			w.WriteString(" = ")
 		} else {
-			io.WriteString(w, "=")
+			w.WriteString("=")
 		}
 
 		d.Value.printSource(w, v)
@@ -387,7 +383,7 @@ func (d DefParameter) printSource(w writer, v bool) {
 }
 
 func (d DelStatement) printSource(w writer, v bool) {
-	io.WriteString(w, "del ")
+	w.WriteString("del ")
 	d.TargetList.printSource(w, v)
 }
 
@@ -397,9 +393,9 @@ func (d DictDisplay) printSource(w writer, v bool) {
 
 		for _, di := range d.DictItems[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			di.printSource(w, v)
@@ -407,22 +403,22 @@ func (d DictDisplay) printSource(w writer, v bool) {
 	}
 
 	if d.DictComprehension != nil {
-		io.WriteString(w, " ")
+		w.WriteString(" ")
 		d.DictComprehension.printSource(w, v)
 	}
 }
 
 func (d DictItem) printSource(w writer, v bool) {
 	if d.OrExpression != nil {
-		io.WriteString(w, "**")
+		w.WriteString("**")
 		d.OrExpression.printSource(w, v)
 	} else if d.Key != nil && d.Value != nil {
 		d.Key.printSource(w, v)
 
 		if v {
-			io.WriteString(w, ": ")
+			w.WriteString(": ")
 		} else {
-			io.WriteString(w, ":")
+			w.WriteString(":")
 		}
 
 		d.Value.printSource(w, v)
@@ -457,13 +453,13 @@ func (e Enclosure) printSource(w writer, v bool) {
 		return
 	}
 
-	io.WriteString(w, oc[:1])
+	w.WriteString(oc[:1])
 
 	if v && len(e.Comments[0]) > 0 {
 		if len(e.Tokens) > 0 && e.Comments[0][0].Line > e.Tokens[0].Line {
-			io.WriteString(w, "\n")
+			w.WriteString("\n")
 		} else {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
 		e.Comments[0].printSource(w, v)
@@ -472,22 +468,22 @@ func (e Enclosure) printSource(w writer, v bool) {
 	t.printSource(w, v)
 
 	if v && len(e.Comments[1]) > 0 {
-		io.WriteString(w, "\n")
+		w.WriteString("\n")
 		e.Comments[1].printSource(w, v)
 	}
 
-	io.WriteString(w, oc[1:])
+	w.WriteString(oc[1:])
 }
 
 func (e Except) printSource(w writer, v bool) {
 	e.Expression.printSource(w, v)
 
 	if e.Identifier != nil {
-		io.WriteString(w, " as ")
-		io.WriteString(w, e.Identifier.Data)
+		w.WriteString(" as ")
+		w.WriteString(e.Identifier.Data)
 	}
 
-	io.WriteString(w, ":")
+	w.WriteString(":")
 	e.Suite.printSource(w, v)
 }
 
@@ -505,9 +501,9 @@ func (e ExpressionList) printSource(w writer, v bool) {
 
 		for _, ex := range e.Expressions[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			ex.printSource(w, v)
@@ -518,11 +514,11 @@ func (e ExpressionList) printSource(w writer, v bool) {
 func (f File) printSource(w writer, v bool) {
 	for _, s := range f.Statements {
 		s.printSource(w, v)
-		io.WriteString(w, "\n")
+		w.WriteString("\n")
 	}
 
 	if v && len(f.Comments) > 0 {
-		io.WriteString(w, "\n")
+		w.WriteString("\n")
 		f.Comments.printSource(w, v)
 	}
 }
@@ -540,9 +536,9 @@ func (f FlexibleExpressionList) printSource(w writer, v bool) {
 		f.FlexibleExpressions[0].printSource(w, v)
 		for _, fe := range f.FlexibleExpressions[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			fe.printSource(w, v)
@@ -560,18 +556,18 @@ func (f FlexibleExpression) printSource(w writer, v bool) {
 
 func (f ForStatement) printSource(w writer, v bool) {
 	if f.Async {
-		io.WriteString(w, "async ")
+		w.WriteString("async ")
 	}
 
-	io.WriteString(w, "for ")
+	w.WriteString("for ")
 	f.TargetList.printSource(w, v)
-	io.WriteString(w, " in ")
+	w.WriteString(" in ")
 	f.StarredList.printSource(w, v)
-	io.WriteString(w, ":")
+	w.WriteString(":")
 	f.Suite.printSource(w, v)
 
 	if f.Else != nil {
-		io.WriteString(w, "\nelse:")
+		w.WriteString("\nelse:")
 		f.Else.printSource(w, v)
 	}
 }
@@ -582,86 +578,86 @@ func (f FuncDefinition) printSource(w writer, v bool) {
 	}
 
 	if f.Async {
-		io.WriteString(w, "async ")
+		w.WriteString("async ")
 	}
 
-	io.WriteString(w, "def ")
-	io.WriteString(w, f.FuncName.Data)
+	w.WriteString("def ")
+	w.WriteString(f.FuncName.Data)
 
 	if f.TypeParams != nil {
 		f.TypeParams.printSource(w, v)
 	}
 
-	io.WriteString(w, "(")
+	w.WriteString("(")
 
 	if v && len(f.Comments) > 0 {
-		io.WriteString(w, " ")
+		w.WriteString(" ")
 		f.Comments.printSource(w, v)
 	}
 
 	f.ParameterList.printSource(w, v)
-	io.WriteString(w, ")")
+	w.WriteString(")")
 
 	if f.Expression != nil {
 		if v {
-			io.WriteString(w, " -> ")
+			w.WriteString(" -> ")
 		} else {
-			io.WriteString(w, "->")
+			w.WriteString("->")
 		}
 		f.Expression.printSource(w, v)
 	}
 
-	io.WriteString(w, ":")
+	w.WriteString(":")
 	f.Suite.printSource(w, v)
 }
 
 func (g GeneratorExpression) printSource(w writer, v bool) {
 	g.Expression.printSource(w, v)
-	io.WriteString(w, " ")
+	w.WriteString(" ")
 	g.ComprehensionFor.printSource(w, v)
 }
 
 func (g GlobalStatement) printSource(w writer, v bool) {
 	if len(g.Identifiers) > 0 {
-		io.WriteString(w, "global ")
-		io.WriteString(w, g.Identifiers[0].Data)
+		w.WriteString("global ")
+		w.WriteString(g.Identifiers[0].Data)
 
 		for _, t := range g.Identifiers[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
-			io.WriteString(w, t.Data)
+			w.WriteString(t.Data)
 		}
 	}
 }
 
 func (i IfStatement) printSource(w writer, v bool) {
-	io.WriteString(w, "if ")
+	w.WriteString("if ")
 	i.AssignmentExpression.printSource(w, v)
-	io.WriteString(w, ":")
+	w.WriteString(":")
 	i.Suite.printSource(w, v)
 
 	for _, e := range i.Elif {
-		io.WriteString(w, "\nelif ")
+		w.WriteString("\nelif ")
 		e.printSource(w, v)
 	}
 
 	if i.Else != nil {
-		io.WriteString(w, "\nelse:")
+		w.WriteString("\nelse:")
 		i.Else.printSource(w, v)
 	}
 }
 
 func (i ImportStatement) printSource(w writer, v bool) {
 	if i.RelativeModule != nil {
-		io.WriteString(w, "from ")
+		w.WriteString("from ")
 		i.RelativeModule.printSource(w, v)
-		io.WriteString(w, " import ")
+		w.WriteString(" import ")
 	} else {
-		io.WriteString(w, "import ")
+		w.WriteString("import ")
 	}
 
 	if len(i.Modules) > 0 {
@@ -669,9 +665,9 @@ func (i ImportStatement) printSource(w writer, v bool) {
 
 		for _, m := range i.Modules[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			m.printSource(w, v)
@@ -681,7 +677,7 @@ func (i ImportStatement) printSource(w writer, v bool) {
 
 func (k KeywordArgument) printSource(w writer, v bool) {
 	if k.Expression != nil {
-		io.WriteString(w, "**")
+		w.WriteString("**")
 		k.Expression.printSource(w, v)
 	} else if k.KeywordItem != nil {
 		k.KeywordItem.printSource(w, v)
@@ -690,12 +686,12 @@ func (k KeywordArgument) printSource(w writer, v bool) {
 
 func (k KeywordItem) printSource(w writer, v bool) {
 	if k.Identifier != nil {
-		io.WriteString(w, k.Identifier.Data)
+		w.WriteString(k.Identifier.Data)
 
 		if v {
-			io.WriteString(w, " = ")
+			w.WriteString(" = ")
 		} else {
-			io.WriteString(w, "=")
+			w.WriteString("=")
 		}
 
 		k.Expression.printSource(w, v)
@@ -704,16 +700,16 @@ func (k KeywordItem) printSource(w writer, v bool) {
 
 func (l LambdaExpression) printSource(w writer, v bool) {
 	if l.ParameterList != nil {
-		io.WriteString(w, "lambda ")
+		w.WriteString("lambda ")
 		l.ParameterList.printSource(w, v)
 	} else {
-		io.WriteString(w, "lambda")
+		w.WriteString("lambda")
 	}
 
 	if v {
-		io.WriteString(w, ": ")
+		w.WriteString(": ")
 	} else {
-		io.WriteString(w, ":")
+		w.WriteString(":")
 	}
 
 	l.Expression.printSource(w, v)
@@ -723,18 +719,18 @@ func (m ModuleAs) printSource(w writer, v bool) {
 	m.Module.printSource(w, v)
 
 	if m.As != nil {
-		io.WriteString(w, " as ")
-		io.WriteString(w, m.As.Data)
+		w.WriteString(" as ")
+		w.WriteString(m.As.Data)
 	}
 }
 
 func (m Module) printSource(w writer, v bool) {
 	if len(m.Identifiers) > 0 {
-		io.WriteString(w, m.Identifiers[0].Data)
+		w.WriteString(m.Identifiers[0].Data)
 
 		for _, i := range m.Identifiers[1:] {
-			io.WriteString(w, ".")
-			io.WriteString(w, i.Data)
+			w.WriteString(".")
+			w.WriteString(i.Data)
 		}
 	}
 }
@@ -744,13 +740,13 @@ func (m MultiplyExpression) printSource(w writer, v bool) {
 
 	if m.Multiply != nil && m.MultiplyExpression != nil {
 		if v {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
-		io.WriteString(w, m.Multiply.Data)
+		w.WriteString(m.Multiply.Data)
 
 		if v {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
 		m.MultiplyExpression.printSource(w, v)
@@ -759,24 +755,24 @@ func (m MultiplyExpression) printSource(w writer, v bool) {
 
 func (n NonLocalStatement) printSource(w writer, v bool) {
 	if len(n.Identifiers) > 0 {
-		io.WriteString(w, "nonlocal ")
-		io.WriteString(w, n.Identifiers[0].Data)
+		w.WriteString("nonlocal ")
+		w.WriteString(n.Identifiers[0].Data)
 
 		for _, t := range n.Identifiers[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
-			io.WriteString(w, t.Data)
+			w.WriteString(t.Data)
 		}
 	}
 }
 
 func (n NotTest) printSource(w writer, v bool) {
 	for i := n.Nots; i > 0; i-- {
-		io.WriteString(w, "not ")
+		w.WriteString("not ")
 	}
 
 	n.Comparison.printSource(w, v)
@@ -787,9 +783,9 @@ func (o OrExpression) printSource(w writer, v bool) {
 
 	if o.OrExpression != nil {
 		if v {
-			io.WriteString(w, " | ")
+			w.WriteString(" | ")
 		} else {
-			io.WriteString(w, "|")
+			w.WriteString("|")
 		}
 		o.OrExpression.printSource(w, v)
 	}
@@ -799,19 +795,19 @@ func (o OrTest) printSource(w writer, v bool) {
 	o.AndTest.printSource(w, v)
 
 	if o.OrTest != nil {
-		io.WriteString(w, " or ")
+		w.WriteString(" or ")
 		o.OrTest.printSource(w, v)
 	}
 }
 
 func (p Parameter) printSource(w writer, v bool) {
-	io.WriteString(w, p.Identifier.Data)
+	w.WriteString(p.Identifier.Data)
 
 	if p.Type != nil {
 		if v {
-			io.WriteString(w, ": ")
+			w.WriteString(": ")
 		} else {
-			io.WriteString(w, ":")
+			w.WriteString(":")
 		}
 		p.Type.printSource(w, v)
 	}
@@ -825,22 +821,22 @@ func (p ParameterList) printSource(w writer, v bool) {
 			d.printSource(w, v)
 
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 		}
 
-		io.WriteString(w, "/")
+		w.WriteString("/")
 	}
 
 	for _, n := range p.NoPosOnly {
 		if first {
 			first = false
 		} else if v {
-			io.WriteString(w, ", ")
+			w.WriteString(", ")
 		} else {
-			io.WriteString(w, ",")
+			w.WriteString(",")
 		}
 
 		n.printSource(w, v)
@@ -850,19 +846,19 @@ func (p ParameterList) printSource(w writer, v bool) {
 		if first {
 			first = false
 		} else if v {
-			io.WriteString(w, ", ")
+			w.WriteString(", ")
 		} else {
-			io.WriteString(w, ",")
+			w.WriteString(",")
 		}
 
-		io.WriteString(w, "*")
+		w.WriteString("*")
 		p.StarArg.printSource(w, v)
 
 		for _, d := range p.StarArgs {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			d.printSource(w, v)
@@ -873,12 +869,12 @@ func (p ParameterList) printSource(w writer, v bool) {
 		if first {
 			first = false
 		} else if v {
-			io.WriteString(w, ", ")
+			w.WriteString(", ")
 		} else {
-			io.WriteString(w, ",")
+			w.WriteString(",")
 		}
 
-		io.WriteString(w, "**")
+		w.WriteString("**")
 		p.StarStarArg.printSource(w, v)
 	}
 }
@@ -887,23 +883,23 @@ func (p PositionalArgument) printSource(w writer, v bool) {
 	if p.AssignmentExpression != nil {
 		p.AssignmentExpression.printSource(w, v)
 	} else if p.Expression != nil {
-		io.WriteString(w, "*")
+		w.WriteString("*")
 		p.Expression.printSource(w, v)
 	}
 }
 
 func (p PowerExpression) printSource(w writer, v bool) {
 	if p.AwaitExpression {
-		io.WriteString(w, "await ")
+		w.WriteString("await ")
 	}
 
 	p.PrimaryExpression.printSource(w, v)
 
 	if p.UnaryExpression != nil {
 		if v {
-			io.WriteString(w, " ** ")
+			w.WriteString(" ** ")
 		} else {
-			io.WriteString(w, "**")
+			w.WriteString("**")
 		}
 
 		p.UnaryExpression.printSource(w, v)
@@ -917,8 +913,8 @@ func (p PrimaryExpression) printSource(w writer, v bool) {
 		p.PrimaryExpression.printSource(w, v)
 
 		if p.AttributeRef != nil {
-			io.WriteString(w, ".")
-			io.WriteString(w, p.AttributeRef.Data)
+			w.WriteString(".")
+			w.WriteString(p.AttributeRef.Data)
 		} else if p.Slicing != nil {
 			p.Slicing.printSource(w, v)
 		} else if p.Call != nil {
@@ -929,13 +925,13 @@ func (p PrimaryExpression) printSource(w writer, v bool) {
 
 func (r RaiseStatement) printSource(w writer, v bool) {
 	if r.Expression == nil {
-		io.WriteString(w, "raise")
+		w.WriteString("raise")
 	} else {
-		io.WriteString(w, "raise ")
+		w.WriteString("raise ")
 		r.Expression.printSource(w, v)
 
 		if r.From != nil {
-			io.WriteString(w, " from ")
+			w.WriteString(" from ")
 			r.From.printSource(w, v)
 		}
 	}
@@ -943,7 +939,7 @@ func (r RaiseStatement) printSource(w writer, v bool) {
 
 func (r RelativeModule) printSource(w writer, v bool) {
 	for range r.Dots {
-		io.WriteString(w, ".")
+		w.WriteString(".")
 	}
 
 	if r.Module != nil {
@@ -953,10 +949,10 @@ func (r RelativeModule) printSource(w writer, v bool) {
 
 func (r ReturnStatement) printSource(w writer, v bool) {
 	if r.Expression != nil {
-		io.WriteString(w, "return ")
+		w.WriteString("return ")
 		r.Expression.printSource(w, v)
 	} else {
-		io.WriteString(w, "return")
+		w.WriteString("return")
 	}
 }
 
@@ -965,13 +961,13 @@ func (s ShiftExpression) printSource(w writer, v bool) {
 
 	if s.Shift != nil && s.ShiftExpression != nil {
 		if v {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
-		io.WriteString(w, s.Shift.Data)
+		w.WriteString(s.Shift.Data)
 
 		if v {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
 		s.ShiftExpression.printSource(w, v)
@@ -1004,15 +1000,15 @@ func (s SimpleStatement) printSource(w writer, v bool) {
 	} else if s.AugmentedAssignmentStatement != nil {
 		s.AugmentedAssignmentStatement.printSource(w, v)
 	} else if s.Type == StatementPass {
-		io.WriteString(w, "pass")
+		w.WriteString("pass")
 	} else if s.Type == StatementBreak {
-		io.WriteString(w, "break")
+		w.WriteString("break")
 	} else if s.Type == StatementContinue {
-		io.WriteString(w, "continue")
+		w.WriteString("continue")
 	}
 
 	if v && len(s.Comments) > 0 {
-		io.WriteString(w, " ")
+		w.WriteString(" ")
 		s.Comments.printSource(w, false)
 	}
 }
@@ -1025,18 +1021,18 @@ func (s SliceItem) printSource(w writer, v bool) {
 
 		if s.UpperBound != nil {
 			if v {
-				io.WriteString(w, " : ")
+				w.WriteString(" : ")
 			} else {
-				io.WriteString(w, ":")
+				w.WriteString(":")
 			}
 
 			s.UpperBound.printSource(w, v)
 
 			if s.Stride != nil {
 				if v {
-					io.WriteString(w, " : ")
+					w.WriteString(" : ")
 				} else {
-					io.WriteString(w, ":")
+					w.WriteString(":")
 				}
 
 				s.Stride.printSource(w, v)
@@ -1046,23 +1042,23 @@ func (s SliceItem) printSource(w writer, v bool) {
 }
 
 func (s SliceList) printSource(w writer, v bool) {
-	io.WriteString(w, "[")
+	w.WriteString("[")
 
 	if len(s.SliceItems) > 0 {
 		s.SliceItems[0].printSource(w, v)
 
 		for _, si := range s.SliceItems[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			si.printSource(w, v)
 		}
 	}
 
-	io.WriteString(w, "]")
+	w.WriteString("]")
 }
 
 func (s StarredExpression) printSource(w writer, v bool) {
@@ -1077,7 +1073,7 @@ func (s StarredItem) printSource(w writer, v bool) {
 	if s.AssignmentExpression != nil {
 		s.AssignmentExpression.printSource(w, v)
 	} else if s.OrExpr != nil {
-		io.WriteString(w, "*")
+		w.WriteString("*")
 		s.OrExpr.printSource(w, v)
 	}
 }
@@ -1088,23 +1084,23 @@ func (s StarredList) printSource(w writer, v bool) {
 
 		for _, si := range s.StarredItems[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			si.printSource(w, v)
 		}
 
 		if s.TrailingComma {
-			io.WriteString(w, ",")
+			w.WriteString(",")
 		}
 	}
 }
 
 func (s StarredOrKeyword) printSource(w writer, v bool) {
 	if s.Expression != nil {
-		io.WriteString(w, "*")
+		w.WriteString("*")
 		s.Expression.printSource(w, v)
 	} else if s.KeywordItem != nil {
 		s.KeywordItem.printSource(w, v)
@@ -1129,9 +1125,9 @@ func (s StatementList) printSource(w writer, v bool) {
 
 		for _, ss := range s.Statements[1:] {
 			if v {
-				io.WriteString(w, "; ")
+				w.WriteString("; ")
 			} else {
-				io.WriteString(w, ";")
+				w.WriteString(";")
 			}
 
 			ss.printSource(w, v)
@@ -1142,7 +1138,7 @@ func (s StatementList) printSource(w writer, v bool) {
 func (s Suite) printSource(w writer, v bool) {
 	if s.StatementList != nil {
 		if v {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 		}
 
 		s.StatementList.printSource(w, v)
@@ -1153,7 +1149,7 @@ func (s Suite) printSource(w writer, v bool) {
 			if len(s.Tokens) > 0 && len(s.Comments[0]) > 0 && s.Comments[0][0].Line > s.Tokens[0].Line {
 				ip.WriteString("\n")
 			} else {
-				io.WriteString(w, " ")
+				w.WriteString(" ")
 			}
 
 			s.Comments[0].printSource(&ip, false)
@@ -1165,7 +1161,7 @@ func (s Suite) printSource(w writer, v bool) {
 		}
 
 		if v && len(s.Comments[1]) > 0 {
-			io.WriteString(w, "\n")
+			w.WriteString("\n")
 			ip.WriteString("\n")
 			s.Comments[1].printSource(&ip, v)
 		}
@@ -1176,15 +1172,15 @@ func (t Target) printSource(w writer, v bool) {
 	if t.PrimaryExpression != nil {
 		t.PrimaryExpression.printSource(w, v)
 	} else if t.Tuple != nil {
-		io.WriteString(w, "(")
+		w.WriteString("(")
 		t.Tuple.printSource(w, v)
-		io.WriteString(w, ")")
+		w.WriteString(")")
 	} else if t.Array != nil {
-		io.WriteString(w, "[")
+		w.WriteString("[")
 		t.Array.printSource(w, v)
-		io.WriteString(w, "]")
+		w.WriteString("]")
 	} else if t.Star != nil {
-		io.WriteString(w, "*")
+		w.WriteString("*")
 		t.Star.printSource(w, v)
 	}
 }
@@ -1199,39 +1195,39 @@ func (t TargetList) printSource(w writer, v bool) {
 
 		for _, tg := range t.Targets[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			tg.printSource(w, v)
 		}
 
 		if v && len(t.Comments[1]) > 0 {
-			io.WriteString(w, " ")
+			w.WriteString(" ")
 			t.Comments[1].printSource(w, v)
 		}
 	}
 }
 
 func (t TryStatement) printSource(w writer, v bool) {
-	io.WriteString(w, "try:")
+	w.WriteString("try:")
 	t.Try.printSource(w, v)
 
 	if len(t.Except) > 0 {
-		io.WriteString(w, "\nexcept ")
+		w.WriteString("\nexcept ")
 
 		if t.Groups {
-			io.WriteString(w, "*")
+			w.WriteString("*")
 		}
 
 		t.Except[0].printSource(w, v)
 
 		for _, e := range t.Except[1:] {
-			io.WriteString(w, "\nexcept ")
+			w.WriteString("\nexcept ")
 
 			if t.Groups {
-				io.WriteString(w, "*")
+				w.WriteString("*")
 			}
 
 			e.printSource(w, v)
@@ -1239,30 +1235,30 @@ func (t TryStatement) printSource(w writer, v bool) {
 	}
 
 	if t.Else != nil {
-		io.WriteString(w, "\nelse:")
+		w.WriteString("\nelse:")
 		t.Else.printSource(w, v)
 	}
 
 	if t.Finally != nil {
-		io.WriteString(w, "\nfinally:")
+		w.WriteString("\nfinally:")
 		t.Finally.printSource(w, v)
 	}
 }
 
 func (t TypeParam) printSource(w writer, v bool) {
 	if t.Type == TypeParamVar {
-		io.WriteString(w, "*")
+		w.WriteString("*")
 	} else if t.Type == TypeParamVarTuple {
-		io.WriteString(w, "**")
+		w.WriteString("**")
 	}
 
-	io.WriteString(w, t.Identifier.Data)
+	w.WriteString(t.Identifier.Data)
 
 	if t.Expression != nil {
 		if v {
-			io.WriteString(w, ": ")
+			w.WriteString(": ")
 		} else {
-			io.WriteString(w, ":")
+			w.WriteString(":")
 		}
 
 		t.Expression.printSource(w, v)
@@ -1270,37 +1266,37 @@ func (t TypeParam) printSource(w writer, v bool) {
 }
 
 func (t TypeParams) printSource(w writer, v bool) {
-	io.WriteString(w, "[")
+	w.WriteString("[")
 
 	if len(t.TypeParams) > 0 {
 		t.TypeParams[0].printSource(w, v)
 
 		for _, tp := range t.TypeParams[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			tp.printSource(w, v)
 		}
 	}
 
-	io.WriteString(w, "]")
+	w.WriteString("]")
 }
 
 func (t TypeStatement) printSource(w writer, v bool) {
-	io.WriteString(w, "type ")
-	io.WriteString(w, t.Identifier.Data)
+	w.WriteString("type ")
+	w.WriteString(t.Identifier.Data)
 
 	if t.TypeParams != nil {
 		t.TypeParams.printSource(w, v)
 	}
 
 	if v {
-		io.WriteString(w, " = ")
+		w.WriteString(" = ")
 	} else {
-		io.WriteString(w, "=")
+		w.WriteString("=")
 	}
 
 	t.Expression.printSource(w, v)
@@ -1310,19 +1306,19 @@ func (u UnaryExpression) printSource(w writer, v bool) {
 	if u.PowerExpression != nil {
 		u.PowerExpression.printSource(w, v)
 	} else if u.Unary != nil && u.UnaryExpression != nil {
-		io.WriteString(w, u.Unary.Data)
+		w.WriteString(u.Unary.Data)
 		u.UnaryExpression.printSource(w, v)
 	}
 }
 
 func (ws WhileStatement) printSource(w writer, v bool) {
-	io.WriteString(w, "while ")
+	w.WriteString("while ")
 	ws.AssignmentExpression.printSource(w, v)
-	io.WriteString(w, ":")
+	w.WriteString(":")
 	ws.Suite.printSource(w, v)
 
 	if ws.Else != nil {
-		io.WriteString(w, "\nelse:")
+		w.WriteString("\nelse:")
 		ws.Else.printSource(w, v)
 	}
 }
@@ -1331,15 +1327,15 @@ func (wi WithItem) printSource(w writer, v bool) {
 	wi.Expression.printSource(w, v)
 
 	if wi.Target != nil {
-		io.WriteString(w, " as ")
+		w.WriteString(" as ")
 		wi.Target.printSource(w, v)
 	}
 }
 
 func (ws WithStatement) printSource(w writer, v bool) {
-	io.WriteString(w, "with ")
+	w.WriteString("with ")
 	ws.Contents.printSource(w, v)
-	io.WriteString(w, ":")
+	w.WriteString(":")
 	ws.Suite.printSource(w, v)
 }
 
@@ -1349,9 +1345,9 @@ func (wc WithStatementContents) printSource(w writer, v bool) {
 
 		for _, i := range wc.Items[1:] {
 			if v {
-				io.WriteString(w, ", ")
+				w.WriteString(", ")
 			} else {
-				io.WriteString(w, ",")
+				w.WriteString(",")
 			}
 
 			i.printSource(w, v)
@@ -1364,9 +1360,9 @@ func (x XorExpression) printSource(w writer, v bool) {
 
 	if x.XorExpression != nil {
 		if v {
-			io.WriteString(w, " ^ ")
+			w.WriteString(" ^ ")
 		} else {
-			io.WriteString(w, "^")
+			w.WriteString("^")
 		}
 
 		x.XorExpression.printSource(w, v)
@@ -1375,10 +1371,10 @@ func (x XorExpression) printSource(w writer, v bool) {
 
 func (y YieldExpression) printSource(w writer, v bool) {
 	if y.From != nil {
-		io.WriteString(w, "yield from ")
+		w.WriteString("yield from ")
 		y.From.printSource(w, v)
 	} else if y.ExpressionList != nil {
-		io.WriteString(w, "yield ")
+		w.WriteString("yield ")
 		y.ExpressionList.printSource(w, v)
 	}
 }
