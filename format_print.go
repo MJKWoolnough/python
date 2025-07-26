@@ -1143,7 +1143,7 @@ func (s Suite) printSource(w writer, v bool) {
 
 		s.StatementList.printSource(w, v)
 	} else {
-		ip := indentPrinter{writer: w}
+		ip := w.Indent()
 
 		if v && len(s.Comments[0]) > 0 {
 			if len(s.Tokens) > 0 && len(s.Comments[0]) > 0 && s.Comments[0][0].Line > s.Tokens[0].Line {
@@ -1152,18 +1152,18 @@ func (s Suite) printSource(w writer, v bool) {
 				w.WriteString(" ")
 			}
 
-			s.Comments[0].printSource(&ip, false)
+			s.Comments[0].printSource(ip, false)
 		}
 
 		for _, stmt := range s.Statements {
 			ip.WriteString("\n")
-			stmt.printSource(&ip, v)
+			stmt.printSource(ip, v)
 		}
 
 		if v && len(s.Comments[1]) > 0 {
 			w.WriteString("\n")
 			ip.WriteString("\n")
-			s.Comments[1].printSource(&ip, v)
+			s.Comments[1].printSource(ip, v)
 		}
 	}
 }

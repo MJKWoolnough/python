@@ -19,6 +19,8 @@ type writer interface {
 	io.StringWriter
 	Underlying() writer
 	Pos() int
+	Indent() writer
+	Printf(string, ...any)
 }
 
 type indentPrinter struct {
@@ -80,12 +82,16 @@ func (i *indentPrinter) printIndent() error {
 	return nil
 }
 
-func (i *indentPrinter) Printf(format string, args ...interface{}) {
+func (i *indentPrinter) Printf(format string, args ...any) {
 	fmt.Fprintf(i, format, args...)
 }
 
 func (i *indentPrinter) WriteString(s string) (int, error) {
 	return i.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
+}
+
+func (i *indentPrinter) Indent() writer {
+	return &indentPrinter{writer: i}
 }
 
 type countPrinter struct {
@@ -115,6 +121,14 @@ func (c *countPrinter) Pos() int {
 
 func (c *countPrinter) Underlying() writer {
 	return c
+}
+
+func (c *countPrinter) Indent() writer {
+	return &indentPrinter{writer: c}
+}
+
+func (c *countPrinter) Printf(format string, args ...any) {
+	fmt.Fprintf(c, format, args...)
 }
 
 func (t Token) printType(w writer, v bool) {
