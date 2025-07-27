@@ -9,10 +9,7 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-var (
-	indent = []byte{'\t'}
-	space  = []byte{' '}
-)
+var indent = []byte{'\t'}
 
 type writer interface {
 	io.Writer
