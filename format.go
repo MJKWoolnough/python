@@ -151,27 +151,27 @@ func (t Token) printType(w writer, v bool) {
 		typ = "Unknown"
 	}
 
-	fmt.Fprintf(w, "Type: %s - Data: %q", typ, t.Data)
+	w.Printf("Type: %s - Data: %q", typ, t.Data)
 
 	if v {
-		fmt.Fprintf(w, " - Position: %d (%d: %d)", t.Pos, t.Line, t.LinePos)
+		w.Printf(" - Position: %d (%d: %d)", t.Pos, t.Line, t.LinePos)
 	}
 }
 
 func (t Tokens) printType(w writer, v bool) {
 	if t == nil {
-		io.WriteString(w, "nil")
+		w.WriteString("nil")
 
 		return
 	}
 
 	if len(t) == 0 {
-		io.WriteString(w, "[]")
+		w.WriteString("[]")
 
 		return
 	}
 
-	io.WriteString(w, "[")
+	w.WriteString("[")
 
 	ipp := indentPrinter{writer: w}
 
@@ -180,7 +180,7 @@ func (t Tokens) printType(w writer, v bool) {
 		t.printType(w, v)
 	}
 
-	io.WriteString(w, "\n]")
+	w.WriteString("\n]")
 }
 
 func (c Comments) printType(w writer, v bool) {
@@ -194,12 +194,12 @@ func (c Comments) printSource(w writer, v bool) {
 		line := c[0].Line
 
 		for _, c := range c[1:] {
-			io.WriteString(w, "\n")
+			w.WriteString("\n")
 
 			line++
 
 			if line < c.Line {
-				io.WriteString(w, "\n")
+				w.WriteString("\n")
 
 				line++
 			}
@@ -208,21 +208,21 @@ func (c Comments) printSource(w writer, v bool) {
 		}
 
 		if v {
-			io.WriteString(w, "\n")
+			w.WriteString("\n")
 		}
 	}
 }
 
 func printComment(w writer, c string) {
 	if !strings.HasPrefix(c, "#") {
-		io.WriteString(w, "#")
+		w.WriteString("#")
 	}
 
-	io.WriteString(w, c)
+	w.WriteString(c)
 }
 
 func (s StatementType) printType(w writer, _ bool) {
-	io.WriteString(w, s.String())
+	w.WriteString(s.String())
 }
 
 // String implements the fmt.Stringer interface.
@@ -264,7 +264,7 @@ func (s StatementType) String() string {
 }
 
 func (t TypeParamType) printType(w writer, _ bool) {
-	io.WriteString(w, t.String())
+	w.WriteString(t.String())
 }
 
 // String implements the fmt.Stringer interface.
