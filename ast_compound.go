@@ -1365,7 +1365,7 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 			}
 		default:
 			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
-				if target, err = l.parseStarStar(p, q, target, allowAnnotations); err != nil {
+				if err = l.parseStarStar(p, q, allowAnnotations); err != nil {
 					return err
 				}
 			}
@@ -1405,13 +1405,13 @@ func (l *ParameterList) parseStars(p, q *pyParser, target *[]DefParameter, allow
 	}
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
-		return l.parseStarStar(p, q, target, allowAnnotations)
+		return nil, l.parseStarStar(p, q, allowAnnotations)
 	}
 
 	return target, nil
 }
 
-func (l *ParameterList) parseStarStar(p, q *pyParser, target *[]DefParameter, allowAnnotations bool) (*[]DefParameter, error) {
+func (l *ParameterList) parseStarStar(p, q *pyParser, allowAnnotations bool) error {
 	q.AcceptRunWhitespace()
 	p.Score(q)
 
@@ -1419,12 +1419,11 @@ func (l *ParameterList) parseStarStar(p, q *pyParser, target *[]DefParameter, al
 	l.StarStarArg = new(Parameter)
 
 	if err := l.StarStarArg.parse(q, allowAnnotations); err != nil {
-		return nil, p.Error("ParameterList", err)
+		return p.Error("ParameterList", err)
 	}
 
 	p.Score(q)
 
-	target = nil
 	*q = *p.NewGoal()
 
 	q.AcceptRunWhitespace()
@@ -1433,7 +1432,7 @@ func (l *ParameterList) parseStarStar(p, q *pyParser, target *[]DefParameter, al
 		p.Score(q)
 	}
 
-	return target, nil
+	return nil
 }
 
 // DefParameter as defined in python@3.13.0:
