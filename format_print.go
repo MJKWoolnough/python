@@ -866,12 +866,12 @@ func (p ParameterList) printSource(w writer, v bool) {
 	}
 
 	if p.StarStarArg != nil {
-		if first {
-			first = false
-		} else if v {
-			w.WriteString(", ")
-		} else {
-			w.WriteString(",")
+		if !first {
+			if v {
+				w.WriteString(", ")
+			} else {
+				w.WriteString(",")
+			}
 		}
 
 		w.WriteString("**")
