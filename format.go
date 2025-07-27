@@ -93,37 +93,24 @@ func (i *indentPrinter) Indent() writer {
 	return &indentPrinter{writer: i}
 }
 
-type countPrinter struct {
+type underlyingWriter struct {
 	io.Writer
-	pos int
 }
 
-func (c *countPrinter) Write(p []byte) (int, error) {
-	for _, b := range p {
-		if b == '\n' {
-			c.pos = 0
-		} else if b != '\t' || c.pos > 0 {
-			c.pos++
-		}
-	}
-
-	return c.Writer.Write(p)
+func (u *underlyingWriter) WriteString(s string) (int, error) {
+	return u.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
 }
 
-func (c *countPrinter) WriteString(s string) (int, error) {
-	return c.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
+func (u *underlyingWriter) Underlying() writer {
+	return u
 }
 
-func (c *countPrinter) Underlying() writer {
-	return c
+func (u *underlyingWriter) Indent() writer {
+	return &indentPrinter{writer: u}
 }
 
-func (c *countPrinter) Indent() writer {
-	return &indentPrinter{writer: c}
-}
-
-func (c *countPrinter) Printf(format string, args ...any) {
-	fmt.Fprintf(c, format, args...)
+func (u *underlyingWriter) Printf(format string, args ...any) {
+	fmt.Fprintf(u, format, args...)
 }
 
 func (t Token) printType(w writer, v bool) {
@@ -302,8 +289,8 @@ type formatter interface {
 func format(f formatter, s fmt.State, v rune) {
 	switch v {
 	case 'v':
-		f.printType(&countPrinter{Writer: s}, s.Flag('+'))
+		f.printType(&underlyingWriter{Writer: s}, s.Flag('+'))
 	case 's':
-		f.printSource(&countPrinter{Writer: s}, s.Flag('+'))
+		f.printSource(&underlyingWriter{Writer: s}, s.Flag('+'))
 	}
 }
