@@ -13,8 +13,6 @@ types() {
 package python
 
 // File automatically generated with format.sh.
-
-import "io"
 HEREDOC
 
 	while read type file; do
@@ -78,7 +76,7 @@ HEREDOC
 		done < <(sed '/^type '$type' struct {$/,/^}$/!d;//d' "$file");
 
 		echo;
-		echo "	io.WriteString(w, \"\n}\")";
+		echo "	w.WriteString(\"\n}\")";
 		echo "}";
 	done < <(types);
 } > "format_types.go";
