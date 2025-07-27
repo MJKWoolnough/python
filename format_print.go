@@ -1163,7 +1163,7 @@ func (s Suite) printSource(w writer, v bool) {
 		if v && len(s.Comments[1]) > 0 {
 			w.WriteString("\n")
 			ip.WriteString("\n")
-			s.Comments[1].printSource(ip, v)
+			s.Comments[1].printSource(ip, false)
 		}
 	}
 }
