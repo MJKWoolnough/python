@@ -822,6 +822,7 @@ func walkFuncDefinition(t *python.FuncDefinition, fn Handler) error {
 
 func walkGeneratorExpression(t *python.GeneratorExpression, fn Handler) error {
 	if err := fn.Handle(&t.Expression); err != nil {
+		return err
 	}
 
 	return fn.Handle(&t.ComprehensionFor)
