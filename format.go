@@ -13,7 +13,7 @@ var indent = []byte{'\t'}
 
 type writer interface {
 	io.Writer
-	io.StringWriter
+	WriteString(string)
 	Underlying() writer
 	Indent() writer
 	Printf(string, ...any)
@@ -82,8 +82,8 @@ func (i *indentPrinter) Printf(format string, args ...any) {
 	fmt.Fprintf(i, format, args...)
 }
 
-func (i *indentPrinter) WriteString(s string) (int, error) {
-	return i.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
+func (i *indentPrinter) WriteString(s string) {
+	i.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
 }
 
 func (i *indentPrinter) Indent() writer {
@@ -94,8 +94,8 @@ type underlyingWriter struct {
 	io.Writer
 }
 
-func (u *underlyingWriter) WriteString(s string) (int, error) {
-	return u.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
+func (u *underlyingWriter) WriteString(s string) {
+	u.Write(unsafe.Slice(unsafe.StringData(s), len(s)))
 }
 
 func (u *underlyingWriter) Underlying() writer {
