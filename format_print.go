@@ -512,15 +512,48 @@ func (e ExpressionList) printSource(w writer, v bool) {
 }
 
 func (f File) printSource(w writer, v bool) {
-	for _, s := range f.Statements {
-		s.printSource(w, v)
-		w.WriteString("\n")
-	}
+	printStatements(w, v, f.Statements)
+	w.WriteString("\n")
 
 	if v && len(f.Comments) > 0 {
 		w.WriteString("\n")
 		f.Comments.printSource(w, v)
 	}
+}
+
+func printStatements(w writer, v bool, s []Statement) {
+	if len(s) > 0 {
+		s[0].printSource(w, v)
+
+		lastLine := lastTokenPos(s[0].Tokens)
+
+		for _, s := range s[1:] {
+			if v && firstTokenPos(s.Tokens) > lastLine+1 {
+				w.WriteString("\n")
+			}
+
+			w.WriteString("\n")
+			s.printSource(w, v)
+
+			lastLine = lastTokenPos(s.Tokens)
+		}
+	}
+}
+
+func firstTokenPos(tk Tokens) (pos uint64) {
+	if len(tk) > 0 {
+		pos = tk[0].Line
+	}
+
+	return pos
+}
+
+func lastTokenPos(tk Tokens) (pos uint64) {
+	if len(tk) > 0 {
+		pos = tk[len(tk)-1].Line
+	}
+
+	return pos
 }
 
 func (f FlexibleExpressionListOrComprehension) printSource(w writer, v bool) {
@@ -1155,10 +1188,8 @@ func (s Suite) printSource(w writer, v bool) {
 			s.Comments[0].printSource(ip, false)
 		}
 
-		for _, stmt := range s.Statements {
-			ip.WriteString("\n")
-			stmt.printSource(ip, v)
-		}
+		ip.WriteString("\n")
+		printStatements(ip, v, s.Statements)
 
 		if v && len(s.Comments[1]) > 0 {
 			w.WriteString("\n")
