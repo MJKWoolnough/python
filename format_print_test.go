@@ -1160,6 +1160,16 @@ func TestPrintSource(t *testing.T) {
 			"[a]=b\n",
 			"[#abc\na #def\n] = b\n",
 		},
+		{ // 231
+			"a\nb\n\nc\n\nd\n\n\n\n\ne",
+			"a\nb\nc\nd\ne\n",
+			"a\nb\n\nc\n\nd\n\ne\n",
+		},
+		{ // 231
+			"if a:\n\tb\n\tc\n\t\n\t\n\td",
+			"if a:\n\tb\n\tc\n\td\n",
+			"if a:\n\tb\n\tc\n\n\td\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
@@ -1168,7 +1178,7 @@ func TestPrintSource(t *testing.T) {
 				t.Errorf("test %d.%d: unexpected error: %s", n+1, m+1, err)
 			} else if simple := fmt.Sprintf("%s", f); simple != test[1] {
 				t.Errorf("test %d.%d.1: expecting output %q, got %q", n+1, m+1, test[1], simple)
-			} else if verbose := fmt.Sprintf("%+s", f); verbose != test[2] && (m != 1 || !strings.ContainsRune(test[0], '#')) {
+			} else if verbose := fmt.Sprintf("%+s", f); verbose != test[2] && (m != 1 || !strings.ContainsRune(test[2], '#') && !strings.Contains(test[2], "\n\n")) {
 				t.Errorf("test %d.%d.2: expecting output %q, got %q", n+1, m+1, test[2], verbose)
 			}
 		}
