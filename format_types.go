@@ -1860,9 +1860,6 @@ func (f *SimpleStatement) printType(w writer, v bool) {
 		pp.WriteString("\nTypeStatement: nil")
 	}
 
-	pp.WriteString("\nComments: ")
-	f.Comments.printType(pp, v)
-
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
 
@@ -2092,6 +2089,9 @@ func (f *StatementList) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nStatements: []")
 	}
+
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
 
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)

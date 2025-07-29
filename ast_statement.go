@@ -68,6 +68,7 @@ func (s *Statement) parse(p *pyParser) error {
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-stmt_list
 type StatementList struct {
 	Statements []SimpleStatement
+	Comments   Comments
 	Tokens
 }
 
@@ -103,6 +104,7 @@ func (s *StatementList) parse(p *pyParser) error {
 		p.Score(q)
 	}
 
+	s.Comments = p.AcceptRunWhitespaceCommentsNoNewline()
 	s.Tokens = p.ToTokens()
 
 	return nil
@@ -145,7 +147,6 @@ type SimpleStatement struct {
 	GlobalStatement              *GlobalStatement
 	NonLocalStatement            *NonLocalStatement
 	TypeStatement                *TypeStatement
-	Comments                     Comments
 	Tokens                       Tokens
 }
 
@@ -307,7 +308,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 		p.Score(q)
 	}
 
-	s.Comments = p.AcceptRunWhitespaceCommentsNoNewline()
 	s.Tokens = p.ToTokens()
 
 	return nil

@@ -1043,11 +1043,6 @@ func (s SimpleStatement) printSource(w writer, v bool) {
 	} else if s.Type == StatementContinue {
 		w.WriteString("continue")
 	}
-
-	if v && len(s.Comments) > 0 {
-		w.WriteString(" ")
-		s.Comments.printSource(w, false)
-	}
 }
 
 func (s SliceItem) printSource(w writer, v bool) {
@@ -1168,6 +1163,11 @@ func (s StatementList) printSource(w writer, v bool) {
 			}
 
 			ss.printSource(w, v)
+		}
+
+		if v && len(s.Comments) > 0 {
+			w.WriteString(" ")
+			s.Comments.printSource(w, false)
 		}
 	}
 }

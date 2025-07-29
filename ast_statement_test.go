@@ -239,31 +239,6 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a #Comment`, func(t *test, tk Tokens) { // 4
-			t.Output = StatementList{
-				Statements: []SimpleStatement{
-					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Comments: Comments{tk[2]},
-						Tokens:   tk[:3],
-					},
-				},
-				Tokens: tk[:3],
-			}
-		}},
 		{"a\n", func(t *test, tk Tokens) { // 5
 			t.Output = StatementList{
 				Statements: []SimpleStatement{
@@ -309,7 +284,8 @@ func TestStatementList(t *testing.T) {
 						Tokens: tk[:1],
 					},
 				},
-				Tokens: tk[:2],
+				Comments: Comments{tk[3]},
+				Tokens:   tk[:4],
 			}
 		}},
 		{"a;\n", func(t *test, tk Tokens) { // 7
@@ -969,26 +945,6 @@ func TestSimpleStatement(t *testing.T) {
 				},
 				Parsing: "SimpleStatement",
 				Token:   tk[0],
-			}
-		}},
-		{`a # A comment`, func(t *test, tk Tokens) { // 29
-			t.Output = SimpleStatement{
-				Type: StatementAssignment,
-				AssignmentStatement: &AssignmentStatement{
-					StarredExpression: &StarredExpression{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							}),
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Comments: Comments{tk[2]},
-				Tokens:   tk[:3],
 			}
 		}},
 	}, func(t *test) (Type, error) {
