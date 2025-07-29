@@ -17,7 +17,6 @@ type PrimaryExpression struct {
 
 func (pr *PrimaryExpression) parse(p *pyParser) error {
 	pr.Atom = new(Atom)
-
 	q := p.NewGoal()
 
 	if err := pr.Atom.parse(q); err != nil {
@@ -46,6 +45,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			}
 		} else if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "["}) {
 			r := q.NewGoal()
+
 			var sl SliceList
 
 			if err := sl.parse(r); err != nil {
@@ -116,7 +116,6 @@ func (a *Atom) parse(p *pyParser) error {
 		a.Literal = p.GetLastToken()
 	} else {
 		a.Enclosure = new(Enclosure)
-
 		q := p.NewGoal()
 
 		if err := a.Enclosure.parse(q); err != nil {
@@ -480,6 +479,7 @@ func (c *Comprehension) parse(p *pyParser, ae *AssignmentExpression) error {
 	}
 
 	p.AcceptRunWhitespace()
+
 	q := p.NewGoal()
 
 	if err := c.ComprehensionFor.parse(q); err != nil {
@@ -539,6 +539,7 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 	p.Score(q)
 
 	q = p.NewGoal()
+
 	q.AcceptRunWhitespace()
 
 	switch q.Peek() {
@@ -1149,7 +1150,6 @@ func (s *ShiftExpression) parse(p *pyParser) error {
 		s.Shift = q.GetLastToken()
 
 		q.AcceptRunWhitespace()
-
 		p.Score(q)
 
 		q = p.NewGoal()
@@ -1239,7 +1239,6 @@ func (m *MultiplyExpression) parse(p *pyParser) error {
 		m.Multiply = q.GetLastToken()
 
 		q.AcceptRunWhitespace()
-
 		p.Score(q)
 
 		q = p.NewGoal()
