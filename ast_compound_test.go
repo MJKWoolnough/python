@@ -947,7 +947,7 @@ func TestCompoundStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var c CompoundStatement
 
-		err := c.parser(t.Tokens)
+		err := c.parse(t.Tokens)
 
 		return c, err
 	})

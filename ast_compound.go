@@ -19,7 +19,7 @@ type CompoundStatement struct {
 	Tokens Tokens
 }
 
-func (c *CompoundStatement) parser(p *pyParser) error {
+func (c *CompoundStatement) parse(p *pyParser) error {
 	var (
 		decorators *Decorators
 		err        error

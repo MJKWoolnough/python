@@ -37,7 +37,7 @@ func (s *Statement) parse(p *pyParser) error {
 	if isCompound {
 		c := new(CompoundStatement)
 
-		if err := c.parser(q); err != nil {
+		if err := c.parse(q); err != nil {
 			if !isSoftCompound {
 				return p.Error("Statement", err)
 			}
