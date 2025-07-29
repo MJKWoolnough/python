@@ -155,7 +155,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "assert"}:
 		s.AssertStatement = new(AssertStatement)
 		s.Type = StatementAssert
-
 		q := p.NewGoal()
 
 		if err := s.AssertStatement.parse(q); err != nil {
@@ -170,7 +169,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "del"}:
 		s.DelStatement = new(DelStatement)
 		s.Type = StatementDel
-
 		q := p.NewGoal()
 
 		if err := s.DelStatement.parse(q); err != nil {
@@ -181,7 +179,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "return"}:
 		s.ReturnStatement = new(ReturnStatement)
 		s.Type = StatementReturn
-
 		q := p.NewGoal()
 
 		if err := s.ReturnStatement.parse(q); err != nil {
@@ -192,7 +189,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "yield"}:
 		s.YieldStatement = new(YieldExpression)
 		s.Type = StatementYield
-
 		q := p.NewGoal()
 
 		if err := s.YieldStatement.parse(q); err != nil {
@@ -203,7 +199,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "raise"}:
 		s.RaiseStatement = new(RaiseStatement)
 		s.Type = StatementRaise
-
 		q := p.NewGoal()
 
 		if err := s.RaiseStatement.parse(q); err != nil {
@@ -222,7 +217,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "import"}, parser.Token{Type: TokenKeyword, Data: "from"}:
 		s.ImportStatement = new(ImportStatement)
 		s.Type = StatementImport
-
 		q := p.NewGoal()
 
 		if err := s.ImportStatement.parse(q); err != nil {
@@ -233,7 +227,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "global"}:
 		s.GlobalStatement = new(GlobalStatement)
 		s.Type = StatementGlobal
-
 		q := p.NewGoal()
 
 		if err := s.GlobalStatement.parse(q); err != nil {
@@ -244,7 +237,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	case parser.Token{Type: TokenKeyword, Data: "nonlocal"}:
 		s.NonLocalStatement = new(NonLocalStatement)
 		s.Type = StatementNonLocal
-
 		q := p.NewGoal()
 
 		if err := s.NonLocalStatement.parse(q); err != nil {
@@ -255,7 +247,6 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 	case parser.Token{Type: TokenIdentifier, Data: "type"}:
 		s.TypeStatement = new(TypeStatement)
 		s.Type = StatementTyp
-
 		q := p.NewGoal()
 
 		if err := s.TypeStatement.parse(q); err != nil {
@@ -350,6 +341,7 @@ func (a *AssertStatement) parse(p *pyParser) error {
 	}
 
 	a.Tokens = p.ToTokens()
+
 	return nil
 }
 
@@ -957,7 +949,6 @@ func (g *GlobalStatement) parse(p *pyParser) error {
 		}
 
 		g.Identifiers = append(g.Identifiers, p.GetLastToken())
-
 		q := p.NewGoal()
 
 		q.AcceptRunWhitespace()
@@ -1028,6 +1019,7 @@ func (t *TypeStatement) parse(p *pyParser) error {
 	}
 
 	t.Identifier = p.GetLastToken()
+
 	p.AcceptRunWhitespace()
 
 	if p.Peek() == (parser.Token{Type: TokenDelimiter, Data: "["}) {
@@ -1093,7 +1085,6 @@ func (t *TypeParams) parse(p *pyParser) error {
 			t.TypeParams = append(t.TypeParams, tp)
 
 			p.Score(q)
-
 			p.AcceptRunWhitespace()
 
 			if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
