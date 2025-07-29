@@ -947,9 +947,16 @@ func (f *File) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nStatements: []")
 	}
+	pp.WriteString("\nComments: [")
 
-	pp.WriteString("\nComments: ")
-	f.Comments.printType(pp, v)
+	ipp := pp.Indent()
+
+	for n, e := range f.Comments {
+		ipp.Printf("\n%d: ", n)
+		e.printType(ipp, v)
+	}
+
+	pp.WriteString("\n]")
 
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)

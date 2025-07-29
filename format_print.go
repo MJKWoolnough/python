@@ -512,12 +512,16 @@ func (e ExpressionList) printSource(w writer, v bool) {
 }
 
 func (f File) printSource(w writer, v bool) {
+	if v {
+		f.Comments[0].printSource(w, true)
+	}
+
 	printStatements(w, v, f.Statements)
 	w.WriteString("\n")
 
-	if v && len(f.Comments) > 0 {
+	if v && len(f.Comments[1]) > 0 {
 		w.WriteString("\n")
-		f.Comments.printSource(w, v)
+		f.Comments[1].printSource(w, v)
 	}
 }
 

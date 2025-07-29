@@ -587,7 +587,7 @@ func TestFile(t *testing.T) {
 						Tokens: tk[:1],
 					},
 				},
-				Comments: Comments{tk[2]},
+				Comments: [2]Comments{nil, {tk[2]}},
 				Tokens:   tk[:3],
 			}
 		}},
@@ -621,7 +621,7 @@ func TestFile(t *testing.T) {
 						Tokens: tk[:5],
 					},
 				},
-				Comments: Comments{tk[7]},
+				Comments: [2]Comments{nil, {tk[7]}},
 				Tokens:   tk[:8],
 			}
 		}},
