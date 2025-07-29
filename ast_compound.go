@@ -549,7 +549,6 @@ func (e *Except) parse(p *pyParser) error {
 	}
 
 	p.Score(q)
-
 	p.AcceptRunWhitespace()
 
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
@@ -593,11 +592,10 @@ type WithStatement struct {
 }
 
 func (w *WithStatement) parse(p *pyParser, async bool) error {
-	w.Async = async
-
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "with"})
 	p.AcceptRunWhitespace()
 
+	w.Async = async
 	parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
 	if parens {
@@ -655,7 +653,6 @@ type WithStatementContents struct {
 
 func (w *WithStatementContents) parse(p *pyParser) error {
 	q := p.NewGoal()
-
 	another := true
 
 	for another {
@@ -1079,7 +1076,6 @@ func (t *Target) parse(p *pyParser) error {
 		p.AcceptRunWhitespaceNoComment()
 
 		q := p.NewGoal()
-
 		t.Array = new(TargetList)
 
 		if err := t.Array.parse(q); err != nil {
@@ -1306,13 +1302,12 @@ type ParameterList struct {
 
 func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 	q := p.NewGoal()
+	hasSlash := false
 
 	target, err := l.parseStars(p, q, &l.DefParameters, allowAnnotations)
 	if err != nil {
 		return err
 	}
-
-	hasSlash := false
 
 	for target != nil && q.Peek().Type == TokenIdentifier {
 		p.Score(q)
@@ -1328,7 +1323,6 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 		p.Score(q)
 
 		*target = append(*target, df)
-
 		q = p.NewGoal()
 
 		q.AcceptRunWhitespace()
@@ -1532,6 +1526,7 @@ func (a *ArgumentList) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+
 		q = p.NewGoal()
 
 		if next := q.Peek(); next == (parser.Token{Type: TokenOperator, Data: "**"}) {
