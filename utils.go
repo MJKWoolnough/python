@@ -10,7 +10,6 @@ import (
 // Unquote takes a python quoted string and returns the unquoted string.
 func Unquote(str string) (string, error) {
 	t := parser.NewStringTokeniser(str)
-
 	raw := parseStringRaw(&t)
 	so := parseStringOpening(&t)
 
@@ -46,7 +45,6 @@ func Unquote(str string) (string, error) {
 			}
 
 			ret.WriteRune(r)
-
 			t.Get()
 		case '\n':
 			if !triple {
