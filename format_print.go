@@ -1281,6 +1281,10 @@ func (t TryStatement) printSource(w writer, v bool) {
 }
 
 func (t TypeParam) printSource(w writer, v bool) {
+	if v && len(t.Comments[0]) > 0 {
+		t.Comments[0].printSource(w, true)
+	}
+
 	if t.Type == TypeParamVar {
 		w.WriteString("*")
 	} else if t.Type == TypeParamVarTuple {
@@ -1297,6 +1301,11 @@ func (t TypeParam) printSource(w writer, v bool) {
 		}
 
 		t.Expression.printSource(w, v)
+	}
+
+	if v && len(t.Comments[1]) > 0 {
+		w.WriteString(" ")
+		t.Comments[1].printSource(w, true)
 	}
 }
 
