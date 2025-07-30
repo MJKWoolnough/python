@@ -7151,14 +7151,30 @@ func TestTypeParam(t *testing.T) {
 				Tokens:     tk[:3],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 8
+		{"# a comment\n** a", func(t *test, tk Tokens) { // 8
+			t.Output = TypeParam{
+				Type:       TypeParamVarTuple,
+				Identifier: &tk[4],
+				Comments:   [2]Comments{{tk[0]}},
+				Tokens:     tk[:5],
+			}
+		}},
+		{"# a comment\n# b comment\n\n# c comment\n** a # d comment", func(t *test, tk Tokens) { // 9
+			t.Output = TypeParam{
+				Type:       TypeParamVarTuple,
+				Identifier: &tk[9],
+				Comments:   [2]Comments{{tk[0], tk[2], tk[5]}, {tk[11]}},
+				Tokens:     tk[:12],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "TypeParam",
 				Token:   tk[0],
 			}
 		}},
-		{`a:nonlocal`, func(t *test, tk Tokens) { // 9
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -7173,14 +7189,14 @@ func TestTypeParam(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 10
+		{`*nonlocal`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "TypeParam",
 				Token:   tk[1],
 			}
 		}},
-		{`**nonlocal`, func(t *test, tk Tokens) { // 11
+		{`**nonlocal`, func(t *test, tk Tokens) { // 13
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "TypeParam",
