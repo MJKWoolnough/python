@@ -1072,7 +1072,7 @@ func (t *TypeParams) parse(p *pyParser) error {
 		p.Score(q)
 	} else {
 		for {
-			p.AcceptRunWhitespace()
+			p.AcceptRunWhitespaceNoComment()
 
 			q := p.NewGoal()
 
