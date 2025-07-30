@@ -1165,10 +1165,15 @@ func TestPrintSource(t *testing.T) {
 			"a\nb\nc\nd\ne\n",
 			"a\nb\n\nc\n\nd\n\ne\n",
 		},
-		{ // 231
+		{ // 232
 			"if a:\n\tb\n\tc\n\t\n\t\n\td",
 			"if a:\n\tb\n\tc\n\td\n",
 			"if a:\n\tb\n\tc\n\n\td\n",
+		},
+		{ // 233
+			"def a[b # A\n, # B\nc # C\n](): b",
+			"def a[b,c]():b\n",
+			"def a[b # A\n, # B\nc # C\n](): b\n",
 		},
 	} {
 		for m, input := range test {
