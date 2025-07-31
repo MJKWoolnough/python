@@ -1291,7 +1291,7 @@ func (t *TypeParam) parse(p *pyParser) error {
 
 	q := p.NewGoal()
 
-	q.AcceptRunAllWhitespace()
+	q.AcceptRunWhitespace()
 
 	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "]"}) {
 		t.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewline()
