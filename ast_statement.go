@@ -1057,20 +1057,22 @@ func (t *TypeStatement) parse(p *pyParser) error {
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-type_params
 type TypeParams struct {
 	TypeParams []TypeParam
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 
 func (t *TypeParams) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
+
+	t.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+
 	p.OpenBrackets()
 
 	q := p.NewGoal()
 
 	q.AcceptRunAllWhitespace()
 
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-		p.Score(q)
-	} else {
+	if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 		for {
 			p.AcceptRunWhitespaceNoComment()
 
@@ -1085,16 +1087,27 @@ func (t *TypeParams) parse(p *pyParser) error {
 			t.TypeParams = append(t.TypeParams, tp)
 
 			p.Score(q)
-			p.AcceptRunWhitespace()
 
-			if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			q = p.NewGoal()
+
+			q.AcceptRunAllWhitespace()
+
+			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
 				break
-			} else if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-				return p.Error("TypeParams", ErrMissingComma)
+			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				return q.Error("TypeParams", ErrMissingComma)
 			}
+
+			p.AcceptRunWhitespace()
+			p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
 		}
 	}
 
+	t.Comments[1] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunAllWhitespaceNoComment()
+
+	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"})
 	p.CloseBrackets()
 
 	t.Tokens = p.ToTokens()
