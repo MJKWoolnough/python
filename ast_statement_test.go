@@ -239,7 +239,7 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{"a\n", func(t *test, tk Tokens) { // 5
+		{"a\n", func(t *test, tk Tokens) { // 4
 			t.Output = StatementList{
 				Statements: []SimpleStatement{
 					{
@@ -263,7 +263,7 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{`a; #Comment`, func(t *test, tk Tokens) { // 6
+		{`a; #Comment`, func(t *test, tk Tokens) { // 5
 			t.Output = StatementList{
 				Statements: []SimpleStatement{
 					{
@@ -288,7 +288,7 @@ func TestStatementList(t *testing.T) {
 				Tokens:   tk[:4],
 			}
 		}},
-		{"a;\n", func(t *test, tk Tokens) { // 7
+		{"a;\n", func(t *test, tk Tokens) { // 6
 			t.Output = StatementList{
 				Statements: []SimpleStatement{
 					{
@@ -312,7 +312,7 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-		{`a;b`, func(t *test, tk Tokens) { // 8
+		{`a;b`, func(t *test, tk Tokens) { // 7
 			t.Output = StatementList{
 				Statements: []SimpleStatement{
 					{
@@ -353,7 +353,7 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a ; b `, func(t *test, tk Tokens) { // 9
+		{`a ; b `, func(t *test, tk Tokens) { // 8
 			t.Output = StatementList{
 				Statements: []SimpleStatement{
 					{
@@ -394,7 +394,7 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 10
+		{`nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -409,7 +409,7 @@ func TestStatementList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a;nonlocal`, func(t *test, tk Tokens) { // 11
+		{`a;nonlocal`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3095,7 +3095,41 @@ func TestTypeParams(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{`[nonlocal]`, func(t *test, tk Tokens) { // 6
+		{"[ # A\na, b\n# B\n]", func(t *test, tk Tokens) { // 6
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					},
+					{
+						Identifier: &tk[7],
+						Tokens:     tk[7:8],
+					},
+				},
+				Comments: [2]Comments{{tk[2]}, {tk[9]}},
+				Tokens:   tk[:12],
+			}
+		}},
+		{"[ # A\n\t# B\n\t\n\t# C\n\ta, b # D\n\t# E\n\t\n\t# F\n\t]", func(t *test, tk Tokens) { // 7
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
+						Identifier: &tk[8],
+						Comments:   [2]Comments{{tk[6]}},
+						Tokens:     tk[6:9],
+					},
+					{
+						Identifier: &tk[11],
+						Comments:   [2]Comments{nil, {tk[13], tk[15]}},
+						Tokens:     tk[11:16],
+					},
+				},
+				Comments: [2]Comments{{tk[2], tk[4]}, {tk[17]}},
+				Tokens:   tk[:20],
+			}
+		}},
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -3106,7 +3140,7 @@ func TestTypeParams(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`[a b]`, func(t *test, tk Tokens) { // 7
+		{`[a b]`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "TypeParams",
