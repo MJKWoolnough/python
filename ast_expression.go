@@ -152,7 +152,13 @@ func (e *Enclosure) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 		p.OpenBrackets()
 
-		e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+		q := p.NewGoal()
+
+		if q.AcceptRunAllWhitespace() == TokenDelimiter {
+			e.Comments[0] = p.AcceptRunWhitespaceComments()
+		} else {
+			e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+		}
 
 		p.AcceptRunAllWhitespace()
 
@@ -209,7 +215,13 @@ func (e *Enclosure) parse(p *pyParser) error {
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 		p.OpenBrackets()
 
-		e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+		q := p.NewGoal()
+
+		if q.AcceptRunAllWhitespace() == TokenDelimiter {
+			e.Comments[0] = p.AcceptRunWhitespaceComments()
+		} else {
+			e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+		}
 
 		p.AcceptRunAllWhitespace()
 
@@ -242,7 +254,13 @@ func (e *Enclosure) parse(p *pyParser) error {
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "{"}) {
 		p.OpenBrackets()
 
-		e.Comments[0] = p.AcceptRunWhitespaceComments()
+		q := p.NewGoal()
+
+		if q.AcceptRunAllWhitespace() == TokenDelimiter {
+			e.Comments[0] = p.AcceptRunWhitespaceComments()
+		} else {
+			e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+		}
 
 		p.AcceptRunAllWhitespace()
 
