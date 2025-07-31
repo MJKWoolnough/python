@@ -1175,6 +1175,11 @@ func TestPrintSource(t *testing.T) {
 			"def a[b,c]():b\n",
 			"def a[b # A\n\t, # B\n\tc # C\n](): b\n",
 		},
+		{ // 234
+			"def a[# A\n# B\n\n# C\nb, c # D\n# E\n\n# F\n# G\n\n](): b",
+			"def a[b,c]():b\n",
+			"def a[ # A\n\t# B\n\n\t# C\n\tb, c # D\n\t# E\n\n\t# F\n\t# G\n](): b\n",
+		},
 	} {
 		if n != 233 {
 			continue
