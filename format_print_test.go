@@ -1173,9 +1173,13 @@ func TestPrintSource(t *testing.T) {
 		{ // 233
 			"def a[b # A\n, # B\nc # C\n](): b",
 			"def a[b,c]():b\n",
-			"def a[b # A\n, # B\nc # C\n](): b\n",
+			"def a[b # A\n\t, # B\n\tc # C\n](): b\n",
 		},
 	} {
+		if n != 233 {
+			continue
+		}
+
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
 

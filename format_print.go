@@ -1305,28 +1305,53 @@ func (t TypeParam) printSource(w writer, v bool) {
 
 	if v && len(t.Comments[1]) > 0 {
 		w.WriteString(" ")
-		t.Comments[1].printSource(w, true)
+		t.Comments[1].printSource(w, false)
 	}
 }
 
 func (t TypeParams) printSource(w writer, v bool) {
-	w.WriteString("[")
+	ip := w.Indent()
 
-	if len(t.TypeParams) > 0 {
-		t.TypeParams[0].printSource(w, v)
+	ip.WriteString("[")
 
-		for _, tp := range t.TypeParams[1:] {
-			if v {
-				w.WriteString(", ")
-			} else {
-				w.WriteString(",")
-			}
+	if v && len(t.Comments[0]) > 0 {
+		ip.WriteString(" ")
+		t.Comments[0].printSource(ip, true)
 
-			tp.printSource(w, v)
+		if len(t.TypeParams) > 0 && len(t.TypeParams[0].Comments) > 0 {
+			ip.WriteString("\n")
 		}
 	}
 
-	w.WriteString("]")
+	if len(t.TypeParams) > 0 {
+		t.TypeParams[0].printSource(ip, v)
+
+		for n, tp := range t.TypeParams[1:] {
+			if v && len(t.TypeParams[n].Comments[1]) > 0 {
+				ip.WriteString("\n")
+			}
+
+			if v {
+				ip.WriteString(", ")
+			} else {
+				ip.WriteString(",")
+			}
+
+			tp.printSource(ip, v)
+		}
+	}
+
+	if v && len(t.TypeParams) > 0 && len(t.TypeParams[len(t.TypeParams)-1].Comments[1]) > 0 {
+		w.WriteString("\n")
+	}
+
+	if v && len(t.Comments[0]) > 0 {
+		ip.WriteString("\n")
+		t.Comments[1].printSource(ip, false)
+		w.WriteString("\n")
+	}
+
+	ip.WriteString("]")
 }
 
 func (t TypeStatement) printSource(w writer, v bool) {
