@@ -207,7 +207,7 @@ func (p *pyParser) AcceptRunWhitespaceCommentsNoNewline() Comments {
 		c = append(c, p.Next())
 		s = p.NewGoal()
 
-		s.Accept(TokenLineTerminator)
+		s.AcceptNewline()
 	}
 
 	return c
@@ -221,6 +221,16 @@ func (p *pyParser) AcceptRunWhitespaceNoNewline() parser.TokenType {
 
 		p.Next()
 	}
+}
+
+func (p *pyParser) AcceptNewline() bool {
+	if tk := p.Peek(); tk.Type == TokenWhitespace && strings.Count(tk.Data, "\n") == 1 {
+		p.Next()
+
+		return true
+	}
+
+	return p.Accept(TokenLineTerminator)
 }
 
 func (p *pyParser) AcceptRunAllWhitespace() parser.TokenType {
