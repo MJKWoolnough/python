@@ -2,6 +2,7 @@ package python
 
 import (
 	"fmt"
+	"strings"
 
 	"vimagination.zapto.org/parser"
 )
@@ -172,6 +173,10 @@ func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 }
 
 func (p *pyParser) AcceptRunWhitespaceNoComment() parser.TokenType {
+	if p.inBrackets > 0 {
+		return p.AcceptRunAllWhitespaceNoComment()
+	}
+
 	return p.AcceptRun(TokenWhitespace)
 }
 
@@ -196,7 +201,7 @@ func (p *pyParser) AcceptRunWhitespaceCommentsNoNewline() Comments {
 
 	s := p.NewGoal()
 
-	for s.AcceptRun(TokenWhitespace) == TokenComment {
+	for s.AcceptRunWhitespaceNoNewline() == TokenComment {
 		p.Score(s)
 
 		c = append(c, p.Next())
@@ -206,6 +211,16 @@ func (p *pyParser) AcceptRunWhitespaceCommentsNoNewline() Comments {
 	}
 
 	return c
+}
+
+func (p *pyParser) AcceptRunWhitespaceNoNewline() parser.TokenType {
+	for {
+		if tk := p.Peek(); tk.Type != TokenWhitespace || strings.Contains(tk.Data, lineTerminator) {
+			return tk.Type
+		}
+
+		p.Next()
+	}
 }
 
 func (p *pyParser) AcceptRunAllWhitespace() parser.TokenType {
