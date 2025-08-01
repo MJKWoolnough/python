@@ -369,6 +369,10 @@ func (d Decorators) printSource(w writer, v bool) {
 }
 
 func (d DefParameter) printSource(w writer, v bool) {
+	if v {
+		d.Comments[0].printSource(w, true)
+	}
+
 	d.Parameter.printSource(w, v)
 
 	if d.Value != nil {
@@ -379,6 +383,12 @@ func (d DefParameter) printSource(w writer, v bool) {
 		}
 
 		d.Value.printSource(w, v)
+	}
+
+	if v && len(d.Comments[1]) > 0 {
+		w.WriteString(" ")
+
+		d.Comments[1].printSource(w, true)
 	}
 }
 
