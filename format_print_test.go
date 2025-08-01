@@ -1180,6 +1180,11 @@ func TestPrintSource(t *testing.T) {
 			"def a[b,c]():b\n",
 			"def a[ # A\n\t# B\n\n\t# C\n\tb, c # D\n\t# E\n\n\t# F\n\t# G\n](): b\n",
 		},
+		{ // 235
+			"def a(\n# A\nb = 1 # B\n): c",
+			"def a(b = 1): c\n",
+			"def a(\n# A\nb = 1 # B\n): c\n",
+		},
 	} {
 		if n != 233 {
 			continue
