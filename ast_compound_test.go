@@ -7774,6 +7774,16 @@ func TestDefParameter(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{"# A\na # B", func(t *test, tk Tokens) { // 1
+			t.Output = DefParameter{
+				Parameter: Parameter{
+					Identifier: &tk[2],
+					Tokens:     tk[2:3],
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[4]}},
+				Tokens:   tk[:5],
+			}
+		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
