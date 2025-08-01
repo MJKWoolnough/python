@@ -1449,10 +1449,15 @@ func (l *ParameterList) parseStarStar(p, q *pyParser, allowAnnotations bool) err
 type DefParameter struct {
 	Parameter Parameter
 	Value     *Expression
+	Comments  [2]Comments
 	Tokens    Tokens
 }
 
 func (d *DefParameter) parse(p *pyParser, allowAnnotations bool) error {
+	d.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunAllWhitespace()
+
 	q := p.NewGoal()
 
 	if err := d.Parameter.parse(q, allowAnnotations); err != nil {
@@ -1477,6 +1482,16 @@ func (d *DefParameter) parse(p *pyParser, allowAnnotations bool) error {
 		}
 
 		p.Score(q)
+	}
+
+	q = p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		d.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewline()
+	} else {
+		d.Comments[1] = p.AcceptRunWhitespaceComments()
 	}
 
 	d.Tokens = p.ToTokens()
