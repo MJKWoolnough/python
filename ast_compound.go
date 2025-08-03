@@ -1,8 +1,6 @@
 package python
 
-import (
-	"vimagination.zapto.org/parser"
-)
+import "vimagination.zapto.org/parser"
 
 var compounds = [...]string{"if", "while", "for", "try", "with", "func", "class", "async", "def"}
 
@@ -771,14 +769,20 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 		return p.Error("FuncDefinition", ErrMissingOpeningParen)
 	}
 
-	p.OpenBrackets()
-
 	q := p.NewGoal()
 
-	q.AcceptRunWhitespace()
+	q.AcceptRunAllWhitespace()
 
 	if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-		p.AcceptRunWhitespaceNoComment()
+		q = p.NewGoal()
+
+		if q.AcceptRunAllWhitespaceNoComment() == TokenComment {
+			p.AcceptRunWhitespaceNoNewline()
+		} else {
+			p.Score(q)
+		}
+
+		p.OpenBrackets()
 
 		q = p.NewGoal()
 
@@ -797,12 +801,10 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 	} else {
 		f.Comments = p.AcceptRunWhitespaceComments()
 
-		p.AcceptRunWhitespace()
+		p.AcceptRunAllWhitespace()
 		p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"})
 
 		f.ParameterList.Tokens = p.NewGoal().ToTokens()
-
-		p.CloseBrackets()
 	}
 
 	p.AcceptRunWhitespace()
@@ -1312,12 +1314,17 @@ type ParameterList struct {
 	StarArg       *Parameter
 	StarArgs      []DefParameter
 	StarStarArg   *Parameter
+	Comments      [10]Comments
 	Tokens        Tokens
 }
 
 func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
-	q := p.NewGoal()
+	l.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+
 	hasSlash := false
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
 
 	target, err := l.parseStars(p, q, &l.DefParameters, allowAnnotations)
 	if err != nil {
@@ -1325,7 +1332,7 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 	}
 
 	for target != nil && q.Peek().Type == TokenIdentifier {
-		p.Score(q)
+		p.AcceptRunWhitespaceNoComment()
 
 		q = p.NewGoal()
 
@@ -1346,12 +1353,19 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 			break
 		}
 
+		p.Score(q)
+
+		q = p.NewGoal()
+
 		q.AcceptRunWhitespace()
 
 		switch target {
 		case &l.DefParameters:
 			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) {
-				p.Score(q)
+				l.Comments[1] = p.AcceptRunWhitespaceComments()
+
+				p.AcceptRunWhitespace()
+				p.Next()
 
 				hasSlash = true
 				q = p.NewGoal()
@@ -1359,10 +1373,19 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 				q.AcceptRunWhitespace()
 
 				if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+					l.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewline()
+					target = nil
+
 					break
 				}
 
-				q.AcceptRunWhitespace()
+				l.Comments[2] = p.AcceptRunWhitespaceComments()
+
+				p.AcceptRunWhitespace()
+				p.Next()
+
+				q = p.NewGoal()
+				q.AcceptRunAllWhitespace()
 
 				target = &l.NoPosOnly
 			}
@@ -1377,6 +1400,8 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 				if err = l.parseStarStar(p, q, allowAnnotations); err != nil {
 					return err
 				}
+
+				target = nil
 			}
 		}
 	}
@@ -1386,6 +1411,8 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 		l.DefParameters = nil
 	}
 
+	l.Comments[9] = p.AcceptRunWhitespaceComments()
+
 	l.Tokens = p.ToTokens()
 
 	return nil
@@ -1393,23 +1420,43 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 
 func (l *ParameterList) parseStars(p, q *pyParser, target *[]DefParameter, allowAnnotations bool) (*[]DefParameter, error) {
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		r := p.NewGoal()
 
-		*q = *p.NewGoal()
+		l.Comments[3] = r.AcceptRunWhitespaceComments()
+
+		r.AcceptRunWhitespace()
+		r.Next()
+
+		l.Comments[4] = r.AcceptRunWhitespaceComments()
+
+		r.AcceptRunWhitespace()
+		p.Score(r)
+
+		r = p.NewGoal()
 		l.StarArg = new(Parameter)
 
-		if err := l.StarArg.parse(q, allowAnnotations); err != nil {
+		if err := l.StarArg.parse(r, allowAnnotations); err != nil {
 			return nil, p.Error("ParameterList", err)
 		}
 
-		p.Score(q)
+		p.Score(r)
 
 		target = &l.StarArgs
+		r = p.NewGoal()
+
+		r.AcceptRunWhitespace()
+
+		if r.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			l.Comments[5] = p.AcceptRunWhitespaceComments()
+
+			p.AcceptRunAllWhitespace()
+			p.Next()
+		} else {
+			l.Comments[5] = p.AcceptRunWhitespaceCommentsNoNewline()
+		}
+
 		*q = *p.NewGoal()
 
-		q.AcceptRunWhitespace()
-		q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
 		q.AcceptRunWhitespace()
 	}
 
@@ -1421,25 +1468,41 @@ func (l *ParameterList) parseStars(p, q *pyParser, target *[]DefParameter, allow
 }
 
 func (l *ParameterList) parseStarStar(p, q *pyParser, allowAnnotations bool) error {
-	q.AcceptRunWhitespace()
-	p.Score(q)
+	r := p.NewGoal()
 
-	*q = *p.NewGoal()
+	l.Comments[6] = r.AcceptRunWhitespaceComments()
+
+	r.AcceptRunWhitespace()
+	r.Next()
+
+	l.Comments[7] = r.AcceptRunWhitespaceComments()
+
+	r.AcceptRunWhitespace()
+	p.Score(r)
+
+	r = p.NewGoal()
 	l.StarStarArg = new(Parameter)
 
-	if err := l.StarStarArg.parse(q, allowAnnotations); err != nil {
+	if err := l.StarStarArg.parse(r, allowAnnotations); err != nil {
 		return p.Error("ParameterList", err)
 	}
 
-	p.Score(q)
+	p.Score(r)
+
+	r = p.NewGoal()
+
+	r.AcceptRunWhitespace()
+
+	if r.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		l.Comments[8] = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunAllWhitespace()
+		p.Next()
+	} else {
+		l.Comments[8] = p.AcceptRunWhitespaceCommentsNoNewline()
+	}
 
 	*q = *p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		p.Score(q)
-	}
 
 	return nil
 }
