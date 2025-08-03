@@ -1182,14 +1182,20 @@ func TestPrintSource(t *testing.T) {
 		},
 		{ // 235
 			"def a(\n# A\nb = 1 # B\n): c",
-			"def a(b = 1): c\n",
-			"def a(\n# A\nb = 1 # B\n): c\n",
+			"def a(b=1):c\n",
+			"def a(\n\t# A\n\tb = 1 # B\n): c\n",
+		},
+		{ // 236
+			"def a(\n# A\nb = 1 # B\n, /, # C\nc # D\n): d",
+			"def a(b=1,/,c):d\n",
+			"def a(\n\t# A\n\tb = 1 # B\n\t, /, # C\n\tc # D\n): d\n",
+		},
+		{ // 237
+			"def a(# A\n# B\n\n# C\n\n#D\nb # E\n\n#F\n, # G\n\n# H\n\n/# I\n\n# J\n, # K\n\n# L\n*# M\n\n# N\nc\n# O\n\n# P\n, # Q\n**# R\n\n# S\nd\n# T\n): e",
+			"def a(b,/,*c,**d):e\n",
+			"def a( # A\n\t# B\n\n\t# C\n\n\t#D\n\tb # E\n\n\t#F\n\t, # G\n\n\t# H\n\t/ # I\n\n\t# J\n\t, # K\n\n\t# L\n\t* # M\n\n\t# N\n\tc # O\n\n\t# P\n\t, # Q\n\t** # R\n\n\t# S\n\td\n\t# T\n): e\n",
 		},
 	} {
-		if n != 233 {
-			continue
-		}
-
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
 
