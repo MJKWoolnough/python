@@ -50,6 +50,7 @@ HEREDOC
 				echo "		pp.WriteString(\"\\n$fieldName: []\")";
 				echo "	}";
 			elif [ "${fieldType:0:1}" = "[" ]; then
+				echo;
 				echo "	pp.WriteString(\"\\n$fieldName: [\")";
 				echo;
 				echo "	ipp := pp.Indent()";
