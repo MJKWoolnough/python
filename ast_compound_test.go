@@ -7780,12 +7780,14 @@ func TestParameterList(t *testing.T) {
 		var p ParameterList
 
 		t.Tokens.inBrackets = 1
+		allowTypeAnnotations := t.AllowTypeAnnotations
 
 		if t.Tokens.Peek().Data == "(" {
 			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+			allowTypeAnnotations = true
 		}
 
-		err := p.parse(t.Tokens, t.AllowTypeAnnotations)
+		err := p.parse(t.Tokens, allowTypeAnnotations)
 
 		return p, err
 	})
@@ -7868,6 +7870,7 @@ func TestDefParameter(t *testing.T) {
 			}
 		}},
 		{"# A\na # B", func(t *test, tk Tokens) { // 6
+			t.AllowTypeAnnotations = true
 			t.Output = DefParameter{
 				Parameter: Parameter{
 					Identifier: &tk[2],
