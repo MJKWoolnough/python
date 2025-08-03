@@ -698,6 +698,7 @@ func (f *DefParameter) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nValue: nil")
 	}
+
 	pp.WriteString("\nComments: [")
 
 	ipp := pp.Indent()
@@ -842,6 +843,7 @@ func (f *Enclosure) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nYieldAtom: nil")
 	}
+
 	pp.WriteString("\nComments: [")
 
 	ipp := pp.Indent()
@@ -957,6 +959,7 @@ func (f *File) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nStatements: []")
 	}
+
 	pp.WriteString("\nComments: [")
 
 	ipp := pp.Indent()
@@ -1582,6 +1585,7 @@ func (f *ParameterList) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nStarStarArg: nil")
 	}
+
 	pp.WriteString("\nComments: [")
 
 	ipp := pp.Indent()
@@ -2147,6 +2151,7 @@ func (f *Suite) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nStatements: []")
 	}
+
 	pp.WriteString("\nComments: [")
 
 	ipp := pp.Indent()
@@ -2224,6 +2229,7 @@ func (f *TargetList) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nTargets: []")
 	}
+
 	pp.WriteString("\nComments: [")
 
 	ipp := pp.Indent()
@@ -2311,6 +2317,7 @@ func (f *TypeParam) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nExpression: nil")
 	}
+
 	pp.WriteString("\nComments: [")
 
 	ipp := pp.Indent()
@@ -2349,6 +2356,7 @@ func (f *TypeParams) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nTypeParams: []")
 	}
+
 	pp.WriteString("\nComments: [")
 
 	ipp := pp.Indent()
