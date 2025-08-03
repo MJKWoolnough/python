@@ -388,7 +388,7 @@ func (d DefParameter) printSource(w writer, v bool) {
 	if v && len(d.Comments[1]) > 0 {
 		w.WriteString(" ")
 
-		d.Comments[1].printSource(w, true)
+		d.Comments[1].printSource(w, false)
 	}
 }
 
@@ -856,73 +856,180 @@ func (p Parameter) printSource(w writer, v bool) {
 		} else {
 			w.WriteString(":")
 		}
+
 		p.Type.printSource(w, v)
 	}
 }
 
 func (p ParameterList) printSource(w writer, v bool) {
 	first := len(p.DefParameters) == 0
+	lastWasComment := false
+	ip := w.Indent()
+
+	if v && len(p.Comments[0]) > 0 {
+		ip.WriteString(" ")
+		p.Comments[0].printSource(ip, false)
+		lastWasComment = true
+	}
 
 	if !first {
+		if lastWasComment {
+			ip.WriteString("\n")
+		}
+
+		if v && len(p.DefParameters[0].Comments[0]) > 0 {
+			ip.WriteString("\n")
+		}
+
 		for _, d := range p.DefParameters {
-			d.printSource(w, v)
+			d.printSource(ip, v)
 
 			if v {
-				w.WriteString(", ")
+				if len(d.Comments[1]) > 0 {
+					ip.WriteString("\n")
+				}
+
+				ip.WriteString(", ")
 			} else {
-				w.WriteString(",")
+				ip.WriteString(",")
 			}
 		}
 
-		w.WriteString("/")
+		if v {
+			p.Comments[1].printSource(ip, true)
+		}
+
+		ip.WriteString("/")
+
+		if lastWasComment = v && len(p.Comments[2]) > 0; lastWasComment {
+			ip.WriteString(" ")
+			p.Comments[2].printSource(ip, false)
+		}
 	}
 
 	for _, n := range p.NoPosOnly {
+		if lastWasComment {
+			ip.WriteString("\n")
+		}
+
+		if v && first && len(n.Comments[0]) > 0 {
+			ip.WriteString("\n")
+		}
+
 		if first {
 			first = false
 		} else if v {
-			w.WriteString(", ")
+			ip.WriteString(", ")
 		} else {
-			w.WriteString(",")
+			ip.WriteString(",")
 		}
 
-		n.printSource(w, v)
+		n.printSource(ip, v)
+
+		lastWasComment = v && len(n.Comments[1]) > 0
 	}
 
 	if p.StarArg != nil {
+		if lastWasComment {
+			ip.WriteString("\n")
+
+			if first && len(p.Comments[3]) > 0 {
+				ip.WriteString("\n")
+			}
+		}
+
 		if first {
 			first = false
 		} else if v {
-			w.WriteString(", ")
+			ip.WriteString(", ")
 		} else {
-			w.WriteString(",")
+			ip.WriteString(",")
 		}
 
-		w.WriteString("*")
-		p.StarArg.printSource(w, v)
+		if v && len(p.Comments[3]) > 0 {
+			p.Comments[3].printSource(ip, true)
+		}
+
+		ip.WriteString("*")
+
+		if v && len(p.Comments[4]) > 0 {
+			ip.WriteString(" ")
+			p.Comments[4].printSource(ip, true)
+		}
+
+		p.StarArg.printSource(ip, v)
+
+		if lastWasComment = v && len(p.Comments[5]) > 0; lastWasComment {
+			ip.WriteString(" ")
+			p.Comments[5].printSource(ip, false)
+		}
 
 		for _, d := range p.StarArgs {
-			if v {
-				w.WriteString(", ")
-			} else {
-				w.WriteString(",")
+			if lastWasComment {
+				ip.WriteString("\n")
 			}
 
-			d.printSource(w, v)
+			if v {
+				ip.WriteString(", ")
+			} else {
+				ip.WriteString(",")
+			}
+
+			d.printSource(ip, v)
+
+			lastWasComment = v && len(d.Comments[1]) > 0
 		}
 	}
 
 	if p.StarStarArg != nil {
-		if !first {
-			if v {
-				w.WriteString(", ")
-			} else {
-				w.WriteString(",")
+		if lastWasComment {
+			ip.WriteString("\n")
+
+			if first && len(p.Comments[6]) > 0 {
+				ip.WriteString("\n")
 			}
 		}
 
-		w.WriteString("**")
-		p.StarStarArg.printSource(w, v)
+		if !first {
+			if v {
+				ip.WriteString(", ")
+			} else {
+				ip.WriteString(",")
+			}
+		}
+
+		if v && len(p.Comments[6]) > 0 {
+			p.Comments[6].printSource(ip, true)
+		}
+
+		ip.WriteString("**")
+
+		if v && len(p.Comments[7]) > 0 {
+			ip.WriteString(" ")
+			p.Comments[7].printSource(ip, true)
+		}
+
+		p.StarStarArg.printSource(ip, v)
+
+		if lastWasComment = v && len(p.Comments[8]) > 0; lastWasComment {
+			ip.WriteString(" ")
+			p.Comments[8].printSource(ip, false)
+		}
+	}
+
+	if v && len(p.Comments[9]) > 0 {
+		ip.WriteString("\n")
+
+		if lastWasComment {
+			ip.WriteString("\n")
+		}
+
+		p.Comments[9].printSource(ip, false)
+		lastWasComment = true
+	}
+
+	if lastWasComment {
+		w.WriteString("\n")
 	}
 }
 
