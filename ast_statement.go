@@ -1255,7 +1255,7 @@ func (l *LambdaExpression) parse(p *pyParser) error {
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		q := p.NewGoal()
 		l.ParameterList = new(ParameterList)
