@@ -5180,14 +5180,58 @@ func TestFuncDefinition(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
-		{"def nonlocal():a", func(t *test, tk Tokens) { // 16
+		{"def a( # A\nb\n# B\n):c", func(t *test, tk Tokens) { // 16
+			t.Output = FuncDefinition{
+				FuncName: &tk[2],
+				ParameterList: ParameterList{
+					NoPosOnly: []DefParameter{
+						{
+							Parameter: Parameter{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							},
+							Tokens: tk[7:8],
+						},
+					},
+					Comments: [10]Comments{{tk[5]}, nil, nil, nil, nil, nil, nil, nil, nil, {tk[9]}},
+					Tokens:   tk[5:10],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[13],
+												Tokens:     tk[13:14],
+											}),
+											Tokens: tk[13:14],
+										},
+										Tokens: tk[13:14],
+									},
+									Tokens: tk[13:14],
+								},
+								Tokens: tk[13:14],
+							},
+						},
+						Tokens: tk[13:14],
+					},
+					Tokens: tk[13:14],
+				},
+				Tokens: tk[:14],
+			}
+		}},
+		{"def nonlocal():a", func(t *test, tk Tokens) { // 17
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "FuncDefinition",
 				Token:   tk[2],
 			}
 		}},
-		{"def a[nonlocal]():b", func(t *test, tk Tokens) { // 17
+		{"def a[nonlocal]():b", func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5202,14 +5246,14 @@ func TestFuncDefinition(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{"def a(nonlocal):b", func(t *test, tk Tokens) { // 18
+		{"def a(nonlocal):b", func(t *test, tk Tokens) { // 19
 			t.Err = Error{
 				Err:     ErrMissingClosingParen,
 				Parsing: "FuncDefinition",
 				Token:   tk[4],
 			}
 		}},
-		{"def a(b=nonlocal):c", func(t *test, tk Tokens) { // 19
+		{"def a(b=nonlocal):c", func(t *test, tk Tokens) { // 20
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5232,7 +5276,7 @@ func TestFuncDefinition(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{"def a()->nonlocal:b", func(t *test, tk Tokens) { // 20
+		{"def a()->nonlocal:b", func(t *test, tk Tokens) { // 21
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -5247,7 +5291,7 @@ func TestFuncDefinition(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{"def a():nonlocal", func(t *test, tk Tokens) { // 21
+		{"def a():nonlocal", func(t *test, tk Tokens) { // 22
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5270,21 +5314,21 @@ func TestFuncDefinition(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{"def a:b", func(t *test, tk Tokens) { // 22
+		{"def a:b", func(t *test, tk Tokens) { // 23
 			t.Err = Error{
 				Err:     ErrMissingOpeningParen,
 				Parsing: "FuncDefinition",
 				Token:   tk[3],
 			}
 		}},
-		{"def a() b", func(t *test, tk Tokens) { // 23
+		{"def a() b", func(t *test, tk Tokens) { // 24
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "FuncDefinition",
 				Token:   tk[6],
 			}
 		}},
-		{"def a(#abc\n):b", func(t *test, tk Tokens) { // 24
+		{"def a(#abc\n):b", func(t *test, tk Tokens) { // 25
 			t.Output = FuncDefinition{
 				FuncName: &tk[2],
 				ParameterList: ParameterList{
