@@ -7743,7 +7743,21 @@ func TestParameterList(t *testing.T) {
 				Tokens:   tk[1:16],
 			}
 		}},
-		{"(# A\n# B\n\n# C\n\n#D\na # E\n\n#F\n, # G\n\n# H\n\n/# I\n\n# J\n, # K\n\n# L\n*# M\n\n# N\nb\n# O\n\n# P\n, # Q\n**# R\n\n# S\nc\n# T\n)", func(t *test, tk Tokens) { // 24
+		{"(*a, # A\n**\n# B\nb # C\n\n# D\n, #E\n)", func(t *test, tk Tokens) { // 24
+			t.Output = ParameterList{
+				StarArg: &Parameter{
+					Identifier: &tk[2],
+					Tokens:     tk[2:3],
+				},
+				StarStarArg: &Parameter{
+					Identifier: &tk[11],
+					Tokens:     tk[11:12],
+				},
+				Comments: [10]Comments{nil, nil, nil, nil, nil, nil, {tk[5]}, {tk[9]}, {tk[13], tk[15]}, {tk[19]}},
+				Tokens:   tk[1:20],
+			}
+		}},
+		{"(# A\n# B\n\n# C\n\n#D\na # E\n\n#F\n, # G\n\n# H\n\n/# I\n\n# J\n, # K\n\n# L\n*# M\n\n# N\nb\n# O\n\n# P\n, # Q\n**# R\n\n# S\nc\n# T\n)", func(t *test, tk Tokens) { // 25
 			t.Output = ParameterList{
 				DefParameters: []DefParameter{
 					{
@@ -7767,7 +7781,7 @@ func TestParameterList(t *testing.T) {
 				Tokens:   tk[1:55],
 			}
 		}},
-		{`a=nonlocal`, func(t *test, tk Tokens) { // 25
+		{`a=nonlocal`, func(t *test, tk Tokens) { // 26
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7786,7 +7800,7 @@ func TestParameterList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 26
+		{`*nonlocal`, func(t *test, tk Tokens) { // 27
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -7797,7 +7811,7 @@ func TestParameterList(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`**nonlocal`, func(t *test, tk Tokens) { // 27
+		{`**nonlocal`, func(t *test, tk Tokens) { // 28
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -7808,7 +7822,7 @@ func TestParameterList(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`a,*nonlocal`, func(t *test, tk Tokens) { // 28
+		{`a,*nonlocal`, func(t *test, tk Tokens) { // 29
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -7819,7 +7833,7 @@ func TestParameterList(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{`a,**nonlocal`, func(t *test, tk Tokens) { // 29
+		{`a,**nonlocal`, func(t *test, tk Tokens) { // 30
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -7830,7 +7844,7 @@ func TestParameterList(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{`*a, b, **nonlocal`, func(t *test, tk Tokens) { // 30
+		{`*a, b, **nonlocal`, func(t *test, tk Tokens) { // 31
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
