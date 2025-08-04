@@ -779,7 +779,6 @@ func (i *ImportStatement) parse(p *pyParser) error {
 		parens := i.RelativeModule != nil && p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
 		if parens {
-			p.OpenBrackets()
 			p.AcceptRunWhitespace()
 		}
 
@@ -800,8 +799,6 @@ func (i *ImportStatement) parse(p *pyParser) error {
 
 			if parens {
 				if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-					p.CloseBrackets()
-
 					break
 				}
 
@@ -1065,9 +1062,6 @@ func (t *TypeParams) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
 
 	t.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
-
-	p.OpenBrackets()
-
 	q := p.NewGoal()
 
 	q.AcceptRunAllWhitespace()
@@ -1108,7 +1102,6 @@ func (t *TypeParams) parse(p *pyParser) error {
 	p.AcceptRunAllWhitespaceNoComment()
 
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"})
-	p.CloseBrackets()
 
 	t.Tokens = p.ToTokens()
 

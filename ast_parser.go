@@ -19,7 +19,6 @@ type Tokens []Token
 type Comments []Token
 
 type pyParser struct {
-	inBrackets uint
 	Tokens
 }
 
@@ -74,8 +73,7 @@ func newPyParser(t Tokeniser) (*pyParser, error) {
 
 func (p pyParser) NewGoal() *pyParser {
 	return &pyParser{
-		inBrackets: p.inBrackets,
-		Tokens:     p.Tokens[len(p.Tokens):],
+		Tokens: p.Tokens[len(p.Tokens):],
 	}
 }
 
@@ -156,27 +154,11 @@ func (p *pyParser) GetLastToken() *Token {
 	return &p.Tokens[len(p.Tokens)-1]
 }
 
-func (p *pyParser) OpenBrackets() {
-	p.inBrackets++
-}
-
-func (p *pyParser) CloseBrackets() {
-	p.inBrackets--
-}
-
 func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
-	if p.inBrackets > 0 {
-		return p.AcceptRunAllWhitespace()
-	}
-
 	return p.AcceptRun(TokenWhitespace, TokenComment)
 }
 
 func (p *pyParser) AcceptRunWhitespaceNoComment() parser.TokenType {
-	if p.inBrackets > 0 {
-		return p.AcceptRunAllWhitespaceNoComment()
-	}
-
 	return p.AcceptRun(TokenWhitespace)
 }
 

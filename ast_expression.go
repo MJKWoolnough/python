@@ -150,8 +150,6 @@ type Enclosure struct {
 
 func (e *Enclosure) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-		p.OpenBrackets()
-
 		q := p.NewGoal()
 
 		if q.AcceptRunAllWhitespace() == TokenDelimiter {
@@ -211,10 +209,7 @@ func (e *Enclosure) parse(p *pyParser) error {
 			}
 		}
 
-		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
-		p.OpenBrackets()
-
 		q := p.NewGoal()
 
 		if q.AcceptRunAllWhitespace() == TokenDelimiter {
@@ -250,10 +245,7 @@ func (e *Enclosure) parse(p *pyParser) error {
 			}
 		}
 
-		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "{"}) {
-		p.OpenBrackets()
-
 		q := p.NewGoal()
 
 		if q.AcceptRunAllWhitespace() == TokenDelimiter {
@@ -334,7 +326,6 @@ func (e *Enclosure) parse(p *pyParser) error {
 				return p.Error("Enclosure", ErrMissingClosingBrace)
 			}
 		}
-		p.CloseBrackets()
 	} else {
 		return p.Error("Enclosure", ErrInvalidEnclosure)
 	}
@@ -834,7 +825,6 @@ type ArgumentListOrComprehension struct {
 
 func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
-	p.OpenBrackets()
 	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
@@ -859,8 +849,6 @@ func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 		return p.Error("ArgumentListOrComprehension", ErrMissingClosingParen)
 	}
-
-	p.CloseBrackets()
 
 	a.Tokens = p.ToTokens()
 
@@ -920,7 +908,6 @@ type SliceList struct {
 
 func (s *SliceList) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
-	p.OpenBrackets()
 	p.AcceptRunWhitespace()
 
 	for !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
@@ -946,8 +933,6 @@ func (s *SliceList) parse(p *pyParser) error {
 			p.AcceptRunWhitespace()
 		}
 	}
-
-	p.CloseBrackets()
 
 	s.Tokens = p.ToTokens()
 

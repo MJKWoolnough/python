@@ -597,7 +597,6 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 	parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
 	if parens {
-		p.OpenBrackets()
 		p.AcceptRunWhitespace()
 	}
 
@@ -619,7 +618,6 @@ func (w *WithStatement) parse(p *pyParser, async bool) error {
 			return p.Error("WithStatement", ErrMissingClosingParen)
 		}
 
-		p.CloseBrackets()
 		p.AcceptRunWhitespace()
 	}
 
@@ -782,8 +780,6 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 			p.Score(q)
 		}
 
-		p.OpenBrackets()
-
 		q = p.NewGoal()
 
 		if err := f.ParameterList.parse(q, true); err != nil {
@@ -797,7 +793,6 @@ func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) 
 			return p.Error("FuncDefinition", ErrMissingClosingParen)
 		}
 
-		p.CloseBrackets()
 	} else {
 		f.Comments = p.AcceptRunWhitespaceComments()
 
@@ -880,7 +875,6 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 	}
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-		p.OpenBrackets()
 		p.AcceptRunWhitespace()
 
 		c.Inheritance = new(ArgumentList)
@@ -899,7 +893,6 @@ func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
 			c.Inheritance.Tokens = p.NewGoal().ToTokens()
 		}
 
-		p.CloseBrackets()
 		p.AcceptRunWhitespace()
 	}
 
@@ -1054,7 +1047,6 @@ type Target struct {
 
 func (t *Target) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-		p.OpenBrackets()
 		p.AcceptRunWhitespaceNoComment()
 
 		q := p.NewGoal()
@@ -1072,9 +1064,7 @@ func (t *Target) parse(p *pyParser) error {
 			return p.Error("Target", ErrMissingClosingParen)
 		}
 
-		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
-		p.OpenBrackets()
 		p.AcceptRunWhitespaceNoComment()
 
 		q := p.NewGoal()
@@ -1091,7 +1081,6 @@ func (t *Target) parse(p *pyParser) error {
 			return p.Error("Target", ErrMissingClosingBracket)
 		}
 
-		p.CloseBrackets()
 	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
 		p.AcceptRunWhitespace()
 

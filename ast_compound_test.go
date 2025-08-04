@@ -7858,7 +7858,6 @@ func TestParameterList(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var p ParameterList
 
-		t.Tokens.inBrackets = 1
 		allowTypeAnnotations := t.AllowTypeAnnotations
 
 		if t.Tokens.Peek().Data == "(" {
