@@ -544,7 +544,42 @@ func TestFile(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 7
+		{"# A\n\n# B\na #C\n\n# D", func(t *test, tk Tokens) { // 7
+			t.Output = File{
+				Statements: []Statement{
+					{
+						StatementList: &StatementList{
+							Statements: []SimpleStatement{
+								{
+									Type: StatementAssignment,
+									AssignmentStatement: &AssignmentStatement{
+										StarredExpression: &StarredExpression{
+											Expression: &Expression{
+												ConditionalExpression: WrapConditional(&Atom{
+													Identifier: &tk[5],
+													Tokens:     tk[5:6],
+												}),
+												Tokens: tk[5:6],
+											},
+											Tokens: tk[5:6],
+										},
+										Tokens: tk[5:6],
+									},
+									Tokens: tk[5:6],
+								},
+							},
+							Comments: Comments{tk[7]},
+							Tokens:   tk[5:8],
+						},
+						Comments: Comments{tk[3]},
+						Tokens:   tk[3:8],
+					},
+				},
+				Comments: [2]Comments{{tk[0]}, {tk[10]}},
+				Tokens:   tk[:11],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -567,7 +602,7 @@ func TestFile(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{"a\n# A Comment", func(t *test, tk Tokens) { // 8
+		{"a\n# A Comment", func(t *test, tk Tokens) { // 9
 			t.Output = File{
 				Statements: []Statement{
 					{
@@ -600,7 +635,7 @@ func TestFile(t *testing.T) {
 				Tokens:   tk[:3],
 			}
 		}},
-		{"a # A Comment\n# B Comment\n\n# EOF Comment", func(t *test, tk Tokens) { // 9
+		{"a # A Comment\n# B Comment\n\n# EOF Comment", func(t *test, tk Tokens) { // 10
 			t.Output = File{
 				Statements: []Statement{
 					{
