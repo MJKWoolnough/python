@@ -436,53 +436,53 @@ func (d DictItem) printSource(w writer, v bool) {
 }
 
 func (e Enclosure) printSource(w writer, v bool) {
-	var (
-		t  interface{ printSource(writer, bool) }
-		oc string
-	)
+	if e.ParenthForm != nil || e.ListDisplay != nil || e.DictDisplay != nil || e.SetDisplay != nil || e.GeneratorExpression != nil || e.YieldAtom != nil {
+		var (
+			t  interface{ printSource(writer, bool) }
+			oc string
+		)
 
-	if e.ParenthForm != nil {
-		t = e.ParenthForm
-		oc = "()"
-	} else if e.ListDisplay != nil {
-		t = e.ListDisplay
-		oc = "[]"
-	} else if e.DictDisplay != nil {
-		t = e.DictDisplay
-		oc = "{}"
-	} else if e.SetDisplay != nil {
-		t = e.SetDisplay
-		oc = "{}"
-	} else if e.GeneratorExpression != nil {
-		t = e.GeneratorExpression
-		oc = "()"
-	} else if e.YieldAtom != nil {
-		t = e.YieldAtom
-		oc = "()"
-	} else {
-		return
-	}
-
-	w.WriteString(oc[:1])
-
-	if v && len(e.Comments[0]) > 0 {
-		if len(e.Tokens) > 0 && e.Comments[0][0].Line > e.Tokens[0].Line {
-			w.WriteString("\n")
-		} else {
-			w.WriteString(" ")
+		if e.ParenthForm != nil {
+			t = e.ParenthForm
+			oc = "()"
+		} else if e.ListDisplay != nil {
+			t = e.ListDisplay
+			oc = "[]"
+		} else if e.DictDisplay != nil {
+			t = e.DictDisplay
+			oc = "{}"
+		} else if e.SetDisplay != nil {
+			t = e.SetDisplay
+			oc = "{}"
+		} else if e.GeneratorExpression != nil {
+			t = e.GeneratorExpression
+			oc = "()"
+		} else if e.YieldAtom != nil {
+			t = e.YieldAtom
+			oc = "()"
 		}
 
-		e.Comments[0].printSource(w, v)
+		w.WriteString(oc[:1])
+
+		if v && len(e.Comments[0]) > 0 {
+			if len(e.Tokens) > 0 && e.Comments[0][0].Line > e.Tokens[0].Line {
+				w.WriteString("\n")
+			} else {
+				w.WriteString(" ")
+			}
+
+			e.Comments[0].printSource(w, v)
+		}
+
+		t.printSource(w, v)
+
+		if v && len(e.Comments[1]) > 0 {
+			w.WriteString("\n")
+			e.Comments[1].printSource(w, v)
+		}
+
+		w.WriteString(oc[1:])
 	}
-
-	t.printSource(w, v)
-
-	if v && len(e.Comments[1]) > 0 {
-		w.WriteString("\n")
-		e.Comments[1].printSource(w, v)
-	}
-
-	w.WriteString(oc[1:])
 }
 
 func (e Except) printSource(w writer, v bool) {
