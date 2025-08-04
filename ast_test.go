@@ -2,6 +2,7 @@ package python
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -211,6 +212,14 @@ func TestParse(t *testing.T) {
 		t.Errorf("2: expecting Error type, got %T", err)
 	} else if errStr := e.Error(); errStr != errorB {
 		t.Errorf("2: expecting error %q, got %q", errorB, errStr)
+	}
+
+	tk = parser.NewStringTokeniser("a")
+
+	if f, err := Parse(&tk); err != nil {
+		t.Errorf("3: expecting nil error, got %s", err)
+	} else if got := fmt.Sprintf("%s", f); got != "a\n" {
+		t.Errorf("3: expecting `a\\n` error, got %s", got)
 	}
 }
 
