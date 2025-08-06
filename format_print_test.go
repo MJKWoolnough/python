@@ -1146,56 +1146,61 @@ func TestPrintSource(t *testing.T) {
 			"[ #abc\n]\n",
 		},
 		{ // 228
+			"[ #abc\na\n#def\n]",
+			"[a]\n",
+			"[ #abc\n\ta\n\t#def\n]\n",
+		},
+		{ // 229
 			"[ #abc\n]",
 			"[]\n",
 			"[ #abc\n]\n",
 		},
-		{ // 229
+		{ // 230
 			"def a(#abc\n): b",
 			"def a():b\n",
 			"def a( #abc\n): b\n",
 		},
-		{ // 230
+		{ // 231
 			"[ #abc\na\n#def\n] = b",
 			"[a]=b\n",
 			"[ #abc\n\ta\n\t#def\n] = b\n",
 		},
-		{ // 231
+		{ // 232
 			"a\nb\n\nc\n\nd\n\n\n\n\ne",
 			"a\nb\nc\nd\ne\n",
 			"a\nb\n\nc\n\nd\n\ne\n",
 		},
-		{ // 232
+		{ // 233
 			"if a:\n\tb\n\tc\n\t\n\t\n\td",
 			"if a:\n\tb\n\tc\n\td\n",
 			"if a:\n\tb\n\tc\n\n\td\n",
 		},
-		{ // 233
+		{ // 234
 			"def a[b # A\n, # B\nc # C\n](): b",
 			"def a[b,c]():b\n",
 			"def a[b # A\n\t, # B\n\tc # C\n](): b\n",
 		},
-		{ // 234
+		{ // 235
 			"def a[# A\n# B\n\n# C\nb, c # D\n# E\n\n# F\n# G\n\n](): b",
 			"def a[b,c]():b\n",
 			"def a[ # A\n\t# B\n\n\t# C\n\tb, c # D\n\t# E\n\n\t# F\n\t# G\n](): b\n",
 		},
-		{ // 235
+		{ // 236
 			"def a(\n# A\nb = 1 # B\n): c",
 			"def a(b=1):c\n",
 			"def a(\n\t# A\n\tb = 1 # B\n): c\n",
 		},
-		{ // 236
+		{ // 237
 			"def a(\n# A\nb = 1 # B\n, /, # C\nc # D\n): d",
 			"def a(b=1,/,c):d\n",
 			"def a(\n\t# A\n\tb = 1 # B\n\t, /, # C\n\tc # D\n): d\n",
 		},
-		{ // 237
+		{ // 238
 			"def a(# A\n# B\n\n# C\n\n#D\nb # E\n\n#F\n, # G\n\n# H\n\n/# I\n\n# J\n, # K\n\n# L\n*# M\n\n# N\nc\n# O\n\n# P\n, # Q\n**# R\n\n# S\nd\n# T\n): e",
 			"def a(b,/,*c,**d):e\n",
 			"def a( # A\n\t# B\n\n\t# C\n\n\t#D\n\tb # E\n\n\t#F\n\t, # G\n\n\t# H\n\t/ # I\n\n\t# J\n\t, # K\n\n\t# L\n\t* # M\n\n\t# N\n\tc # O\n\n\t# P\n\t, # Q\n\t** # R\n\n\t# S\n\td\n\t# T\n): e\n",
 		},
-		{ // 238
+		{ // 239
 			"def a( # A\n\n# B\nb = 1): c",
 			"def a(b=1):c\n",
 			"def a( # A\n\n\t# B\n\tb = 1): c\n",
