@@ -1136,19 +1136,19 @@ func TestPrintSource(t *testing.T) {
 			"[ #abc\n]\n",
 		},
 		{ // 226
-			"(\n#abc\n)",
+			"( #abc\n)",
 			"()\n",
-			"(\n#abc\n)\n",
+			"( #abc\n)\n",
 		},
 		{ // 227
-			"[\n#abc\n]",
+			"[ #abc\n]",
 			"[]\n",
-			"[\n#abc\n]\n",
+			"[ #abc\n]\n",
 		},
 		{ // 228
-			"[\n#abc\n]",
+			"[ #abc\n]",
 			"[]\n",
-			"[\n#abc\n]\n",
+			"[ #abc\n]\n",
 		},
 		{ // 229
 			"def a(#abc\n): b",
@@ -1156,9 +1156,9 @@ func TestPrintSource(t *testing.T) {
 			"def a( #abc\n): b\n",
 		},
 		{ // 230
-			"[#abc\na#def\n] = b",
+			"[ #abc\na\n#def\n] = b",
 			"[a]=b\n",
-			"[#abc\na #def\n] = b\n",
+			"[ #abc\n\ta\n\t#def\n] = b\n",
 		},
 		{ // 231
 			"a\nb\n\nc\n\nd\n\n\n\n\ne",

@@ -462,23 +462,21 @@ func (e Enclosure) printSource(w writer, v bool) {
 			oc = "()"
 		}
 
-		w.WriteString(oc[:1])
+		ip := w.Indent()
+
+		ip.WriteString(oc[:1])
 
 		if v && len(e.Comments[0]) > 0 {
-			if len(e.Tokens) > 0 && e.Comments[0][0].Line > e.Tokens[0].Line {
-				w.WriteString("\n")
-			} else {
-				w.WriteString(" ")
-			}
-
-			e.Comments[0].printSource(w, v)
+			ip.WriteString(" ")
+			e.Comments[0].printSource(ip, true)
 		}
 
-		t.printSource(w, v)
+		t.printSource(ip, v)
 
 		if v && len(e.Comments[1]) > 0 {
+			ip.WriteString("\n")
+			e.Comments[1].printSource(ip, false)
 			w.WriteString("\n")
-			e.Comments[1].printSource(w, v)
 		}
 
 		w.WriteString(oc[1:])
@@ -1325,11 +1323,11 @@ func (t Target) printSource(w writer, v bool) {
 		t.PrimaryExpression.printSource(w, v)
 	} else if t.Tuple != nil {
 		w.WriteString("(")
-		t.Tuple.printSource(w, v)
+		t.Tuple.printSource(w.Indent(), v)
 		w.WriteString(")")
 	} else if t.Array != nil {
 		w.WriteString("[")
-		t.Array.printSource(w, v)
+		t.Array.printSource(w.Indent(), v)
 		w.WriteString("]")
 	} else if t.Star != nil {
 		w.WriteString("*")
@@ -1338,7 +1336,8 @@ func (t Target) printSource(w writer, v bool) {
 }
 
 func (t TargetList) printSource(w writer, v bool) {
-	if v {
+	if v && len(t.Comments[0]) > 0 {
+		w.WriteString(" ")
 		t.Comments[0].printSource(w, v)
 	}
 
@@ -1356,7 +1355,7 @@ func (t TargetList) printSource(w writer, v bool) {
 		}
 
 		if v && len(t.Comments[1]) > 0 {
-			w.WriteString(" ")
+			w.WriteString("\n")
 			t.Comments[1].printSource(w, v)
 		}
 	}
