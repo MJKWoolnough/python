@@ -126,6 +126,10 @@ func TestUnquote(t *testing.T) {
 			Input: "B",
 			Err:   strconv.ErrSyntax,
 		},
+		{ // 29
+			Input:  "\"a\\\nb\"",
+			Output: "ab",
+		},
 	} {
 		output, err := Unquote(test.Input)
 
