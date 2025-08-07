@@ -12,7 +12,7 @@ Package walk provides a python type walker.
 func Walk(t python.Type, fn Handler) error
 ```
 Walk calls the Handle function on the given interface for each non-nil,
-non-Token field of the given R type.
+non-Token field of the given python type.
 
 #### type Handler
 
