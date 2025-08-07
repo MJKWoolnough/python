@@ -1210,6 +1210,11 @@ func TestPrintSource(t *testing.T) {
 			"def a(*b,c):d\n",
 			"def a( # A\n\n\t# B\n\t*b # C\n\t, c): d\n",
 		},
+		{ // 241
+			"def a( # A\n\n# B\n**b # C\n\n# D\n): d",
+			"def a(**b):d\n",
+			"def a( # A\n\n\t# B\n\t**b # C\n\n\t# D\n): d\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
