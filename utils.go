@@ -38,6 +38,15 @@ func Unquote(str string) (string, error) {
 		case '\\':
 			ret.WriteString(t.Get())
 
+			t.Next()
+			t.Get()
+
+			if t.Accept("\n") {
+				t.Get()
+
+				continue
+			}
+
 			r := unescapeEscaped(&t)
 
 			if r < 0 {
@@ -64,9 +73,6 @@ func Unquote(str string) (string, error) {
 }
 
 func unescapeEscaped(t *parser.Tokeniser) rune {
-	t.Next()
-	t.Get()
-
 	c := t.Peek()
 
 	if t.Accept(octalDigit) {
