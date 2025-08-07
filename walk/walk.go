@@ -16,7 +16,8 @@ func (h HandlerFunc) Handle(t python.Type) error {
 	return h(t)
 }
 
-// Walk calls the Handle function on the given interface for each non-nil, non-Token field of the given R type.
+// Walk calls the Handle function on the given interface for each non-nil,
+// non-Token field of the given python type.
 func Walk(t python.Type, fn Handler) error {
 	switch t := t.(type) {
 	case python.AddExpression:
