@@ -154,6 +154,14 @@ func (p *pyParser) GetLastToken() *Token {
 	return &p.Tokens[len(p.Tokens)-1]
 }
 
+func (p *pyParser) NextIsWhitespaceComment() bool {
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespaceNoNewline()
+
+	return q.Accept(TokenComment) && q.Accept(TokenWhitespace)
+}
+
 func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 	return p.AcceptRun(TokenWhitespace, TokenComment)
 }
@@ -178,6 +186,14 @@ func (p *pyParser) AcceptRunWhitespaceComments() Comments {
 	return c
 }
 
+func (p *pyParser) AcceptRunWhitespaceCommentsIfMultiline() Comments {
+	if p.NextIsWhitespaceComment() {
+		return p.AcceptRunWhitespaceComments()
+	}
+
+	return nil
+}
+
 func (p *pyParser) AcceptRunWhitespaceCommentsNoNewline() Comments {
 	var c Comments
 
@@ -193,6 +209,14 @@ func (p *pyParser) AcceptRunWhitespaceCommentsNoNewline() Comments {
 	}
 
 	return c
+}
+
+func (p *pyParser) AcceptRunWhitespaceCommentsNoNewlineIfMultiline() Comments {
+	if p.NextIsWhitespaceComment() {
+		return p.AcceptRunWhitespaceCommentsNoNewline()
+	}
+
+	return nil
 }
 
 func (p *pyParser) AcceptRunWhitespaceNoNewline() parser.TokenType {
