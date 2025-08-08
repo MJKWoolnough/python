@@ -462,7 +462,7 @@ func (e Enclosure) printSource(w writer, v bool) {
 			oc = "()"
 		}
 
-		ip := w.Indent()
+		ip := w.IndentMultiline()
 
 		ip.WriteString(oc[:1])
 
@@ -1555,11 +1555,38 @@ func (x XorExpression) printSource(w writer, v bool) {
 }
 
 func (y YieldExpression) printSource(w writer, v bool) {
-	if y.From != nil {
-		w.WriteString("yield from ")
-		y.From.printSource(w, v)
-	} else if y.ExpressionList != nil {
+	if y.From != nil || y.ExpressionList != nil {
+		if v && w.InMultiline() && len(y.Comments[0]) > 0 {
+			w.WriteString("\n")
+			y.Comments[0].printSource(w, true)
+		}
 		w.WriteString("yield ")
-		y.ExpressionList.printSource(w, v)
+
+		if v && w.InMultiline() {
+			y.Comments[1].printSource(w, true)
+		}
+
+		if y.From != nil {
+			w.WriteString("from ")
+
+			if v && w.InMultiline() {
+				y.Comments[2].printSource(w, true)
+			}
+
+			y.From.printSource(w, v)
+		} else if y.ExpressionList != nil {
+			y.ExpressionList.printSource(w, v)
+
+			if v && w.InMultiline() && len(y.Comments[2]) > 0 {
+				w.WriteString(" ")
+				y.Comments[2].printSource(w, true)
+				w.WriteString(",")
+			}
+		}
+
+		if v && w.InMultiline() && len(y.Comments[3]) > 0 {
+			w.WriteString(" ")
+			y.Comments[3].printSource(w, true)
+		}
 	}
 }
