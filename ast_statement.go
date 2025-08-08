@@ -648,14 +648,23 @@ func (r *ReturnStatement) parse(p *pyParser) error {
 type YieldExpression struct {
 	ExpressionList *ExpressionList
 	From           *Expression
+	Comments       [4]Comments
 	Tokens         Tokens
 }
 
 func (y *YieldExpression) parse(p *pyParser) error {
+	y.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
 	p.Next()
+
+	y.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 	p.AcceptRunWhitespace()
 
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
+		y.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
@@ -667,8 +676,6 @@ func (y *YieldExpression) parse(p *pyParser) error {
 
 		p.Score(q)
 	} else {
-		p.AcceptRunWhitespace()
-
 		q := p.NewGoal()
 		y.ExpressionList = new(ExpressionList)
 
@@ -683,10 +690,14 @@ func (y *YieldExpression) parse(p *pyParser) error {
 		q.AcceptRunWhitespace()
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			p.Score(q)
+			y.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+			p.AcceptRunWhitespace()
+			p.Next()
 		}
 	}
 
+	y.Comments[3] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	y.Tokens = p.ToTokens()
 
 	return nil
