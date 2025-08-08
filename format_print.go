@@ -189,10 +189,7 @@ func (a Atom) printSource(w writer, v bool) {
 		w.WriteString(a.Identifier.Data)
 	} else if a.Literal != nil && len(a.Literal.Data) > 0 {
 		w.WriteString(a.Literal.Data[:1])
-
-		w = w.Underlying()
-
-		w.WriteString(a.Literal.Data[1:])
+		w.Underlying().WriteString(a.Literal.Data[1:])
 	} else if a.Enclosure != nil {
 		a.Enclosure.printSource(w, v)
 	}
