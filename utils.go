@@ -37,7 +37,6 @@ func Unquote(str string) (string, error) {
 			return "", strconv.ErrSyntax
 		case '\\':
 			ret.WriteString(t.Get())
-
 			t.Next()
 			t.Get()
 
@@ -48,7 +47,6 @@ func Unquote(str string) (string, error) {
 			}
 
 			r := unescapeEscaped(&t)
-
 			if r < 0 {
 				return "", strconv.ErrSyntax
 			}
