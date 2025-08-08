@@ -16,12 +16,15 @@ type writer interface {
 	WriteString(string)
 	Underlying() writer
 	Indent() writer
+	IndentMultiline() writer
+	InMultiline() bool
 	Printf(string, ...any)
 }
 
 type indentPrinter struct {
 	writer
-	hadNewline bool
+	hadNewline  bool
+	inMultiline bool
 }
 
 func (i *indentPrinter) Write(p []byte) (int, error) {
@@ -87,7 +90,15 @@ func (i *indentPrinter) WriteString(s string) {
 }
 
 func (i *indentPrinter) Indent() writer {
-	return &indentPrinter{writer: i}
+	return &indentPrinter{writer: i, inMultiline: i.inMultiline}
+}
+
+func (i *indentPrinter) IndentMultiline() writer {
+	return &indentPrinter{writer: i, inMultiline: true}
+}
+
+func (i *indentPrinter) InMultiline() bool {
+	return i.inMultiline
 }
 
 type underlyingWriter struct {
@@ -104,6 +115,14 @@ func (u *underlyingWriter) Underlying() writer {
 
 func (u *underlyingWriter) Indent() writer {
 	return &indentPrinter{writer: u}
+}
+
+func (u *underlyingWriter) IndentMultiline() writer {
+	return &indentPrinter{writer: u, inMultiline: true}
+}
+
+func (u *underlyingWriter) InMultiline() bool {
+	return false
 }
 
 func (u *underlyingWriter) Printf(format string, args ...any) {
