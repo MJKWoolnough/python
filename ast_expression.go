@@ -154,11 +154,11 @@ func (e *Enclosure) parse(p *pyParser) error {
 
 		if q.AcceptRunAllWhitespace() == TokenDelimiter {
 			e.Comments[0] = p.AcceptRunWhitespaceComments()
+
+			p.AcceptRunAllWhitespace()
 		} else {
 			e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
 		}
-
-		p.AcceptRunAllWhitespace()
 
 		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			e.ParenthForm = &StarredExpression{
