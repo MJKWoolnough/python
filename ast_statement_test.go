@@ -2136,7 +2136,56 @@ func TestYieldExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`yield nonlocal`, func(t *test, tk Tokens) { // 7
+		{"(# A\nyield # B\na # C\n)", func(t *test, tk Tokens) { // 7
+			t.Output = YieldExpression{
+				ExpressionList: &ExpressionList{
+					Expressions: []Expression{
+						{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							}),
+							Tokens: tk[7:8],
+						},
+					},
+					Tokens: tk[7:8],
+				},
+				Comments: [4]Comments{{tk[1]}, {tk[5]}, nil, {tk[9]}},
+				Tokens:   tk[1:10],
+			}
+		}},
+		{"(# A\nyield # B\na # C\n, # D\n)", func(t *test, tk Tokens) { // 8
+			t.Output = YieldExpression{
+				ExpressionList: &ExpressionList{
+					Expressions: []Expression{
+						{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							}),
+							Tokens: tk[7:8],
+						},
+					},
+					Tokens: tk[7:8],
+				},
+				Comments: [4]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13]}},
+				Tokens:   tk[1:14],
+			}
+		}},
+		{"(# A\nyield # B\nfrom # C\na # D\n)", func(t *test, tk Tokens) { // 9
+			t.Output = YieldExpression{
+				From: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}),
+					Tokens: tk[11:12],
+				},
+				Comments: [4]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13]}},
+				Tokens:   tk[1:14],
+			}
+		}},
+		{`yield nonlocal`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2155,7 +2204,7 @@ func TestYieldExpression(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`yield from nonlocal`, func(t *test, tk Tokens) { // 8
+		{`yield from nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -2172,6 +2221,10 @@ func TestYieldExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var y YieldExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := y.parse(t.Tokens)
 
