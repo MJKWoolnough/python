@@ -788,10 +788,14 @@ func (d *DictItem) parse(p *pyParser, e *Expression) error {
 type GeneratorExpression struct {
 	Expression       Expression
 	ComprehensionFor ComprehensionFor
+	Comments         [3]Comments
 	Tokens           Tokens
 }
 
 func (g *GeneratorExpression) parse(p *pyParser) error {
+	g.Comments[0] = p.AcceptRunWhitespaceComments()
+	p.AcceptRunWhitespace()
+
 	q := p.NewGoal()
 
 	if err := g.Expression.parse(q); err != nil {
@@ -800,7 +804,9 @@ func (g *GeneratorExpression) parse(p *pyParser) error {
 
 	p.Score(q)
 
-	p.AcceptRunWhitespace()
+	g.Comments[1] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunAllWhitespace()
 
 	q = p.NewGoal()
 
@@ -810,6 +816,7 @@ func (g *GeneratorExpression) parse(p *pyParser) error {
 
 	p.Score(q)
 
+	g.Comments[2] = p.AcceptRunWhitespaceComments()
 	g.Tokens = p.ToTokens()
 
 	return nil
