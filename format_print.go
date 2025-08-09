@@ -1222,10 +1222,20 @@ func (s SliceList) printSource(w writer, v bool) {
 }
 
 func (s StarredExpression) printSource(w writer, v bool) {
+	if v && w.InMultiline() && len(s.Comments[0]) > 0 {
+		w.WriteString("\n")
+		s.Comments[0].printSource(w, true)
+	}
+
 	if s.Expression != nil {
 		s.Expression.printSource(w, v)
 	} else if s.StarredList != nil {
 		s.StarredList.printSource(w, v)
+	}
+
+	if v && w.InMultiline() && len(s.Comments[1]) > 0 {
+		w.WriteString(" ")
+		s.Comments[1].printSource(w, true)
 	}
 }
 
