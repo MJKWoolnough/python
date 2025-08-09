@@ -1874,7 +1874,39 @@ func TestStarredExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
+		{"(# A\na #B\n)", func(t *test, tk Tokens) { // 4
+			t.Output = StarredExpression{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[5]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"(# A\n*a, #B\n)", func(t *test, tk Tokens) { // 5
+			t.Output = StarredExpression{
+				StarredList: &StarredList{
+					StarredItems: []StarredItem{
+						{
+							OrExpr: &WrapConditional(&Atom{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
+							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+							Tokens: tk[3:5],
+						},
+					},
+					TrailingComma: true,
+					Tokens:        tk[3:6],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[7]}},
+				Tokens:   tk[1:8],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -1891,6 +1923,10 @@ func TestStarredExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var s StarredExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := s.parse(t.Tokens)
 
