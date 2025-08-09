@@ -654,9 +654,25 @@ func (f FuncDefinition) printSource(w writer, v bool) {
 }
 
 func (g GeneratorExpression) printSource(w writer, v bool) {
+	if v && len(g.Comments[0]) > 0 {
+		w.WriteString("\n")
+		g.Comments[0].printSource(w, true)
+	}
+
 	g.Expression.printSource(w, v)
+
 	w.WriteString(" ")
+
+	if v && len(g.Comments[1]) > 0 {
+		g.Comments[1].printSource(w, true)
+	}
+
 	g.ComprehensionFor.printSource(w, v)
+
+	if v && len(g.Comments[2]) > 0 {
+		w.WriteString(" ")
+		g.Comments[2].printSource(w, true)
+	}
 }
 
 func (g GlobalStatement) printSource(w writer, v bool) {
