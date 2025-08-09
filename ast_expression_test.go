@@ -3216,10 +3216,45 @@ func TestGeneratorExpression(t *testing.T) {
 					}).OrTest,
 					Tokens: tk[2:9],
 				},
-				Tokens: tk[:9],
+				Tokens: tk[0:9],
 			}
 		}},
-		{`nonlocal for b in c`, func(t *test, tk Tokens) { // 2
+		{"(# A\na # B\nfor b in c # C\n)", func(t *test, tk Tokens) { // 2
+			t.Output = GeneratorExpression{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				ComprehensionFor: ComprehensionFor{
+					TargetList: TargetList{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[9],
+										Tokens:     tk[9:10],
+									},
+									Tokens: tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+						},
+						Tokens: tk[9:10],
+					},
+					OrTest: WrapConditional(&Atom{
+						Identifier: &tk[13],
+						Tokens:     tk[13:14],
+					}).OrTest,
+					Tokens: tk[7:14],
+				},
+				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[15]}},
+				Tokens:   tk[1:16],
+			}
+		}},
+		{`nonlocal for b in c`, func(t *test, tk Tokens) { // 3
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -3234,7 +3269,7 @@ func TestGeneratorExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a for b in nonlocal`, func(t *test, tk Tokens) { // 3
+		{`a for b in nonlocal`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -3251,6 +3286,10 @@ func TestGeneratorExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var g GeneratorExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := g.parse(t.Tokens)
 
