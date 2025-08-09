@@ -1138,12 +1138,14 @@ Loop:
 
 		hasComma := q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
 
+		r := q.NewGoal()
+
 		if hasComma {
-			q.AcceptRunWhitespace()
+			r.AcceptRunWhitespace()
 		}
 
-		switch tk := q.Peek(); tk {
-		case parser.Token{Type: TokenDelimiter, Data: "]"}, parser.Token{Type: TokenDelimiter, Data: "}"}, parser.Token{Type: TokenDelimiter, Data: ":"}, parser.Token{Type: TokenKeyword, Data: "for"}, parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: parser.TokenDone}:
+		switch tk := r.Peek(); tk {
+		case parser.Token{Type: TokenDelimiter, Data: "]"}, parser.Token{Type: TokenDelimiter, Data: "}"}, parser.Token{Type: TokenDelimiter, Data: ")"}, parser.Token{Type: TokenDelimiter, Data: ":"}, parser.Token{Type: TokenKeyword, Data: "for"}, parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: parser.TokenDone}:
 			if hasComma {
 				if len(s.StarredItems) == 1 {
 					s.TrailingComma = true

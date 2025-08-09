@@ -559,10 +559,15 @@ func (a *AnnotatedAssignmentStatement) parse(p *pyParser) error {
 type StarredExpression struct {
 	Expression  *Expression
 	StarredList *StarredList
+	Comments    [2]Comments
 	Tokens      Tokens
 }
 
 func (s *StarredExpression) parse(p *pyParser) error {
+	s.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunAllWhitespace()
+
 	q := p.NewGoal()
 
 	if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) || q.LookaheadLine(parser.Token{Type: TokenDelimiter, Data: ","}) == 0 {
@@ -581,6 +586,7 @@ func (s *StarredExpression) parse(p *pyParser) error {
 
 	p.Score(q)
 
+	s.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	s.Tokens = p.ToTokens()
 
 	return nil
