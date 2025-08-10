@@ -1163,7 +1163,7 @@ func TestPrintSource(t *testing.T) {
 		{ // 231
 			"[ #abc\na\n#def\n] = b",
 			"[a]=b\n",
-			"[ #abc\n\ta\n\t#def\n] = b\n",
+			"[ #abc\n\ta #def\n] = b\n",
 		},
 		{ // 232
 			"a\nb\n\nc\n\nd\n\n\n\n\ne",
@@ -1249,6 +1249,16 @@ func TestPrintSource(t *testing.T) {
 			"( # A\n\n# B\na # C\n, # D\n* # E\nb # F\n\n# G\n)",
 			"(a,*b)\n",
 			"( # A\n\n\t# B\n\ta # C\n\t, # D\n\t* # E\n\tb # F\n\n\t# G\n)\n",
+		},
+		{ // 249
+			"( # A\n\n# B\na # C\nfor # D\nb # E\nin # F\nc # G\n\n# H\n)",
+			"(a for b in c)\n",
+			"( # A\n\n\t# B\n\ta # C\n\tfor # D\n\tb # E\n\tin # F\n\tc # G\n\n\t# H\n)\n",
+		},
+		{ // 249
+			"( # A\n\n# B\na # C\nasync # D\nfor # E\nb # F\nin # G\nc # H\n\n# I\n)",
+			"(a async for b in c)\n",
+			"( # A\n\n\t# B\n\ta # C\n\tasync # D\n\tfor # E\n\tb # F\n\tin # G\n\tc # H\n\n\t# I\n)\n",
 		},
 	} {
 		for m, input := range test {
