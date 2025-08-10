@@ -1177,7 +1177,7 @@ Loop:
 			return q.Error("StarredList", ErrMissingComma)
 		}
 
-		q.AcceptRunWhitespace()
+		q.AcceptRunWhitespaceNoComment()
 		p.Score(q)
 	}
 
@@ -1191,11 +1191,16 @@ Loop:
 type StarredItem struct {
 	AssignmentExpression *AssignmentExpression
 	OrExpr               *OrExpression
+	Comments             [3]Comments
 	Tokens               Tokens
 }
 
 func (s *StarredItem) parse(p *pyParser) error {
+	s.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	p.AcceptRunWhitespace()
+
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		s.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
@@ -1215,6 +1220,16 @@ func (s *StarredItem) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunAllWhitespace()
+
+	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ","}) {
+		s.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else {
+		s.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	}
 
 	s.Tokens = p.ToTokens()
