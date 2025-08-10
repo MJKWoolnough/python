@@ -7075,7 +7075,33 @@ func TestStarredItem(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
+		{"(# A\na #B\n)", func(t *test, tk Tokens) { // 4
+			t.Output = StarredItem{
+				AssignmentExpression: &AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						}),
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[3:4],
+				},
+				Comments: [3]Comments{{tk[1]}, nil, {tk[5]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"(# A\n* # B\na #C \n)", func(t *test, tk Tokens) { // 5
+			t.Output = StarredItem{
+				OrExpr: &WrapConditional(&Atom{
+					Identifier: &tk[7],
+					Tokens:     tk[7:8],
+				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[9]}},
+				Tokens:   tk[1:10],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7094,7 +7120,7 @@ func TestStarredItem(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 5
+		{`*nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7147,6 +7173,10 @@ func TestStarredItem(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var s StarredItem
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := s.parse(t.Tokens)
 
