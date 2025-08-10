@@ -2257,14 +2257,67 @@ func TestComprehensionFor(t *testing.T) {
 				Tokens: tk[:17],
 			}
 		}},
-		{`async a in b if c`, func(t *test, tk Tokens) { // 6
+		{"(# A\nfor # B\na #C\nin # D\nb # E\n)", func(t *test, tk Tokens) { // 6
+			t.Output = ComprehensionFor{
+				TargetList: TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[7],
+									Tokens:     tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+							Tokens: tk[7:8],
+						},
+					},
+					Comments: [2]Comments{nil, {tk[9]}},
+					Tokens:   tk[7:10],
+				},
+				OrTest: WrapConditional(&Atom{
+					Identifier: &tk[15],
+					Tokens:     tk[15:16],
+				}).OrTest,
+				Comments: [5]Comments{{tk[1]}, nil, {tk[5]}, {tk[13]}, {tk[17]}},
+				Tokens:   tk[1:18],
+			}
+		}},
+		{"(# A\nasync # B\nfor # C\na # D\nin # E\nb # F\n)", func(t *test, tk Tokens) { // 7
+			t.Output = ComprehensionFor{
+				Async: true,
+				TargetList: TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[11],
+									Tokens:     tk[11:12],
+								},
+								Tokens: tk[11:12],
+							},
+							Tokens: tk[11:12],
+						},
+					},
+					Comments: [2]Comments{nil, {tk[13]}},
+					Tokens:   tk[11:14],
+				},
+				OrTest: WrapConditional(&Atom{
+					Identifier: &tk[19],
+					Tokens:     tk[19:20],
+				}).OrTest,
+				Comments: [5]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[17]}, {tk[21]}},
+				Tokens:   tk[1:22],
+			}
+		}},
+		{`async a in b if c`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     ErrMissingFor,
 				Parsing: "ComprehensionFor",
 				Token:   tk[2],
 			}
 		}},
-		{`for nonlocal in a if b`, func(t *test, tk Tokens) { // 7
+		{`for nonlocal in a if b`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2291,7 +2344,7 @@ func TestComprehensionFor(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`for a in nonlocal if b`, func(t *test, tk Tokens) { // 8
+		{`for a in nonlocal if b`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err: wrapConditionalExpressionError(Error{
 					Err:     ErrInvalidEnclosure,
@@ -2302,7 +2355,7 @@ func TestComprehensionFor(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{`for a in b if nonlocal`, func(t *test, tk Tokens) { // 9
+		{`for a in b if nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2321,7 +2374,7 @@ func TestComprehensionFor(t *testing.T) {
 				Token:   tk[8],
 			}
 		}},
-		{`for a`, func(t *test, tk Tokens) { // 10
+		{`for a`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err:     ErrMissingIn,
 				Parsing: "ComprehensionFor",
@@ -2330,6 +2383,10 @@ func TestComprehensionFor(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var c ComprehensionFor
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := c.parse(t.Tokens)
 
@@ -3219,7 +3276,7 @@ func TestGeneratorExpression(t *testing.T) {
 				Tokens: tk[0:9],
 			}
 		}},
-		{"(# A\na # B\nfor b in c # C\n)", func(t *test, tk Tokens) { // 2
+		{"(# A\na # B\nfor b in c\n# C\n)", func(t *test, tk Tokens) { // 2
 			t.Output = GeneratorExpression{
 				Expression: Expression{
 					ConditionalExpression: WrapConditional(&Atom{
