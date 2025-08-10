@@ -509,17 +509,26 @@ type ComprehensionFor struct {
 	TargetList            TargetList
 	OrTest                OrTest
 	ComprehensionIterator *ComprehensionIterator
+	Comments              [5]Comments
 	Tokens                Tokens
 }
 
 func (c *ComprehensionFor) parse(p *pyParser) error {
+	c.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
 	c.Async = p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"})
+
+	c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "for"}) {
 		return p.Error("ComprehensionFor", ErrMissingFor)
 	}
+
+	c.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
@@ -530,13 +539,15 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 	}
 
 	p.Score(q)
+
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
 		return p.Error("ComprehensionFor", ErrMissingIn)
 	}
 
-	p.Score(q)
+	c.Comments[3] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
@@ -553,7 +564,7 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 
 	switch q.Peek() {
 	case parser.Token{Type: TokenKeyword, Data: "if"}, parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: TokenKeyword, Data: "for"}:
-		p.Score(q)
+		p.AcceptRunWhitespaceNoComment()
 
 		q = p.NewGoal()
 		c.ComprehensionIterator = new(ComprehensionIterator)
@@ -565,6 +576,7 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 		p.Score(q)
 	}
 
+	c.Comments[4] = p.AcceptRunWhitespaceCommentsIfMultiline()
 	c.Tokens = p.ToTokens()
 
 	return nil
