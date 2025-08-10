@@ -1240,11 +1240,26 @@ func (s StarredExpression) printSource(w writer, v bool) {
 }
 
 func (s StarredItem) printSource(w writer, v bool) {
+	if v && w.InMultiline() {
+		s.Comments[0].printSource(w, true)
+	}
+
 	if s.AssignmentExpression != nil {
 		s.AssignmentExpression.printSource(w, v)
 	} else if s.OrExpr != nil {
 		w.WriteString("*")
+
+		if v && w.InMultiline() && len(s.Comments[1]) > 0 {
+			w.WriteString(" ")
+			s.Comments[1].printSource(w, true)
+		}
+
 		s.OrExpr.printSource(w, v)
+	}
+
+	if v && w.InMultiline() && len(s.Comments[2]) > 0 {
+		w.WriteString(" ")
+		s.Comments[2].printSource(w, true)
 	}
 }
 
