@@ -313,18 +313,46 @@ func (c Comprehension) printSource(w writer, v bool) {
 }
 
 func (c ComprehensionFor) printSource(w writer, v bool) {
+	if v && w.InMultiline() {
+		c.Comments[0].printSource(w, true)
+	}
+
 	if c.Async {
 		w.WriteString("async ")
+
+		if v && w.InMultiline() {
+			c.Comments[1].printSource(w, true)
+		}
 	}
 
 	w.WriteString("for ")
+
+	if v && w.InMultiline() {
+		c.Comments[2].printSource(w, true)
+	}
+
 	c.TargetList.printSource(w, v)
-	w.WriteString(" in ")
+
+	if v && w.InMultiline() && len(c.TargetList.Comments[1]) > 0 {
+		w.WriteString("in ")
+	} else {
+		w.WriteString(" in ")
+	}
+
+	if v && w.InMultiline() {
+		c.Comments[3].printSource(w, true)
+	}
+
 	c.OrTest.printSource(w, v)
 
 	if c.ComprehensionIterator != nil {
 		w.WriteString(" ")
 		c.ComprehensionIterator.printSource(w, v)
+	}
+
+	if v && w.InMultiline() && len(c.Comments[4]) > 0 {
+		w.WriteString(" ")
+		c.Comments[4].printSource(w, true)
 	}
 }
 
@@ -1393,7 +1421,7 @@ func (t TargetList) printSource(w writer, v bool) {
 		}
 
 		if v && len(t.Comments[1]) > 0 {
-			w.WriteString("\n")
+			w.WriteString(" ")
 			t.Comments[1].printSource(w, v)
 		}
 	}
