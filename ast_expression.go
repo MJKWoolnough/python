@@ -593,13 +593,17 @@ type ComprehensionIterator struct {
 func (c *ComprehensionIterator) parse(p *pyParser) error {
 	q := p.NewGoal()
 
+	q.AcceptRunAllWhitespace()
+
 	if q.Peek() == (parser.Token{Type: TokenKeyword, Data: "if"}) {
+		q = p.NewGoal()
 		c.ComprehensionIf = new(ComprehensionIf)
 
 		if err := c.ComprehensionIf.parse(q); err != nil {
 			return p.Error("ComprehensionIterator", err)
 		}
 	} else {
+		q = p.NewGoal()
 		c.ComprehensionFor = new(ComprehensionFor)
 
 		if err := c.ComprehensionFor.parse(q); err != nil {
@@ -619,13 +623,20 @@ func (c *ComprehensionIterator) parse(p *pyParser) error {
 type ComprehensionIf struct {
 	OrTest                OrTest
 	ComprehensionIterator *ComprehensionIterator
+	Comments              [3]Comments
 	Tokens                Tokens
 }
 
 func (c *ComprehensionIf) parse(p *pyParser) error {
+	c.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
 	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
 		return p.Error("ComprehensionIf", ErrMissingIf)
 	}
+
+	c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
@@ -636,7 +647,6 @@ func (c *ComprehensionIf) parse(p *pyParser) error {
 	}
 
 	p.Score(q)
-	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
 
@@ -644,7 +654,7 @@ func (c *ComprehensionIf) parse(p *pyParser) error {
 
 	switch q.Peek() {
 	case parser.Token{Type: TokenKeyword, Data: "if"}, parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: TokenKeyword, Data: "for"}:
-		p.Score(q)
+		p.AcceptRunWhitespaceNoComment()
 
 		q = p.NewGoal()
 		c.ComprehensionIterator = new(ComprehensionIterator)
@@ -656,6 +666,7 @@ func (c *ComprehensionIf) parse(p *pyParser) error {
 		p.Score(q)
 	}
 
+	c.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
 	c.Tokens = p.ToTokens()
 
 	return nil
