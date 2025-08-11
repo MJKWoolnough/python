@@ -1265,6 +1265,11 @@ func TestPrintSource(t *testing.T) {
 			"(a for b in c if d)\n",
 			"( # A\n\n\t# B\n\ta # C\n\tfor # D\n\tb # E\n\tin # F\n\tc # G\n\tif # H\n\td # I\n\n\t# J\n)\n",
 		},
+		{ // 252
+			"(a # A\nor # B\nb)",
+			"(a or b)\n",
+			"(a # A\n\tor # B\n\tb)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
