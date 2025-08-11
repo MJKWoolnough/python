@@ -895,7 +895,18 @@ func (o OrTest) printSource(w writer, v bool) {
 	o.AndTest.printSource(w, v)
 
 	if o.OrTest != nil {
-		w.WriteString(" or ")
+		w.WriteString(" ")
+
+		if v && w.InMultiline() {
+			o.Comments[0].printSource(w, true)
+		}
+
+		w.WriteString("or ")
+
+		if v && w.InMultiline() {
+			o.Comments[1].printSource(w, true)
+		}
+
 		o.OrTest.printSource(w, v)
 	}
 }
