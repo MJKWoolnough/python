@@ -2618,14 +2618,60 @@ func TestComprehensionIf(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{`a`, func(t *test, tk Tokens) { // 5
+		{"(# A\nif # B\na # C\n)", func(t *test, tk Tokens) { // 5
+			t.Output = ComprehensionIf{
+				OrTest: WrapConditional(&Atom{
+					Identifier: &tk[7],
+					Tokens:     tk[7:8],
+				}).OrTest,
+				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[9]}},
+				Tokens:   tk[1:10],
+			}
+		}},
+		{"(# A\nif # B\na # C\nfor b in c # D\n\n# E\n)", func(t *test, tk Tokens) { // 6
+			t.Output = ComprehensionIf{
+				OrTest: WrapConditional(&Atom{
+					Identifier: &tk[7],
+					Tokens:     tk[7:8],
+				}).OrTest,
+				ComprehensionIterator: &ComprehensionIterator{
+					ComprehensionFor: &ComprehensionFor{
+						TargetList: TargetList{
+							Targets: []Target{
+								{
+									PrimaryExpression: &PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[13],
+											Tokens:     tk[13:14],
+										},
+										Tokens: tk[13:14],
+									},
+									Tokens: tk[13:14],
+								},
+							},
+							Tokens: tk[13:14],
+						},
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[17],
+							Tokens:     tk[17:18],
+						}).OrTest,
+						Comments: [5]Comments{{tk[9]}, nil, nil, nil, {tk[19], tk[21]}},
+						Tokens:   tk[9:22],
+					},
+					Tokens: tk[9:22],
+				},
+				Comments: [3]Comments{{tk[1]}, {tk[5]}},
+				Tokens:   tk[1:22],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err:     ErrMissingIf,
 				Parsing: "ComprehensionIf",
 				Token:   tk[0],
 			}
 		}},
-		{`if nonlocal`, func(t *test, tk Tokens) { // 6
+		{`if nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: wrapConditionalExpressionError(Error{
 					Err:     ErrInvalidEnclosure,
@@ -2636,7 +2682,7 @@ func TestComprehensionIf(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`if a if nonlocal`, func(t *test, tk Tokens) { // 7
+		{`if a if nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2657,6 +2703,10 @@ func TestComprehensionIf(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var c ComprehensionIf
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := c.parse(t.Tokens)
 
