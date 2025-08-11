@@ -1300,9 +1300,10 @@ func (l *LambdaExpression) parse(p *pyParser) error {
 // OrTest as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-or_test
 type OrTest struct {
-	AndTest AndTest
-	OrTest  *OrTest
-	Tokens  Tokens
+	AndTest  AndTest
+	OrTest   *OrTest
+	Comments [2]Comments
+	Tokens   Tokens
 }
 
 func (o *OrTest) parse(p *pyParser) error {
@@ -1319,8 +1320,14 @@ func (o *OrTest) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "or"}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		o.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		o.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		o.OrTest = new(OrTest)
