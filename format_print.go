@@ -357,12 +357,26 @@ func (c ComprehensionFor) printSource(w writer, v bool) {
 }
 
 func (c ComprehensionIf) printSource(w writer, v bool) {
+	if v && w.InMultiline() {
+		c.Comments[0].printSource(w, true)
+	}
+
 	w.WriteString("if ")
+
+	if v && w.InMultiline() {
+		c.Comments[1].printSource(w, true)
+	}
+
 	c.OrTest.printSource(w, v)
 
 	if c.ComprehensionIterator != nil {
 		w.WriteString(" ")
 		c.ComprehensionIterator.printSource(w, v)
+	}
+
+	if v && w.InMultiline() && len(c.Comments[2]) > 0 {
+		w.WriteString(" ")
+		c.Comments[2].printSource(w, true)
 	}
 }
 
