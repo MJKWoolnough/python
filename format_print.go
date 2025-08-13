@@ -36,7 +36,18 @@ func (a AndTest) printSource(w writer, v bool) {
 	a.NotTest.printSource(w, v)
 
 	if a.AndTest != nil {
-		w.WriteString(" and ")
+		w.WriteString(" ")
+
+		if v && w.InMultiline() {
+			a.Comments[0].printSource(w, true)
+		}
+
+		w.WriteString("and ")
+
+		if v && w.InMultiline() {
+			a.Comments[1].printSource(w, true)
+		}
+
 		a.AndTest.printSource(w, v)
 	}
 }
