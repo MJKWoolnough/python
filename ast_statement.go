@@ -1347,9 +1347,10 @@ func (o *OrTest) parse(p *pyParser) error {
 // AndTest as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-and_test
 type AndTest struct {
-	NotTest NotTest
-	AndTest *AndTest
-	Tokens  Tokens
+	NotTest  NotTest
+	AndTest  *AndTest
+	Comments [2]Comments
+	Tokens   Tokens
 }
 
 func (a *AndTest) parse(p *pyParser) error {
@@ -1366,8 +1367,14 @@ func (a *AndTest) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "and"}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		a.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		a.AndTest = new(AndTest)
