@@ -1480,8 +1480,21 @@ func (f *NotTest) printType(w writer, v bool) {
 
 	pp.WriteString("NotTest {")
 
-	if f.Nots != 0 || v {
-		pp.Printf("\nNots: %v", f.Nots)
+	if f.Nots == nil {
+		pp.WriteString("\nNots: nil")
+	} else if len(f.Nots) > 0 {
+		pp.WriteString("\nNots: [")
+
+		ipp := pp.Indent()
+
+		for n, e := range f.Nots {
+			ipp.Printf("\n%d: ", n)
+			e.printType(ipp, v)
+		}
+
+		pp.WriteString("\n]")
+	} else if v {
+		pp.WriteString("\nNots: []")
 	}
 
 	pp.WriteString("\nComparison: ")
