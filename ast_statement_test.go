@@ -4507,7 +4507,7 @@ func TestAndTest(t *testing.T) {
 				Tokens:   tk[1:10],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 3
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4566,7 +4566,7 @@ func TestAndTest(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a and nonlocal`, func(t *test, tk Tokens) { // 4
+		{`a and nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4763,7 +4763,87 @@ func TestNotTest(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
+		{"(not #A\na)", func(t *test, tk Tokens) { // 4
+			t.Output = NotTest{
+				Nots: []Comments{{tk[3]}},
+				Comparison: Comparison{
+					OrExpression: OrExpression{
+						XorExpression: XorExpression{
+							AndExpression: AndExpression{
+								ShiftExpression: ShiftExpression{
+									AddExpression: AddExpression{
+										MultiplyExpression: MultiplyExpression{
+											UnaryExpression: UnaryExpression{
+												PowerExpression: &PowerExpression{
+													PrimaryExpression: PrimaryExpression{
+														Atom: &Atom{
+															Identifier: &tk[5],
+															Tokens:     tk[5:6],
+														},
+														Tokens: tk[5:6],
+													},
+													Tokens: tk[5:6],
+												},
+												Tokens: tk[5:6],
+											},
+											Tokens: tk[5:6],
+										},
+										Tokens: tk[5:6],
+									},
+									Tokens: tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+					Tokens: tk[5:6],
+				},
+				Tokens: tk[1:6],
+			}
+		}},
+		{"(not #A\nnot not #B\nnot #C\na)", func(t *test, tk Tokens) { // 5
+			t.Output = NotTest{
+				Nots: []Comments{{tk[3]}, nil, {tk[9]}, {tk[13]}},
+				Comparison: Comparison{
+					OrExpression: OrExpression{
+						XorExpression: XorExpression{
+							AndExpression: AndExpression{
+								ShiftExpression: ShiftExpression{
+									AddExpression: AddExpression{
+										MultiplyExpression: MultiplyExpression{
+											UnaryExpression: UnaryExpression{
+												PowerExpression: &PowerExpression{
+													PrimaryExpression: PrimaryExpression{
+														Atom: &Atom{
+															Identifier: &tk[15],
+															Tokens:     tk[15:16],
+														},
+														Tokens: tk[15:16],
+													},
+													Tokens: tk[15:16],
+												},
+												Tokens: tk[15:16],
+											},
+											Tokens: tk[15:16],
+										},
+										Tokens: tk[15:16],
+									},
+									Tokens: tk[15:16],
+								},
+								Tokens: tk[15:16],
+							},
+							Tokens: tk[15:16],
+						},
+						Tokens: tk[15:16],
+					},
+					Tokens: tk[15:16],
+				},
+				Tokens: tk[1:16],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4818,7 +4898,7 @@ func TestNotTest(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`not not not nonlocal`, func(t *test, tk Tokens) { // 5
+		{`not not not nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4875,6 +4955,10 @@ func TestNotTest(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var nt NotTest
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := nt.parse(t.Tokens)
 
