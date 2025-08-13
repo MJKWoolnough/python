@@ -882,8 +882,12 @@ func (n NonLocalStatement) printSource(w writer, v bool) {
 }
 
 func (n NotTest) printSource(w writer, v bool) {
-	for i := n.Nots; i > 0; i-- {
+	for _, comments := range n.Nots {
 		w.WriteString("not ")
+
+		if v && w.InMultiline() {
+			comments.printSource(w, true)
+		}
 	}
 
 	n.Comparison.printSource(w, v)
