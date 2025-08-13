@@ -4685,7 +4685,7 @@ func TestNotTest(t *testing.T) {
 		}},
 		{`not a`, func(t *test, tk Tokens) { // 2
 			t.Output = NotTest{
-				Nots: 1,
+				Nots: make([]Comments, 1),
 				Comparison: Comparison{
 					OrExpression: OrExpression{
 						XorExpression: XorExpression{
@@ -4725,7 +4725,7 @@ func TestNotTest(t *testing.T) {
 		}},
 		{`not not not not a`, func(t *test, tk Tokens) { // 3
 			t.Output = NotTest{
-				Nots: 4,
+				Nots: make([]Comments, 4),
 				Comparison: Comparison{
 					OrExpression: OrExpression{
 						XorExpression: XorExpression{

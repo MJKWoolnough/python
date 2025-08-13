@@ -1365,7 +1365,7 @@ func TestUnwrapConditional(t *testing.T) {
 			Comparisons: []ComparisonExpression{{}},
 		},
 		&NotTest{ // 12
-			Nots: 1,
+			Nots: make([]Comments, 1),
 			Comparison: Comparison{
 				OrExpression: OrExpression{
 					XorExpression: XorExpression{

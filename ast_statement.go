@@ -1394,7 +1394,7 @@ func (a *AndTest) parse(p *pyParser) error {
 // NotTest as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-not_test
 type NotTest struct {
-	Nots       uint
+	Nots       []Comments
 	Comparison Comparison
 	Tokens     Tokens
 }
@@ -1405,9 +1405,8 @@ func (n *NotTest) parse(p *pyParser) error {
 			break
 		}
 
+		n.Nots = append(n.Nots, p.AcceptRunWhitespaceCommentsIfMultiline())
 		p.AcceptRunWhitespace()
-
-		n.Nots++
 	}
 
 	q := p.NewGoal()

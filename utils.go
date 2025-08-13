@@ -356,7 +356,7 @@ func UnwrapConditional(c *ConditionalExpression) ConditionalWrappable {
 		return &c.OrTest
 	} else if c.OrTest.AndTest.AndTest != nil {
 		return &c.OrTest.AndTest
-	} else if c.OrTest.AndTest.NotTest.Nots != 0 {
+	} else if len(c.OrTest.AndTest.NotTest.Nots) != 0 {
 		return &c.OrTest.AndTest.NotTest
 	} else if c.OrTest.AndTest.NotTest.Comparison.Comparisons != nil {
 		return &c.OrTest.AndTest.NotTest.Comparison
