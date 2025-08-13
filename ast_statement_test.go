@@ -4424,6 +4424,89 @@ func TestAndTest(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
+		{"(a # A\nand # B\nb)", func(t *test, tk Tokens) { // 3
+			t.Output = AndTest{
+				NotTest: NotTest{
+					Comparison: Comparison{
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[1],
+																Tokens:     tk[1:2],
+															},
+															Tokens: tk[1:2],
+														},
+														Tokens: tk[1:2],
+													},
+													Tokens: tk[1:2],
+												},
+												Tokens: tk[1:2],
+											},
+											Tokens: tk[1:2],
+										},
+										Tokens: tk[1:2],
+									},
+									Tokens: tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				AndTest: &AndTest{
+					NotTest: NotTest{
+						Comparison: Comparison{
+							OrExpression: OrExpression{
+								XorExpression: XorExpression{
+									AndExpression: AndExpression{
+										ShiftExpression: ShiftExpression{
+											AddExpression: AddExpression{
+												MultiplyExpression: MultiplyExpression{
+													UnaryExpression: UnaryExpression{
+														PowerExpression: &PowerExpression{
+															PrimaryExpression: PrimaryExpression{
+																Atom: &Atom{
+																	Identifier: &tk[9],
+																	Tokens:     tk[9:10],
+																},
+																Tokens: tk[9:10],
+															},
+															Tokens: tk[9:10],
+														},
+														Tokens: tk[9:10],
+													},
+													Tokens: tk[9:10],
+												},
+												Tokens: tk[9:10],
+											},
+											Tokens: tk[9:10],
+										},
+										Tokens: tk[9:10],
+									},
+									Tokens: tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[9:10],
+					},
+					Tokens: tk[9:10],
+				},
+				Comments: [2]Comments{{tk[3]}, {tk[7]}},
+				Tokens:   tk[1:10],
+			}
+		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 3
 			t.Err = Error{
 				Err: Error{
@@ -4548,6 +4631,10 @@ func TestAndTest(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var at AndTest
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := at.parse(t.Tokens)
 
