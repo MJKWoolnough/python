@@ -1270,6 +1270,11 @@ func TestPrintSource(t *testing.T) {
 			"(a or b)\n",
 			"(a # A\n\tor # B\n\tb)\n",
 		},
+		{ // 253
+			"(a # A\nand # B\nb)",
+			"(a and b)\n",
+			"(a # A\n\tand # B\n\tb)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
