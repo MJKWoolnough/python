@@ -1443,9 +1443,11 @@ Loop:
 	for {
 		q = p.NewGoal()
 
-		q.AcceptRunWhitespace()
-
 		var ce ComparisonExpression
+
+		ce.Comments[0] = q.AcceptRunWhitespaceCommentsIfMultiline()
+
+		q.AcceptRunWhitespace()
 
 		switch q.Peek() {
 		case parser.Token{Type: TokenOperator, Data: "<"},
@@ -1475,7 +1477,10 @@ Loop:
 			r.AcceptRunWhitespace()
 
 			if r.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
-				q.Score(r)
+				ce.Comments[1] = q.AcceptRunWhitespaceCommentsIfMultiline()
+
+				q.AcceptRunWhitespace()
+				q.Next()
 			}
 
 			ce.ComparisonOperator = q.ToTokens()
@@ -1487,6 +1492,9 @@ Loop:
 			q = p.NewGoal()
 
 			q.Next()
+
+			ce.Comments[1] = q.AcceptRunWhitespaceCommentsIfMultiline()
+
 			q.AcceptRunWhitespace()
 
 			if !q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
@@ -1510,6 +1518,8 @@ Loop:
 			break Loop
 		}
 
+		ce.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
@@ -1532,4 +1542,5 @@ Loop:
 type ComparisonExpression struct {
 	ComparisonOperator []Token
 	OrExpression       OrExpression
+	Comments           [3]Comments
 }
