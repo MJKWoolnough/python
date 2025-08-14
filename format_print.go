@@ -267,9 +267,14 @@ func (c ComparisonExpression) printSource(w writer, v bool) {
 		first = c.ComparisonOperator[0].Data
 	}
 
+	if v && w.InMultiline() {
+		w.WriteString(" ")
+		c.Comments[0].printSource(w, true)
+	}
+
 	switch first {
 	case "<", ">", "==", ">=", "<=", "!=":
-		if v {
+		if v && (!w.InMultiline() || len(c.Comments[0]) == 0) {
 			w.WriteString(" ")
 		}
 
@@ -277,23 +282,63 @@ func (c ComparisonExpression) printSource(w writer, v bool) {
 
 		if v {
 			w.WriteString(" ")
+
+			if w.InMultiline() {
+				c.Comments[2].printSource(w, true)
+			}
 		}
 
 		c.OrExpression.printSource(w, v)
 	case "in":
-		w.WriteString(" in ")
+		if !v || !w.InMultiline() || len(c.Comments[0]) == 0 {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("in ")
+
+		if v && w.InMultiline() {
+			c.Comments[2].printSource(w, true)
+		}
+
 		c.OrExpression.printSource(w, v)
 	case "is":
+		if !v || !w.InMultiline() || len(c.Comments[0]) == 0 {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("is ")
+
+		if v && w.InMultiline() {
+			c.Comments[1].printSource(w, true)
+		}
+
 		if c.ComparisonOperator[len(c.ComparisonOperator)-1].Data == "not" {
-			w.WriteString(" is not ")
-		} else {
-			w.WriteString(" is ")
+			w.WriteString("not ")
+		}
+
+		if v && w.InMultiline() {
+			c.Comments[2].printSource(w, true)
 		}
 
 		c.OrExpression.printSource(w, v)
 	case "not":
+		if !v || !w.InMultiline() || len(c.Comments[0]) == 0 {
+			w.WriteString(" ")
+		}
+
+		w.WriteString("not ")
+
+		if v && w.InMultiline() {
+			c.Comments[1].printSource(w, true)
+		}
+
 		if c.ComparisonOperator[len(c.ComparisonOperator)-1].Data == "in" {
-			w.WriteString(" not in ")
+			w.WriteString("in ")
+
+			if v && w.InMultiline() {
+				c.Comments[2].printSource(w, true)
+			}
+
 			c.OrExpression.printSource(w, v)
 		}
 	}
