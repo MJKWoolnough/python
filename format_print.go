@@ -943,10 +943,21 @@ func (o OrExpression) printSource(w writer, v bool) {
 
 	if o.OrExpression != nil {
 		if v {
-			w.WriteString(" | ")
+			w.WriteString(" ")
+
+			if w.InMultiline() {
+				o.Comments[0].printSource(w, true)
+			}
+
+			w.WriteString("| ")
+
+			if w.InMultiline() {
+				o.Comments[1].printSource(w, true)
+			}
 		} else {
 			w.WriteString("|")
 		}
+
 		o.OrExpression.printSource(w, v)
 	}
 }
