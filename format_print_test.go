@@ -1280,10 +1280,35 @@ func TestPrintSource(t *testing.T) {
 			"(not a)\n",
 			"(not # A\n\ta)\n",
 		},
-		{ // 254
+		{ // 255
 			"(not # A\nnot not # B\na)",
 			"(not not not a)\n",
 			"(not # A\n\tnot not # B\n\ta)\n",
+		},
+		{ // 256
+			"(a # A\n== # B\nb)",
+			"(a==b)\n",
+			"(a # A\n\t== # B\n\tb)\n",
+		},
+		{ // 257
+			"(a # A\nin # B\nb)",
+			"(a in b)\n",
+			"(a # A\n\tin # B\n\tb)\n",
+		},
+		{ // 258
+			"(a # A\nnot # B\nin # C\nb)",
+			"(a not in b)\n",
+			"(a # A\n\tnot # B\n\tin # C\n\tb)\n",
+		},
+		{ // 259
+			"(a # A\nis # B\nb)",
+			"(a is b)\n",
+			"(a # A\n\tis # B\n\tb)\n",
+		},
+		{ // 260
+			"(a # A\nis # B\nnot # C\nb)",
+			"(a is not b)\n",
+			"(a # A\n\tis # B\n\tnot # C\n\tb)\n",
 		},
 	} {
 		for m, input := range test {
