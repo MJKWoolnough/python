@@ -1310,6 +1310,11 @@ func TestPrintSource(t *testing.T) {
 			"(a is not b)\n",
 			"(a # A\n\tis # B\n\tnot # C\n\tb)\n",
 		},
+		{ // 261
+			"(a # A\n| # B\nb)",
+			"(a|b)\n",
+			"(a # A\n\t| # B\n\tb)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
