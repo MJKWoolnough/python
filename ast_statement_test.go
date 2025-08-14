@@ -5610,7 +5610,153 @@ func TestComparison(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 9
+		{"(a # A\n> # B\nb)", func(t *test, tk Tokens) { // 9
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[1],
+														Tokens:     tk[1:2],
+													},
+													Tokens: tk[1:2],
+												},
+												Tokens: tk[1:2],
+											},
+											Tokens: tk[1:2],
+										},
+										Tokens: tk[1:2],
+									},
+									Tokens: tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Comparisons: []ComparisonExpression{
+					{
+						ComparisonOperator: []Token{tk[5]},
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[9],
+																Tokens:     tk[9:10],
+															},
+															Tokens: tk[9:10],
+														},
+														Tokens: tk[9:10],
+													},
+													Tokens: tk[9:10],
+												},
+												Tokens: tk[9:10],
+											},
+											Tokens: tk[9:10],
+										},
+										Tokens: tk[9:10],
+									},
+									Tokens: tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[9:10],
+						},
+						Comments: [3]Comments{{tk[3]}, nil, {tk[7]}},
+					},
+				},
+				Tokens: tk[1:10],
+			}
+		}},
+		{"(a # A\nis # B\nnot # C\nb)", func(t *test, tk Tokens) { // 10
+			t.Output = Comparison{
+				OrExpression: OrExpression{
+					XorExpression: XorExpression{
+						AndExpression: AndExpression{
+							ShiftExpression: ShiftExpression{
+								AddExpression: AddExpression{
+									MultiplyExpression: MultiplyExpression{
+										UnaryExpression: UnaryExpression{
+											PowerExpression: &PowerExpression{
+												PrimaryExpression: PrimaryExpression{
+													Atom: &Atom{
+														Identifier: &tk[1],
+														Tokens:     tk[1:2],
+													},
+													Tokens: tk[1:2],
+												},
+												Tokens: tk[1:2],
+											},
+											Tokens: tk[1:2],
+										},
+										Tokens: tk[1:2],
+									},
+									Tokens: tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Comparisons: []ComparisonExpression{
+					{
+						ComparisonOperator: tk[5:10],
+						OrExpression: OrExpression{
+							XorExpression: XorExpression{
+								AndExpression: AndExpression{
+									ShiftExpression: ShiftExpression{
+										AddExpression: AddExpression{
+											MultiplyExpression: MultiplyExpression{
+												UnaryExpression: UnaryExpression{
+													PowerExpression: &PowerExpression{
+														PrimaryExpression: PrimaryExpression{
+															Atom: &Atom{
+																Identifier: &tk[13],
+																Tokens:     tk[13:14],
+															},
+															Tokens: tk[13:14],
+														},
+														Tokens: tk[13:14],
+													},
+													Tokens: tk[13:14],
+												},
+												Tokens: tk[13:14],
+											},
+											Tokens: tk[13:14],
+										},
+										Tokens: tk[13:14],
+									},
+									Tokens: tk[13:14],
+								},
+								Tokens: tk[13:14],
+							},
+							Tokens: tk[13:14],
+						},
+						Comments: [3]Comments{{tk[3]}, {tk[7]}, {tk[11]}},
+					},
+				},
+				Tokens: tk[1:14],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5661,14 +5807,14 @@ func TestComparison(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a not a b`, func(t *test, tk Tokens) { // 10
+		{`a not a b`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err:     ErrMissingIn,
 				Parsing: "Comparison",
 				Token:   tk[4],
 			}
 		}},
-		{`1<nonlocal`, func(t *test, tk Tokens) { // 11
+		{`1<nonlocal`, func(t *test, tk Tokens) { // 13
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5721,6 +5867,10 @@ func TestComparison(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var c Comparison
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := c.parse(t.Tokens)
 
