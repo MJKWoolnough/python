@@ -1039,6 +1039,7 @@ func (s *SliceItem) parse(p *pyParser) error {
 type OrExpression struct {
 	XorExpression XorExpression
 	OrExpression  *OrExpression
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 
@@ -1056,9 +1057,14 @@ func (o *OrExpression) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "|"}) {
-		q.AcceptRunWhitespace()
+		o.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
-		p.Score(q)
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		o.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		o.OrExpression = new(OrExpression)
