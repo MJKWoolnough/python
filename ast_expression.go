@@ -1133,6 +1133,7 @@ func (x *XorExpression) parse(p *pyParser) error {
 type AndExpression struct {
 	ShiftExpression ShiftExpression
 	AndExpression   *AndExpression
+	Comments        [2]Comments
 	Tokens          Tokens
 }
 
@@ -1150,9 +1151,14 @@ func (a *AndExpression) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "&"}) {
-		q.AcceptRunWhitespace()
+		a.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
-		p.Score(q)
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		a.AndExpression = new(AndExpression)
