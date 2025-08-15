@@ -1086,6 +1086,7 @@ func (o *OrExpression) parse(p *pyParser) error {
 type XorExpression struct {
 	AndExpression AndExpression
 	XorExpression *XorExpression
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 
@@ -1103,9 +1104,14 @@ func (x *XorExpression) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "^"}) {
-		q.AcceptRunWhitespace()
+		x.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
-		p.Score(q)
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		x.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		x.XorExpression = new(XorExpression)
