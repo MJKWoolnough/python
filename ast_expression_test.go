@@ -4774,7 +4774,60 @@ func TestAndExpression(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
+		{"(a # A\n& # B\nb)", func(t *test, tk Tokens) { // 4
+			t.Output = AndExpression{
+				ShiftExpression: ShiftExpression{
+					AddExpression: AddExpression{
+						MultiplyExpression: MultiplyExpression{
+							UnaryExpression: UnaryExpression{
+								PowerExpression: &PowerExpression{
+									PrimaryExpression: PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[1],
+											Tokens:     tk[1:2],
+										},
+										Tokens: tk[1:2],
+									},
+									Tokens: tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				AndExpression: &AndExpression{
+					ShiftExpression: ShiftExpression{
+						AddExpression: AddExpression{
+							MultiplyExpression: MultiplyExpression{
+								UnaryExpression: UnaryExpression{
+									PowerExpression: &PowerExpression{
+										PrimaryExpression: PrimaryExpression{
+											Atom: &Atom{
+												Identifier: &tk[9],
+												Tokens:     tk[9:10],
+											},
+											Tokens: tk[9:10],
+										},
+										Tokens: tk[9:10],
+									},
+									Tokens: tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[9:10],
+					},
+					Tokens: tk[9:10],
+				},
+				Comments: [2]Comments{{tk[3]}, {tk[7]}},
+				Tokens:   tk[1:10],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4813,7 +4866,7 @@ func TestAndExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`1&nonlocal`, func(t *test, tk Tokens) { // 5
+		{`1&nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4858,6 +4911,10 @@ func TestAndExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ae AndExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := ae.parse(t.Tokens)
 
