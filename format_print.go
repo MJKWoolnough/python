@@ -1707,7 +1707,17 @@ func (x XorExpression) printSource(w writer, v bool) {
 
 	if x.XorExpression != nil {
 		if v {
-			w.WriteString(" ^ ")
+			w.WriteString(" ")
+
+			if w.InMultiline() {
+				x.Comments[0].printSource(w, true)
+			}
+
+			w.WriteString("^ ")
+
+			if w.InMultiline() {
+				x.Comments[1].printSource(w, true)
+			}
 		} else {
 			w.WriteString("^")
 		}
