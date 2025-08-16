@@ -1261,12 +1261,19 @@ func (s ShiftExpression) printSource(w writer, v bool) {
 	if s.Shift != nil && s.ShiftExpression != nil {
 		if v {
 			w.WriteString(" ")
-		}
 
-		w.WriteString(s.Shift.Data)
+			if w.InMultiline() {
+				s.Comments[0].printSource(w, true)
+			}
 
-		if v {
+			w.WriteString(s.Shift.Data)
 			w.WriteString(" ")
+
+			if w.InMultiline() {
+				s.Comments[1].printSource(w, true)
+			}
+		} else {
+			w.WriteString(s.Shift.Data)
 		}
 
 		s.ShiftExpression.printSource(w, v)
