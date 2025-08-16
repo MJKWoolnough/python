@@ -1181,6 +1181,7 @@ type ShiftExpression struct {
 	AddExpression   AddExpression
 	Shift           *Token
 	ShiftExpression *ShiftExpression
+	Comments        [2]Comments
 	Tokens          Tokens
 }
 
@@ -1198,10 +1199,15 @@ func (s *ShiftExpression) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "<<"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: ">>"}) {
+		s.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
 		s.Shift = q.GetLastToken()
 
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		s.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		s.ShiftExpression = new(ShiftExpression)
