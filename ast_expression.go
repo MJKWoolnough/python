@@ -1230,6 +1230,7 @@ type AddExpression struct {
 	MultiplyExpression MultiplyExpression
 	Add                *Token
 	AddExpression      *AddExpression
+	Comments           [2]Comments
 	Tokens             Tokens
 }
 
@@ -1247,11 +1248,15 @@ func (a *AddExpression) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "+"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: "-"}) {
+		a.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
 		a.Add = q.GetLastToken()
 
-		q.AcceptRunWhitespace()
+		a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
-		p.Score(q)
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		a.AddExpression = new(AddExpression)
