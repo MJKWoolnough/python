@@ -6,12 +6,19 @@ func (a AddExpression) printSource(w writer, v bool) {
 	if a.Add != nil && a.AddExpression != nil {
 		if v {
 			w.WriteString(" ")
-		}
 
-		w.WriteString(a.Add.Data)
+			if w.InMultiline() {
+				a.Comments[0].printSource(w, true)
+			}
 
-		if v {
+			w.WriteString(a.Add.Data)
 			w.WriteString(" ")
+
+			if w.InMultiline() {
+				a.Comments[1].printSource(w, true)
+			}
+		} else {
+			w.WriteString(a.Add.Data)
 		}
 
 		a.AddExpression.printSource(w, v)
