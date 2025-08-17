@@ -914,12 +914,19 @@ func (m MultiplyExpression) printSource(w writer, v bool) {
 	if m.Multiply != nil && m.MultiplyExpression != nil {
 		if v {
 			w.WriteString(" ")
-		}
 
-		w.WriteString(m.Multiply.Data)
+			if w.InMultiline() {
+				m.Comments[0].printSource(w, true)
+			}
 
-		if v {
+			w.WriteString(m.Multiply.Data)
 			w.WriteString(" ")
+
+			if w.InMultiline() {
+				m.Comments[1].printSource(w, true)
+			}
+		} else {
+			w.WriteString(m.Multiply.Data)
 		}
 
 		m.MultiplyExpression.printSource(w, v)
