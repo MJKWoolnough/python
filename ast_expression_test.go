@@ -6002,6 +6002,26 @@ func TestUnaryExpression(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{"(- # A\n1)", func(t *test, tk Tokens) { // 3
+			t.Output = UnaryExpression{
+				Unary: &tk[1],
+				UnaryExpression: &UnaryExpression{
+					PowerExpression: &PowerExpression{
+						PrimaryExpression: PrimaryExpression{
+							Atom: &Atom{
+								Literal: &tk[5],
+								Tokens:  tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+					Tokens: tk[5:6],
+				},
+				Comments: Comments{tk[3]},
+				Tokens:   tk[1:6],
+			}
+		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
@@ -6054,6 +6074,10 @@ func TestUnaryExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ue UnaryExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := ue.parse(t.Tokens)
 
