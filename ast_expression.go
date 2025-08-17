@@ -1279,6 +1279,7 @@ type MultiplyExpression struct {
 	UnaryExpression    UnaryExpression
 	Multiply           *Token
 	MultiplyExpression *MultiplyExpression
+	Comments           [2]Comments
 	Tokens             Tokens
 }
 
@@ -1298,10 +1299,15 @@ func (m *MultiplyExpression) parse(p *pyParser) error {
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) ||
 		q.AcceptToken(parser.Token{Type: TokenOperator, Data: "//"}) || q.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) ||
 		q.AcceptToken(parser.Token{Type: TokenOperator, Data: "%"}) {
+		m.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
 		m.Multiply = q.GetLastToken()
 
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		m.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		m.MultiplyExpression = new(MultiplyExpression)
