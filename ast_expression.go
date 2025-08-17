@@ -1330,7 +1330,8 @@ type UnaryExpression struct {
 	PowerExpression *PowerExpression
 	Unary           *Token
 	UnaryExpression *UnaryExpression
-	Tokens          Tokens
+	Comments
+	Tokens Tokens
 }
 
 func (u *UnaryExpression) parse(p *pyParser) error {
@@ -1339,6 +1340,7 @@ func (u *UnaryExpression) parse(p *pyParser) error {
 		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "~"}) {
 		u.Unary = p.GetLastToken()
 
+		u.Comments = p.AcceptRunWhitespaceCommentsIfMultiline()
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
