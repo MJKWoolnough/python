@@ -5798,6 +5798,42 @@ func TestMultiplyExpression(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
+		{"(a # A\n* # B\nb)", func(t *test, tk Tokens) { // 2
+			t.Output = MultiplyExpression{
+				UnaryExpression: UnaryExpression{
+					PowerExpression: &PowerExpression{
+						PrimaryExpression: PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Multiply: &tk[5],
+				MultiplyExpression: &MultiplyExpression{
+					UnaryExpression: UnaryExpression{
+						PowerExpression: &PowerExpression{
+							PrimaryExpression: PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[9],
+									Tokens:     tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[9:10],
+					},
+					Tokens: tk[9:10],
+				},
+				Comments: [2]Comments{{tk[3]}, {tk[7]}},
+				Tokens:   tk[1:10],
+			}
+		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
@@ -5858,6 +5894,10 @@ func TestMultiplyExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var me MultiplyExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := me.parse(t.Tokens)
 
