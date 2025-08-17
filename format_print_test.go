@@ -1355,6 +1355,11 @@ func TestPrintSource(t *testing.T) {
 			"(a//b)\n",
 			"(a # A\n\t// # B\n\tb)\n",
 		},
+		{ // 270
+			"(- # A\na)",
+			"(-a)\n",
+			"(- # A\n\ta)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
