@@ -1685,6 +1685,12 @@ func (u UnaryExpression) printSource(w writer, v bool) {
 		u.PowerExpression.printSource(w, v)
 	} else if u.Unary != nil && u.UnaryExpression != nil {
 		w.WriteString(u.Unary.Data)
+
+		if v && w.InMultiline() && len(u.Comments) > 0 {
+			w.WriteString(" ")
+			u.Comments.printSource(w, true)
+		}
+
 		u.UnaryExpression.printSource(w, v)
 	}
 }
