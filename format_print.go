@@ -1204,13 +1204,27 @@ func (p PositionalArgument) printSource(w writer, v bool) {
 func (p PowerExpression) printSource(w writer, v bool) {
 	if p.AwaitExpression {
 		w.WriteString("await ")
+
+		if v && w.InMultiline() {
+			p.Comments[0].printSource(w, v)
+		}
 	}
 
 	p.PrimaryExpression.printSource(w, v)
 
 	if p.UnaryExpression != nil {
 		if v {
-			w.WriteString(" ** ")
+			w.WriteString(" ")
+
+			if w.InMultiline() {
+				p.Comments[1].printSource(w, v)
+			}
+
+			w.WriteString("** ")
+
+			if w.InMultiline() {
+				p.Comments[2].printSource(w, v)
+			}
 		} else {
 			w.WriteString("**")
 		}
