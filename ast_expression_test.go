@@ -99,6 +99,82 @@ func TestPrimaryExpression(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
+		{"(a # A\n. # B\nb)", func(t *test, tk Tokens) { // 3
+			t.Output = PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				AttributeRef: &tk[9],
+				Comments:     [2]Comments{{tk[3]}, {tk[7]}},
+				Tokens:       tk[1:10],
+			}
+		}},
+		{"(a # A\n[b])", func(t *test, tk Tokens) { // 4
+			t.Output = PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Slicing: &SliceList{
+					SliceItems: []SliceItem{
+						{
+							Expression: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+					},
+					Tokens: tk[5:8],
+				},
+				Comments: [2]Comments{{tk[3]}},
+				Tokens:   tk[1:8],
+			}
+		}},
+		{"(a # A\n(b))", func(t *test, tk Tokens) { // 5
+			t.Output = PrimaryExpression{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Call: &ArgumentListOrComprehension{
+					ArgumentList: &ArgumentList{
+						PositionalArguments: []PositionalArgument{
+							{
+								AssignmentExpression: &AssignmentExpression{
+									Expression: Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[6],
+											Tokens:     tk[6:7],
+										}),
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+						},
+						Tokens: tk[6:7],
+					},
+					Tokens: tk[5:8],
+				},
+				Comments: [2]Comments{{tk[3]}},
+				Tokens:   tk[1:8],
+			}
+		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
@@ -358,6 +434,10 @@ func TestPrimaryExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var pe PrimaryExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := pe.parse(t.Tokens)
 
