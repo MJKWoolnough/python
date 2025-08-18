@@ -1373,12 +1373,15 @@ type PowerExpression struct {
 	AwaitExpression   bool
 	PrimaryExpression PrimaryExpression
 	UnaryExpression   *UnaryExpression
+	Comments          [3]Comments
 	Tokens            Tokens
 }
 
 func (pe *PowerExpression) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "await"}) {
 		pe.AwaitExpression = true
+
+		pe.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 		p.AcceptRunWhitespace()
 	}
@@ -1396,8 +1399,14 @@ func (pe *PowerExpression) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		pe.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		pe.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		pe.UnaryExpression = new(UnaryExpression)
