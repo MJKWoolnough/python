@@ -12,6 +12,7 @@ type PrimaryExpression struct {
 	AttributeRef      *Token
 	Slicing           *SliceList
 	Call              *ArgumentListOrComprehension
+	Comments          [2]Comments
 	Tokens            Tokens
 }
 
@@ -28,9 +29,13 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 	for {
 		q := p.NewGoal()
 
+		aComments := q.AcceptRunWhitespaceCommentsIfMultiline()
+
 		q.AcceptRunWhitespace()
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
+			bComments := q.AcceptRunWhitespaceCommentsIfMultiline()
+
 			q.AcceptRunWhitespace()
 
 			if !q.Accept(TokenIdentifier) {
@@ -42,6 +47,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			*pr = PrimaryExpression{
 				PrimaryExpression: &ipr,
 				AttributeRef:      q.GetLastToken(),
+				Comments:          [2]Comments{aComments, bComments},
 			}
 		} else if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "["}) {
 			r := q.NewGoal()
@@ -59,6 +65,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			*pr = PrimaryExpression{
 				PrimaryExpression: &ipr,
 				Slicing:           &sl,
+				Comments:          [2]Comments{aComments},
 			}
 		} else if tk == (parser.Token{Type: TokenDelimiter, Data: "("}) {
 			r := q.NewGoal()
@@ -76,6 +83,7 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 			*pr = PrimaryExpression{
 				PrimaryExpression: &ipr,
 				Call:              &call,
+				Comments:          [2]Comments{aComments},
 			}
 		} else {
 			break
