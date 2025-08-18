@@ -1240,11 +1240,32 @@ func (p PrimaryExpression) printSource(w writer, v bool) {
 		p.PrimaryExpression.printSource(w, v)
 
 		if p.AttributeRef != nil {
+			if v && w.InMultiline() && len(p.Comments[0]) > 0 {
+				w.WriteString(" ")
+				p.Comments[0].printSource(w, true)
+			}
+
 			w.WriteString(".")
+
+			if v && w.InMultiline() && len(p.Comments[1]) > 0 {
+				w.WriteString(" ")
+				p.Comments[1].printSource(w, true)
+			}
+
 			w.WriteString(p.AttributeRef.Data)
 		} else if p.Slicing != nil {
+			if v && w.InMultiline() && len(p.Comments[0]) > 0 {
+				w.WriteString(" ")
+				p.Comments[0].printSource(w, true)
+			}
+
 			p.Slicing.printSource(w, v)
 		} else if p.Call != nil {
+			if v && w.InMultiline() && len(p.Comments[0]) > 0 {
+				w.WriteString(" ")
+				p.Comments[0].printSource(w, true)
+			}
+
 			p.Call.printSource(w, v)
 		}
 	}
