@@ -6201,6 +6201,73 @@ func TestPowerExpression(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"(await # A\na)", func(t *test, tk Tokens) { // 2
+			t.Output = PowerExpression{
+				AwaitExpression: true,
+				PrimaryExpression: PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[5],
+						Tokens:     tk[5:6],
+					},
+					Tokens: tk[5:6],
+				},
+				Comments: [3]Comments{{tk[3]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"(a # A\n** # B\nb)", func(t *test, tk Tokens) { // 3
+			t.Output = PowerExpression{
+				PrimaryExpression: PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				UnaryExpression: &UnaryExpression{
+					PowerExpression: &PowerExpression{
+						PrimaryExpression: PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[9],
+								Tokens:     tk[9:10],
+							},
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[9:10],
+					},
+					Tokens: tk[9:10],
+				},
+				Comments: [3]Comments{nil, {tk[3]}, {tk[7]}},
+				Tokens:   tk[1:10],
+			}
+		}},
+		{"(await # A\na # B\n** # C\nb)", func(t *test, tk Tokens) { // 4
+			t.Output = PowerExpression{
+				AwaitExpression: true,
+				PrimaryExpression: PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[5],
+						Tokens:     tk[5:6],
+					},
+					Tokens: tk[5:6],
+				},
+				UnaryExpression: &UnaryExpression{
+					PowerExpression: &PowerExpression{
+						PrimaryExpression: PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[13],
+								Tokens:     tk[13:14],
+							},
+							Tokens: tk[13:14],
+						},
+						Tokens: tk[13:14],
+					},
+					Tokens: tk[13:14],
+				},
+				Comments: [3]Comments{{tk[3]}, {tk[7]}, {tk[11]}},
+				Tokens:   tk[1:14],
+			}
+		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
@@ -6249,6 +6316,10 @@ func TestPowerExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var pe PowerExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := pe.parse(t.Tokens)
 
