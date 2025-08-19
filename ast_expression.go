@@ -941,15 +941,23 @@ func (e *ExpressionList) parse(p *pyParser) error {
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-slice_list
 type SliceList struct {
 	SliceItems []SliceItem
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 
 func (s *SliceList) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
-	p.AcceptRunWhitespace()
 
-	for !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-		q := p.NewGoal()
+	s.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	for !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+		p.AcceptRunWhitespaceNoComment()
+
+		q = p.NewGoal()
 
 		var si SliceItem
 
@@ -960,17 +968,27 @@ func (s *SliceList) parse(p *pyParser) error {
 		p.Score(q)
 
 		s.SliceItems = append(s.SliceItems, si)
+		q = p.NewGoal()
 
-		p.AcceptRunWhitespace()
+		q.AcceptRunWhitespace()
 
-		if p.Peek() != (parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-				return p.Error("SliceList", ErrMissingComma)
+		if q.Peek() != (parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				return q.Error("SliceList", ErrMissingComma)
 			}
 
-			p.AcceptRunWhitespace()
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.AcceptRunWhitespace()
 		}
 	}
+
+	s.Comments[1] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunAllWhitespace()
+	p.Next()
 
 	s.Tokens = p.ToTokens()
 
