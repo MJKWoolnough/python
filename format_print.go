@@ -1392,20 +1392,32 @@ func (s SliceItem) printSource(w writer, v bool) {
 }
 
 func (s SliceList) printSource(w writer, v bool) {
-	w.WriteString("[")
+	ip := w.Indent()
+
+	ip.WriteString("[")
+
+	if v && len(s.Comments[0]) > 0 {
+		ip.WriteString(" ")
+		s.Comments[0].printSource(ip, true)
+	}
 
 	if len(s.SliceItems) > 0 {
-		s.SliceItems[0].printSource(w, v)
+		s.SliceItems[0].printSource(ip, v)
 
 		for _, si := range s.SliceItems[1:] {
 			if v {
-				w.WriteString(", ")
+				ip.WriteString(", ")
 			} else {
-				w.WriteString(",")
+				ip.WriteString(",")
 			}
 
-			si.printSource(w, v)
+			si.printSource(ip, v)
 		}
+	}
+
+	if v && len(s.Comments[1]) > 0 {
+		ip.WriteString(" ")
+		s.Comments[1].printSource(ip, true)
 	}
 
 	w.WriteString("]")
