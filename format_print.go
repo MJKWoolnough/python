@@ -1365,13 +1365,38 @@ func (s SimpleStatement) printSource(w writer, v bool) {
 
 func (s SliceItem) printSource(w writer, v bool) {
 	if s.Expression != nil {
+		if v && w.InMultiline() && len(s.Comments[0]) > 0 {
+			w.WriteString("\n")
+			s.Comments[0].printSource(w, true)
+		}
+
 		s.Expression.printSource(w, v)
+
+		if v && w.InMultiline() && len(s.Comments[5]) > 0 {
+			w.WriteString(" ")
+			s.Comments[5].printSource(w, true)
+		}
 	} else if s.LowerBound != nil {
+		if v && w.InMultiline() && len(s.Comments[0]) > 0 {
+			w.WriteString("\n")
+			s.Comments[0].printSource(w, true)
+		}
+
 		s.LowerBound.printSource(w, v)
 
 		if s.UpperBound != nil {
 			if v {
-				w.WriteString(" : ")
+				w.WriteString(" ")
+
+				if w.InMultiline() {
+					s.Comments[1].printSource(w, true)
+				}
+
+				w.WriteString(": ")
+
+				if w.InMultiline() {
+					s.Comments[2].printSource(w, true)
+				}
 			} else {
 				w.WriteString(":")
 			}
@@ -1380,7 +1405,17 @@ func (s SliceItem) printSource(w writer, v bool) {
 
 			if s.Stride != nil {
 				if v {
-					w.WriteString(" : ")
+					w.WriteString(" ")
+
+					if w.InMultiline() {
+						s.Comments[3].printSource(w, true)
+					}
+
+					w.WriteString(": ")
+
+					if w.InMultiline() {
+						s.Comments[4].printSource(w, true)
+					}
 				} else {
 					w.WriteString(":")
 				}
@@ -1388,11 +1423,16 @@ func (s SliceItem) printSource(w writer, v bool) {
 				s.Stride.printSource(w, v)
 			}
 		}
+
+		if v && w.InMultiline() && len(s.Comments[5]) > 0 {
+			w.WriteString(" ")
+			s.Comments[5].printSource(w, true)
+		}
 	}
 }
 
 func (s SliceList) printSource(w writer, v bool) {
-	ip := w.Indent()
+	ip := w.IndentMultiline()
 
 	ip.WriteString("[")
 
@@ -1416,7 +1456,7 @@ func (s SliceList) printSource(w writer, v bool) {
 	}
 
 	if v && len(s.Comments[1]) > 0 {
-		ip.WriteString(" ")
+		ip.WriteString("\n")
 		s.Comments[1].printSource(ip, true)
 	}
 
