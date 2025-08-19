@@ -3879,7 +3879,7 @@ func TestSliceList(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{"[ # A\na # B\n]", func(t *test, tk Tokens) { // 8
+		{"[ # A\na\n# B\n]", func(t *test, tk Tokens) { // 8
 			t.Output = SliceList{
 				SliceItems: []SliceItem{
 					{
@@ -3897,7 +3897,7 @@ func TestSliceList(t *testing.T) {
 				Tokens:   tk[:9],
 			}
 		}},
-		{"[ # A\na, # B\n]", func(t *test, tk Tokens) { // 9
+		{"[ # A\na,\n# B\n]", func(t *test, tk Tokens) { // 9
 			t.Output = SliceList{
 				SliceItems: []SliceItem{
 					{
@@ -3915,7 +3915,7 @@ func TestSliceList(t *testing.T) {
 				Tokens:   tk[:10],
 			}
 		}},
-		{"[ # A\na,b # B\n]", func(t *test, tk Tokens) { // 10
+		{"[ # A\na,b\n# B\n]", func(t *test, tk Tokens) { // 10
 			t.Output = SliceList{
 				SliceItems: []SliceItem{
 					{
@@ -4082,7 +4082,67 @@ func TestSliceItem(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 6
+		{"[# A\na # B\n]", func(t *test, tk Tokens) { // 6
+			t.Output = SliceItem{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Comments: [6]Comments{{tk[1]}, nil, nil, nil, nil, {tk[5]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"[# A\na # B\n: # C\nb # D\n]", func(t *test, tk Tokens) { // 7
+			t.Output = SliceItem{
+				LowerBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				UpperBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}),
+					Tokens: tk[11:12],
+				},
+				Comments: [6]Comments{{tk[1]}, {tk[5]}, {tk[9]}, nil, nil, {tk[13]}},
+				Tokens:   tk[1:14],
+			}
+		}},
+		{"[# A\na # B\n: # C\nb # D\n: # E\nc # F\n]", func(t *test, tk Tokens) { // 8
+			t.Output = SliceItem{
+				LowerBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				UpperBound: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}),
+					Tokens: tk[11:12],
+				},
+				Stride: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[19],
+						Tokens:     tk[19:20],
+					}),
+					Tokens: tk[19:20],
+				},
+				Comments: [6]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13]}, {tk[17]}, {tk[21]}},
+				Tokens:   tk[1:22],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -4097,7 +4157,7 @@ func TestSliceItem(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a:nonlocal`, func(t *test, tk Tokens) { // 7
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -4112,7 +4172,7 @@ func TestSliceItem(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`a:b:nonlocal`, func(t *test, tk Tokens) { // 8
+		{`a:b:nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -4129,6 +4189,10 @@ func TestSliceItem(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var si SliceItem
+
+		if t.Tokens.Peek().Data == "[" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := si.parse(t.Tokens)
 
