@@ -1391,19 +1391,29 @@ func TestPrintSource(t *testing.T) {
 			"(a # A\n\t(b))\n",
 		},
 		{ // 277
-			"a[ # A\nb # B\n]",
+			"a[ # A\nb\n# B\n]",
 			"a[b]\n",
-			"a[ # A\n\tb # B\n]\n",
+			"a[ # A\n\tb\n\t# B\n]\n",
 		},
 		{ // 278
 			"a[ # A\nb, # B\n]",
 			"a[b]\n",
-			"a[ # A\n\tb # B\n]\n",
+			"a[ # A\n\tb\n\t# B\n]\n",
 		},
 		{ // 279
-			"a[ # A\nb, c # B\n]",
+			"a[ # A\nb, c\n# B\n]",
 			"a[b,c]\n",
-			"a[ # A\n\tb, c # B\n]\n",
+			"a[ # A\n\tb, c\n\t# B\n]\n",
+		},
+		{ // 280
+			"a[ # A\n\n# B\n b # C\n: # D\n c # E\n: # F\nd # G\n\n# H\n]",
+			"a[b:c:d]\n",
+			"a[ # A\n\n\t# B\n\tb # C\n\t: # D\n\tc # E\n\t: # F\n\td # G\n\n\t# H\n]\n",
+		},
+		{ // 281
+			"a[ # A\n\n# B\n b # C\n\n# D\n]",
+			"a[b]\n",
+			"a[ # A\n\n\t# B\n\tb # C\n\n\t# D\n]\n",
 		},
 	} {
 		for m, input := range test {
