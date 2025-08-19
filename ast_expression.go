@@ -1002,10 +1002,15 @@ type SliceItem struct {
 	LowerBound *Expression
 	UpperBound *Expression
 	Stride     *Expression
+	Comments   [6]Comments
 	Tokens     Tokens
 }
 
 func (s *SliceItem) parse(p *pyParser) error {
+	s.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
 	q := p.NewGoal()
 
 	s.Expression = new(Expression)
@@ -1021,8 +1026,14 @@ func (s *SliceItem) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		s.Comments[1] = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		s.Comments[2] = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunAllWhitespace()
 
 		q = p.NewGoal()
 		s.LowerBound = s.Expression
@@ -1040,8 +1051,14 @@ func (s *SliceItem) parse(p *pyParser) error {
 		q.AcceptRunWhitespace()
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-			q.AcceptRunWhitespace()
-			p.Score(q)
+			s.Comments[3] = p.AcceptRunWhitespaceComments()
+
+			p.AcceptRunWhitespace()
+			p.Next()
+
+			s.Comments[4] = p.AcceptRunWhitespaceComments()
+
+			p.AcceptRunWhitespace()
 
 			q = p.NewGoal()
 			s.Stride = new(Expression)
@@ -1052,7 +1069,16 @@ func (s *SliceItem) parse(p *pyParser) error {
 
 			p.Score(q)
 		}
+	}
 
+	q = p.NewGoal()
+
+	q.AcceptRunAllWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		s.Comments[5] = p.AcceptRunWhitespaceComments()
+	} else {
+		s.Comments[5] = p.AcceptRunWhitespaceCommentsNoNewline()
 	}
 
 	s.Tokens = p.ToTokens()
