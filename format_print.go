@@ -465,9 +465,31 @@ func (c ConditionalExpression) printSource(w writer, v bool) {
 	c.OrTest.printSource(w, v)
 
 	if c.If != nil && c.Else != nil {
-		w.WriteString(" if ")
+		w.WriteString(" ")
+
+		if v && w.InMultiline() {
+			c.Comments[0].printSource(w, true)
+		}
+
+		w.WriteString("if ")
+
+		if v && w.InMultiline() {
+			c.Comments[1].printSource(w, true)
+		}
+
 		c.If.printSource(w, v)
-		w.WriteString(" else ")
+		w.WriteString(" ")
+
+		if v && w.InMultiline() {
+			c.Comments[2].printSource(w, true)
+		}
+
+		w.WriteString("else ")
+
+		if v && w.InMultiline() {
+			c.Comments[3].printSource(w, true)
+		}
+
 		c.Else.printSource(w, v)
 	}
 }
