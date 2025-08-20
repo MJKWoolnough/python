@@ -1325,9 +1325,7 @@ type ParameterList struct {
 }
 
 func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
-	if allowAnnotations {
-		l.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
-	}
+	l.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 
 	hasSlash := false
 	q := p.NewGoal()
@@ -1370,9 +1368,7 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 		switch target {
 		case &l.DefParameters:
 			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) {
-				if allowAnnotations {
-					l.Comments[1] = p.AcceptRunWhitespaceComments()
-				}
+				l.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 				p.AcceptRunWhitespace()
 				p.Next()
@@ -1383,18 +1379,14 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 				q.AcceptRunWhitespace()
 
 				if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-					if allowAnnotations {
-						l.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewline()
-					}
+					l.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 
 					target = nil
 
 					break
 				}
 
-				if allowAnnotations {
-					l.Comments[2] = p.AcceptRunWhitespaceComments()
-				}
+				l.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 				p.AcceptRunWhitespace()
 				p.Next()
@@ -1426,9 +1418,7 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 		l.DefParameters = nil
 	}
 
-	if allowAnnotations {
-		l.Comments[9] = p.AcceptRunWhitespaceComments()
-	}
+	l.Comments[9] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	l.Tokens = p.ToTokens()
 
@@ -1439,16 +1429,12 @@ func (l *ParameterList) parseStars(p, q *pyParser, target *[]DefParameter, allow
 	if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
 		r := p.NewGoal()
 
-		if allowAnnotations {
-			l.Comments[3] = r.AcceptRunWhitespaceComments()
-		}
+		l.Comments[3] = r.AcceptRunWhitespaceCommentsIfMultiline()
 
 		r.AcceptRunWhitespace()
 		r.Next()
 
-		if allowAnnotations {
-			l.Comments[4] = r.AcceptRunWhitespaceComments()
-		}
+		l.Comments[4] = r.AcceptRunWhitespaceCommentsIfMultiline()
 
 		r.AcceptRunWhitespace()
 		p.Score(r)
@@ -1468,14 +1454,12 @@ func (l *ParameterList) parseStars(p, q *pyParser, target *[]DefParameter, allow
 		r.AcceptRunWhitespace()
 
 		if r.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			if allowAnnotations {
-				l.Comments[5] = p.AcceptRunWhitespaceComments()
-			}
+			l.Comments[5] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 			p.AcceptRunAllWhitespace()
 			p.Next()
-		} else if allowAnnotations {
-			l.Comments[5] = p.AcceptRunWhitespaceCommentsNoNewline()
+		} else {
+			l.Comments[5] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 		}
 
 		*q = *p.NewGoal()
@@ -1493,16 +1477,12 @@ func (l *ParameterList) parseStars(p, q *pyParser, target *[]DefParameter, allow
 func (l *ParameterList) parseStarStar(p, q *pyParser, allowAnnotations bool) error {
 	r := p.NewGoal()
 
-	if allowAnnotations {
-		l.Comments[6] = r.AcceptRunWhitespaceComments()
-	}
+	l.Comments[6] = r.AcceptRunWhitespaceCommentsIfMultiline()
 
 	r.AcceptRunWhitespace()
 	r.Next()
 
-	if allowAnnotations {
-		l.Comments[7] = r.AcceptRunWhitespaceComments()
-	}
+	l.Comments[7] = r.AcceptRunWhitespaceCommentsIfMultiline()
 
 	r.AcceptRunWhitespace()
 	p.Score(r)
@@ -1521,14 +1501,12 @@ func (l *ParameterList) parseStarStar(p, q *pyParser, allowAnnotations bool) err
 	r.AcceptRunWhitespace()
 
 	if r.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		if allowAnnotations {
-			l.Comments[8] = p.AcceptRunWhitespaceComments()
-		}
+		l.Comments[8] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 		p.AcceptRunAllWhitespace()
 		p.Next()
-	} else if allowAnnotations {
-		l.Comments[8] = p.AcceptRunWhitespaceCommentsNoNewline()
+	} else {
+		l.Comments[8] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	}
 
 	*q = *p.NewGoal()
