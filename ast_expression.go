@@ -584,7 +584,7 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 		p.Score(q)
 	}
 
-	c.Comments[4] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	c.Comments[4] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	c.Tokens = p.ToTokens()
 
 	return nil
