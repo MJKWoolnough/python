@@ -807,7 +807,7 @@ func (g GeneratorExpression) printSource(w writer, v bool) {
 	g.ComprehensionFor.printSource(w, v)
 
 	if v && len(g.Comments[2]) > 0 {
-		w.WriteString(" ")
+		w.WriteString("\n")
 		g.Comments[2].printSource(w, true)
 	}
 }
