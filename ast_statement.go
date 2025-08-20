@@ -1198,10 +1198,11 @@ func (e *Expression) parse(p *pyParser) error {
 // ConditionalExpression as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-conditional_expression
 type ConditionalExpression struct {
-	OrTest OrTest
-	If     *OrTest
-	Else   *Expression
-	Tokens Tokens
+	OrTest   OrTest
+	If       *OrTest
+	Else     *Expression
+	Comments [4]Comments
+	Tokens   Tokens
 }
 
 func (c *ConditionalExpression) parse(p *pyParser) error {
@@ -1218,8 +1219,14 @@ func (c *ConditionalExpression) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		c.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		c.If = new(OrTest)
@@ -1229,11 +1236,16 @@ func (c *ConditionalExpression) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+
+		c.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
 			return p.Error("ConditionalExpression", ErrMissingElse)
 		}
+
+		c.Comments[3] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 		p.AcceptRunWhitespace()
 
