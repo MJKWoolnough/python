@@ -3579,7 +3579,148 @@ func TestConditionalExpression(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 3
+		{"(a # A\nif # B\nb # C\nelse # D\nc)", func(t *test, tk Tokens) { // 3
+			t.Output = ConditionalExpression{
+				OrTest: OrTest{
+					AndTest: AndTest{
+						NotTest: NotTest{
+							Comparison: Comparison{
+								OrExpression: OrExpression{
+									XorExpression: XorExpression{
+										AndExpression: AndExpression{
+											ShiftExpression: ShiftExpression{
+												AddExpression: AddExpression{
+													MultiplyExpression: MultiplyExpression{
+														UnaryExpression: UnaryExpression{
+															PowerExpression: &PowerExpression{
+																PrimaryExpression: PrimaryExpression{
+																	Atom: &Atom{
+																		Identifier: &tk[1],
+																		Tokens:     tk[1:2],
+																	},
+																	Tokens: tk[1:2],
+																},
+																Tokens: tk[1:2],
+															},
+															Tokens: tk[1:2],
+														},
+														Tokens: tk[1:2],
+													},
+													Tokens: tk[1:2],
+												},
+												Tokens: tk[1:2],
+											},
+											Tokens: tk[1:2],
+										},
+										Tokens: tk[1:2],
+									},
+									Tokens: tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				If: &OrTest{
+					AndTest: AndTest{
+						NotTest: NotTest{
+							Comparison: Comparison{
+								OrExpression: OrExpression{
+									XorExpression: XorExpression{
+										AndExpression: AndExpression{
+											ShiftExpression: ShiftExpression{
+												AddExpression: AddExpression{
+													MultiplyExpression: MultiplyExpression{
+														UnaryExpression: UnaryExpression{
+															PowerExpression: &PowerExpression{
+																PrimaryExpression: PrimaryExpression{
+																	Atom: &Atom{
+																		Identifier: &tk[9],
+																		Tokens:     tk[9:10],
+																	},
+																	Tokens: tk[9:10],
+																},
+																Tokens: tk[9:10],
+															},
+															Tokens: tk[9:10],
+														},
+														Tokens: tk[9:10],
+													},
+													Tokens: tk[9:10],
+												},
+												Tokens: tk[9:10],
+											},
+											Tokens: tk[9:10],
+										},
+										Tokens: tk[9:10],
+									},
+									Tokens: tk[9:10],
+								},
+								Tokens: tk[9:10],
+							},
+							Tokens: tk[9:10],
+						},
+						Tokens: tk[9:10],
+					},
+					Tokens: tk[9:10],
+				},
+				Else: &Expression{
+					ConditionalExpression: &ConditionalExpression{
+						OrTest: OrTest{
+							AndTest: AndTest{
+								NotTest: NotTest{
+									Comparison: Comparison{
+										OrExpression: OrExpression{
+											XorExpression: XorExpression{
+												AndExpression: AndExpression{
+													ShiftExpression: ShiftExpression{
+														AddExpression: AddExpression{
+															MultiplyExpression: MultiplyExpression{
+																UnaryExpression: UnaryExpression{
+																	PowerExpression: &PowerExpression{
+																		PrimaryExpression: PrimaryExpression{
+																			Atom: &Atom{
+																				Identifier: &tk[17],
+																				Tokens:     tk[17:18],
+																			},
+																			Tokens: tk[17:18],
+																		},
+																		Tokens: tk[17:18],
+																	},
+																	Tokens: tk[17:18],
+																},
+																Tokens: tk[17:18],
+															},
+															Tokens: tk[17:18],
+														},
+														Tokens: tk[17:18],
+													},
+													Tokens: tk[17:18],
+												},
+												Tokens: tk[17:18],
+											},
+											Tokens: tk[17:18],
+										},
+										Tokens: tk[17:18],
+									},
+									Tokens: tk[17:18],
+								},
+								Tokens: tk[17:18],
+							},
+							Tokens: tk[17:18],
+						},
+						Tokens: tk[17:18],
+					},
+					Tokens: tk[17:18],
+				},
+				Comments: [4]Comments{{tk[3]}, {tk[7]}, {tk[11]}, {tk[15]}},
+				Tokens:   tk[1:18],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3646,7 +3787,7 @@ func TestConditionalExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a if nonlocal else c`, func(t *test, tk Tokens) { // 4
+		{`a if nonlocal else c`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3713,14 +3854,14 @@ func TestConditionalExpression(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{`a if b els c`, func(t *test, tk Tokens) { // 5
+		{`a if b els c`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err:     ErrMissingElse,
 				Parsing: "ConditionalExpression",
 				Token:   tk[6],
 			}
 		}},
-		{`a if b else nonlocal`, func(t *test, tk Tokens) { // 6
+		{`a if b else nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3797,6 +3938,10 @@ func TestConditionalExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var ce ConditionalExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := ce.parse(t.Tokens)
 
