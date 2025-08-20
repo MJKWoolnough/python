@@ -162,6 +162,14 @@ func (p *pyParser) NextIsWhitespaceComment() bool {
 	return q.Accept(TokenComment) && q.Accept(TokenWhitespace)
 }
 
+func (p *pyParser) NextIsAllWhitespaceComment() bool {
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespaceNoComment()
+
+	return q.Accept(TokenComment) && q.Accept(TokenWhitespace)
+}
+
 func (p *pyParser) AcceptRunWhitespace() parser.TokenType {
 	return p.AcceptRun(TokenWhitespace, TokenComment)
 }
@@ -187,7 +195,7 @@ func (p *pyParser) AcceptRunWhitespaceComments() Comments {
 }
 
 func (p *pyParser) AcceptRunWhitespaceCommentsIfMultiline() Comments {
-	if p.NextIsWhitespaceComment() {
+	if p.NextIsAllWhitespaceComment() {
 		return p.AcceptRunWhitespaceComments()
 	}
 
