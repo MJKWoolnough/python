@@ -893,20 +893,49 @@ func (k KeywordItem) printSource(w writer, v bool) {
 }
 
 func (l LambdaExpression) printSource(w writer, v bool) {
+	if v && w.InMultiline() && len(l.Comments[0]) > 0 {
+		w.WriteString("\n")
+		l.Comments[0].printSource(w, true)
+	}
+
 	if l.ParameterList != nil {
 		w.WriteString("lambda ")
+
+		if v && w.InMultiline() {
+			l.Comments[1].printSource(w, true)
+		}
+
 		l.ParameterList.printSource(w, v)
+
+		if v && w.InMultiline() && len(l.Comments[2]) > 0 {
+			w.WriteString("\n")
+			l.Comments[2].printSource(w, true)
+		}
 	} else {
 		w.WriteString("lambda")
+
+		if v && w.InMultiline() && len(l.Comments[1]) > 0 {
+			w.WriteString(" ")
+			l.Comments[1].printSource(w, true)
+		}
 	}
 
 	if v {
 		w.WriteString(": ")
+
+		if w.InMultiline() {
+			l.Comments[3].printSource(w, v)
+		}
 	} else {
 		w.WriteString(":")
 	}
 
 	l.Expression.printSource(w, v)
+
+	if v && w.InMultiline() && len(l.Comments[4]) > 0 {
+		w.WriteString(" ")
+		l.Comments[4].printSource(w, true)
+	}
 }
 
 func (m ModuleAs) printSource(w writer, v bool) {
