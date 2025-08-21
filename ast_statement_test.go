@@ -4030,14 +4030,52 @@ func TestLambdaExpression(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
-		{`lambda nonlocal: a`, func(t *test, tk Tokens) { // 5
+		{"(# A\nlambda # B\n: # C\na # D\n)", func(t *test, tk Tokens) { // 5
+			t.Output = LambdaExpression{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}),
+					Tokens: tk[11:12],
+				},
+				Comments: [5]Comments{{tk[1]}, {tk[5]}, nil, {tk[9]}, {tk[13]}},
+				Tokens:   tk[1:14],
+			}
+		}},
+		{"(# A\nlambda # B\na\n# C\n: # D\nb # E\n)", func(t *test, tk Tokens) { // 6
+			t.Output = LambdaExpression{
+				ParameterList: &ParameterList{
+					NoPosOnly: []DefParameter{
+						{
+							Parameter: Parameter{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							},
+							Tokens: tk[7:8],
+						},
+					},
+					Tokens: tk[7:8],
+				},
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[15],
+						Tokens:     tk[15:16],
+					}),
+					Tokens: tk[15:16],
+				},
+				Comments: [5]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13]}, {tk[17]}},
+				Tokens:   tk[1:18],
+			}
+		}},
+		{`lambda nonlocal: a`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "LambdaExpression",
 				Token:   tk[2],
 			}
 		}},
-		{`lambda: nonlocal`, func(t *test, tk Tokens) { // 6
+		{`lambda: nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -4052,7 +4090,7 @@ func TestLambdaExpression(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{`lambda *nonlocal`, func(t *test, tk Tokens) { // 7
+		{`lambda *nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4069,6 +4107,10 @@ func TestLambdaExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var le LambdaExpression
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := le.parse(t.Tokens)
 
