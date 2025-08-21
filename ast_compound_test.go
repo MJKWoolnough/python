@@ -7977,15 +7977,15 @@ func TestDefParameter(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{"# A\na # B", func(t *test, tk Tokens) { // 6
+		{"(# A\na # B\n)", func(t *test, tk Tokens) { // 6
 			t.AllowTypeAnnotations = true
 			t.Output = DefParameter{
 				Parameter: Parameter{
-					Identifier: &tk[2],
-					Tokens:     tk[2:3],
+					Identifier: &tk[3],
+					Tokens:     tk[3:4],
 				},
-				Comments: [2]Comments{{tk[0]}, {tk[4]}},
-				Tokens:   tk[:5],
+				Comments: [2]Comments{{tk[1]}, {tk[5]}},
+				Tokens:   tk[1:6],
 			}
 		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 7
@@ -8016,6 +8016,10 @@ func TestDefParameter(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var d DefParameter
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := d.parse(t.Tokens, t.AllowTypeAnnotations)
 
