@@ -796,7 +796,6 @@ func (g GeneratorExpression) printSource(w writer, v bool) {
 	}
 
 	g.Expression.printSource(w, v)
-
 	w.WriteString(" ")
 
 	if v && len(g.Comments[1]) > 0 {
