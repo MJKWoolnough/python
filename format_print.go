@@ -521,8 +521,7 @@ func (d DefParameter) printSource(w writer, v bool) {
 
 	if v && len(d.Comments[1]) > 0 {
 		w.WriteString(" ")
-
-		d.Comments[1].printSource(w, false)
+		d.Comments[1].printSource(w, true)
 	}
 }
 
@@ -774,7 +773,7 @@ func (f FuncDefinition) printSource(w writer, v bool) {
 		f.Comments.printSource(w, v)
 	}
 
-	f.ParameterList.printSource(w, v)
+	f.ParameterList.printSource(w.IndentMultiline(), v)
 	w.WriteString(")")
 
 	if f.Expression != nil {
@@ -1044,173 +1043,130 @@ func (p Parameter) printSource(w writer, v bool) {
 
 func (p ParameterList) printSource(w writer, v bool) {
 	first := len(p.DefParameters) == 0
-	lastWasComment := false
-	ip := w.Indent()
 
-	if v && len(p.Comments[0]) > 0 {
-		ip.WriteString(" ")
-		p.Comments[0].printSource(ip, false)
-		lastWasComment = true
+	if v && w.InMultiline() && len(p.Comments[0]) > 0 {
+		w.WriteString(" ")
+		p.Comments[0].printSource(w, true)
 	}
 
 	if !first {
-		if lastWasComment {
-			ip.WriteString("\n")
-		}
-
-		if v && len(p.DefParameters[0].Comments[0]) > 0 {
-			ip.WriteString("\n")
+		if v && w.InMultiline() && len(p.DefParameters[0].Comments[0]) > 0 {
+			w.WriteString("\n")
 		}
 
 		for _, d := range p.DefParameters {
-			d.printSource(ip, v)
+			d.printSource(w, v)
 
 			if v {
-				if len(d.Comments[1]) > 0 {
-					ip.WriteString("\n")
-				}
-
-				ip.WriteString(", ")
+				w.WriteString(", ")
 			} else {
-				ip.WriteString(",")
+				w.WriteString(",")
 			}
 		}
 
 		if v {
-			p.Comments[1].printSource(ip, true)
+			p.Comments[1].printSource(w, true)
 		}
 
-		ip.WriteString("/")
+		w.WriteString("/")
 
-		if lastWasComment = v && len(p.Comments[2]) > 0; lastWasComment {
-			ip.WriteString(" ")
-			p.Comments[2].printSource(ip, false)
+		if v && w.InMultiline() && len(p.Comments[2]) > 0 {
+			w.WriteString(" ")
+			p.Comments[2].printSource(w, true)
 		}
 	}
 
 	for _, n := range p.NoPosOnly {
-		if lastWasComment {
-			ip.WriteString("\n")
-		}
-
-		if v && first && len(n.Comments[0]) > 0 {
-			ip.WriteString("\n")
-		}
-
 		if first {
 			first = false
+
+			if v && w.InMultiline() && len(p.NoPosOnly[0].Comments[0]) > 0 {
+				w.WriteString("\n")
+			}
 		} else if v {
-			ip.WriteString(", ")
+			w.WriteString(", ")
 		} else {
-			ip.WriteString(",")
+			w.WriteString(",")
 		}
 
-		n.printSource(ip, v)
-
-		lastWasComment = v && len(n.Comments[1]) > 0
+		n.printSource(w, v)
 	}
 
 	if p.StarArg != nil {
-		if lastWasComment {
-			ip.WriteString("\n")
-
-			if first && len(p.Comments[3]) > 0 {
-				ip.WriteString("\n")
-			}
-		}
-
 		if first {
 			first = false
+
+			if v && w.InMultiline() && len(p.Comments[3]) > 0 {
+				w.WriteString("\n")
+			}
 		} else if v {
-			ip.WriteString(", ")
+			w.WriteString(", ")
 		} else {
-			ip.WriteString(",")
+			w.WriteString(",")
 		}
 
 		if v && len(p.Comments[3]) > 0 {
-			p.Comments[3].printSource(ip, true)
+			p.Comments[3].printSource(w, true)
 		}
 
-		ip.WriteString("*")
+		w.WriteString("*")
 
 		if v && len(p.Comments[4]) > 0 {
-			ip.WriteString(" ")
-			p.Comments[4].printSource(ip, true)
+			w.WriteString(" ")
+			p.Comments[4].printSource(w, true)
 		}
 
-		p.StarArg.printSource(ip, v)
+		p.StarArg.printSource(w, v)
 
-		if lastWasComment = v && len(p.Comments[5]) > 0; lastWasComment {
-			ip.WriteString(" ")
-			p.Comments[5].printSource(ip, false)
+		if v && w.InMultiline() && len(p.Comments[5]) > 0 {
+			w.WriteString(" ")
+			p.Comments[5].printSource(w, true)
 		}
 
 		for _, d := range p.StarArgs {
-			if lastWasComment {
-				ip.WriteString("\n")
-			}
-
 			if v {
-				ip.WriteString(", ")
+				w.WriteString(", ")
 			} else {
-				ip.WriteString(",")
+				w.WriteString(",")
 			}
 
-			d.printSource(ip, v)
-
-			lastWasComment = v && len(d.Comments[1]) > 0
+			d.printSource(w, v)
 		}
 	}
 
 	if p.StarStarArg != nil {
-		if lastWasComment {
-			ip.WriteString("\n")
-
-			if first && len(p.Comments[6]) > 0 {
-				ip.WriteString("\n")
-			}
-		}
-
 		if !first {
 			if v {
-				ip.WriteString(", ")
+				w.WriteString(", ")
 			} else {
-				ip.WriteString(",")
+				w.WriteString(",")
 			}
+		} else if v && w.InMultiline() && len(p.Comments[6]) > 0 {
+			w.WriteString("\n")
 		}
 
 		if v && len(p.Comments[6]) > 0 {
-			p.Comments[6].printSource(ip, true)
+			p.Comments[6].printSource(w, true)
 		}
 
-		ip.WriteString("**")
+		w.WriteString("**")
 
 		if v && len(p.Comments[7]) > 0 {
-			ip.WriteString(" ")
-			p.Comments[7].printSource(ip, true)
+			w.WriteString(" ")
+			p.Comments[7].printSource(w, true)
 		}
 
-		p.StarStarArg.printSource(ip, v)
+		p.StarStarArg.printSource(w, v)
 
-		if lastWasComment = v && len(p.Comments[8]) > 0; lastWasComment {
-			ip.WriteString(" ")
-			p.Comments[8].printSource(ip, false)
+		if v && w.InMultiline() && len(p.Comments[8]) > 0 {
+			w.WriteString(" ")
+			p.Comments[8].printSource(w, true)
 		}
 	}
 
 	if v && len(p.Comments[9]) > 0 {
-		ip.WriteString("\n")
-
-		if lastWasComment {
-			ip.WriteString("\n")
-		}
-
-		p.Comments[9].printSource(ip, false)
-		lastWasComment = true
-	}
-
-	if lastWasComment {
 		w.WriteString("\n")
+		p.Comments[9].printSource(w, true)
 	}
 }
 
