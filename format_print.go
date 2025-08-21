@@ -1708,7 +1708,7 @@ func (t TypeParam) printSource(w writer, v bool) {
 
 	if v && len(t.Comments[1]) > 0 {
 		w.WriteString(" ")
-		t.Comments[1].printSource(w, false)
+		t.Comments[1].printSource(w, true)
 	}
 }
 
@@ -1729,11 +1729,7 @@ func (t TypeParams) printSource(w writer, v bool) {
 	if len(t.TypeParams) > 0 {
 		t.TypeParams[0].printSource(ip, v)
 
-		for n, tp := range t.TypeParams[1:] {
-			if v && len(t.TypeParams[n].Comments[1]) > 0 {
-				ip.WriteString("\n")
-			}
-
+		for _, tp := range t.TypeParams[1:] {
 			if v {
 				ip.WriteString(", ")
 			} else {
@@ -1744,17 +1740,12 @@ func (t TypeParams) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && len(t.TypeParams) > 0 && len(t.TypeParams[len(t.TypeParams)-1].Comments[1]) > 0 {
-		w.WriteString("\n")
-	}
-
 	if v && len(t.Comments[0]) > 0 {
 		ip.WriteString("\n")
-		t.Comments[1].printSource(ip, false)
-		w.WriteString("\n")
+		t.Comments[1].printSource(ip, true)
 	}
 
-	ip.WriteString("]")
+	w.WriteString("]")
 }
 
 func (t TypeStatement) printSource(w writer, v bool) {
