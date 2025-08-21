@@ -1420,6 +1420,16 @@ func TestPrintSource(t *testing.T) {
 			"(a if b else c)\n",
 			"(a # A\n\tif # B\n\tb # C\n\telse # D\n\tc)\n",
 		},
+		{ // 283
+			"(# A\n\n# B\nlambda # C\n: # D\na # E\n\n# F\n)",
+			"(lambda:a)\n",
+			"( # A\n\n\t# B\n\tlambda # C\n\t: # D\n\ta # E\n\n\t# F\n)\n",
+		},
+		{ // 284
+			"(# A\n\n# B\nlambda # C\na # D\n\n# E\n: # F\nb # G\n\n# H\n)",
+			"(lambda a:b)\n",
+			"( # A\n\n\t# B\n\tlambda # C\n\ta # D\n\n\t# E\n\t: # F\n\tb # G\n\n\t# H\n)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
