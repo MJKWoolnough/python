@@ -185,7 +185,17 @@ func (a AssignmentExpression) printSource(w writer, v bool) {
 		w.WriteString(a.Identifier.Data)
 
 		if v {
-			w.WriteString(" := ")
+			w.WriteString(" ")
+
+			if w.InMultiline() {
+				a.Comments[0].printSource(w, true)
+			}
+
+			w.WriteString(":= ")
+
+			if w.InMultiline() {
+				a.Comments[1].printSource(w, true)
+			}
 		} else {
 			w.WriteString(":=")
 		}
