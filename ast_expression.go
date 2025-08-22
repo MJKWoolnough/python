@@ -226,9 +226,13 @@ func (e *Enclosure) parse(p *pyParser) error {
 			e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
 		}
 
-		p.AcceptRunAllWhitespace()
+		q = p.NewGoal()
 
-		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+		q.AcceptRunAllWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			p.Score(q)
+
 			e.ListDisplay = &FlexibleExpressionListOrComprehension{
 				Tokens: p.NewGoal().ToTokens(),
 			}
@@ -238,7 +242,7 @@ func (e *Enclosure) parse(p *pyParser) error {
 			q := p.NewGoal()
 			e.ListDisplay = new(FlexibleExpressionListOrComprehension)
 
-			if err := e.ListDisplay.parse(q, nil); err != nil {
+			if err := e.ListDisplay.parse(q); err != nil {
 				return p.Error("Enclosure", err)
 			}
 
@@ -262,9 +266,13 @@ func (e *Enclosure) parse(p *pyParser) error {
 			e.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
 		}
 
-		p.AcceptRunAllWhitespace()
+		q = p.NewGoal()
 
-		if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
+		q.AcceptRunAllWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "}"}) {
+			p.Score(q)
+
 			e.DictDisplay = &DictDisplay{
 				Tokens: p.NewGoal().ToTokens(),
 			}
@@ -274,7 +282,6 @@ func (e *Enclosure) parse(p *pyParser) error {
 			q.AcceptRunAllWhitespace()
 
 			var isDict bool
-			var ae *AssignmentExpression
 
 			switch q.Peek() {
 			case parser.Token{Type: TokenOperator, Data: "**"}:
@@ -286,10 +293,11 @@ func (e *Enclosure) parse(p *pyParser) error {
 
 				q = p.NewGoal()
 			default:
-				p.AcceptRunWhitespaceNoComment()
-
 				q = p.NewGoal()
-				ae = new(AssignmentExpression)
+
+				q.AcceptRunAllWhitespace()
+
+				ae := new(AssignmentExpression)
 
 				if err := ae.parse(q); err != nil {
 					return p.Error("Enclosure", err)
@@ -304,22 +312,20 @@ func (e *Enclosure) parse(p *pyParser) error {
 				}
 			}
 
+			p.AcceptRunWhitespaceNoComment()
+
 			if isDict {
-				var ex *Expression
-
-				if ae != nil {
-					ex = &ae.Expression
-				}
-
+				q = p.NewGoal()
 				e.DictDisplay = new(DictDisplay)
 
-				if err := e.DictDisplay.parse(q, p, ex); err != nil {
+				if err := e.DictDisplay.parse(q); err != nil {
 					return p.Error("Enclosure", err)
 				}
 			} else {
+				q = p.NewGoal()
 				e.SetDisplay = new(FlexibleExpressionListOrComprehension)
 
-				if err := e.SetDisplay.parse(q, ae); err != nil {
+				if err := e.SetDisplay.parse(q); err != nil {
 					return p.Error("Enclosure", err)
 				}
 			}
@@ -351,28 +357,15 @@ type FlexibleExpressionListOrComprehension struct {
 	Tokens                 Tokens
 }
 
-func (f *FlexibleExpressionListOrComprehension) parse(p *pyParser, ae *AssignmentExpression) error {
-	o := p.NewGoal()
-	if ae == nil {
-		q := p.NewGoal()
-		f.FlexibleExpressionList = new(FlexibleExpressionList)
+func (f *FlexibleExpressionListOrComprehension) parse(p *pyParser) error {
+	q := p.NewGoal()
+	f.FlexibleExpressionList = new(FlexibleExpressionList)
 
-		if err := f.FlexibleExpressionList.parse(q); err != nil {
-			return p.Error("FlexibleExpressionListOrComprehension", err)
-		}
-
-		p.Score(q)
-	} else {
-		f.FlexibleExpressionList = &FlexibleExpressionList{
-			FlexibleExpressions: []FlexibleExpression{
-				{
-					AssignmentExpression: ae,
-					Tokens:               ae.Tokens,
-				},
-			},
-			Tokens: ae.Tokens,
-		}
+	if err := f.FlexibleExpressionList.parse(q); err != nil {
+		return p.Error("FlexibleExpressionListOrComprehension", err)
 	}
+
+	p.Score(q)
 
 	if len(f.FlexibleExpressionList.FlexibleExpressions) == 1 && f.FlexibleExpressionList.FlexibleExpressions[0].AssignmentExpression != nil {
 		q := p.NewGoal()
@@ -385,7 +378,7 @@ func (f *FlexibleExpressionListOrComprehension) parse(p *pyParser, ae *Assignmen
 			f.Comprehension = new(Comprehension)
 
 			if err := f.Comprehension.parse(p, f.FlexibleExpressionList.FlexibleExpressions[0].AssignmentExpression); err != nil {
-				return o.Error("FlexibleExpressionListOrComprehension", err)
+				return p.Error("FlexibleExpressionListOrComprehension", err)
 			}
 
 			f.FlexibleExpressionList = nil
@@ -401,10 +394,15 @@ func (f *FlexibleExpressionListOrComprehension) parse(p *pyParser, ae *Assignmen
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-flexible_expression_list
 type FlexibleExpressionList struct {
 	FlexibleExpressions []FlexibleExpression
+	Comments            [2]Comments
 	Tokens
 }
 
 func (f *FlexibleExpressionList) parse(p *pyParser) error {
+	f.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
 	for {
 		q := p.NewGoal()
 
@@ -436,6 +434,16 @@ func (f *FlexibleExpressionList) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: "}"}) {
+		f.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+	} else {
+		f.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 	}
 
 	f.Tokens = p.ToTokens()
@@ -688,30 +696,18 @@ type DictDisplay struct {
 	Tokens            Tokens
 }
 
-func (d *DictDisplay) parse(p, o *pyParser, e *Expression) error {
+func (d *DictDisplay) parse(p *pyParser) error {
 Loop:
 	for {
-		q := p
-
-		if e == nil {
-			q = p.NewGoal()
-		}
+		q := p.NewGoal()
 
 		var di DictItem
 
-		if err := di.parse(q, e); err != nil {
-			if e != nil {
-				p = o
-			}
-
+		if err := di.parse(q); err != nil {
 			return p.Error("DictDisplay", err)
 		}
 
-		if e == nil {
-			p.Score(q)
-		} else {
-			e = nil
-		}
+		p.Score(q)
 
 		d.DictItems = append(d.DictItems, di)
 		q = p.NewGoal()
@@ -765,8 +761,8 @@ type DictItem struct {
 	Tokens       Tokens
 }
 
-func (d *DictItem) parse(p *pyParser, e *Expression) error {
-	if e == nil && p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+func (d *DictItem) parse(p *pyParser) error {
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
@@ -778,18 +774,14 @@ func (d *DictItem) parse(p *pyParser, e *Expression) error {
 
 		p.Score(q)
 	} else {
-		if e != nil {
-			d.Key = e
-		} else {
-			q := p.NewGoal()
-			d.Key = new(Expression)
+		q := p.NewGoal()
+		d.Key = new(Expression)
 
-			if err := d.Key.parse(q); err != nil {
-				return p.Error("DictItem", err)
-			}
-
-			p.Score(q)
+		if err := d.Key.parse(q); err != nil {
+			return p.Error("DictItem", err)
 		}
+
+		p.Score(q)
 
 		p.AcceptRunWhitespace()
 
@@ -799,7 +791,7 @@ func (d *DictItem) parse(p *pyParser, e *Expression) error {
 
 		p.AcceptRunWhitespace()
 
-		q := p.NewGoal()
+		q = p.NewGoal()
 		d.Value = new(Expression)
 
 		if err := d.Value.parse(q); err != nil {
