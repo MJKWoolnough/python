@@ -1494,144 +1494,7 @@ func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{`a`, func(t *test, tk Tokens) { // 4
-			t.AssignmentExpression = &AssignmentExpression{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-			t.TokenSkip = 1
-			t.Output = FlexibleExpressionListOrComprehension{
-				FlexibleExpressionList: &FlexibleExpressionList{
-					FlexibleExpressions: []FlexibleExpression{
-						{
-							AssignmentExpression: &AssignmentExpression{
-								Expression: Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a for b in c`, func(t *test, tk Tokens) { // 5
-			t.AssignmentExpression = &AssignmentExpression{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-			t.TokenSkip = 1
-			t.Output = FlexibleExpressionListOrComprehension{
-				Comprehension: &Comprehension{
-					AssignmentExpression: AssignmentExpression{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							}),
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					ComprehensionFor: ComprehensionFor{
-						TargetList: TargetList{
-							Targets: []Target{
-								{
-									PrimaryExpression: &PrimaryExpression{
-										Atom: &Atom{
-											Identifier: &tk[4],
-											Tokens:     tk[4:5],
-										},
-										Tokens: tk[4:5],
-									},
-									Tokens: tk[4:5],
-								},
-							},
-							Tokens: tk[4:5],
-						},
-						OrTest: WrapConditional(&Atom{
-							Identifier: &tk[8],
-							Tokens:     tk[8:9],
-						}).OrTest,
-						Tokens: tk[2:9],
-					},
-					Tokens: tk[:9],
-				},
-				Tokens: tk[:9],
-			}
-		}},
-		{`a async for b in c`, func(t *test, tk Tokens) { // 6
-			t.AssignmentExpression = &AssignmentExpression{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-			t.TokenSkip = 1
-			t.Output = FlexibleExpressionListOrComprehension{
-				Comprehension: &Comprehension{
-					AssignmentExpression: AssignmentExpression{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							}),
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					ComprehensionFor: ComprehensionFor{
-						Async: true,
-						TargetList: TargetList{
-							Targets: []Target{
-								{
-									PrimaryExpression: &PrimaryExpression{
-										Atom: &Atom{
-											Identifier: &tk[6],
-											Tokens:     tk[6:7],
-										},
-										Tokens: tk[6:7],
-									},
-									Tokens: tk[6:7],
-								},
-							},
-							Tokens: tk[6:7],
-						},
-						OrTest: WrapConditional(&Atom{
-							Identifier: &tk[10],
-							Tokens:     tk[10:11],
-						}).OrTest,
-						Tokens: tk[2:11],
-					},
-					Tokens: tk[:11],
-				},
-				Tokens: tk[:11],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 7
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1658,7 +1521,7 @@ func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a for nonlocal in b`, func(t *test, tk Tokens) { // 8
+		{`a for nonlocal in b`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1690,13 +1553,13 @@ func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 					Token:   tk[2],
 				},
 				Parsing: "FlexibleExpressionListOrComprehension",
-				Token:   tk[0],
+				Token:   tk[2],
 			}
 		}},
 	}, func(t *test) (Type, error) {
 		var f FlexibleExpressionListOrComprehension
 
-		err := f.parse(t.Tokens, t.AssignmentExpression)
+		err := f.parse(t.Tokens)
 
 		return f, err
 	})
@@ -1823,7 +1686,62 @@ func TestFlexibleExpressionList(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 5
+		{"{# A\na # B\n}", func(t *test, tk Tokens) { // 5
+			t.Output = FlexibleExpressionList{
+				FlexibleExpressions: []FlexibleExpression{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[3],
+									Tokens:     tk[3:4],
+								}),
+								Tokens: tk[3:4],
+							},
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[5]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"{# A\na,b # B\n}", func(t *test, tk Tokens) { // 6
+			t.Output = FlexibleExpressionList{
+				FlexibleExpressions: []FlexibleExpression{
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[3],
+									Tokens:     tk[3:4],
+								}),
+								Tokens: tk[3:4],
+							},
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+					{
+						AssignmentExpression: &AssignmentExpression{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[5],
+									Tokens:     tk[5:6],
+								}),
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[7]}},
+				Tokens:   tk[1:8],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1846,7 +1764,7 @@ func TestFlexibleExpressionList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a,nonlocal`, func(t *test, tk Tokens) { // 6
+		{`a,nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1871,6 +1789,10 @@ func TestFlexibleExpressionList(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var f FlexibleExpressionList
+
+		if t.Tokens.Peek().Data == "{" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := f.parse(t.Tokens)
 
@@ -3031,14 +2953,6 @@ func TestDictDisplay(t *testing.T) {
 			}
 		}},
 		{`a: b`, func(t *test, tk Tokens) { // 8
-			t.Expression = &Expression{
-				ConditionalExpression: WrapConditional(&Atom{
-					Identifier: &tk[0],
-					Tokens:     tk[:1],
-				}),
-				Tokens: tk[:1],
-			}
-			t.TokenSkip = 1
 			t.Output = DictDisplay{
 				DictItems: []DictItem{
 					{
@@ -3062,88 +2976,7 @@ func TestDictDisplay(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{`a :b, c:d`, func(t *test, tk Tokens) { // 9
-			t.Expression = &Expression{
-				ConditionalExpression: WrapConditional(&Atom{
-					Identifier: &tk[0],
-					Tokens:     tk[:1],
-				}),
-				Tokens: tk[:1],
-			}
-			t.TokenSkip = 1
-			t.Output = DictDisplay{
-				DictItems: []DictItem{
-					{
-						Key: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							}),
-							Tokens: tk[:1],
-						},
-						Value: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[3],
-								Tokens:     tk[3:4],
-							}),
-							Tokens: tk[3:4],
-						},
-						Tokens: tk[:4],
-					},
-					{
-						Key: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[6],
-								Tokens:     tk[6:7],
-							}),
-							Tokens: tk[6:7],
-						},
-						Value: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[8],
-								Tokens:     tk[8:9],
-							}),
-							Tokens: tk[8:9],
-						},
-						Tokens: tk[6:9],
-					},
-				},
-				Tokens: tk[:9],
-			}
-		}},
-		{`a: b,`, func(t *test, tk Tokens) { // 10
-			t.Expression = &Expression{
-				ConditionalExpression: WrapConditional(&Atom{
-					Identifier: &tk[0],
-					Tokens:     tk[:1],
-				}),
-				Tokens: tk[:1],
-			}
-			t.TokenSkip = 1
-			t.Output = DictDisplay{
-				DictItems: []DictItem{
-					{
-						Key: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							}),
-							Tokens: tk[:1],
-						},
-						Value: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[3],
-								Tokens:     tk[3:4],
-							}),
-							Tokens: tk[3:4],
-						},
-						Tokens: tk[:4],
-					},
-				},
-				Tokens: tk[:4],
-			}
-		}},
-		{`a: nonlocal`, func(t *test, tk Tokens) { // 11
+		{`a: nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3162,21 +2995,21 @@ func TestDictDisplay(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a: b, c: d for e in f`, func(t *test, tk Tokens) { // 12
+		{`a: b, c: d for e in f`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrInvalidKeyword,
 				Parsing: "DictDisplay",
 				Token:   tk[11],
 			}
 		}},
-		{`**a for e in f`, func(t *test, tk Tokens) { // 13
+		{`**a for e in f`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err:     ErrInvalidKeyword,
 				Parsing: "DictDisplay",
 				Token:   tk[3],
 			}
 		}},
-		{`a: b for nonlocal in f`, func(t *test, tk Tokens) { // 14
+		{`a: b for nonlocal in f`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3210,7 +3043,7 @@ func TestDictDisplay(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var d DictDisplay
 
-		err := d.parse(t.Tokens, t.OrigTokens, t.Expression)
+		err := d.parse(t.Tokens)
 
 		return d, err
 	})
@@ -3237,34 +3070,7 @@ func TestDictItem(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{`a: b`, func(t *test, tk Tokens) { // 2
-			t.Expression = &Expression{
-				ConditionalExpression: WrapConditional(&Atom{
-					Identifier: &tk[0],
-					Tokens:     tk[:1],
-				}),
-				Tokens: tk[:1],
-			}
-			t.TokenSkip = 1
-			t.Output = DictItem{
-				Key: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
-				},
-				Value: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[3],
-						Tokens:     tk[3:4],
-					}),
-					Tokens: tk[3:4],
-				},
-				Tokens: tk[:4],
-			}
-		}},
-		{`**a`, func(t *test, tk Tokens) { // 3
+		{`**a`, func(t *test, tk Tokens) { // 2
 			t.Output = DictItem{
 				OrExpression: &WrapConditional(&Atom{
 					Identifier: &tk[1],
@@ -3273,7 +3079,7 @@ func TestDictItem(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-		{`nonlocal: b`, func(t *test, tk Tokens) { // 4
+		{`nonlocal: b`, func(t *test, tk Tokens) { // 3
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -3288,7 +3094,7 @@ func TestDictItem(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a: nonlocal`, func(t *test, tk Tokens) { // 5
+		{`a: nonlocal`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -3303,7 +3109,7 @@ func TestDictItem(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{`**nonlocal`, func(t *test, tk Tokens) { // 6
+		{`**nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3354,7 +3160,7 @@ func TestDictItem(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`a`, func(t *test, tk Tokens) { // 7
+		{`a`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "DictItem",
@@ -3364,7 +3170,7 @@ func TestDictItem(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var d DictItem
 
-		err := d.parse(t.Tokens, t.Expression)
+		err := d.parse(t.Tokens)
 
 		return d, err
 	})
