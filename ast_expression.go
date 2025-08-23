@@ -293,10 +293,6 @@ func (e *Enclosure) parse(p *pyParser) error {
 
 				q = p.NewGoal()
 			default:
-				q = p.NewGoal()
-
-				q.AcceptRunAllWhitespace()
-
 				ae := new(AssignmentExpression)
 
 				if err := ae.parse(q); err != nil {
