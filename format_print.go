@@ -585,7 +585,7 @@ func (d DictItem) printSource(w writer, v bool) {
 func (e Enclosure) printSource(w writer, v bool) {
 	if e.ParenthForm != nil || e.ListDisplay != nil || e.DictDisplay != nil || e.SetDisplay != nil || e.GeneratorExpression != nil || e.YieldAtom != nil {
 		var (
-			t  interface{ printSource(writer, bool) }
+			t  formatter
 			oc string
 		)
 
