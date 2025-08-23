@@ -1543,7 +1543,8 @@ Loop:
 			parser.Token{Type: TokenOperator, Data: "=="},
 			parser.Token{Type: TokenOperator, Data: ">="},
 			parser.Token{Type: TokenOperator, Data: "<="},
-			parser.Token{Type: TokenOperator, Data: "!="}:
+			parser.Token{Type: TokenOperator, Data: "!="},
+			parser.Token{Type: TokenKeyword, Data: "in"}:
 			p.Score(q)
 
 			q = p.NewGoal()
@@ -1588,16 +1589,6 @@ Loop:
 			if !q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
 				return q.Error("Comparison", ErrMissingIn)
 			}
-
-			ce.ComparisonOperator = q.ToTokens()
-
-			p.Score(q)
-		case parser.Token{Type: TokenKeyword, Data: "in"}:
-			p.Score(q)
-
-			q = p.NewGoal()
-
-			q.Next()
 
 			ce.ComparisonOperator = q.ToTokens()
 
