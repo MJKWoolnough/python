@@ -296,11 +296,11 @@ func (c ComparisonExpression) printSource(w writer, v bool) {
 
 	if len(c.ComparisonOperator) > 0 {
 		first = c.ComparisonOperator[0].Data
-	}
 
-	if v && w.InMultiline() {
-		w.WriteString(" ")
-		c.Comments[0].printSource(w, true)
+		if v && w.InMultiline() {
+			w.WriteString(" ")
+			c.Comments[0].printSource(w, true)
+		}
 	}
 
 	switch first {
