@@ -216,7 +216,6 @@ func (e *Enclosure) parse(p *pyParser) error {
 				return p.Error("Enclosure", ErrMissingClosingParen)
 			}
 		}
-
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
 		q := p.NewGoal()
 
@@ -256,7 +255,6 @@ func (e *Enclosure) parse(p *pyParser) error {
 				return p.Error("Enclosure", ErrMissingClosingBracket)
 			}
 		}
-
 	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "{"}) {
 		q := p.NewGoal()
 
