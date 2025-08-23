@@ -3299,7 +3299,21 @@ func TestAssignmentExpression(t *testing.T) {
 				Tokens:   tk[1:10],
 			}
 		}},
-		{`nonlocal := a`, func(t *test, tk Tokens) { // 5
+		{"{# A\na # B\n:= # C\nb}", func(t *test, tk Tokens) { // 5
+			t.Output = AssignmentExpression{
+				Identifier: &tk[3],
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}),
+					Tokens: tk[11:12],
+				},
+				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[9]}},
+				Tokens:   tk[1:12],
+			}
+		}},
+		{`nonlocal := a`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -3314,7 +3328,7 @@ func TestAssignmentExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a := nonlocal`, func(t *test, tk Tokens) { // 6
+		{`a := nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
