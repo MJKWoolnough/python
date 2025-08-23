@@ -3295,7 +3295,7 @@ func TestAssignmentExpression(t *testing.T) {
 					}),
 					Tokens: tk[9:10],
 				},
-				Comments: [2]Comments{{tk[3]}, {tk[7]}},
+				Comments: [3]Comments{nil, {tk[3]}, {tk[7]}},
 				Tokens:   tk[1:10],
 			}
 		}},
