@@ -1111,15 +1111,27 @@ func TestEnclosure(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err: wrapConditionalExpressionError(Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: wrapConditionalExpressionError(Error{
+										Err:     ErrInvalidEnclosure,
+										Parsing: "Enclosure",
+										Token:   tk[1],
+									}),
+									Parsing: "Expression",
+									Token:   tk[1],
+								},
+								Parsing: "AssignmentExpression",
+								Token:   tk[1],
+							},
+							Parsing: "FlexibleExpression",
 							Token:   tk[1],
-						}),
-						Parsing: "Expression",
+						},
+						Parsing: "FlexibleExpressionList",
 						Token:   tk[1],
 					},
-					Parsing: "AssignmentExpression",
+					Parsing: "FlexibleExpressionListOrComprehension",
 					Token:   tk[1],
 				},
 				Parsing: "Enclosure",
