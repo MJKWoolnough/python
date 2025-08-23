@@ -181,6 +181,10 @@ func (a AssignmentExpressionAndSuite) printSource(w writer, v bool) {
 }
 
 func (a AssignmentExpression) printSource(w writer, v bool) {
+	if v && w.InMultiline() {
+		a.Comments[0].printSource(w, true)
+	}
+
 	if a.Identifier != nil {
 		w.WriteString(a.Identifier.Data)
 
@@ -188,13 +192,13 @@ func (a AssignmentExpression) printSource(w writer, v bool) {
 			w.WriteString(" ")
 
 			if w.InMultiline() {
-				a.Comments[0].printSource(w, true)
+				a.Comments[1].printSource(w, true)
 			}
 
 			w.WriteString(":= ")
 
 			if w.InMultiline() {
-				a.Comments[1].printSource(w, true)
+				a.Comments[2].printSource(w, true)
 			}
 		} else {
 			w.WriteString(":=")
