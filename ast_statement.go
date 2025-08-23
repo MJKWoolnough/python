@@ -1202,6 +1202,18 @@ func (e *Expression) parse(p *pyParser) error {
 	return nil
 }
 
+func skipExpression(p *pyParser) {
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "lambda"}) {
+		skipDepth(p, parser.Token{Type: TokenKeyword, Data: "lambda"}, parser.Token{Type: TokenDelimiter, Data: ":"})
+		p.AcceptRunWhitespace()
+		skipExpression(p)
+	} else {
+		skipConditionalExpression(p)
+	}
+}
+
 // ConditionalExpression as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-conditional_expression
 type ConditionalExpression struct {
@@ -1269,6 +1281,22 @@ func (c *ConditionalExpression) parse(p *pyParser) error {
 	c.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func skipConditionalExpression(p *pyParser) {
+	p.AcceptRunWhitespace()
+	skipOrTest(p)
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
+		return
+	}
+
+	skipOrTest(p)
+	p.AcceptRunWhitespace()
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"})
+	p.AcceptRunWhitespace()
+	skipExpression(p)
 }
 
 // LambdaExpression as defined in python@3.13.0:
@@ -1376,6 +1404,16 @@ func (o *OrTest) parse(p *pyParser) error {
 	return nil
 }
 
+func skipOrTest(p *pyParser) {
+	skipAndTest(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "or"}) {
+		p.AcceptRunWhitespace()
+		skipOrTest(p)
+	}
+}
+
 // AndTest as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-and_test
 type AndTest struct {
@@ -1423,6 +1461,16 @@ func (a *AndTest) parse(p *pyParser) error {
 	return nil
 }
 
+func skipAndTest(p *pyParser) {
+	skipNotTest(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "and"}) {
+		p.AcceptRunWhitespace()
+		skipAndTest(p)
+	}
+}
+
 // NotTest as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-not_test
 type NotTest struct {
@@ -1452,6 +1500,14 @@ func (n *NotTest) parse(p *pyParser) error {
 	n.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func skipNotTest(p *pyParser) {
+	for p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
+		p.AcceptRunWhitespace()
+	}
+
+	skipComparison(p)
 }
 
 // Comparison as defined in python@3.13.0:
@@ -1568,6 +1624,35 @@ Loop:
 	c.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func skipComparison(p *pyParser) {
+	skipOrExpression(p)
+	p.AcceptRunWhitespace()
+
+	for {
+		switch p.Peek() {
+		default:
+			return
+		case parser.Token{Type: TokenOperator, Data: "<"},
+			parser.Token{Type: TokenOperator, Data: ">"},
+			parser.Token{Type: TokenOperator, Data: "=="},
+			parser.Token{Type: TokenOperator, Data: ">="},
+			parser.Token{Type: TokenOperator, Data: "<="},
+			parser.Token{Type: TokenOperator, Data: "!="},
+			parser.Token{Type: TokenKeyword, Data: "in"}:
+		case parser.Token{Type: TokenKeyword, Data: "is"}:
+			p.AcceptRunWhitespace()
+			p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"})
+		case parser.Token{Type: TokenKeyword, Data: "not"}:
+			p.AcceptRunWhitespace()
+			p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"})
+		}
+
+		p.AcceptRunWhitespace()
+		skipOrExpression(p)
+		p.AcceptRunWhitespace()
+	}
 }
 
 // ComparisonExpression combines combines the operators with an OrExpression.

@@ -97,6 +97,35 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 	return nil
 }
 
+func skipPrimaryExpression(p *pyParser) {
+	skipAtom(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "."}) {
+		p.AcceptRunWhitespace()
+		skipPrimaryExpression(p)
+	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+		skipDepth(p, parser.Token{Type: TokenDelimiter, Data: "["}, parser.Token{Type: TokenDelimiter, Data: "]"})
+	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
+		skipDepth(p, parser.Token{Type: TokenDelimiter, Data: "("}, parser.Token{Type: TokenDelimiter, Data: ")"})
+	}
+}
+
+func skipDepth(p *pyParser, opener, closer parser.Token) {
+	depth := 1
+
+	for {
+		switch p.Next().Token {
+		case opener:
+			depth++
+		case closer:
+			if depth--; depth == 0 {
+				return
+			}
+		}
+	}
+}
+
 // IsIdentifier returns true if the Primary expression is based on an Identifier.
 func (pr *PrimaryExpression) IsIdentifier() bool {
 	if pr.Atom != nil {
@@ -136,6 +165,12 @@ func (a *Atom) parse(p *pyParser) error {
 	a.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func skipAtom(p *pyParser) {
+	if !p.Accept(TokenIdentifier, TokenNumericLiteral, TokenStringLiteral, TokenBooleanLiteral) {
+		skipEnclosure(p)
+	}
 }
 
 // IsIdentifier returns true if the Atom contains an Idneitifer.
@@ -282,28 +317,14 @@ func (e *Enclosure) parse(p *pyParser) error {
 			var isDict bool
 
 			switch q.Peek() {
+			case parser.Token{Type: TokenOperator, Data: "*"}:
 			case parser.Token{Type: TokenOperator, Data: "**"}:
 				isDict = true
-
-				fallthrough
-			case parser.Token{Type: TokenOperator, Data: "*"}:
-				p.AcceptRunWhitespaceNoComment()
-
-				q = p.NewGoal()
 			default:
-				ae := new(AssignmentExpression)
+				skipExpression(q)
+				q.AcceptRunWhitespace()
 
-				if err := ae.parse(q); err != nil {
-					return p.Error("Enclosure", err)
-				}
-
-				if ae.Identifier == nil {
-					r := q.NewGoal()
-
-					r.AcceptRunWhitespace()
-
-					isDict = r.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"})
-				}
+				isDict = q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"})
 			}
 
 			p.AcceptRunWhitespaceNoComment()
@@ -341,6 +362,16 @@ func (e *Enclosure) parse(p *pyParser) error {
 	e.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func skipEnclosure(p *pyParser) {
+	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
+		skipDepth(p, parser.Token{Type: TokenDelimiter, Data: "("}, parser.Token{Type: TokenDelimiter, Data: ")"})
+	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+		skipDepth(p, parser.Token{Type: TokenDelimiter, Data: "["}, parser.Token{Type: TokenDelimiter, Data: "]"})
+	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "{"}) {
+		skipDepth(p, parser.Token{Type: TokenDelimiter, Data: "{"}, parser.Token{Type: TokenDelimiter, Data: "}"})
+	}
 }
 
 // FlexibleExpressionListOrComprehension as defined in python@3.13.0:
@@ -1119,6 +1150,16 @@ func (o *OrExpression) parse(p *pyParser) error {
 	return nil
 }
 
+func skipOrExpression(p *pyParser) {
+	skipXorExpression(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "|"}) {
+		p.AcceptRunWhitespace()
+		skipOrExpression(p)
+	}
+}
+
 // XorExpression as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-xor_expr
 type XorExpression struct {
@@ -1166,6 +1207,16 @@ func (x *XorExpression) parse(p *pyParser) error {
 	return nil
 }
 
+func skipXorExpression(p *pyParser) {
+	skipAndExpression(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "^"}) {
+		p.AcceptRunWhitespace()
+		skipXorExpression(p)
+	}
+}
+
 // AndExpression as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-and_expr
 type AndExpression struct {
@@ -1211,6 +1262,16 @@ func (a *AndExpression) parse(p *pyParser) error {
 	a.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func skipAndExpression(p *pyParser) {
+	skipShiftExpression(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "&"}) {
+		p.AcceptRunWhitespace()
+		skipAndExpression(p)
+	}
 }
 
 // ShiftExpression as defined in python@3.13.0:
@@ -1262,6 +1323,16 @@ func (s *ShiftExpression) parse(p *pyParser) error {
 	return nil
 }
 
+func skipShiftExpression(p *pyParser) {
+	skipAddExpression(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "<<"}) || p.AcceptToken(parser.Token{Type: TokenOperator, Data: ">>"}) {
+		p.AcceptRunWhitespace()
+		skipShiftExpression(p)
+	}
+}
+
 // AddExpression as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-a_expr
 type AddExpression struct {
@@ -1309,6 +1380,16 @@ func (a *AddExpression) parse(p *pyParser) error {
 	a.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func skipAddExpression(p *pyParser) {
+	skipMultiplyExpression(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "+"}) || p.AcceptToken(parser.Token{Type: TokenOperator, Data: "-"}) {
+		p.AcceptRunWhitespace()
+		skipAddExpression(p)
+	}
 }
 
 // MultiplyExpression as defined in python@3.13.0:
@@ -1362,6 +1443,18 @@ func (m *MultiplyExpression) parse(p *pyParser) error {
 	return nil
 }
 
+func skipMultiplyExpression(p *pyParser) {
+	skipUnaryExpression(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) || p.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) ||
+		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "//"}) || p.AcceptToken(parser.Token{Type: TokenOperator, Data: "/"}) ||
+		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "%"}) {
+		p.AcceptRunWhitespace()
+		skipMultiplyExpression(p)
+	}
+}
+
 // UnaryExpression as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-u_expr
 type UnaryExpression struct {
@@ -1403,6 +1496,17 @@ func (u *UnaryExpression) parse(p *pyParser) error {
 	u.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func skipUnaryExpression(p *pyParser) {
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "-"}) ||
+		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "+"}) ||
+		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "~"}) {
+		p.AcceptRunWhitespace()
+		skipUnaryExpression(p)
+	} else {
+		skipPowerExpression(p)
+	}
 }
 
 // PowerExpression as defined in python@3.13.0:
@@ -1459,4 +1563,16 @@ func (pe *PowerExpression) parse(p *pyParser) error {
 	pe.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func skipPowerExpression(p *pyParser) {
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "await"})
+	p.AcceptRunWhitespace()
+	skipPrimaryExpression(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+		p.AcceptRunWhitespace()
+		skipUnaryExpression(p)
+	}
 }
