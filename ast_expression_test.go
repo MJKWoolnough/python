@@ -3091,7 +3091,57 @@ func TestDictItem(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-		{`nonlocal: b`, func(t *test, tk Tokens) { // 3
+		{"{# A\na # B\n: # C\nb # D\n\n# E\n}", func(t *test, tk Tokens) { // 3
+			t.Output = DictItem{
+				Key: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Value: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}),
+					Tokens: tk[11:12],
+				},
+				Comments: [4]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13]}},
+				Tokens:   tk[1:14],
+			}
+		}},
+		{"{# A\na # B\n: # C\nb # D\n\n# E\n,}", func(t *test, tk Tokens) { // 4
+			t.Output = DictItem{
+				Key: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Value: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}),
+					Tokens: tk[11:12],
+				},
+				Comments: [4]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13], tk[15]}},
+				Tokens:   tk[1:16],
+			}
+		}},
+		{"{# A\n** # B\na # C\n}", func(t *test, tk Tokens) { // 5
+			t.Output = DictItem{
+				OrExpression: &WrapConditional(&Atom{
+					Identifier: &tk[7],
+					Tokens:     tk[7:8],
+				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+				Comments: [4]Comments{{tk[1]}, {tk[5]}, nil, {tk[9]}},
+				Tokens:   tk[1:10],
+			}
+		}},
+		{`nonlocal: b`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -3106,7 +3156,7 @@ func TestDictItem(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a: nonlocal`, func(t *test, tk Tokens) { // 4
+		{`a: nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -3121,7 +3171,7 @@ func TestDictItem(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{`**nonlocal`, func(t *test, tk Tokens) { // 5
+		{`**nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3172,7 +3222,7 @@ func TestDictItem(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`a`, func(t *test, tk Tokens) { // 6
+		{`a`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "DictItem",
@@ -3181,6 +3231,10 @@ func TestDictItem(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var d DictItem
+
+		if t.Tokens.Peek().Data == "{" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := d.parse(t.Tokens)
 
