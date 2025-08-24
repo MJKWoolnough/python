@@ -299,7 +299,7 @@ Format implements the fmt.Formatter interface
 ```go
 func (a *Atom) IsIdentifier() bool
 ```
-IsIdentifier returns true if the Atom contains an Idneitifer.
+IsIdentifier returns true if the Atom contains an Identifier.
 
 #### type AugTarget
 
