@@ -173,7 +173,7 @@ func skipAtom(p *pyParser) {
 	}
 }
 
-// IsIdentifier returns true if the Atom contains an Idneitifer.
+// IsIdentifier returns true if the Atom contains an Identifier.
 func (a *Atom) IsIdentifier() bool {
 	return a.Identifier != nil
 }
