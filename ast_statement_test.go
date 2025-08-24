@@ -4062,42 +4062,42 @@ func TestLambdaExpression(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
-		{"(# A\nlambda # B\n: # C\na # D\n)", func(t *test, tk Tokens) { // 5
+		{"(lambda # A\n: # B\na # C\n)", func(t *test, tk Tokens) { // 5
 			t.Output = LambdaExpression{
 				Expression: Expression{
 					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[11],
-						Tokens:     tk[11:12],
+						Identifier: &tk[9],
+						Tokens:     tk[9:10],
 					}),
-					Tokens: tk[11:12],
+					Tokens: tk[9:10],
 				},
-				Comments: [5]Comments{{tk[1]}, {tk[5]}, nil, {tk[9]}, {tk[13]}},
-				Tokens:   tk[1:14],
+				Comments: [3]Comments{{tk[3]}, nil, {tk[7]}},
+				Tokens:   tk[1:10],
 			}
 		}},
-		{"(# A\nlambda # B\na\n# C\n: # D\nb # E\n)", func(t *test, tk Tokens) { // 6
+		{"(lambda # A\na\n# B\n: # C\nb # D\n)", func(t *test, tk Tokens) { // 6
 			t.Output = LambdaExpression{
 				ParameterList: &ParameterList{
 					NoPosOnly: []DefParameter{
 						{
 							Parameter: Parameter{
-								Identifier: &tk[7],
-								Tokens:     tk[7:8],
+								Identifier: &tk[5],
+								Tokens:     tk[5:6],
 							},
-							Tokens: tk[7:8],
+							Tokens: tk[5:6],
 						},
 					},
-					Tokens: tk[7:8],
+					Tokens: tk[5:6],
 				},
 				Expression: Expression{
 					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[15],
-						Tokens:     tk[15:16],
+						Identifier: &tk[13],
+						Tokens:     tk[13:14],
 					}),
-					Tokens: tk[15:16],
+					Tokens: tk[13:14],
 				},
-				Comments: [5]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13]}, {tk[17]}},
-				Tokens:   tk[1:18],
+				Comments: [3]Comments{{tk[3]}, {tk[7]}, {tk[11]}},
+				Tokens:   tk[1:14],
 			}
 		}},
 		{`lambda nonlocal: a`, func(t *test, tk Tokens) { // 7
