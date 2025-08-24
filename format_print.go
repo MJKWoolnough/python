@@ -566,19 +566,44 @@ func (d DictDisplay) printSource(w writer, v bool) {
 }
 
 func (d DictItem) printSource(w writer, v bool) {
+	if v && w.InMultiline() && len(d.Comments[0]) > 0 {
+		w.WriteString("\n")
+		d.Comments[0].printSource(w, v)
+	}
+
 	if d.OrExpression != nil {
 		w.WriteString("**")
+
+		if v && w.InMultiline() && len(d.Comments[1]) > 0 {
+			w.WriteString(" ")
+			d.Comments[1].printSource(w, v)
+		}
+
 		d.OrExpression.printSource(w, v)
 	} else if d.Key != nil && d.Value != nil {
 		d.Key.printSource(w, v)
 
 		if v {
+			if w.InMultiline() && len(d.Comments[1]) > 0 {
+				w.WriteString(" ")
+				d.Comments[1].printSource(w, v)
+			}
+
 			w.WriteString(": ")
+
+			if w.InMultiline() {
+				d.Comments[2].printSource(w, v)
+			}
 		} else {
 			w.WriteString(":")
 		}
 
 		d.Value.printSource(w, v)
+	}
+
+	if v && w.InMultiline() && len(d.Comments[3]) > 0 {
+		w.WriteString(" ")
+		d.Comments[3].printSource(w, v)
 	}
 }
 
