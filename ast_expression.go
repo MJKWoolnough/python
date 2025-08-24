@@ -745,7 +745,7 @@ Loop:
 				return q.Error("DictDisplay", ErrInvalidKeyword)
 			}
 
-			p.Score(q)
+			p.AcceptRunWhitespaceNoNewline()
 
 			q = p.NewGoal()
 			d.DictComprehension = new(ComprehensionFor)
@@ -783,11 +783,18 @@ type DictItem struct {
 	Key          *Expression
 	Value        *Expression
 	OrExpression *OrExpression
+	Comments     [4]Comments
 	Tokens       Tokens
 }
 
 func (d *DictItem) parse(p *pyParser) error {
+	d.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+		d.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
@@ -808,11 +815,15 @@ func (d *DictItem) parse(p *pyParser) error {
 
 		p.Score(q)
 
+		d.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 			return p.Error("DictItem", ErrMissingColon)
 		}
+
+		d.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 		p.AcceptRunWhitespace()
 
@@ -824,6 +835,16 @@ func (d *DictItem) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ","}) {
+		d.Comments[3] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else {
+		d.Comments[3] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	}
 
 	d.Tokens = p.ToTokens()
