@@ -1308,17 +1308,14 @@ func skipConditionalExpression(p *pyParser) {
 type LambdaExpression struct {
 	ParameterList *ParameterList
 	Expression    Expression
-	Comments      [5]Comments
+	Comments      [3]Comments
 	Tokens        Tokens
 }
 
 func (l *LambdaExpression) parse(p *pyParser) error {
-	l.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunWhitespace()
 	p.Next()
 
-	l.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	l.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
@@ -1334,7 +1331,7 @@ func (l *LambdaExpression) parse(p *pyParser) error {
 
 		p.Score(q)
 
-		l.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+		l.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 		p.AcceptRunWhitespace()
 
@@ -1343,7 +1340,7 @@ func (l *LambdaExpression) parse(p *pyParser) error {
 		}
 	}
 
-	l.Comments[3] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	l.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
@@ -1355,7 +1352,6 @@ func (l *LambdaExpression) parse(p *pyParser) error {
 
 	p.Score(q)
 
-	l.Comments[4] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	l.Tokens = p.ToTokens()
 
 	return nil
