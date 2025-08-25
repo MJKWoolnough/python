@@ -1371,6 +1371,46 @@ func TestEnclosure(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
+		{`{a&b:c}`, func(t *test, tk Tokens) { // 31
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					DictItems: []DictItem{
+						{
+							Key: &Expression{
+								ConditionalExpression: WrapConditional(&AndExpression{
+									ShiftExpression: WrapConditional(&PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[1],
+											Tokens:     tk[1:2],
+										},
+										Tokens: tk[1:2],
+									}).OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression,
+									AndExpression: &WrapConditional(&PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[3],
+											Tokens:     tk[3:4],
+										},
+										Tokens: tk[3:4],
+									}).OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression,
+									Tokens: tk[1:4],
+								}),
+								Tokens: tk[1:4],
+							},
+							Value: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[5],
+									Tokens:     tk[5:6],
+								}),
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[1:6],
+						},
+					},
+					Tokens: tk[1:6],
+				},
+				Tokens: tk[:7],
+			}
+		}},
 		{`(yield nonlocal)`, func(t *test, tk Tokens) { // 31
 			t.Err = Error{
 				Err: Error{
