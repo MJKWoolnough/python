@@ -1143,7 +1143,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{`{(a):c}`, func(t *test, tk Tokens) { // 26
+		{`{(a):b}`, func(t *test, tk Tokens) { // 26
 			t.Output = Enclosure{
 				DictDisplay: &DictDisplay{
 					DictItems: []DictItem{
@@ -1185,7 +1185,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`{[a]:c}`, func(t *test, tk Tokens) { // 27
+		{`{[a]:b}`, func(t *test, tk Tokens) { // 27
 			t.Output = Enclosure{
 				DictDisplay: &DictDisplay{
 					DictItems: []DictItem{
@@ -1238,7 +1238,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`{{a}:c}`, func(t *test, tk Tokens) { // 28
+		{`{{a}:b}`, func(t *test, tk Tokens) { // 28
 			t.Output = Enclosure{
 				DictDisplay: &DictDisplay{
 					DictItems: []DictItem{
@@ -1272,6 +1272,46 @@ func TestEnclosure(t *testing.T) {
 										},
 										Tokens: tk[1:4],
 									},
+									Tokens: tk[1:4],
+								}),
+								Tokens: tk[1:4],
+							},
+							Value: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[5],
+									Tokens:     tk[5:6],
+								}),
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[1:6],
+						},
+					},
+					Tokens: tk[1:6],
+				},
+				Tokens: tk[:7],
+			}
+		}},
+		{`{a|b:c}`, func(t *test, tk Tokens) { // 28
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					DictItems: []DictItem{
+						{
+							Key: &Expression{
+								ConditionalExpression: WrapConditional(&OrExpression{
+									XorExpression: WrapConditional(&PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[1],
+											Tokens:     tk[1:2],
+										},
+										Tokens: tk[1:2],
+									}).OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression,
+									OrExpression: &WrapConditional(&PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[3],
+											Tokens:     tk[3:4],
+										},
+										Tokens: tk[3:4],
+									}).OrTest.AndTest.NotTest.Comparison.OrExpression,
 									Tokens: tk[1:4],
 								}),
 								Tokens: tk[1:4],
