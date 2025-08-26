@@ -1480,11 +1480,7 @@ type NotTest struct {
 }
 
 func (n *NotTest) parse(p *pyParser) error {
-	for {
-		if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
-			break
-		}
-
+	for p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
 		n.Nots = append(n.Nots, p.AcceptRunWhitespaceCommentsIfMultiline())
 		p.AcceptRunWhitespace()
 	}
