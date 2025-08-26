@@ -2156,7 +2156,47 @@ func TestEnclosure(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`(yield nonlocal)`, func(t *test, tk Tokens) { // 50
+		{`{a and b:c}`, func(t *test, tk Tokens) { // 50
+			t.Output = Enclosure{
+				DictDisplay: &DictDisplay{
+					DictItems: []DictItem{
+						{
+							Key: &Expression{
+								ConditionalExpression: &ConditionalExpression{
+									OrTest: OrTest{
+										AndTest: AndTest{
+											NotTest: WrapConditional(&Atom{
+												Identifier: &tk[1],
+												Tokens:     tk[1:2],
+											}).OrTest.AndTest.NotTest,
+											AndTest: &WrapConditional(&Atom{
+												Identifier: &tk[5],
+												Tokens:     tk[5:6],
+											}).OrTest.AndTest,
+											Tokens: tk[1:6],
+										},
+										Tokens: tk[1:6],
+									},
+									Tokens: tk[1:6],
+								},
+								Tokens: tk[1:6],
+							},
+							Value: &Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[7],
+									Tokens:     tk[7:8],
+								}),
+								Tokens: tk[7:8],
+							},
+							Tokens: tk[1:8],
+						},
+					},
+					Tokens: tk[1:8],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`(yield nonlocal)`, func(t *test, tk Tokens) { // 51
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2179,7 +2219,7 @@ func TestEnclosure(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`(nonlocal for)`, func(t *test, tk Tokens) { // 51
+		{`(nonlocal for)`, func(t *test, tk Tokens) { // 52
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2198,7 +2238,7 @@ func TestEnclosure(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`(nonlocal)`, func(t *test, tk Tokens) { // 52
+		{`(nonlocal)`, func(t *test, tk Tokens) { // 53
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2217,14 +2257,14 @@ func TestEnclosure(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`(a b)`, func(t *test, tk Tokens) { // 53
+		{`(a b)`, func(t *test, tk Tokens) { // 54
 			t.Err = Error{
 				Err:     ErrMissingClosingParen,
 				Parsing: "Enclosure",
 				Token:   tk[3],
 			}
 		}},
-		{`[nonlocal]`, func(t *test, tk Tokens) { // 54
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 55
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2255,14 +2295,14 @@ func TestEnclosure(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`[a for b in c d]`, func(t *test, tk Tokens) { // 55
+		{`[a for b in c d]`, func(t *test, tk Tokens) { // 56
 			t.Err = Error{
 				Err:     ErrMissingClosingBracket,
 				Parsing: "Enclosure",
 				Token:   tk[11],
 			}
 		}},
-		{`{nonlocal}`, func(t *test, tk Tokens) { // 56
+		{`{nonlocal}`, func(t *test, tk Tokens) { // 57
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2293,7 +2333,7 @@ func TestEnclosure(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`{a:nonlocal}`, func(t *test, tk Tokens) { // 57
+		{`{a:nonlocal}`, func(t *test, tk Tokens) { // 58
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2316,7 +2356,7 @@ func TestEnclosure(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`{*nonlocal}`, func(t *test, tk Tokens) { // 58
+		{`{*nonlocal}`, func(t *test, tk Tokens) { // 59
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2391,14 +2431,14 @@ func TestEnclosure(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`{a for b in c d}`, func(t *test, tk Tokens) { // 59
+		{`{a for b in c d}`, func(t *test, tk Tokens) { // 60
 			t.Err = Error{
 				Err:     ErrMissingClosingBrace,
 				Parsing: "Enclosure",
 				Token:   tk[11],
 			}
 		}},
-		{"(#abc\n)", func(t *test, tk Tokens) { // 60
+		{"(#abc\n)", func(t *test, tk Tokens) { // 61
 			t.Output = Enclosure{
 				ParenthForm: &StarredExpression{
 					Tokens: tk[1:1],
@@ -2407,7 +2447,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens:   tk[:4],
 			}
 		}},
-		{"[#abc\n]", func(t *test, tk Tokens) { // 61
+		{"[#abc\n]", func(t *test, tk Tokens) { // 62
 			t.Output = Enclosure{
 				ListDisplay: &FlexibleExpressionListOrComprehension{
 					Tokens: tk[1:1],
@@ -2416,7 +2456,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens:   tk[:4],
 			}
 		}},
-		{"{#abc\n}", func(t *test, tk Tokens) { // 62
+		{"{#abc\n}", func(t *test, tk Tokens) { // 63
 			t.Output = Enclosure{
 				DictDisplay: &DictDisplay{
 					Tokens: tk[1:1],
@@ -2425,7 +2465,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens:   tk[:4],
 			}
 		}},
-		{"(#abc\na\n#def\n)", func(t *test, tk Tokens) { // 63
+		{"(#abc\na\n#def\n)", func(t *test, tk Tokens) { // 64
 			t.Output = Enclosure{
 				ParenthForm: &StarredExpression{
 					Expression: &Expression{
@@ -2441,7 +2481,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens:   tk[:8],
 			}
 		}},
-		{"[#abc\na\n#def\n]", func(t *test, tk Tokens) { // 64
+		{"[#abc\na\n#def\n]", func(t *test, tk Tokens) { // 65
 			t.Output = Enclosure{
 				ListDisplay: &FlexibleExpressionListOrComprehension{
 					FlexibleExpressionList: &FlexibleExpressionList{
@@ -2468,7 +2508,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens:   tk[:8],
 			}
 		}},
-		{"{#abc\n**a\n#def\n}", func(t *test, tk Tokens) { // 65
+		{"{#abc\n**a\n#def\n}", func(t *test, tk Tokens) { // 66
 			t.Output = Enclosure{
 				DictDisplay: &DictDisplay{
 					DictItems: []DictItem{
@@ -2486,7 +2526,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens:   tk[:9],
 			}
 		}},
-		{"{#abc\n*a\n#def\n}", func(t *test, tk Tokens) { // 66
+		{"{#abc\n*a\n#def\n}", func(t *test, tk Tokens) { // 67
 			t.Output = Enclosure{
 				SetDisplay: &FlexibleExpressionListOrComprehension{
 					FlexibleExpressionList: &FlexibleExpressionList{
@@ -2518,7 +2558,7 @@ func TestEnclosure(t *testing.T) {
 				Tokens:   tk[:9],
 			}
 		}},
-		{"{#abc\na:b\n#def\n}", func(t *test, tk Tokens) { // 67
+		{"{#abc\na:b\n#def\n}", func(t *test, tk Tokens) { // 68
 			t.Output = Enclosure{
 				DictDisplay: &DictDisplay{
 					DictItems: []DictItem{
