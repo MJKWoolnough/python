@@ -1628,10 +1628,13 @@ func skipComparison(p *pyParser) {
 			parser.Token{Type: TokenOperator, Data: "<="},
 			parser.Token{Type: TokenOperator, Data: "!="},
 			parser.Token{Type: TokenKeyword, Data: "in"}:
+			p.Next()
 		case parser.Token{Type: TokenKeyword, Data: "is"}:
+			p.Next()
 			p.AcceptRunWhitespace()
 			p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"})
 		case parser.Token{Type: TokenKeyword, Data: "not"}:
+			p.Next()
 			p.AcceptRunWhitespace()
 			p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"})
 		}
