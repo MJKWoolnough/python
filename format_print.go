@@ -148,10 +148,22 @@ func (a ArgumentList) printSource(w writer, v bool) {
 func (a ArgumentListOrComprehension) printSource(w writer, v bool) {
 	w.WriteString("(")
 
+	ip := w.Indent()
+
+	if v && len(a.Comments[0]) > 0 {
+		ip.WriteString(" ")
+		a.Comments[0].printSource(ip, v)
+	}
+
 	if a.ArgumentList != nil {
-		a.ArgumentList.printSource(w, v)
+		a.ArgumentList.printSource(ip, v)
 	} else if a.Comprehension != nil {
-		a.Comprehension.printSource(w, v)
+		a.Comprehension.printSource(ip, v)
+	}
+
+	if v && len(a.Comments[1]) > 0 {
+		ip.WriteString("\n")
+		a.Comments[1].printSource(ip, v)
 	}
 
 	w.WriteString(")")
