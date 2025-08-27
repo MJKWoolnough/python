@@ -4982,7 +4982,72 @@ func TestArgumentListOrComprehension(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{`(nonlocal)`, func(t *test, tk Tokens) { // 4
+		{"(# A\na\n# B\n)", func(t *test, tk Tokens) { // 4
+			t.Output = ArgumentListOrComprehension{
+				ArgumentList: &ArgumentList{
+					PositionalArguments: []PositionalArgument{
+						{
+							AssignmentExpression: &AssignmentExpression{
+								Expression: Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[3],
+										Tokens:     tk[3:4],
+									}),
+									Tokens: tk[3:4],
+								},
+								Tokens: tk[3:4],
+							},
+							Tokens: tk[3:4],
+						},
+					},
+					Tokens: tk[3:4],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[5]}},
+				Tokens:   tk[:8],
+			}
+		}},
+		{"(# A\na for b in c\n# B\n)", func(t *test, tk Tokens) { // 5
+			t.Output = ArgumentListOrComprehension{
+				Comprehension: &Comprehension{
+					AssignmentExpression: AssignmentExpression{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+					ComprehensionFor: ComprehensionFor{
+						TargetList: TargetList{
+							Targets: []Target{
+								{
+									PrimaryExpression: &PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[7],
+											Tokens:     tk[7:8],
+										},
+										Tokens: tk[7:8],
+									},
+									Tokens: tk[7:8],
+								},
+							},
+							Tokens: tk[7:8],
+						},
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[11],
+							Tokens:     tk[11:12],
+						}).OrTest,
+						Tokens: tk[5:12],
+					},
+					Tokens: tk[3:12],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[13]}},
+				Tokens:   tk[:16],
+			}
+		}},
+		{`(nonlocal)`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5009,7 +5074,7 @@ func TestArgumentListOrComprehension(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`(nonlocal for a in b)`, func(t *test, tk Tokens) { // 5
+		{`(nonlocal for a in b)`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5032,7 +5097,7 @@ func TestArgumentListOrComprehension(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`(a for b in c d)`, func(t *test, tk Tokens) { // 6
+		{`(a for b in c d)`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     ErrMissingClosingParen,
 				Parsing: "ArgumentListOrComprehension",
