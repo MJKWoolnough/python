@@ -903,19 +903,23 @@ type ArgumentListOrComprehension struct {
 func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
-	a.Comments[0] = p.AcceptRunWhitespaceComments()
+	a.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
 
-	p.AcceptRunWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q := p.NewGoal()
 
+	q.AcceptRunWhitespace()
+
 	if q.LookaheadLine(parser.Token{Type: TokenKeyword, Data: "for"}) == 0 {
+		q = p.NewGoal()
 		a.Comprehension = new(Comprehension)
 
 		if err := a.Comprehension.parse(q, nil); err != nil {
 			return p.Error("ArgumentListOrComprehension", err)
 		}
 	} else {
+		q = p.NewGoal()
 		a.ArgumentList = new(ArgumentList)
 
 		if err := a.ArgumentList.parse(q); err != nil {

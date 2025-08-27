@@ -1622,33 +1622,30 @@ type ArgumentList struct {
 func (a *ArgumentList) parse(p *pyParser) error {
 	var nextIsKeywordItem, nextIsDoubleStarred bool
 
-	q := p.NewGoal()
-
 	for {
-		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
+		q := p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) || q.Peek().Type == parser.TokenDone {
 			break
-		}
-
-		p.Score(q)
-
-		q = p.NewGoal()
-
-		if next := q.Peek(); next == (parser.Token{Type: TokenOperator, Data: "**"}) {
+		} else if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
 			nextIsDoubleStarred = true
 
 			break
-		} else if next.Type == TokenIdentifier {
-			r := q.NewGoal()
+		} else if q.Accept(TokenIdentifier) {
+			q.AcceptRunWhitespace()
 
-			r.Next()
-			r.AcceptRunWhitespace()
-
-			if r.Peek() == (parser.Token{Type: TokenDelimiter, Data: "="}) {
+			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
 				nextIsKeywordItem = true
 
 				break
 			}
 		}
+
+		p.AcceptRunWhitespaceNoComment()
+
+		q = p.NewGoal()
 
 		var pa PositionalArgument
 
@@ -1669,18 +1666,24 @@ func (a *ArgumentList) parse(p *pyParser) error {
 			return p.Error("ArgumentList", ErrMissingComma)
 		}
 
-		q.AcceptRunWhitespace()
+		p.Score(q)
 	}
 
 	if nextIsKeywordItem {
 		for {
 			q := p.NewGoal()
 
-			if next := q.Peek(); next == (parser.Token{Type: TokenOperator, Data: "**"}) {
+			q.AcceptRunWhitespace()
+
+			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
 				nextIsDoubleStarred = true
 
 				break
 			}
+
+			p.AcceptRunAllWhitespaceNoComment()
+
+			q = p.NewGoal()
 
 			var sk StarredOrKeyword
 
@@ -1701,18 +1704,22 @@ func (a *ArgumentList) parse(p *pyParser) error {
 				return p.Error("ArgumentList", ErrMissingComma)
 			}
 
+			p.Score(q)
+
+			q = p.NewGoal()
+
 			q.AcceptRunWhitespace()
 
 			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
 				break
 			}
-
-			p.Score(q)
 		}
 	}
 
 	if nextIsDoubleStarred {
 		for {
+			p.AcceptRunAllWhitespaceNoComment()
+
 			q := p.NewGoal()
 
 			var ka KeywordArgument
@@ -1790,12 +1797,17 @@ func (pa *PositionalArgument) parse(p *pyParser) error {
 type StarredOrKeyword struct {
 	Expression  *Expression
 	KeywordItem *KeywordItem
+	Comments    [2]Comments
 	Tokens      Tokens
 }
 
 func (s *StarredOrKeyword) parse(p *pyParser) error {
+	s.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		q := p.NewGoal()
 		s.Expression = new(Expression)
@@ -1814,6 +1826,16 @@ func (s *StarredOrKeyword) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		s.Comments[1] = p.AcceptRunWhitespaceComments()
+	} else {
+		s.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewline()
 	}
 
 	s.Tokens = p.ToTokens()
