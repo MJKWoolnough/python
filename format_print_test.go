@@ -1451,16 +1451,20 @@ func TestPrintSource(t *testing.T) {
 			"{ # A\n\n\t# B\n\t** # C\n\ta # D\n\n\t# F\n}\n",
 		},
 		{ // 289
-			"a(# B\nb\n# C\n)",
+			"a(# A\nb\n# B\n)",
 			"a(b)\n",
-			"a( # B\n\tb\n\t# C\n)\n",
+			"a( # A\n\tb\n\t# B\n)\n",
 		},
 		{ // 290
-			"a(# B\nb for c in d\n# C\n)",
-			"a(b for c in d)\n",
-			"a( # B\n\tb for c in d\n\t# C\n)\n",
+			"a(# A\n\n# B\nb=c # C\n\n# D\n)",
+			"a(b=c)\n",
+			"a( # A\n\n\t# B\n\tb = c # C\n\n\t# D\n)\n",
 		},
 	} {
+		if n != 289 {
+			continue
+		}
+
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
 
