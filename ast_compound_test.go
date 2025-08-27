@@ -8147,7 +8147,7 @@ func TestArgumentList(t *testing.T) {
 						Tokens: tk[:1],
 					},
 				},
-				Tokens: tk[:1],
+				Tokens: tk[:2],
 			}
 		}},
 		{`a,b`, func(t *test, tk Tokens) { // 3
@@ -8539,7 +8539,7 @@ func TestArgumentList(t *testing.T) {
 						Tokens: tk[:5],
 					},
 				},
-				Tokens: tk[:5],
+				Tokens: tk[:6],
 			}
 		}},
 		{`a=b,`, func(t *test, tk Tokens) { // 15
@@ -8560,7 +8560,7 @@ func TestArgumentList(t *testing.T) {
 						Tokens: tk[:3],
 					},
 				},
-				Tokens: tk[:3],
+				Tokens: tk[:4],
 			}
 		}},
 		{`** a`, func(t *test, tk Tokens) { // 16
@@ -8818,7 +8818,50 @@ func TestStarredOrKeyword(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 4
+		{"(# A\n* a\n# B\n)", func(t *test, tk Tokens) { // 4
+			t.Output = StarredOrKeyword{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[5],
+						Tokens:     tk[5:6],
+					}),
+					Tokens: tk[5:6],
+				},
+				Comments: [2]Comments{{tk[1]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"(# A\n* a\n# B\n,)", func(t *test, tk Tokens) { // 5
+			t.Output = StarredOrKeyword{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[5],
+						Tokens:     tk[5:6],
+					}),
+					Tokens: tk[5:6],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[7]}},
+				Tokens:   tk[1:8],
+			}
+		}},
+		{"(# A\na=b\n# B\n,)", func(t *test, tk Tokens) { // 6
+			t.Output = StarredOrKeyword{
+				KeywordItem: &KeywordItem{
+					Identifier: &tk[3],
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[5],
+							Tokens:     tk[5:6],
+						}),
+						Tokens: tk[5:6],
+					},
+					Tokens: tk[3:6],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[7]}},
+				Tokens:   tk[1:8],
+			}
+		}},
+		{`*nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -8833,7 +8876,7 @@ func TestStarredOrKeyword(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 5
+		{`nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -8846,6 +8889,10 @@ func TestStarredOrKeyword(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var s StarredOrKeyword
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := s.parse(t.Tokens)
 
