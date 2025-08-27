@@ -1583,11 +1583,21 @@ func (s StarredList) printSource(w writer, v bool) {
 }
 
 func (s StarredOrKeyword) printSource(w writer, v bool) {
+	if v && len(s.Comments[0]) > 0 {
+		w.WriteString("\n")
+		s.Comments[0].printSource(w, v)
+	}
+
 	if s.Expression != nil {
 		w.WriteString("*")
 		s.Expression.printSource(w, v)
 	} else if s.KeywordItem != nil {
 		s.KeywordItem.printSource(w, v)
+	}
+
+	if v && len(s.Comments[0]) > 0 {
+		w.WriteString(" ")
+		s.Comments[1].printSource(w, v)
 	}
 }
 
