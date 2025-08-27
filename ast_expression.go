@@ -896,11 +896,15 @@ func (g *GeneratorExpression) parse(p *pyParser) error {
 type ArgumentListOrComprehension struct {
 	ArgumentList  *ArgumentList
 	Comprehension *Comprehension
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 
 func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
+
+	a.Comments[0] = p.AcceptRunWhitespaceComments()
+
 	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
@@ -920,6 +924,9 @@ func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 	}
 
 	p.Score(q)
+
+	a.Comments[1] = p.AcceptRunWhitespaceComments()
+
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
