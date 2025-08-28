@@ -1242,11 +1242,26 @@ func (p ParameterList) printSource(w writer, v bool) {
 }
 
 func (p PositionalArgument) printSource(w writer, v bool) {
+	if v {
+		p.Comments[0].printSource(w, v)
+	}
+
 	if p.AssignmentExpression != nil {
 		p.AssignmentExpression.printSource(w, v)
 	} else if p.Expression != nil {
 		w.WriteString("*")
+
+		if v && len(p.Comments[1]) > 0 {
+			w.WriteString(" ")
+			p.Comments[1].printSource(w, v)
+		}
+
 		p.Expression.printSource(w, v)
+	}
+
+	if v && len(p.Comments[2]) > 0 {
+		w.WriteString(" ")
+		p.Comments[2].printSource(w, v)
 	}
 }
 
