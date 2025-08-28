@@ -419,16 +419,13 @@ func (f *FlexibleExpressionListOrComprehension) parse(p *pyParser) error {
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-flexible_expression_list
 type FlexibleExpressionList struct {
 	FlexibleExpressions []FlexibleExpression
-	Comments            [2]Comments
 	Tokens
 }
 
 func (f *FlexibleExpressionList) parse(p *pyParser) error {
-	f.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunWhitespace()
-
 	for {
+		p.AcceptRunAllWhitespaceNoComment()
+
 		q := p.NewGoal()
 
 		var fe FlexibleExpression
@@ -457,18 +454,6 @@ func (f *FlexibleExpressionList) parse(p *pyParser) error {
 		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "}"}) || tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == TokenLineTerminator || tk.Type == parser.TokenDone {
 			break
 		}
-
-		p.Score(q)
-	}
-
-	q := p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: "]"}) || tk == (parser.Token{Type: TokenDelimiter, Data: "}"}) {
-		f.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
-	} else {
-		f.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 	}
 
 	f.Tokens = p.ToTokens()

@@ -3223,62 +3223,7 @@ func TestFlexibleExpressionList(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-		{"{# A\na # B\n}", func(t *test, tk Tokens) { // 5
-			t.Output = FlexibleExpressionList{
-				FlexibleExpressions: []FlexibleExpression{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[3],
-									Tokens:     tk[3:4],
-								}),
-								Tokens: tk[3:4],
-							},
-							Tokens: tk[3:4],
-						},
-						Tokens: tk[3:4],
-					},
-				},
-				Comments: [2]Comments{{tk[1]}, {tk[5]}},
-				Tokens:   tk[1:6],
-			}
-		}},
-		{"{# A\na,b # B\n}", func(t *test, tk Tokens) { // 6
-			t.Output = FlexibleExpressionList{
-				FlexibleExpressions: []FlexibleExpression{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[3],
-									Tokens:     tk[3:4],
-								}),
-								Tokens: tk[3:4],
-							},
-							Tokens: tk[3:4],
-						},
-						Tokens: tk[3:4],
-					},
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[5],
-									Tokens:     tk[5:6],
-								}),
-								Tokens: tk[5:6],
-							},
-							Tokens: tk[5:6],
-						},
-						Tokens: tk[5:6],
-					},
-				},
-				Comments: [2]Comments{{tk[1]}, {tk[7]}},
-				Tokens:   tk[1:8],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 7
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3301,7 +3246,7 @@ func TestFlexibleExpressionList(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a,nonlocal`, func(t *test, tk Tokens) { // 8
+		{`a,nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{

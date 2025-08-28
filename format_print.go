@@ -762,11 +762,6 @@ func (f FlexibleExpressionListOrComprehension) printSource(w writer, v bool) {
 
 func (f FlexibleExpressionList) printSource(w writer, v bool) {
 	if len(f.FlexibleExpressions) > 0 {
-		if v && w.InMultiline() && len(f.Comments[0]) > 0 {
-			w.WriteString("\n")
-			f.Comments[0].printSource(w, true)
-		}
-
 		f.FlexibleExpressions[0].printSource(w, v)
 		for _, fe := range f.FlexibleExpressions[1:] {
 			if v {
@@ -776,11 +771,6 @@ func (f FlexibleExpressionList) printSource(w writer, v bool) {
 			}
 
 			fe.printSource(w, v)
-		}
-
-		if v && w.InMultiline() && len(f.Comments[1]) > 0 {
-			w.WriteString(" ")
-			f.Comments[1].printSource(w, true)
 		}
 	}
 }
