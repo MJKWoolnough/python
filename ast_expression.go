@@ -465,27 +465,32 @@ func (f *FlexibleExpressionList) parse(p *pyParser) error {
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-flexible_expression
 type FlexibleExpression struct {
 	AssignmentExpression *AssignmentExpression
-	StarredExpression    *StarredExpression
+	StarredExpression    *OrExpression
 	Tokens
 }
 
 func (f *FlexibleExpression) parse(p *pyParser) error {
-	q := p.NewGoal()
-	if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) {
-		f.StarredExpression = new(StarredExpression)
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		p.AcceptRunWhitespace()
+
+		q := p.NewGoal()
+		f.StarredExpression = new(OrExpression)
 
 		if err := f.StarredExpression.parse(q); err != nil {
 			return p.Error("FlexibleExpression", err)
 		}
+
+		p.Score(q)
 	} else {
+		q := p.NewGoal()
 		f.AssignmentExpression = new(AssignmentExpression)
 
 		if err := f.AssignmentExpression.parse(q); err != nil {
 			return p.Error("FlexibleExpression", err)
 		}
-	}
 
-	p.Score(q)
+		p.Score(q)
+	}
 
 	f.Tokens = p.ToTokens()
 
