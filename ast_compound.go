@@ -1761,11 +1761,18 @@ func (a *ArgumentList) parse(p *pyParser) error {
 type PositionalArgument struct {
 	AssignmentExpression *AssignmentExpression
 	Expression           *Expression
+	Comments             [3]Comments
 	Tokens               Tokens
 }
 
 func (pa *PositionalArgument) parse(p *pyParser) error {
+	pa.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		pa.Comments[1] = p.AcceptRunWhitespaceComments()
+
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
@@ -1785,6 +1792,16 @@ func (pa *PositionalArgument) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		pa.Comments[2] = p.AcceptRunWhitespaceComments()
+	} else {
+		pa.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewline()
 	}
 
 	pa.Tokens = p.ToTokens()
