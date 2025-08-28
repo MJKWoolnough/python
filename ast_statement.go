@@ -1139,15 +1139,11 @@ func (t *TypeParams) parse(p *pyParser) error {
 type AssignmentExpression struct {
 	Identifier *Token
 	Expression Expression
-	Comments   [3]Comments
+	Comments   [2]Comments
 	Tokens
 }
 
 func (a *AssignmentExpression) parse(p *pyParser) error {
-	a.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunWhitespace()
-
 	q := p.NewGoal()
 
 	if q.Accept(TokenIdentifier) {
@@ -1157,12 +1153,12 @@ func (a *AssignmentExpression) parse(p *pyParser) error {
 			p.Next()
 			a.Identifier = p.GetLastToken()
 
-			a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+			a.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 			p.AcceptRunWhitespace()
 			p.Next()
 
-			a.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+			a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 			p.AcceptRunWhitespace()
 		}
