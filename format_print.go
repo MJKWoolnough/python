@@ -779,6 +779,12 @@ func (f FlexibleExpression) printSource(w writer, v bool) {
 	if f.AssignmentExpression != nil {
 		f.AssignmentExpression.printSource(w, v)
 	} else if f.StarredExpression != nil {
+		if v {
+			w.WriteString("* ")
+		} else {
+			w.WriteString("* ")
+		}
+
 		f.StarredExpression.printSource(w, v)
 	}
 }
