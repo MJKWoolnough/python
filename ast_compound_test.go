@@ -8733,6 +8733,51 @@ func TestPositionalArgument(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
+		{"(# A\na # B\n\n# C\n)", func(t *test, tk Tokens) { // 1
+			t.Output = PositionalArgument{
+				AssignmentExpression: &AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						}),
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[3:4],
+				},
+				Comments: [3]Comments{{tk[1]}, nil, {tk[5]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"(# A\na # B\n\n# C\n,)", func(t *test, tk Tokens) { // 1
+			t.Output = PositionalArgument{
+				AssignmentExpression: &AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						}),
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[3:4],
+				},
+				Comments: [3]Comments{{tk[1]}, nil, {tk[5], tk[7]}},
+				Tokens:   tk[1:8],
+			}
+		}},
+		{"(# A\n* # B\na # C\n)", func(t *test, tk Tokens) { // 2
+			t.Output = PositionalArgument{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[7],
+						Tokens:     tk[7:8],
+					}),
+					Tokens: tk[7:8],
+				},
+				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[9]}},
+				Tokens:   tk[1:10],
+			}
+		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err: Error{
@@ -8769,6 +8814,10 @@ func TestPositionalArgument(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var p PositionalArgument
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := p.parse(t.Tokens)
 
