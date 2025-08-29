@@ -1441,26 +1441,31 @@ func TestPrintSource(t *testing.T) {
 			"{ # A\n\n\t# B\n\ta # C\n\n\t# D\n}\n",
 		},
 		{ // 287
+			"{# A\n\n# B\n*a # C\n\n# D\n}",
+			"{*a}\n",
+			"{ # A\n\n\t# B\n\t*a # C\n\n\t# D\n}\n",
+		},
+		{ // 288
 			"{# A\n\n# B\na # C\n: # D\nb # E\n\n # F\n}",
 			"{a:b}\n",
 			"{ # A\n\n\t# B\n\ta # C\n\t: # D\n\tb # E\n\n\t# F\n}\n",
 		},
-		{ // 288
+		{ // 289
 			"{# A\n\n# B\n** # C\na # D\n\n # F\n}",
 			"{**a}\n",
 			"{ # A\n\n\t# B\n\t** # C\n\ta # D\n\n\t# F\n}\n",
 		},
-		{ // 289
+		{ // 290
 			"a(# A\nb\n# B\n)",
 			"a(b)\n",
 			"a( # A\n\tb\n\t# B\n)\n",
 		},
-		{ // 290
+		{ // 291
 			"a(# A\n\n# B\nb=c # C\n\n# D\n)",
 			"a(b=c)\n",
 			"a( # A\n\n\t# B\n\tb = c # C\n\n\t# D\n)\n",
 		},
-		{ // 291
+		{ // 292
 			"a(# A\n* # B\nb # C\n\n# D\n,)",
 			"a(*b)\n",
 			"a( # A\n\t* # B\n\tb # C\n\n\t# D\n)\n",
