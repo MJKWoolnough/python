@@ -1901,11 +1901,18 @@ func (k *KeywordItem) parse(p *pyParser) error {
 type KeywordArgument struct {
 	KeywordItem *KeywordItem
 	Expression  *Expression
+	Comments    [3]Comments
 	Tokens      Tokens
 }
 
 func (k *KeywordArgument) parse(p *pyParser) error {
+	k.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+		k.Comments[1] = p.AcceptRunWhitespaceComments()
+
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
@@ -1925,6 +1932,16 @@ func (k *KeywordArgument) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ","}) {
+		k.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else {
+		k.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	}
 
 	k.Tokens = p.ToTokens()
