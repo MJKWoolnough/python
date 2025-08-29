@@ -927,11 +927,27 @@ func (i ImportStatement) printSource(w writer, v bool) {
 }
 
 func (k KeywordArgument) printSource(w writer, v bool) {
+	if v && len(k.Comments[0]) > 0 {
+		w.WriteString("\n")
+		k.Comments[0].printSource(w, true)
+	}
+
 	if k.Expression != nil {
 		w.WriteString("**")
+
+		if v && len(k.Comments[1]) > 0 {
+			w.WriteString(" ")
+			k.Comments[1].printSource(w, true)
+		}
+
 		k.Expression.printSource(w, v)
 	} else if k.KeywordItem != nil {
 		k.KeywordItem.printSource(w, v)
+	}
+
+	if v && len(k.Comments[2]) > 0 {
+		w.WriteString(" ")
+		k.Comments[2].printSource(w, true)
 	}
 }
 
