@@ -772,16 +772,21 @@ func (f FlexibleExpressionList) printSource(w writer, v bool) {
 }
 
 func (f FlexibleExpression) printSource(w writer, v bool) {
+	if v && len(f.Comments[0]) > 0 {
+		w.WriteString("\n")
+		f.Comments[0].printSource(w, true)
+	}
+
 	if f.AssignmentExpression != nil {
 		f.AssignmentExpression.printSource(w, v)
 	} else if f.StarredExpression != nil {
-		if v {
-			w.WriteString("* ")
-		} else {
-			w.WriteString("* ")
-		}
-
+		w.WriteString("*")
 		f.StarredExpression.printSource(w, v)
+	}
+
+	if v && len(f.Comments[1]) > 0 {
+		w.WriteString(" ")
+		f.Comments[1].printSource(w, true)
 	}
 }
 
