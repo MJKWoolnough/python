@@ -3050,7 +3050,6 @@ func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var f FlexibleExpressionListOrComprehension
-
 		err := f.parse(t.Tokens)
 
 		return f, err
@@ -3227,10 +3226,6 @@ func TestFlexibleExpressionList(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var f FlexibleExpressionList
 
-		if t.Tokens.Peek().Data == "{" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
 		err := f.parse(t.Tokens)
 
 		return f, err
@@ -3263,7 +3258,49 @@ func TestFlexibleExpression(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 3
+		{"{# A\na\n# B\n}", func(t *test, tk Tokens) { // 3
+			t.Output = FlexibleExpression{
+				AssignmentExpression: &AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						}),
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[3:4],
+				},
+				Comments: [2]Comments{{tk[1]}},
+				Tokens:   tk[1:4],
+			}
+		}},
+		{"{# A\na\n# B\n,}", func(t *test, tk Tokens) { // 4
+			t.Output = FlexibleExpression{
+				AssignmentExpression: &AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[3],
+							Tokens:     tk[3:4],
+						}),
+						Tokens: tk[3:4],
+					},
+					Tokens: tk[3:4],
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[5]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"{# A\n*a\n# B\n,}", func(t *test, tk Tokens) { // 5
+			t.Output = FlexibleExpression{
+				StarredExpression: &WrapConditional(&Atom{
+					Identifier: &tk[4],
+					Tokens:     tk[4:5],
+				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
+				Comments: [2]Comments{{tk[1]}, {tk[6]}},
+				Tokens:   tk[1:7],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3282,7 +3319,7 @@ func TestFlexibleExpression(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 4
+		{`*nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3335,6 +3372,10 @@ func TestFlexibleExpression(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var f FlexibleExpression
+
+		if t.Tokens.Peek().Data == "{" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := f.parse(t.Tokens)
 
