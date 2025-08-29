@@ -466,10 +466,15 @@ func (f *FlexibleExpressionList) parse(p *pyParser) error {
 type FlexibleExpression struct {
 	AssignmentExpression *AssignmentExpression
 	StarredExpression    *OrExpression
+	Comments             [2]Comments
 	Tokens
 }
 
 func (f *FlexibleExpression) parse(p *pyParser) error {
+	f.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
 		p.AcceptRunWhitespace()
 
@@ -490,6 +495,16 @@ func (f *FlexibleExpression) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ","}) {
+		f.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else {
+		f.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	}
 
 	f.Tokens = p.ToTokens()
