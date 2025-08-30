@@ -586,16 +586,7 @@ func (s *StarredExpression) parse(p *pyParser) error {
 
 	p.Score(q)
 
-	q = p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		s.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-	} else {
-		s.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
-	}
-
+	s.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	s.Tokens = p.ToTokens()
 
 	return nil
