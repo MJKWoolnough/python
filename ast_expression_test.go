@@ -3666,33 +3666,33 @@ func TestComprehensionFor(t *testing.T) {
 				Tokens: tk[:17],
 			}
 		}},
-		{"(# A\nfor # B\na #C\nin # D\nb # E\n)", func(t *test, tk Tokens) { // 6
+		{"(for # B\na #C\nin # D\nb # E\n)", func(t *test, tk Tokens) { // 6
 			t.Output = ComprehensionFor{
 				TargetList: TargetList{
 					Targets: []Target{
 						{
 							PrimaryExpression: &PrimaryExpression{
 								Atom: &Atom{
-									Identifier: &tk[7],
-									Tokens:     tk[7:8],
+									Identifier: &tk[5],
+									Tokens:     tk[5:6],
 								},
-								Tokens: tk[7:8],
+								Tokens: tk[5:6],
 							},
-							Tokens: tk[7:8],
+							Tokens: tk[5:6],
 						},
 					},
-					Comments: [2]Comments{nil, {tk[9]}},
-					Tokens:   tk[7:10],
+					Comments: [2]Comments{nil, {tk[7]}},
+					Tokens:   tk[5:8],
 				},
 				OrTest: WrapConditional(&Atom{
-					Identifier: &tk[15],
-					Tokens:     tk[15:16],
+					Identifier: &tk[13],
+					Tokens:     tk[13:14],
 				}).OrTest,
-				Comments: [5]Comments{{tk[1]}, nil, {tk[5]}, {tk[13]}, {tk[17]}},
-				Tokens:   tk[1:18],
+				Comments: [3]Comments{nil, {tk[3]}, {tk[11]}},
+				Tokens:   tk[1:14],
 			}
 		}},
-		{"(# A\nasync # B\nfor # C\na # D\nin # E\nb # F\n)", func(t *test, tk Tokens) { // 7
+		{"(async # B\nfor # C\na # D\nin # E\nb # F\n)", func(t *test, tk Tokens) { // 7
 			t.Output = ComprehensionFor{
 				Async: true,
 				TargetList: TargetList{
@@ -3700,23 +3700,23 @@ func TestComprehensionFor(t *testing.T) {
 						{
 							PrimaryExpression: &PrimaryExpression{
 								Atom: &Atom{
-									Identifier: &tk[11],
-									Tokens:     tk[11:12],
+									Identifier: &tk[9],
+									Tokens:     tk[9:10],
 								},
-								Tokens: tk[11:12],
+								Tokens: tk[9:10],
 							},
-							Tokens: tk[11:12],
+							Tokens: tk[9:10],
 						},
 					},
-					Comments: [2]Comments{nil, {tk[13]}},
-					Tokens:   tk[11:14],
+					Comments: [2]Comments{nil, {tk[11]}},
+					Tokens:   tk[9:12],
 				},
 				OrTest: WrapConditional(&Atom{
-					Identifier: &tk[19],
-					Tokens:     tk[19:20],
+					Identifier: &tk[17],
+					Tokens:     tk[17:18],
 				}).OrTest,
-				Comments: [5]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[17]}, {tk[21]}},
-				Tokens:   tk[1:22],
+				Comments: [3]Comments{{tk[3]}, {tk[7]}, {tk[15]}},
+				Tokens:   tk[1:18],
 			}
 		}},
 		{`async a in b if c`, func(t *test, tk Tokens) { // 8
@@ -4027,21 +4027,21 @@ func TestComprehensionIf(t *testing.T) {
 				Tokens: tk[:13],
 			}
 		}},
-		{"(# A\nif # B\na # C\n)", func(t *test, tk Tokens) { // 5
+		{"(if # B\na # C\n)", func(t *test, tk Tokens) { // 5
 			t.Output = ComprehensionIf{
 				OrTest: WrapConditional(&Atom{
-					Identifier: &tk[7],
-					Tokens:     tk[7:8],
+					Identifier: &tk[5],
+					Tokens:     tk[5:6],
 				}).OrTest,
-				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[9]}},
-				Tokens:   tk[1:10],
+				Comments: Comments{tk[3]},
+				Tokens:   tk[1:6],
 			}
 		}},
-		{"(# A\nif # B\na # C\nfor b in c # D\n\n# E\n)", func(t *test, tk Tokens) { // 6
+		{"(if # B\na # C\nfor b in c # D\n\n# E\n)", func(t *test, tk Tokens) { // 6
 			t.Output = ComprehensionIf{
 				OrTest: WrapConditional(&Atom{
-					Identifier: &tk[7],
-					Tokens:     tk[7:8],
+					Identifier: &tk[5],
+					Tokens:     tk[5:6],
 				}).OrTest,
 				ComprehensionIterator: &ComprehensionIterator{
 					ComprehensionFor: &ComprehensionFor{
@@ -4050,27 +4050,27 @@ func TestComprehensionIf(t *testing.T) {
 								{
 									PrimaryExpression: &PrimaryExpression{
 										Atom: &Atom{
-											Identifier: &tk[13],
-											Tokens:     tk[13:14],
+											Identifier: &tk[11],
+											Tokens:     tk[11:12],
 										},
-										Tokens: tk[13:14],
+										Tokens: tk[11:12],
 									},
-									Tokens: tk[13:14],
+									Tokens: tk[11:12],
 								},
 							},
-							Tokens: tk[13:14],
+							Tokens: tk[11:12],
 						},
 						OrTest: WrapConditional(&Atom{
-							Identifier: &tk[17],
-							Tokens:     tk[17:18],
+							Identifier: &tk[15],
+							Tokens:     tk[15:16],
 						}).OrTest,
-						Comments: [5]Comments{{tk[9]}, nil, nil, nil, {tk[19]}},
-						Tokens:   tk[9:20],
+						Tokens: tk[9:16],
 					},
-					Tokens: tk[9:20],
+					Comments: [2]Comments{{tk[7]}, {tk[17], tk[19]}},
+					Tokens:   tk[7:20],
 				},
-				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[21]}},
-				Tokens:   tk[1:22],
+				Comments: Comments{tk[3]},
+				Tokens:   tk[1:20],
 			}
 		}},
 		{`a`, func(t *test, tk Tokens) { // 7

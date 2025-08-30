@@ -514,10 +514,15 @@ func (f *FlexibleExpression) parse(p *pyParser) error {
 type Comprehension struct {
 	AssignmentExpression AssignmentExpression
 	ComprehensionFor     ComprehensionFor
+	Comments             [3]Comments
 	Tokens               Tokens
 }
 
 func (c *Comprehension) parse(p *pyParser) error {
+	c.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
 	q := p.NewGoal()
 
 	if err := c.AssignmentExpression.parse(q); err != nil {
@@ -525,6 +530,9 @@ func (c *Comprehension) parse(p *pyParser) error {
 	}
 
 	p.Score(q)
+
+	c.Comments[1] = p.AcceptRunWhitespaceComments()
+
 	p.AcceptRunWhitespace()
 
 	q = p.NewGoal()
@@ -535,6 +543,7 @@ func (c *Comprehension) parse(p *pyParser) error {
 
 	p.Score(q)
 
+	c.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewline()
 	c.Tokens = p.ToTokens()
 
 	return nil
@@ -547,18 +556,14 @@ type ComprehensionFor struct {
 	TargetList            TargetList
 	OrTest                OrTest
 	ComprehensionIterator *ComprehensionIterator
-	Comments              [5]Comments
+	Comments              [3]Comments
 	Tokens                Tokens
 }
 
 func (c *ComprehensionFor) parse(p *pyParser) error {
-	c.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunWhitespace()
-
 	c.Async = p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"})
 
-	c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	c.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
@@ -566,7 +571,7 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 		return p.Error("ComprehensionFor", ErrMissingFor)
 	}
 
-	c.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
@@ -584,7 +589,7 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 		return p.Error("ComprehensionFor", ErrMissingIn)
 	}
 
-	c.Comments[3] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	c.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
@@ -614,7 +619,6 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 		p.Score(q)
 	}
 
-	c.Comments[4] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	c.Tokens = p.ToTokens()
 
 	return nil
@@ -625,10 +629,15 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 type ComprehensionIterator struct {
 	ComprehensionFor *ComprehensionFor
 	ComprehensionIf  *ComprehensionIf
+	Comments         [2]Comments
 	Tokens           Tokens
 }
 
 func (c *ComprehensionIterator) parse(p *pyParser) error {
+	c.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
 	q := p.NewGoal()
 
 	q.AcceptRunAllWhitespace()
@@ -651,6 +660,7 @@ func (c *ComprehensionIterator) parse(p *pyParser) error {
 
 	p.Score(q)
 
+	c.Comments[1] = p.AcceptRunWhitespaceComments()
 	c.Tokens = p.ToTokens()
 
 	return nil
@@ -661,20 +671,16 @@ func (c *ComprehensionIterator) parse(p *pyParser) error {
 type ComprehensionIf struct {
 	OrTest                OrTest
 	ComprehensionIterator *ComprehensionIterator
-	Comments              [3]Comments
+	Comments              Comments
 	Tokens                Tokens
 }
 
 func (c *ComprehensionIf) parse(p *pyParser) error {
-	c.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunWhitespace()
-
 	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
 		return p.Error("ComprehensionIf", ErrMissingIf)
 	}
 
-	c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	c.Comments = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
@@ -704,7 +710,6 @@ func (c *ComprehensionIf) parse(p *pyParser) error {
 		p.Score(q)
 	}
 
-	c.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
 	c.Tokens = p.ToTokens()
 
 	return nil
