@@ -614,6 +614,17 @@ func (f *Comprehension) printType(w writer, v bool) {
 	pp.WriteString("\nComprehensionFor: ")
 	f.ComprehensionFor.printType(pp, v)
 
+	pp.WriteString("\nComments: [")
+
+	ipp := pp.Indent()
+
+	for n, e := range f.Comments {
+		ipp.Printf("\n%d: ", n)
+		e.printType(ipp, v)
+	}
+
+	pp.WriteString("\n]")
+
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
 
@@ -674,16 +685,8 @@ func (f *ComprehensionIf) printType(w writer, v bool) {
 		pp.WriteString("\nComprehensionIterator: nil")
 	}
 
-	pp.WriteString("\nComments: [")
-
-	ipp := pp.Indent()
-
-	for n, e := range f.Comments {
-		ipp.Printf("\n%d: ", n)
-		e.printType(ipp, v)
-	}
-
-	pp.WriteString("\n]")
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
 
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
@@ -709,6 +712,17 @@ func (f *ComprehensionIterator) printType(w writer, v bool) {
 	} else if v {
 		pp.WriteString("\nComprehensionIf: nil")
 	}
+
+	pp.WriteString("\nComments: [")
+
+	ipp := pp.Indent()
+
+	for n, e := range f.Comments {
+		ipp.Printf("\n%d: ", n)
+		e.printType(ipp, v)
+	}
+
+	pp.WriteString("\n]")
 
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
