@@ -17,11 +17,7 @@ type sourceFn struct {
 type test struct {
 	Tokens               *pyParser
 	Output               Type
-	AssignmentExpression *AssignmentExpression
-	Expression           *Expression
-	OrigTokens           *pyParser
 	Decorators           *Decorators
-	TokenSkip            int
 	AllowTypeAnnotations bool
 	Async                bool
 	Err                  error
@@ -47,10 +43,6 @@ func doTests(t *testing.T, tests []sourceFn, fn func(*test) (Type, error)) {
 		tt.Fn(&ts, ts.Tokens.Tokens[:cap(ts.Tokens.Tokens)])
 
 		ts.Tokens = ts.Tokens.NewGoal()
-
-		for range ts.TokenSkip {
-			ts.Tokens.Next()
-		}
 
 		if output, err := fn(&ts); !reflect.DeepEqual(err, ts.Err) {
 			t.Errorf("test %d: expecting error: %v, got %v", n+1, ts.Err, err)
