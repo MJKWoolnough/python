@@ -1177,6 +1177,23 @@ func (a *AssignmentExpression) parse(p *pyParser) error {
 	return nil
 }
 
+func skipAssignmentExpression(p *pyParser) {
+	p.AcceptRunWhitespace()
+
+	q := p.NewGoal()
+
+	if q.Accept(TokenIdentifier) {
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: ":="}) {
+			q.AcceptRunWhitespace()
+			p.Score(q)
+		}
+	}
+
+	skipExpression(p)
+}
+
 // Expression as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-expression
 type Expression struct {
