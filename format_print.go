@@ -402,28 +402,39 @@ func (c CompoundStatement) printSource(w writer, v bool) {
 }
 
 func (c Comprehension) printSource(w writer, v bool) {
-	c.AssignmentExpression.printSource(w, v)
-	w.WriteString(" ")
-	c.ComprehensionFor.printSource(w, v)
-}
-
-func (c ComprehensionFor) printSource(w writer, v bool) {
-	if v && w.InMultiline() {
+	if v && len(c.Comments[0]) > 0 {
+		w.WriteString("\n")
 		c.Comments[0].printSource(w, true)
 	}
 
+	c.AssignmentExpression.printSource(w, v)
+	w.WriteString(" ")
+
+	if v {
+		c.Comments[1].printSource(w, true)
+	}
+
+	c.ComprehensionFor.printSource(w, v)
+
+	if v && len(c.Comments[2]) > 0 {
+		w.WriteString(" ")
+		c.Comments[2].printSource(w, true)
+	}
+}
+
+func (c ComprehensionFor) printSource(w writer, v bool) {
 	if c.Async {
 		w.WriteString("async ")
 
 		if v && w.InMultiline() {
-			c.Comments[1].printSource(w, true)
+			c.Comments[0].printSource(w, true)
 		}
 	}
 
 	w.WriteString("for ")
 
 	if v && w.InMultiline() {
-		c.Comments[2].printSource(w, true)
+		c.Comments[1].printSource(w, true)
 	}
 
 	c.TargetList.printSource(w, v)
@@ -435,7 +446,7 @@ func (c ComprehensionFor) printSource(w writer, v bool) {
 	}
 
 	if v && w.InMultiline() {
-		c.Comments[3].printSource(w, true)
+		c.Comments[2].printSource(w, true)
 	}
 
 	c.OrTest.printSource(w, v)
@@ -443,23 +454,14 @@ func (c ComprehensionFor) printSource(w writer, v bool) {
 	if c.ComprehensionIterator != nil {
 		w.WriteString(" ")
 		c.ComprehensionIterator.printSource(w, v)
-	}
-
-	if v && w.InMultiline() && len(c.Comments[4]) > 0 {
-		w.WriteString(" ")
-		c.Comments[4].printSource(w, true)
 	}
 }
 
 func (c ComprehensionIf) printSource(w writer, v bool) {
-	if v && w.InMultiline() {
-		c.Comments[0].printSource(w, true)
-	}
-
 	w.WriteString("if ")
 
 	if v && w.InMultiline() {
-		c.Comments[1].printSource(w, true)
+		c.Comments.printSource(w, true)
 	}
 
 	c.OrTest.printSource(w, v)
@@ -468,18 +470,22 @@ func (c ComprehensionIf) printSource(w writer, v bool) {
 		w.WriteString(" ")
 		c.ComprehensionIterator.printSource(w, v)
 	}
-
-	if v && w.InMultiline() && len(c.Comments[2]) > 0 {
-		w.WriteString(" ")
-		c.Comments[2].printSource(w, true)
-	}
 }
 
 func (c ComprehensionIterator) printSource(w writer, v bool) {
+	if v && len(c.Comments[0]) > 0 {
+		c.Comments[0].printSource(w, true)
+	}
+
 	if c.ComprehensionIf != nil {
 		c.ComprehensionIf.printSource(w, v)
 	} else if c.ComprehensionFor != nil {
 		c.ComprehensionFor.printSource(w, v)
+	}
+
+	if v && len(c.Comments[1]) > 0 {
+		w.WriteString(" ")
+		c.Comments[1].printSource(w, true)
 	}
 }
 
@@ -863,7 +869,7 @@ func (g GeneratorExpression) printSource(w writer, v bool) {
 	g.ComprehensionFor.printSource(w, v)
 
 	if v && len(g.Comments[2]) > 0 {
-		w.WriteString("\n")
+		w.WriteString(" ")
 		g.Comments[2].printSource(w, true)
 	}
 }
