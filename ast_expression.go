@@ -384,31 +384,28 @@ type FlexibleExpressionListOrComprehension struct {
 
 func (f *FlexibleExpressionListOrComprehension) parse(p *pyParser) error {
 	q := p.NewGoal()
-	f.FlexibleExpressionList = new(FlexibleExpressionList)
 
-	if err := f.FlexibleExpressionList.parse(q); err != nil {
-		return p.Error("FlexibleExpressionListOrComprehension", err)
+	skipAssignmentExpression(q)
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"}) || q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "for"}) {
+		q = p.NewGoal()
+		f.Comprehension = new(Comprehension)
+
+		if err := f.Comprehension.parse(q); err != nil {
+			return p.Error("FlexibleExpressionListOrComprehension", err)
+		}
+	} else {
+		q = p.NewGoal()
+		f.FlexibleExpressionList = new(FlexibleExpressionList)
+
+		if err := f.FlexibleExpressionList.parse(q); err != nil {
+			return p.Error("FlexibleExpressionListOrComprehension", err)
+		}
 	}
 
 	p.Score(q)
-
-	if len(f.FlexibleExpressionList.FlexibleExpressions) == 1 && f.FlexibleExpressionList.FlexibleExpressions[0].AssignmentExpression != nil {
-		q := p.NewGoal()
-
-		q.AcceptRunWhitespace()
-
-		if tk := q.Peek(); tk == (parser.Token{Type: TokenKeyword, Data: "async"}) || tk == (parser.Token{Type: TokenKeyword, Data: "for"}) {
-			p.Score(q)
-
-			f.Comprehension = new(Comprehension)
-
-			if err := f.Comprehension.parse(p, f.FlexibleExpressionList.FlexibleExpressions[0].AssignmentExpression); err != nil {
-				return p.Error("FlexibleExpressionListOrComprehension", err)
-			}
-
-			f.FlexibleExpressionList = nil
-		}
-	}
 
 	f.Tokens = p.ToTokens()
 
@@ -520,22 +517,17 @@ type Comprehension struct {
 	Tokens               Tokens
 }
 
-func (c *Comprehension) parse(p *pyParser, ae *AssignmentExpression) error {
-	if ae != nil {
-		c.AssignmentExpression = *ae
-	} else {
-		q := p.NewGoal()
+func (c *Comprehension) parse(p *pyParser) error {
+	q := p.NewGoal()
 
-		if err := c.AssignmentExpression.parse(q); err != nil {
-			return p.Error("Comprehension", err)
-		}
-
-		p.Score(q)
+	if err := c.AssignmentExpression.parse(q); err != nil {
+		return p.Error("Comprehension", err)
 	}
 
+	p.Score(q)
 	p.AcceptRunWhitespace()
 
-	q := p.NewGoal()
+	q = p.NewGoal()
 
 	if err := c.ComprehensionFor.parse(q); err != nil {
 		return p.Error("Comprehension", err)
@@ -920,7 +912,7 @@ func (a *ArgumentListOrComprehension) parse(p *pyParser) error {
 		q = p.NewGoal()
 		a.Comprehension = new(Comprehension)
 
-		if err := a.Comprehension.parse(q, nil); err != nil {
+		if err := a.Comprehension.parse(q); err != nil {
 			return p.Error("ArgumentListOrComprehension", err)
 		}
 	} else {

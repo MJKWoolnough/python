@@ -3045,7 +3045,7 @@ func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 					Token:   tk[2],
 				},
 				Parsing: "FlexibleExpressionListOrComprehension",
-				Token:   tk[2],
+				Token:   tk[0],
 			}
 		}},
 	}, func(t *test) (Type, error) {
@@ -3422,55 +3422,7 @@ func TestComprehension(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`a for b in c`, func(t *test, tk Tokens) { // 2
-			t.AssignmentExpression = &AssignmentExpression{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-			t.TokenSkip = 1
-			t.Output = Comprehension{
-				AssignmentExpression: AssignmentExpression{
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[0],
-							Tokens:     tk[:1],
-						}),
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				ComprehensionFor: ComprehensionFor{
-					TargetList: TargetList{
-						Targets: []Target{
-							{
-								PrimaryExpression: &PrimaryExpression{
-									Atom: &Atom{
-										Identifier: &tk[4],
-										Tokens:     tk[4:5],
-									},
-									Tokens: tk[4:5],
-								},
-								Tokens: tk[4:5],
-							},
-						},
-						Tokens: tk[4:5],
-					},
-					OrTest: WrapConditional(&Atom{
-						Identifier: &tk[8],
-						Tokens:     tk[8:9],
-					}).OrTest,
-					Tokens: tk[2:9],
-				},
-				Tokens: tk[:9],
-			}
-		}},
-		{`nonlocal for b in c`, func(t *test, tk Tokens) { // 3
+		{`nonlocal for b in c`, func(t *test, tk Tokens) { // 2
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3489,7 +3441,7 @@ func TestComprehension(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a for nonlocal in c`, func(t *test, tk Tokens) { // 4
+		{`a for nonlocal in c`, func(t *test, tk Tokens) { // 3
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3523,7 +3475,7 @@ func TestComprehension(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var c Comprehension
 
-		err := c.parse(t.Tokens, t.AssignmentExpression)
+		err := c.parse(t.Tokens)
 
 		return c, err
 	})
