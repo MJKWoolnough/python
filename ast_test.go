@@ -17,9 +17,7 @@ type sourceFn struct {
 type test struct {
 	Tokens               *pyParser
 	Output               Type
-	Decorators           *Decorators
 	AllowTypeAnnotations bool
-	Async                bool
 	Err                  error
 }
 
