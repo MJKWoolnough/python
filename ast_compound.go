@@ -18,37 +18,30 @@ type CompoundStatement struct {
 }
 
 func (c *CompoundStatement) parse(p *pyParser) error {
-	var (
-		decorators *Decorators
-		err        error
-	)
+	var err error
 
 	q := p.NewGoal()
 
 	if tk := q.Peek(); tk == (parser.Token{Type: TokenOperator, Data: "@"}) {
-		decorators = new(Decorators)
+		r := q.NewGoal()
 
-		if err = decorators.parse(q); err != nil {
-			return p.Error("CompoundStatement", err)
-		}
+		skipDecorators(r)
 
-		q.AcceptRunWhitespace()
-
-		switch tk := q.Peek(); tk.Data {
+		switch tk := r.Peek(); tk.Data {
 		case "def":
 			c.Func = new(FuncDefinition)
-			err = c.Func.parse(q, false, decorators)
+			err = c.Func.parse(q)
 		case "class":
 			c.Class = new(ClassDefinition)
-			err = c.Class.parse(q, decorators)
+			err = c.Class.parse(q)
 		case "async":
-			q.Next()
-			q.AcceptRunWhitespace()
+			r.Next()
+			r.AcceptRunWhitespace()
 
-			switch tk := q.Peek(); tk.Data {
+			switch tk := r.Peek(); tk.Data {
 			case "def":
 				c.Func = new(FuncDefinition)
-				err = c.Func.parse(q, true, decorators)
+				err = c.Func.parse(q)
 			default:
 				err = ErrInvalidCompound
 			}
@@ -65,33 +58,35 @@ func (c *CompoundStatement) parse(p *pyParser) error {
 			err = c.While.parse(q)
 		case "for":
 			c.For = new(ForStatement)
-			err = c.For.parse(q, false)
+			err = c.For.parse(q)
 		case "try":
 			c.Try = new(TryStatement)
 			err = c.Try.parse(q)
 		case "with":
 			c.With = new(WithStatement)
-			err = c.With.parse(q, false)
+			err = c.With.parse(q)
 		case "def":
 			c.Func = new(FuncDefinition)
-			err = c.Func.parse(q, false, decorators)
+			err = c.Func.parse(q)
 		case "class":
 			c.Class = new(ClassDefinition)
-			err = c.Class.parse(q, decorators)
+			err = c.Class.parse(q)
 		case "async":
-			q.Next()
-			q.AcceptRunWhitespace()
+			r := q.NewGoal()
 
-			switch tk := q.Peek(); tk.Data {
+			r.Next()
+			r.AcceptRunWhitespace()
+
+			switch tk := r.Peek(); tk.Data {
 			case "for":
 				c.For = new(ForStatement)
-				err = c.For.parse(q, true)
+				err = c.For.parse(q)
 			case "with":
 				c.With = new(WithStatement)
-				err = c.With.parse(q, true)
+				err = c.With.parse(q)
 			case "def":
 				c.Func = new(FuncDefinition)
-				err = c.Func.parse(q, true, decorators)
+				err = c.Func.parse(q)
 			default:
 				err = ErrInvalidCompound
 			}
@@ -137,9 +132,12 @@ func (d *Decorators) parse(p *pyParser) error {
 		d.Decorators = append(d.Decorators, ae)
 
 		p.Score(q)
-		p.AcceptRunWhitespace()
 
-		if !p.Accept(TokenLineTerminator) {
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if !q.Accept(TokenLineTerminator) {
 			return p.Error("Decorators", ErrMissingNewline)
 		}
 
@@ -348,8 +346,10 @@ type ForStatement struct {
 	Tokens
 }
 
-func (f *ForStatement) parse(p *pyParser, async bool) error {
-	f.Async = async
+func (f *ForStatement) parse(p *pyParser) error {
+	if f.Async = p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"}); f.Async {
+		p.AcceptRunWhitespace()
+	}
 
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "for"}) {
 		p.AcceptRunWhitespace()
@@ -599,11 +599,14 @@ type WithStatement struct {
 	Tokens   Tokens
 }
 
-func (w *WithStatement) parse(p *pyParser, async bool) error {
+func (w *WithStatement) parse(p *pyParser) error {
+	if w.Async = p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"}); w.Async {
+		p.AcceptRunWhitespace()
+	}
+
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "with"})
 	p.AcceptRunWhitespace()
 
-	w.Async = async
 	parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
 	if parens {
@@ -746,9 +749,22 @@ type FuncDefinition struct {
 	Tokens        Tokens
 }
 
-func (f *FuncDefinition) parse(p *pyParser, async bool, decorators *Decorators) error {
-	f.Decorators = decorators
-	f.Async = async
+func (f *FuncDefinition) parse(p *pyParser) error {
+	if p.Peek() == (parser.Token{Type: TokenOperator, Data: "@"}) {
+		q := p.NewGoal()
+		f.Decorators = new(Decorators)
+
+		if err := f.Decorators.parse(q); err != nil {
+			return p.Error("ClassDefinition", err)
+		}
+
+		p.Score(q)
+		p.AcceptRunAllWhitespace()
+	}
+
+	if f.Async = p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"}); f.Async {
+		p.AcceptRunWhitespace()
+	}
 
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "def"})
 	p.AcceptRunWhitespace()
@@ -858,8 +874,18 @@ type ClassDefinition struct {
 	Tokens      Tokens
 }
 
-func (c *ClassDefinition) parse(p *pyParser, decorators *Decorators) error {
-	c.Decorators = decorators
+func (c *ClassDefinition) parse(p *pyParser) error {
+	if p.Peek() == (parser.Token{Type: TokenOperator, Data: "@"}) {
+		q := p.NewGoal()
+		c.Decorators = new(Decorators)
+
+		if err := c.Decorators.parse(q); err != nil {
+			return p.Error("ClassDefinition", err)
+		}
+
+		p.Score(q)
+		p.AcceptRunAllWhitespace()
+	}
 
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "class"})
 	p.AcceptRunWhitespace()
