@@ -72,7 +72,7 @@ func TestStatement(t *testing.T) {
 									Tokens: tk[1:2],
 								},
 							},
-							Tokens: tk[:3],
+							Tokens: tk[:2],
 						},
 						ClassName: &tk[5],
 						Suite: Suite{
