@@ -122,6 +122,8 @@ func (d *Decorators) parse(p *pyParser) error {
 	q := p.NewGoal()
 
 	for q.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) {
+		q.AcceptRunWhitespace()
+
 		var ae AssignmentExpression
 
 		p.Score(q)
