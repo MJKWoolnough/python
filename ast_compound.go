@@ -153,6 +153,14 @@ func (d *Decorators) parse(p *pyParser) error {
 	return nil
 }
 
+func skipDecorators(p *pyParser) {
+	for p.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) {
+		p.AcceptRunWhitespace()
+		skipAssignmentExpression(p)
+		p.AcceptRunAllWhitespace()
+	}
+}
+
 // IfStatement as defined in python@3.13.0:
 // https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-if_stmt
 type IfStatement struct {
