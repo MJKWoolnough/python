@@ -20,7 +20,7 @@ func TestCompoundStatement(t *testing.T) {
 								Tokens: tk[1:2],
 							},
 						},
-						Tokens: tk[:3],
+						Tokens: tk[:2],
 					},
 					FuncName: &tk[5],
 					ParameterList: ParameterList{
@@ -72,7 +72,7 @@ func TestCompoundStatement(t *testing.T) {
 								Tokens: tk[1:2],
 							},
 						},
-						Tokens: tk[:3],
+						Tokens: tk[:2],
 					},
 					ClassName: &tk[5],
 					Inheritance: &ArgumentList{
@@ -124,7 +124,7 @@ func TestCompoundStatement(t *testing.T) {
 								Tokens: tk[1:2],
 							},
 						},
-						Tokens: tk[:3],
+						Tokens: tk[:2],
 					},
 					Async:    true,
 					FuncName: &tk[7],
@@ -640,23 +640,7 @@ func TestCompoundStatement(t *testing.T) {
 		}},
 		{"@nonlocal\ndef a():b", func(t *test, tk Tokens) { // 14
 			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: wrapConditionalExpressionError(Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
-								Token:   tk[1],
-							}),
-							Parsing: "Expression",
-							Token:   tk[1],
-						},
-						Parsing: "AssignmentExpression",
-						Token:   tk[1],
-					},
-					Parsing: "Decorators",
-					Token:   tk[1],
-				},
+				Err:     ErrInvalidCompound,
 				Parsing: "CompoundStatement",
 				Token:   tk[0],
 			}
@@ -969,7 +953,7 @@ func TestDecorators(t *testing.T) {
 						Tokens: tk[1:2],
 					},
 				},
-				Tokens: tk[:3],
+				Tokens: tk[:2],
 			}
 		}},
 		{"@ a\n", func(t *test, tk Tokens) { // 2
@@ -986,7 +970,7 @@ func TestDecorators(t *testing.T) {
 						Tokens: tk[2:3],
 					},
 				},
-				Tokens: tk[:4],
+				Tokens: tk[:3],
 			}
 		}},
 		{"@a\n@b\n", func(t *test, tk Tokens) { // 3
@@ -1013,7 +997,7 @@ func TestDecorators(t *testing.T) {
 						Tokens: tk[4:5],
 					},
 				},
-				Tokens: tk[:6],
+				Tokens: tk[:5],
 			}
 		}},
 		{"@a\n#test\n@b\n", func(t *test, tk Tokens) { // 4
@@ -1040,7 +1024,7 @@ func TestDecorators(t *testing.T) {
 						Tokens: tk[6:7],
 					},
 				},
-				Tokens: tk[:8],
+				Tokens: tk[:7],
 			}
 		}},
 		{"@nonlocal\n", func(t *test, tk Tokens) { // 5
@@ -2371,8 +2355,7 @@ func TestForStatement(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{"for a in b:c", func(t *test, tk Tokens) { // 3
-			t.Async = true
+		{"async for a in b:c", func(t *test, tk Tokens) { // 3
 			t.Output = ForStatement{
 				Async: true,
 				TargetList: TargetList{
@@ -2380,15 +2363,15 @@ func TestForStatement(t *testing.T) {
 						{
 							PrimaryExpression: &PrimaryExpression{
 								Atom: &Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
 								},
-								Tokens: tk[2:3],
+								Tokens: tk[4:5],
 							},
-							Tokens: tk[2:3],
+							Tokens: tk[4:5],
 						},
 					},
-					Tokens: tk[2:3],
+					Tokens: tk[4:5],
 				},
 				StarredList: StarredList{
 					StarredItems: []StarredItem{
@@ -2396,17 +2379,17 @@ func TestForStatement(t *testing.T) {
 							AssignmentExpression: &AssignmentExpression{
 								Expression: Expression{
 									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[6],
-										Tokens:     tk[6:7],
+										Identifier: &tk[8],
+										Tokens:     tk[8:9],
 									}),
-									Tokens: tk[6:7],
+									Tokens: tk[8:9],
 								},
-								Tokens: tk[6:7],
+								Tokens: tk[8:9],
 							},
-							Tokens: tk[6:7],
+							Tokens: tk[8:9],
 						},
 					},
-					Tokens: tk[6:7],
+					Tokens: tk[8:9],
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -2417,23 +2400,23 @@ func TestForStatement(t *testing.T) {
 									StarredExpression: &StarredExpression{
 										Expression: &Expression{
 											ConditionalExpression: WrapConditional(&Atom{
-												Identifier: &tk[8],
-												Tokens:     tk[8:9],
+												Identifier: &tk[10],
+												Tokens:     tk[10:11],
 											}),
-											Tokens: tk[8:9],
+											Tokens: tk[10:11],
 										},
-										Tokens: tk[8:9],
+										Tokens: tk[10:11],
 									},
-									Tokens: tk[8:9],
+									Tokens: tk[10:11],
 								},
-								Tokens: tk[8:9],
+								Tokens: tk[10:11],
 							},
 						},
-						Tokens: tk[8:9],
+						Tokens: tk[10:11],
 					},
-					Tokens: tk[8:9],
+					Tokens: tk[10:11],
 				},
-				Tokens: tk[:9],
+				Tokens: tk[:11],
 			}
 		}},
 		{"for a in b:c\nelse:d", func(t *test, tk Tokens) { // 4
@@ -2736,7 +2719,7 @@ func TestForStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var f ForStatement
 
-		err := f.parse(t.Tokens, t.Async)
+		err := f.parse(t.Tokens)
 
 		return f, err
 	})
@@ -4293,8 +4276,7 @@ func TestWithStatement(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
-		{`with a:b`, func(t *test, tk Tokens) { // 6
-			t.Async = true
+		{`async with a:b`, func(t *test, tk Tokens) { // 6
 			t.Output = WithStatement{
 				Async: true,
 				Contents: WithStatementContents{
@@ -4302,15 +4284,15 @@ func TestWithStatement(t *testing.T) {
 						{
 							Expression: Expression{
 								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
 								}),
-								Tokens: tk[2:3],
+								Tokens: tk[4:5],
 							},
-							Tokens: tk[2:3],
+							Tokens: tk[4:5],
 						},
 					},
-					Tokens: tk[2:3],
+					Tokens: tk[4:5],
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -4321,23 +4303,23 @@ func TestWithStatement(t *testing.T) {
 									StarredExpression: &StarredExpression{
 										Expression: &Expression{
 											ConditionalExpression: WrapConditional(&Atom{
-												Identifier: &tk[4],
-												Tokens:     tk[4:5],
+												Identifier: &tk[6],
+												Tokens:     tk[6:7],
 											}),
-											Tokens: tk[4:5],
+											Tokens: tk[6:7],
 										},
-										Tokens: tk[4:5],
+										Tokens: tk[6:7],
 									},
-									Tokens: tk[4:5],
+									Tokens: tk[6:7],
 								},
-								Tokens: tk[4:5],
+								Tokens: tk[6:7],
 							},
 						},
-						Tokens: tk[4:5],
+						Tokens: tk[6:7],
 					},
-					Tokens: tk[4:5],
+					Tokens: tk[6:7],
 				},
-				Tokens: tk[:5],
+				Tokens: tk[:7],
 			}
 		}},
 		{`with nonlocal:a`, func(t *test, tk Tokens) { // 7
@@ -4403,7 +4385,7 @@ func TestWithStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var w WithStatement
 
-		err := w.parse(t.Tokens, t.Async)
+		err := w.parse(t.Tokens)
 
 		return w, err
 	})
@@ -4663,13 +4645,12 @@ func TestFuncDefinition(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
-		{`def a():b`, func(t *test, tk Tokens) { // 3
-			t.Async = true
+		{`async def a():b`, func(t *test, tk Tokens) { // 3
 			t.Output = FuncDefinition{
 				Async:    true,
-				FuncName: &tk[2],
+				FuncName: &tk[4],
 				ParameterList: ParameterList{
-					Tokens: tk[4:4],
+					Tokens: tk[6:6],
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -4680,34 +4661,45 @@ func TestFuncDefinition(t *testing.T) {
 									StarredExpression: &StarredExpression{
 										Expression: &Expression{
 											ConditionalExpression: WrapConditional(&Atom{
-												Identifier: &tk[6],
-												Tokens:     tk[6:7],
+												Identifier: &tk[8],
+												Tokens:     tk[8:9],
 											}),
-											Tokens: tk[6:7],
+											Tokens: tk[8:9],
 										},
-										Tokens: tk[6:7],
+										Tokens: tk[8:9],
 									},
-									Tokens: tk[6:7],
+									Tokens: tk[8:9],
 								},
-								Tokens: tk[6:7],
+								Tokens: tk[8:9],
 							},
 						},
-						Tokens: tk[6:7],
+						Tokens: tk[8:9],
 					},
-					Tokens: tk[6:7],
+					Tokens: tk[8:9],
 				},
-				Tokens: tk[:7],
+				Tokens: tk[:9],
 			}
 		}},
-		{`def a():b`, func(t *test, tk Tokens) { // 4
-			t.Decorators = &Decorators{
-				Decorators: []AssignmentExpression{},
-			}
+		{"@a\ndef b():c", func(t *test, tk Tokens) { // 4
 			t.Output = FuncDefinition{
-				Decorators: t.Decorators,
-				FuncName:   &tk[2],
+				Decorators: &Decorators{
+					Decorators: []AssignmentExpression{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[1],
+									Tokens:     tk[1:2],
+								}),
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+					},
+					Tokens: tk[:2],
+				},
+				FuncName: &tk[5],
 				ParameterList: ParameterList{
-					Tokens: tk[4:4],
+					Tokens: tk[7:7],
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -4718,23 +4710,23 @@ func TestFuncDefinition(t *testing.T) {
 									StarredExpression: &StarredExpression{
 										Expression: &Expression{
 											ConditionalExpression: WrapConditional(&Atom{
-												Identifier: &tk[6],
-												Tokens:     tk[6:7],
+												Identifier: &tk[9],
+												Tokens:     tk[9:10],
 											}),
-											Tokens: tk[6:7],
+											Tokens: tk[9:10],
 										},
-										Tokens: tk[6:7],
+										Tokens: tk[9:10],
 									},
-									Tokens: tk[6:7],
+									Tokens: tk[9:10],
 								},
-								Tokens: tk[6:7],
+								Tokens: tk[9:10],
 							},
 						},
-						Tokens: tk[6:7],
+						Tokens: tk[9:10],
 					},
-					Tokens: tk[6:7],
+					Tokens: tk[9:10],
 				},
-				Tokens: tk[:7],
+				Tokens: tk[:10],
 			}
 		}},
 		{`def a[b]():c`, func(t *test, tk Tokens) { // 5
@@ -4864,53 +4856,73 @@ func TestFuncDefinition(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{"def a [ b, c ] ( d, e ) -> f : \n\tg", func(t *test, tk Tokens) { // 8
-			t.Async = true
-			t.Decorators = &Decorators{
-				Decorators: []AssignmentExpression{},
-			}
+		{"@a\n@b\nasync def a [ b, c ] ( d, e ) -> f : \n\tg", func(t *test, tk Tokens) { // 8
 			t.Output = FuncDefinition{
-				Async:      true,
-				Decorators: t.Decorators,
-				FuncName:   &tk[2],
+				Decorators: &Decorators{
+					Decorators: []AssignmentExpression{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[1],
+									Tokens:     tk[1:2],
+								}),
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								}),
+								Tokens: tk[4:5],
+							},
+							Tokens: tk[4:5],
+						},
+					},
+					Tokens: tk[:5],
+				},
+				Async:    true,
+				FuncName: &tk[10],
 				TypeParams: &TypeParams{
 					TypeParams: []TypeParam{
 						{
-							Identifier: &tk[6],
-							Tokens:     tk[6:7],
+							Identifier: &tk[14],
+							Tokens:     tk[14:15],
 						},
 						{
-							Identifier: &tk[9],
-							Tokens:     tk[9:10],
+							Identifier: &tk[17],
+							Tokens:     tk[17:18],
 						},
 					},
-					Tokens: tk[4:12],
+					Tokens: tk[12:20],
 				},
 				ParameterList: ParameterList{
 					NoPosOnly: []DefParameter{
 						{
 							Parameter: Parameter{
-								Identifier: &tk[15],
-								Tokens:     tk[15:16],
+								Identifier: &tk[23],
+								Tokens:     tk[23:24],
 							},
-							Tokens: tk[15:16],
+							Tokens: tk[23:24],
 						},
 						{
 							Parameter: Parameter{
-								Identifier: &tk[18],
-								Tokens:     tk[18:19],
+								Identifier: &tk[26],
+								Tokens:     tk[26:27],
 							},
-							Tokens: tk[18:19],
+							Tokens: tk[26:27],
 						},
 					},
-					Tokens: tk[15:19],
+					Tokens: tk[23:27],
 				},
 				Expression: &Expression{
 					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[24],
-						Tokens:     tk[24:25],
+						Identifier: &tk[32],
+						Tokens:     tk[32:33],
 					}),
-					Tokens: tk[24:25],
+					Tokens: tk[32:33],
 				},
 				Suite: Suite{
 					Statements: []Statement{
@@ -4923,26 +4935,26 @@ func TestFuncDefinition(t *testing.T) {
 											StarredExpression: &StarredExpression{
 												Expression: &Expression{
 													ConditionalExpression: WrapConditional(&Atom{
-														Identifier: &tk[30],
-														Tokens:     tk[30:31],
+														Identifier: &tk[38],
+														Tokens:     tk[38:39],
 													}),
-													Tokens: tk[30:31],
+													Tokens: tk[38:39],
 												},
-												Tokens: tk[30:31],
+												Tokens: tk[38:39],
 											},
-											Tokens: tk[30:31],
+											Tokens: tk[38:39],
 										},
-										Tokens: tk[30:31],
+										Tokens: tk[38:39],
 									},
 								},
-								Tokens: tk[30:31],
+								Tokens: tk[38:39],
 							},
-							Tokens: tk[30:31],
+							Tokens: tk[38:39],
 						},
 					},
-					Tokens: tk[28:32],
+					Tokens: tk[36:40],
 				},
-				Tokens: tk[:32],
+				Tokens: tk[:40],
 			}
 		}},
 		{"def a():\n\treturn", func(t *test, tk Tokens) { // 9
@@ -5383,7 +5395,7 @@ func TestFuncDefinition(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var f FuncDefinition
 
-		err := f.parse(t.Tokens, t.Async, t.Decorators)
+		err := f.parse(t.Tokens)
 
 		return f, err
 	})
@@ -5422,13 +5434,24 @@ func TestClassDefinition(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`class a:b`, func(t *test, tk Tokens) { // 2
-			t.Decorators = &Decorators{
-				Decorators: []AssignmentExpression{},
-			}
+		{"@a\nclass b:c", func(t *test, tk Tokens) { // 2
 			t.Output = ClassDefinition{
-				Decorators: t.Decorators,
-				ClassName:  &tk[2],
+				ClassName: &tk[5],
+				Decorators: &Decorators{
+					Decorators: []AssignmentExpression{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[1],
+									Tokens:     tk[1:2],
+								}),
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+					},
+					Tokens: tk[:2],
+				},
 				Suite: Suite{
 					StatementList: &StatementList{
 						Statements: []SimpleStatement{
@@ -5438,23 +5461,23 @@ func TestClassDefinition(t *testing.T) {
 									StarredExpression: &StarredExpression{
 										Expression: &Expression{
 											ConditionalExpression: WrapConditional(&Atom{
-												Identifier: &tk[4],
-												Tokens:     tk[4:5],
+												Identifier: &tk[7],
+												Tokens:     tk[7:8],
 											}),
-											Tokens: tk[4:5],
+											Tokens: tk[7:8],
 										},
-										Tokens: tk[4:5],
+										Tokens: tk[7:8],
 									},
-									Tokens: tk[4:5],
+									Tokens: tk[7:8],
 								},
-								Tokens: tk[4:5],
+								Tokens: tk[7:8],
 							},
 						},
-						Tokens: tk[4:5],
+						Tokens: tk[7:8],
 					},
-					Tokens: tk[4:5],
+					Tokens: tk[7:8],
 				},
-				Tokens: tk[:5],
+				Tokens: tk[:8],
 			}
 		}},
 		{`class a: b`, func(t *test, tk Tokens) { // 3
@@ -5867,7 +5890,7 @@ func TestClassDefinition(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var c ClassDefinition
 
-		err := c.parse(t.Tokens, t.Decorators)
+		err := c.parse(t.Tokens)
 
 		return c, err
 	})
@@ -6134,7 +6157,7 @@ func TestSuite(t *testing.T) {
 											Tokens: tk[7:8],
 										},
 									},
-									Tokens: tk[2:9],
+									Tokens: tk[2:8],
 								},
 								FuncName: &tk[12],
 								ParameterList: ParameterList{
