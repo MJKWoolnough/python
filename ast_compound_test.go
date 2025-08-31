@@ -972,7 +972,24 @@ func TestDecorators(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{"@a\n@b\n", func(t *test, tk Tokens) { // 2
+		{"@ a\n", func(t *test, tk Tokens) { // 2
+			t.Output = Decorators{
+				Decorators: []AssignmentExpression{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}),
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{"@a\n@b\n", func(t *test, tk Tokens) { // 3
 			t.Output = Decorators{
 				Decorators: []AssignmentExpression{
 					{
@@ -999,7 +1016,7 @@ func TestDecorators(t *testing.T) {
 				Tokens: tk[:6],
 			}
 		}},
-		{"@a\n#test\n@b\n", func(t *test, tk Tokens) { // 3
+		{"@a\n#test\n@b\n", func(t *test, tk Tokens) { // 4
 			t.Output = Decorators{
 				Decorators: []AssignmentExpression{
 					{
@@ -1026,7 +1043,7 @@ func TestDecorators(t *testing.T) {
 				Tokens: tk[:8],
 			}
 		}},
-		{"@nonlocal\n", func(t *test, tk Tokens) { // 4
+		{"@nonlocal\n", func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1045,7 +1062,7 @@ func TestDecorators(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{"@a", func(t *test, tk Tokens) { // 5
+		{"@a", func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err:     ErrMissingNewline,
 				Parsing: "Decorators",
