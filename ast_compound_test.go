@@ -5253,111 +5253,7 @@ func TestFuncDefinition(t *testing.T) {
 				Tokens: tk[:14],
 			}
 		}},
-		{"def nonlocal():a", func(t *test, tk Tokens) { // 17
-			t.Err = Error{
-				Err:     ErrMissingIdentifier,
-				Parsing: "FuncDefinition",
-				Token:   tk[2],
-			}
-		}},
-		{"def a[nonlocal]():b", func(t *test, tk Tokens) { // 18
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err:     ErrMissingIdentifier,
-						Parsing: "TypeParam",
-						Token:   tk[4],
-					},
-					Parsing: "TypeParams",
-					Token:   tk[4],
-				},
-				Parsing: "FuncDefinition",
-				Token:   tk[3],
-			}
-		}},
-		{"def a(nonlocal):b", func(t *test, tk Tokens) { // 19
-			t.Err = Error{
-				Err:     ErrMissingClosingParen,
-				Parsing: "FuncDefinition",
-				Token:   tk[4],
-			}
-		}},
-		{"def a(b=nonlocal):c", func(t *test, tk Tokens) { // 20
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: wrapConditionalExpressionError(Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
-								Token:   tk[6],
-							}),
-							Parsing: "Expression",
-							Token:   tk[6],
-						},
-						Parsing: "DefParameter",
-						Token:   tk[6],
-					},
-					Parsing: "ParameterList",
-					Token:   tk[4],
-				},
-				Parsing: "FuncDefinition",
-				Token:   tk[4],
-			}
-		}},
-		{"def a()->nonlocal:b", func(t *test, tk Tokens) { // 21
-			t.Err = Error{
-				Err: Error{
-					Err: wrapConditionalExpressionError(Error{
-						Err:     ErrInvalidEnclosure,
-						Parsing: "Enclosure",
-						Token:   tk[6],
-					}),
-					Parsing: "Expression",
-					Token:   tk[6],
-				},
-				Parsing: "FuncDefinition",
-				Token:   tk[6],
-			}
-		}},
-		{"def a():nonlocal", func(t *test, tk Tokens) { // 22
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err:     ErrMissingIdentifier,
-								Parsing: "NonLocalStatement",
-								Token:   tk[7],
-							},
-							Parsing: "SimpleStatement",
-							Token:   tk[6],
-						},
-						Parsing: "StatementList",
-						Token:   tk[6],
-					},
-					Parsing: "Suite",
-					Token:   tk[6],
-				},
-				Parsing: "FuncDefinition",
-				Token:   tk[6],
-			}
-		}},
-		{"def a:b", func(t *test, tk Tokens) { // 23
-			t.Err = Error{
-				Err:     ErrMissingOpeningParen,
-				Parsing: "FuncDefinition",
-				Token:   tk[3],
-			}
-		}},
-		{"def a() b", func(t *test, tk Tokens) { // 24
-			t.Err = Error{
-				Err:     ErrMissingColon,
-				Parsing: "FuncDefinition",
-				Token:   tk[6],
-			}
-		}},
-		{"def a(#abc\n):b", func(t *test, tk Tokens) { // 25
+		{"def a(#abc\n):b", func(t *test, tk Tokens) { // 17
 			t.Output = FuncDefinition{
 				FuncName: &tk[2],
 				ParameterList: ParameterList{
@@ -5390,6 +5286,110 @@ func TestFuncDefinition(t *testing.T) {
 				},
 				Comments: Comments{tk[4]},
 				Tokens:   tk[:9],
+			}
+		}},
+		{"def nonlocal():a", func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "FuncDefinition",
+				Token:   tk[2],
+			}
+		}},
+		{"def a[nonlocal]():b", func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "TypeParam",
+						Token:   tk[4],
+					},
+					Parsing: "TypeParams",
+					Token:   tk[4],
+				},
+				Parsing: "FuncDefinition",
+				Token:   tk[3],
+			}
+		}},
+		{"def a(nonlocal):b", func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err:     ErrMissingClosingParen,
+				Parsing: "FuncDefinition",
+				Token:   tk[4],
+			}
+		}},
+		{"def a(b=nonlocal):c", func(t *test, tk Tokens) { // 21
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[6],
+							}),
+							Parsing: "Expression",
+							Token:   tk[6],
+						},
+						Parsing: "DefParameter",
+						Token:   tk[6],
+					},
+					Parsing: "ParameterList",
+					Token:   tk[4],
+				},
+				Parsing: "FuncDefinition",
+				Token:   tk[4],
+			}
+		}},
+		{"def a()->nonlocal:b", func(t *test, tk Tokens) { // 22
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err:     ErrInvalidEnclosure,
+						Parsing: "Enclosure",
+						Token:   tk[6],
+					}),
+					Parsing: "Expression",
+					Token:   tk[6],
+				},
+				Parsing: "FuncDefinition",
+				Token:   tk[6],
+			}
+		}},
+		{"def a():nonlocal", func(t *test, tk Tokens) { // 23
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "NonLocalStatement",
+								Token:   tk[7],
+							},
+							Parsing: "SimpleStatement",
+							Token:   tk[6],
+						},
+						Parsing: "StatementList",
+						Token:   tk[6],
+					},
+					Parsing: "Suite",
+					Token:   tk[6],
+				},
+				Parsing: "FuncDefinition",
+				Token:   tk[6],
+			}
+		}},
+		{"def a:b", func(t *test, tk Tokens) { // 24
+			t.Err = Error{
+				Err:     ErrMissingOpeningParen,
+				Parsing: "FuncDefinition",
+				Token:   tk[3],
+			}
+		}},
+		{"def a() b", func(t *test, tk Tokens) { // 25
+			t.Err = Error{
+				Err:     ErrMissingColon,
+				Parsing: "FuncDefinition",
+				Token:   tk[6],
 			}
 		}},
 	}, func(t *test) (Type, error) {
