@@ -755,7 +755,7 @@ func (f *FuncDefinition) parse(p *pyParser) error {
 		f.Decorators = new(Decorators)
 
 		if err := f.Decorators.parse(q); err != nil {
-			return p.Error("ClassDefinition", err)
+			return p.Error("FuncDefinition", err)
 		}
 
 		p.Score(q)

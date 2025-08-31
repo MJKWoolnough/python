@@ -5392,6 +5392,45 @@ func TestFuncDefinition(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
+		{"@(nonlocal)\ndef a(): b", func(t *test, tk Tokens) { // 26
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err: Error{
+									Err: Error{
+										Err: Error{
+											Err: wrapConditionalExpressionError(Error{
+												Err:     ErrInvalidEnclosure,
+												Parsing: "Enclosure",
+												Token:   tk[2],
+											}),
+											Parsing: "Expression",
+											Token:   tk[2],
+										},
+										Parsing: "StarredExpression",
+										Token:   tk[2],
+									},
+									Parsing: "Enclosure",
+									Token:   tk[2],
+								},
+								Parsing: "Atom",
+								Token:   tk[1],
+							}),
+							Parsing: "Expression",
+							Token:   tk[1],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[1],
+					},
+					Parsing: "Decorators",
+					Token:   tk[1],
+				},
+				Parsing: "FuncDefinition",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var f FuncDefinition
 
