@@ -7341,14 +7341,58 @@ func TestTypeParam(t *testing.T) {
 				Tokens:     tk[:12],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 10
+		{"[# A\na # B\n\n# C\n]", func(t *test, tk Tokens) { // 10
+			t.Output = TypeParam{
+				Identifier: &tk[3],
+				Comments:   [4]Comments{{tk[1]}, nil, nil, {tk[5]}},
+				Tokens:     tk[1:6],
+			}
+		}},
+		{"[# A\na # B\n\n# C\n,]", func(t *test, tk Tokens) { // 11
+			t.Output = TypeParam{
+				Identifier: &tk[3],
+				Comments:   [4]Comments{{tk[1]}, nil, nil, {tk[5], tk[7]}},
+				Tokens:     tk[1:8],
+			}
+		}},
+		{"[# A\na # B\n: # C\nb # D\n]", func(t *test, tk Tokens) { // 12
+			t.Output = TypeParam{
+				Identifier: &tk[3],
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}),
+					Tokens: tk[11:12],
+				},
+				Comments: [4]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13]}},
+				Tokens:   tk[1:14],
+			}
+		}},
+		{"[# A\n* # B\na # C\n]", func(t *test, tk Tokens) { // 13
+			t.Output = TypeParam{
+				Type:       TypeParamVar,
+				Identifier: &tk[7],
+				Comments:   [4]Comments{{tk[1]}, {tk[5]}, nil, {tk[9]}},
+				Tokens:     tk[1:10],
+			}
+		}},
+		{"[# A\n** # B\na # C\n]", func(t *test, tk Tokens) { // 14
+			t.Output = TypeParam{
+				Type:       TypeParamVarTuple,
+				Identifier: &tk[7],
+				Comments:   [4]Comments{{tk[1]}, {tk[5]}, nil, {tk[9]}},
+				Tokens:     tk[1:10],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 15
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "TypeParam",
 				Token:   tk[0],
 			}
 		}},
-		{`a:nonlocal`, func(t *test, tk Tokens) { // 11
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -7363,14 +7407,14 @@ func TestTypeParam(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 12
+		{`*nonlocal`, func(t *test, tk Tokens) { // 17
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "TypeParam",
 				Token:   tk[1],
 			}
 		}},
-		{`**nonlocal`, func(t *test, tk Tokens) { // 13
+		{`**nonlocal`, func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "TypeParam",
