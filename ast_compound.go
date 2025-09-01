@@ -1288,7 +1288,7 @@ type TypeParam struct {
 	Type       TypeParamType
 	Identifier *Token
 	Expression *Expression
-	Comments   [2]Comments
+	Comments   [4]Comments
 	Tokens     Tokens
 }
 
@@ -1299,10 +1299,12 @@ func (t *TypeParam) parse(p *pyParser) error {
 
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
 		t.Type = TypeParamVar
+		t.Comments[1] = p.AcceptRunWhitespaceComments()
 
 		p.AcceptRunWhitespace()
 	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
 		t.Type = TypeParamVarTuple
+		t.Comments[1] = p.AcceptRunWhitespaceComments()
 
 		p.AcceptRunWhitespace()
 	}
@@ -1320,7 +1322,15 @@ func (t *TypeParam) parse(p *pyParser) error {
 
 		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
 			q.AcceptRunWhitespace()
-			p.Score(q)
+
+			t.Comments[1] = p.AcceptRunWhitespaceComments()
+
+			p.AcceptRunWhitespace()
+			p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"})
+
+			t.Comments[2] = p.AcceptRunWhitespaceComments()
+
+			p.AcceptRunWhitespace()
 
 			q = p.NewGoal()
 			t.Expression = new(Expression)
@@ -1338,9 +1348,9 @@ func (t *TypeParam) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: "]"}) {
-		t.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewline()
+		t.Comments[3] = p.AcceptRunWhitespaceCommentsNoNewline()
 	} else {
-		t.Comments[1] = p.AcceptRunWhitespaceComments()
+		t.Comments[3] = p.AcceptRunWhitespaceComments()
 	}
 
 	t.Tokens = p.ToTokens()

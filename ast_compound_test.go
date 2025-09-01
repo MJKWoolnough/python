@@ -7329,7 +7329,7 @@ func TestTypeParam(t *testing.T) {
 			t.Output = TypeParam{
 				Type:       TypeParamVarTuple,
 				Identifier: &tk[4],
-				Comments:   [2]Comments{{tk[0]}},
+				Comments:   [4]Comments{{tk[0]}},
 				Tokens:     tk[:5],
 			}
 		}},
@@ -7337,7 +7337,7 @@ func TestTypeParam(t *testing.T) {
 			t.Output = TypeParam{
 				Type:       TypeParamVarTuple,
 				Identifier: &tk[9],
-				Comments:   [2]Comments{{tk[0], tk[2], tk[5]}, {tk[11]}},
+				Comments:   [4]Comments{{tk[0], tk[2], tk[5]}, nil, nil, {tk[11]}},
 				Tokens:     tk[:12],
 			}
 		}},
@@ -7379,6 +7379,10 @@ func TestTypeParam(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var tp TypeParam
+
+		if t.Tokens.Peek().Data == "[" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := tp.parse(t.Tokens)
 

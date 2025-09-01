@@ -3264,12 +3264,12 @@ func TestTypeParams(t *testing.T) {
 				TypeParams: []TypeParam{
 					{
 						Identifier: &tk[8],
-						Comments:   [2]Comments{{tk[6]}},
+						Comments:   [4]Comments{{tk[6]}},
 						Tokens:     tk[6:9],
 					},
 					{
 						Identifier: &tk[11],
-						Comments:   [2]Comments{nil, {tk[13], tk[15]}},
+						Comments:   [4]Comments{nil, nil, nil, {tk[13], tk[15]}},
 						Tokens:     tk[11:16],
 					},
 				},
