@@ -1485,6 +1485,26 @@ func TestPrintSource(t *testing.T) {
 			"a(**b)\n",
 			"a( # A\n\n\t# B\n\t** # C\n\tb # D\n\n\t# E\n)\n",
 		},
+		{ // 296
+			"def a[# A\n\n# B\nb # C\n\n# D\n]():c",
+			"def a[b]():c\n",
+			"def a[ # A\n\n\t# B\n\tb # C\n\n\t# D\n](): c\n",
+		},
+		{ // 297
+			"def a[# A\n\n# B\nb # C\n: # D\nc # E\n\n# F\n]():d",
+			"def a[b:c]():d\n",
+			"def a[ # A\n\n\t# B\n\tb # C\n\t: # D\n\tc # E\n\n\t# F\n](): d\n",
+		},
+		{ // 298
+			"def a[# A\n\n# B\nb # C\n: # D\nc # E\n\n# F\n, # G\n** # H\nd # I\n]():e",
+			"def a[b:c,**d]():e\n",
+			"def a[ # A\n\n\t# B\n\tb # C\n\t: # D\n\tc # E\n\n\t# F\n\t, # G\n\t** # H\n\td # I\n](): e\n",
+		},
+		{ // 299
+			"def a[# A\n\n# B\n*b # C\n\n# D\n]():c",
+			"def a[*b]():c\n",
+			"def a[ # A\n\n\t# B\n\t*b # C\n\n\t# D\n](): c\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
