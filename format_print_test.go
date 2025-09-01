@@ -1505,6 +1505,16 @@ func TestPrintSource(t *testing.T) {
 			"def a[*b]():c\n",
 			"def a[ # A\n\n\t# B\n\t*b # C\n\n\t# D\n](): c\n",
 		},
+		{ // 300
+			"class a( # A\n\n# B\n):b",
+			"class a():b\n",
+			"class a( # A\n\n\t# B\n): b\n",
+		},
+		{ // 300
+			"class a( # A\n\nb\n# B\n):c",
+			"class a(b):c\n",
+			"class a( # A\n\tb\n\t# B\n): c\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
