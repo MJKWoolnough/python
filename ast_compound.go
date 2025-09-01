@@ -871,6 +871,7 @@ type ClassDefinition struct {
 	TypeParams  *TypeParams
 	Inheritance *ArgumentList
 	Suite       Suite
+	Comments    [2]Comments
 	Tokens      Tokens
 }
 
@@ -911,11 +912,17 @@ func (c *ClassDefinition) parse(p *pyParser) error {
 	}
 
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-		p.AcceptRunWhitespace()
+		c.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+
+		p.AcceptRunAllWhitespaceNoComment()
 
 		c.Inheritance = new(ArgumentList)
 
-		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		q := p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			q := p.NewGoal()
 
 			if err := c.Inheritance.parse(q); err != nil {
@@ -923,12 +930,15 @@ func (c *ClassDefinition) parse(p *pyParser) error {
 			}
 
 			p.Score(q)
-			p.AcceptRunWhitespace()
-			p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"})
+
 		} else {
 			c.Inheritance.Tokens = p.NewGoal().ToTokens()
 		}
 
+		c.Comments[1] = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunWhitespace()
+		p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"})
 		p.AcceptRunWhitespace()
 	}
 
