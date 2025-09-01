@@ -5847,14 +5847,134 @@ func TestClassDefinition(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
-		{`class nonlocal:b`, func(t *test, tk Tokens) { // 11
+		{"class a(# A\n):b", func(t *test, tk Tokens) { // 11
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				Inheritance: &ArgumentList{
+					Tokens: tk[4:4],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[8],
+												Tokens:     tk[8:9],
+											}),
+											Tokens: tk[8:9],
+										},
+										Tokens: tk[8:9],
+									},
+									Tokens: tk[8:9],
+								},
+								Tokens: tk[8:9],
+							},
+						},
+						Tokens: tk[8:9],
+					},
+					Tokens: tk[8:9],
+				},
+				Comments: [2]Comments{{tk[4]}},
+				Tokens:   tk[:9],
+			}
+		}},
+		{"class a(# A\n\n# B\n):b", func(t *test, tk Tokens) { // 12
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				Inheritance: &ArgumentList{
+					Tokens: tk[4:4],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[10],
+												Tokens:     tk[10:11],
+											}),
+											Tokens: tk[10:11],
+										},
+										Tokens: tk[10:11],
+									},
+									Tokens: tk[10:11],
+								},
+								Tokens: tk[10:11],
+							},
+						},
+						Tokens: tk[10:11],
+					},
+					Tokens: tk[10:11],
+				},
+				Comments: [2]Comments{{tk[4]}, {tk[6]}},
+				Tokens:   tk[:11],
+			}
+		}},
+		{"class a(# A\nb\n# B\n):c", func(t *test, tk Tokens) { // 13
+			t.Output = ClassDefinition{
+				ClassName: &tk[2],
+				Inheritance: &ArgumentList{
+					PositionalArguments: []PositionalArgument{
+						{
+							AssignmentExpression: &AssignmentExpression{
+								Expression: Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[6],
+										Tokens:     tk[6:7],
+									}),
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+					},
+					Tokens: tk[6:7],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[12],
+												Tokens:     tk[12:13],
+											}),
+											Tokens: tk[12:13],
+										},
+										Tokens: tk[12:13],
+									},
+									Tokens: tk[12:13],
+								},
+								Tokens: tk[12:13],
+							},
+						},
+						Tokens: tk[12:13],
+					},
+					Tokens: tk[12:13],
+				},
+				Comments: [2]Comments{{tk[4]}, {tk[8]}},
+				Tokens:   tk[:13],
+			}
+		}},
+		{`class nonlocal:b`, func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "ClassDefinition",
 				Token:   tk[2],
 			}
 		}},
-		{`class a[nonlocal]`, func(t *test, tk Tokens) { // 12
+		{`class a[nonlocal]`, func(t *test, tk Tokens) { // 15
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5869,7 +5989,7 @@ func TestClassDefinition(t *testing.T) {
 				Token:   tk[3],
 			}
 		}},
-		{`class a(nonlocal)`, func(t *test, tk Tokens) { // 13
+		{`class a(nonlocal)`, func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5896,14 +6016,14 @@ func TestClassDefinition(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
-		{`class a(b)`, func(t *test, tk Tokens) { // 14
+		{`class a(b)`, func(t *test, tk Tokens) { // 17
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "ClassDefinition",
 				Token:   tk[6],
 			}
 		}},
-		{`class a:nonlocal`, func(t *test, tk Tokens) { // 15
+		{`class a:nonlocal`, func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
