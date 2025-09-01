@@ -282,8 +282,22 @@ func (c ClassDefinition) printSource(w writer, v bool) {
 	}
 
 	if c.Inheritance != nil {
-		w.WriteString("(")
-		c.Inheritance.printSource(w, v)
+		ip := w.IndentMultiline()
+
+		ip.WriteString("(")
+
+		if v && len(c.Comments[0]) > 0 {
+			ip.WriteString(" ")
+			c.Comments[0].printSource(ip, true)
+		}
+
+		c.Inheritance.printSource(ip, v)
+
+		if v && len(c.Comments[1]) > 0 {
+			ip.WriteString("\n")
+			c.Comments[1].printSource(ip, true)
+		}
+
 		w.WriteString(")")
 	}
 
