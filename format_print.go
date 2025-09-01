@@ -1800,9 +1800,9 @@ func (t TypeParam) printSource(w writer, v bool) {
 		t.Expression.printSource(w, v)
 	}
 
-	if v && len(t.Comments[1]) > 0 {
+	if v && len(t.Comments[3]) > 0 {
 		w.WriteString(" ")
-		t.Comments[1].printSource(w, true)
+		t.Comments[3].printSource(w, true)
 	}
 }
 
