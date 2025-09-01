@@ -1778,21 +1778,38 @@ func (t TryStatement) printSource(w writer, v bool) {
 }
 
 func (t TypeParam) printSource(w writer, v bool) {
-	if v && len(t.Comments[0]) > 0 {
+	if v {
 		t.Comments[0].printSource(w, true)
 	}
 
 	if t.Type == TypeParamVar {
 		w.WriteString("*")
+
+		if v && len(t.Comments[1]) > 0 {
+			w.WriteString(" ")
+			t.Comments[1].printSource(w, true)
+		}
 	} else if t.Type == TypeParamVarTuple {
 		w.WriteString("**")
+
+		if v && len(t.Comments[1]) > 0 {
+			w.WriteString(" ")
+			t.Comments[1].printSource(w, true)
+		}
 	}
 
 	w.WriteString(t.Identifier.Data)
 
 	if t.Expression != nil {
 		if v {
+			if len(t.Comments[1]) > 0 {
+				w.WriteString(" ")
+				t.Comments[1].printSource(w, true)
+			}
+
 			w.WriteString(": ")
+
+			t.Comments[2].printSource(w, true)
 		} else {
 			w.WriteString(":")
 		}
@@ -1834,7 +1851,7 @@ func (t TypeParams) printSource(w writer, v bool) {
 		}
 	}
 
-	if v && len(t.Comments[0]) > 0 {
+	if v && len(t.Comments[1]) > 0 {
 		ip.WriteString("\n")
 		t.Comments[1].printSource(ip, true)
 	}
