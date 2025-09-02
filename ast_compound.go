@@ -610,7 +610,7 @@ func (w *WithStatement) parse(p *pyParser) error {
 	parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
 	if parens {
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 	}
 
 	q := p.NewGoal()
@@ -656,24 +656,27 @@ func (w *WithStatement) parse(p *pyParser) error {
 // WithStatementContents as defined in python:3.13.0:
 // https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt_contents
 type WithStatementContents struct {
-	Items  []WithItem
-	Tokens Tokens
+	Items    []WithItem
+	Comments [2]Comments
+	Tokens   Tokens
 }
 
 func (w *WithStatementContents) parse(p *pyParser) error {
-	q := p.NewGoal()
+	w.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+
 	another := true
 
 	for another {
+		p.AcceptRunWhitespaceNoComment()
+
+		q := p.NewGoal()
+
 		var wi WithItem
 
-		r := q.NewGoal()
-
-		if err := wi.parse(r); err != nil {
+		if err := wi.parse(q); err != nil {
 			return p.Error("WithStatementContents", err)
 		}
 
-		q.Score(r)
 		p.Score(q)
 
 		w.Items = append(w.Items, wi)
@@ -683,13 +686,20 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 
 		another = q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
 
-		q.AcceptRunWhitespace()
+		r := q.NewGoal()
 
-		if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		r.AcceptRunWhitespace()
+
+		if r.Peek() == (parser.Token{Type: TokenDelimiter, Data: ")"}) {
 			break
+		}
+
+		if another {
+			p.Score(q)
 		}
 	}
 
+	w.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 	w.Tokens = p.ToTokens()
 
 	return nil
