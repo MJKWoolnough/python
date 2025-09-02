@@ -1935,16 +1935,40 @@ func (ws WithStatement) printSource(w writer, v bool) {
 
 func (wc WithStatementContents) printSource(w writer, v bool) {
 	if len(wc.Items) > 0 {
-		wc.Items[0].printSource(w, v)
+		parens := v && (len(wc.Comments[0]) > 0 || len(wc.Comments[1]) > 0)
+
+		ip := w
+
+		if parens {
+			w.WriteString("(")
+
+			ip = w.IndentMultiline()
+
+			if len(wc.Comments[0]) > 0 {
+				ip.WriteString(" ")
+				wc.Comments[0].printSource(ip, true)
+			}
+		}
+
+		wc.Items[0].printSource(ip, v)
 
 		for _, i := range wc.Items[1:] {
 			if v {
-				w.WriteString(", ")
+				ip.WriteString(", ")
 			} else {
-				w.WriteString(",")
+				ip.WriteString(",")
 			}
 
-			i.printSource(w, v)
+			i.printSource(ip, v)
+		}
+
+		if parens {
+			if len(wc.Comments[1]) > 0 {
+				ip.WriteString("\n")
+				wc.Comments[1].printSource(ip, true)
+			}
+
+			w.WriteString(")")
 		}
 	}
 }
