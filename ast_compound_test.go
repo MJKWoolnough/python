@@ -4548,7 +4548,37 @@ func TestWithStatementContents(t *testing.T) {
 				Tokens:   tk[1:8],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 5
+		{"(# A\n\n# B\na,b # C\n\n# D\n)", func(t *test, tk Tokens) { // 5
+			t.Output = WithStatementContents{
+				Items: []WithItem{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[5],
+								Tokens:     tk[5:6],
+							}),
+							Tokens: tk[5:6],
+						},
+						Comments: [4]Comments{{tk[3]}},
+						Tokens:   tk[3:6],
+					},
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[7],
+								Tokens:     tk[7:8],
+							}),
+							Tokens: tk[7:8],
+						},
+						Comments: [4]Comments{nil, nil, nil, {tk[9]}},
+						Tokens:   tk[7:10],
+					},
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[11]}},
+				Tokens:   tk[1:12],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4616,7 +4646,43 @@ func TestWithItem(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 3
+		{"(# A\na # B\n)", func(t *test, tk Tokens) { // 3
+			t.Output = WithItem{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Comments: [4]Comments{{tk[1]}, nil, nil, {tk[5]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"(# A\na # B\nas # C\nb # D\n)", func(t *test, tk Tokens) { // 4
+			t.Output = WithItem{
+				Expression: Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[3],
+						Tokens:     tk[3:4],
+					}),
+					Tokens: tk[3:4],
+				},
+				Target: &Target{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[11],
+							Tokens:     tk[11:12],
+						},
+						Tokens: tk[11:12],
+					},
+					Tokens: tk[11:12],
+				},
+				Comments: [4]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13]}},
+				Tokens:   tk[1:14],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -4631,7 +4697,7 @@ func TestWithItem(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a as nonlocal`, func(t *test, tk Tokens) { // 4
+		{`a as nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4656,6 +4722,10 @@ func TestWithItem(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var w WithItem
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := w.parse(t.Tokens)
 
