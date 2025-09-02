@@ -710,10 +710,15 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 type WithItem struct {
 	Expression Expression
 	Target     *Target
+	Comments   [4]Comments
 	Tokens     Tokens
 }
 
 func (w *WithItem) parse(p *pyParser) error {
+	w.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
 	q := p.NewGoal()
 
 	if err := w.Expression.parse(q); err != nil {
@@ -727,8 +732,14 @@ func (w *WithItem) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		w.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		w.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		w.Target = new(Target)
@@ -738,6 +749,16 @@ func (w *WithItem) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	}
+
+	q = p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		w.Comments[3] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else {
+		w.Comments[3] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	}
 
 	w.Tokens = p.ToTokens()
