@@ -1918,11 +1918,32 @@ func (ws WhileStatement) printSource(w writer, v bool) {
 }
 
 func (wi WithItem) printSource(w writer, v bool) {
+	if v && w.InMultiline() && len(wi.Comments[0]) > 0 {
+		w.WriteString("\n")
+		wi.Comments[0].printSource(w, true)
+	}
+
 	wi.Expression.printSource(w, v)
 
 	if wi.Target != nil {
-		w.WriteString(" as ")
+		w.WriteString(" ")
+
+		if v && w.InMultiline() {
+			wi.Comments[1].printSource(w, true)
+		}
+
+		w.WriteString("as ")
+
+		if v && w.InMultiline() {
+			wi.Comments[2].printSource(w, true)
+		}
+
 		wi.Target.printSource(w, v)
+	}
+
+	if v && w.InMultiline() && len(wi.Comments[3]) > 0 {
+		w.WriteString(" ")
+		wi.Comments[3].printSource(w, true)
 	}
 }
 
