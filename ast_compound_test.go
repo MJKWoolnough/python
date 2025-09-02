@@ -4322,7 +4322,63 @@ func TestWithStatement(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`with nonlocal:a`, func(t *test, tk Tokens) { // 7
+		{"with ( # A\na,b\n# B\n):c", func(t *test, tk Tokens) { // 7
+			t.Output = WithStatement{
+				Contents: WithStatementContents{
+					Items: []WithItem{
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
+							Tokens: tk[6:7],
+						},
+						{
+							Expression: Expression{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[8],
+									Tokens:     tk[8:9],
+								}),
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+					},
+					Comments: [2]Comments{{tk[4]}, {tk[10]}},
+					Tokens:   tk[4:11],
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[14],
+												Tokens:     tk[14:15],
+											}),
+											Tokens: tk[14:15],
+										},
+										Tokens: tk[14:15],
+									},
+									Tokens: tk[14:15],
+								},
+								Tokens: tk[14:15],
+							},
+						},
+						Tokens: tk[14:15],
+					},
+					Tokens: tk[14:15],
+				},
+				Tokens: tk[:15],
+			}
+		}},
+		{`with nonlocal:a`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4345,21 +4401,21 @@ func TestWithStatement(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`with (a:):b`, func(t *test, tk Tokens) { // 8
+		{`with (a:):b`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err:     ErrMissingClosingParen,
 				Parsing: "WithStatement",
 				Token:   tk[4],
 			}
 		}},
-		{`with a b`, func(t *test, tk Tokens) { // 9
+		{`with a b`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "WithStatement",
 				Token:   tk[4],
 			}
 		}},
-		{`with a:nonlocal`, func(t *test, tk Tokens) { // 10
+		{`with a:nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4464,7 +4520,35 @@ func TestWithStatementContents(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
+		{"(# A\na,b\n# B\n)", func(t *test, tk Tokens) { // 4
+			t.Output = WithStatementContents{
+				Items: []WithItem{
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							}),
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+					{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[5],
+								Tokens:     tk[5:6],
+							}),
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[7]}},
+				Tokens:   tk[1:8],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4485,6 +4569,10 @@ func TestWithStatementContents(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var w WithStatementContents
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := w.parse(t.Tokens)
 
