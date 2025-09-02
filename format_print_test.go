@@ -1520,6 +1520,11 @@ func TestPrintSource(t *testing.T) {
 			"with a,b:c\n",
 			"with ( # A\n\ta, b\n\t# B\n): c\n",
 		},
+		{ // 303
+			"with (# A\n\n# B\na # C\n\n# D\n,# E\nb # F\nas # G\nc # H\n\n# I\n): d",
+			"with a,b as c:d\n",
+			"with ( # A\n\n\t# B\n\ta # C\n\n\t# D\n\t, \n\t# E\n\tb # F\n\tas # G\n\tc # H\n\n\t# I\n): d\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
