@@ -1510,10 +1510,15 @@ func TestPrintSource(t *testing.T) {
 			"class a():b\n",
 			"class a( # A\n\n\t# B\n): b\n",
 		},
-		{ // 300
+		{ // 301
 			"class a( # A\n\nb\n# B\n):c",
 			"class a(b):c\n",
 			"class a( # A\n\tb\n\t# B\n): c\n",
+		},
+		{ // 302
+			"with (# A\na,b\n# B\n): c",
+			"with a,b:c\n",
+			"with ( # A\n\ta, b\n\t# B\n): c\n",
 		},
 	} {
 		for m, input := range test {
