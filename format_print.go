@@ -1718,10 +1718,11 @@ func (t Target) printSource(w writer, v bool) {
 		ip := w.IndentMultiline()
 
 		if v && len(t.Tuple.Comments[0]) > 0 {
-			ip.WriteString("\n")
+			ip.WriteString(" ")
 		}
 
 		t.Tuple.printSource(ip, v)
+
 		w.WriteString(")")
 	} else if t.Array != nil {
 		w.WriteString("[")
@@ -1729,7 +1730,7 @@ func (t Target) printSource(w writer, v bool) {
 		ip := w.IndentMultiline()
 
 		if v && len(t.Array.Comments[0]) > 0 {
-			ip.WriteString("\n")
+			ip.WriteString(" ")
 		}
 
 		t.Array.printSource(ip, v)

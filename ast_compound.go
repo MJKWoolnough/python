@@ -1061,7 +1061,7 @@ type TargetList struct {
 }
 
 func (t *TargetList) parse(p *pyParser) error {
-	t.Comments[0] = p.AcceptRunWhitespaceComments()
+	t.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunAllWhitespace()
 
@@ -1106,7 +1106,7 @@ Loop:
 		p.Score(q)
 	}
 
-	t.Comments[1] = p.AcceptRunWhitespaceComments()
+	t.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 	t.Tokens = p.ToTokens()
 
 	return nil
@@ -1119,6 +1119,7 @@ type Target struct {
 	Tuple             *TargetList
 	Array             *TargetList
 	Star              *Target
+	Comments          Comments
 	Tokens            Tokens
 }
 
@@ -1135,6 +1136,7 @@ func (t *Target) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+
 		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
@@ -1152,6 +1154,7 @@ func (t *Target) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+
 		p.AcceptRunWhitespace()
 
 		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
@@ -1159,6 +1162,8 @@ func (t *Target) parse(p *pyParser) error {
 		}
 
 	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		t.Comments = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
