@@ -447,10 +447,6 @@ func (c ComprehensionFor) printSource(w writer, v bool) {
 
 	w.WriteString("for ")
 
-	if v && w.InMultiline() {
-		c.Comments[1].printSource(w, true)
-	}
-
 	c.TargetList.printSource(w, v)
 
 	if v && w.InMultiline() && len(c.TargetList.Comments[1]) > 0 {
@@ -460,7 +456,7 @@ func (c ComprehensionFor) printSource(w writer, v bool) {
 	}
 
 	if v && w.InMultiline() {
-		c.Comments[2].printSource(w, true)
+		c.Comments[1].printSource(w, true)
 	}
 
 	c.OrTest.printSource(w, v)
@@ -1718,11 +1714,25 @@ func (t Target) printSource(w writer, v bool) {
 		t.PrimaryExpression.printSource(w, v)
 	} else if t.Tuple != nil {
 		w.WriteString("(")
-		t.Tuple.printSource(w.Indent(), v)
+
+		ip := w.IndentMultiline()
+
+		if v && len(t.Tuple.Comments[0]) > 0 {
+			ip.WriteString("\n")
+		}
+
+		t.Tuple.printSource(ip, v)
 		w.WriteString(")")
 	} else if t.Array != nil {
 		w.WriteString("[")
-		t.Array.printSource(w.Indent(), v)
+
+		ip := w.IndentMultiline()
+
+		if v && len(t.Array.Comments[0]) > 0 {
+			ip.WriteString("\n")
+		}
+
+		t.Array.printSource(ip, v)
 		w.WriteString("]")
 	} else if t.Star != nil {
 		w.WriteString("*")
@@ -1732,7 +1742,6 @@ func (t Target) printSource(w writer, v bool) {
 
 func (t TargetList) printSource(w writer, v bool) {
 	if v && len(t.Comments[0]) > 0 {
-		w.WriteString(" ")
 		t.Comments[0].printSource(w, v)
 	}
 
