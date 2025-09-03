@@ -1737,6 +1737,12 @@ func (t Target) printSource(w writer, v bool) {
 		w.WriteString("]")
 	} else if t.Star != nil {
 		w.WriteString("*")
+
+		if v && w.InMultiline() && len(t.Comments) > 0 {
+			w.WriteString(" ")
+			t.Comments.printSource(w, v)
+		}
+
 		t.Star.printSource(w, v)
 	}
 }
