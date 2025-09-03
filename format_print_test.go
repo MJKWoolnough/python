@@ -1163,7 +1163,7 @@ func TestPrintSource(t *testing.T) {
 		{ // 231
 			"[ #abc\na\n#def\n] = b",
 			"[a]=b\n",
-			"[ #abc\n\ta #def\n] = b\n",
+			"[\n\t#abc\n\ta #def\n] = b\n",
 		},
 		{ // 232
 			"a\nb\n\nc\n\nd\n\n\n\n\ne",
