@@ -556,7 +556,7 @@ type ComprehensionFor struct {
 	TargetList            TargetList
 	OrTest                OrTest
 	ComprehensionIterator *ComprehensionIterator
-	Comments              [3]Comments
+	Comments              [2]Comments
 	Tokens                Tokens
 }
 
@@ -571,9 +571,7 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 		return p.Error("ComprehensionFor", ErrMissingFor)
 	}
 
-	c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunWhitespace()
+	p.AcceptRunWhitespaceNoComment()
 
 	q := p.NewGoal()
 
@@ -589,7 +587,7 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 		return p.Error("ComprehensionFor", ErrMissingIn)
 	}
 
-	c.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 	p.AcceptRunWhitespace()
 
