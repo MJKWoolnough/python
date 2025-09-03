@@ -7006,7 +7006,31 @@ func TestTarget(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 10
+		{"( * # A\na )", func(t *test, tk Tokens) { // 10
+			t.Output = Target{
+				Tuple: &TargetList{
+					Targets: []Target{
+						{
+							Star: &Target{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[6],
+										Tokens:     tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Tokens: tk[6:7],
+							},
+							Comments: Comments{tk[4]},
+							Tokens:   tk[2:7],
+						},
+					},
+					Tokens: tk[2:7],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7025,7 +7049,7 @@ func TestTarget(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`(nonlocal)`, func(t *test, tk Tokens) { // 11
+		{`(nonlocal)`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7052,7 +7076,7 @@ func TestTarget(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`[nonlocal]`, func(t *test, tk Tokens) { // 12
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 13
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7079,7 +7103,7 @@ func TestTarget(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 13
+		{`*nonlocal`, func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -7102,28 +7126,28 @@ func TestTarget(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`a()`, func(t *test, tk Tokens) { // 14
+		{`a()`, func(t *test, tk Tokens) { // 15
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "Target",
 				Token:   tk[0],
 			}
 		}},
-		{`{a}`, func(t *test, tk Tokens) { // 15
+		{`{a}`, func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "Target",
 				Token:   tk[0],
 			}
 		}},
-		{`(a b)`, func(t *test, tk Tokens) { // 16
+		{`(a b)`, func(t *test, tk Tokens) { // 17
 			t.Err = Error{
 				Err:     ErrMissingClosingParen,
 				Parsing: "Target",
 				Token:   tk[3],
 			}
 		}},
-		{`[a b]`, func(t *test, tk Tokens) { // 17
+		{`[a b]`, func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err:     ErrMissingClosingBracket,
 				Parsing: "Target",
