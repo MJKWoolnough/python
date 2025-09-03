@@ -1116,7 +1116,7 @@ func (t *TypeParams) parse(p *pyParser) error {
 
 	t.Comments[1] = p.AcceptRunWhitespaceComments()
 
-	p.AcceptRunAllWhitespaceNoComment()
+	p.AcceptRunAllWhitespace()
 
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"})
 
