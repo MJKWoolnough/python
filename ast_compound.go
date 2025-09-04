@@ -710,7 +710,7 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 type WithItem struct {
 	Expression Expression
 	Target     *Target
-	Comments   [4]Comments
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 
@@ -737,9 +737,7 @@ func (w *WithItem) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 		p.Next()
 
-		w.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		q = p.NewGoal()
 		w.Target = new(Target)
@@ -749,16 +747,10 @@ func (w *WithItem) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
-	}
-
-	q = p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		w.Comments[3] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		w.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 	} else {
-		w.Comments[3] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+		w.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	}
 
 	w.Tokens = p.ToTokens()
@@ -1061,7 +1053,7 @@ type TargetList struct {
 }
 
 func (t *TargetList) parse(p *pyParser) error {
-	t.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	t.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 
 	p.AcceptRunAllWhitespace()
 
@@ -1119,11 +1111,15 @@ type Target struct {
 	Tuple             *TargetList
 	Array             *TargetList
 	Star              *Target
-	Comments          Comments
+	Comments          [2]Comments
 	Tokens            Tokens
 }
 
 func (t *Target) parse(p *pyParser) error {
+	t.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
 	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
 		p.AcceptRunWhitespaceNoComment()
 
@@ -1162,9 +1158,7 @@ func (t *Target) parse(p *pyParser) error {
 		}
 
 	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		t.Comments = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
+		p.AcceptRunWhitespaceNoComment()
 
 		q := p.NewGoal()
 		t.Star = new(Target)
@@ -1185,6 +1179,16 @@ func (t *Target) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		t.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else {
+		t.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 	}
 
 	t.Tokens = p.ToTokens()
