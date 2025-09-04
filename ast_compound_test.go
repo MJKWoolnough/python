@@ -6760,30 +6760,7 @@ func TestTargetList(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 8
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
-								Token:   tk[0],
-							},
-							Parsing: "Atom",
-							Token:   tk[0],
-						},
-						Parsing: "PrimaryExpression",
-						Token:   tk[0],
-					},
-					Parsing: "Target",
-					Token:   tk[0],
-				},
-				Parsing: "TargetList",
-				Token:   tk[0],
-			}
-		}},
-		{"(#abc\na\n#def\n)", func(t *test, tk Tokens) { // 9
+		{"(#abc\na\n#def\n)", func(t *test, tk Tokens) { // 8
 			t.Output = TargetList{
 				Targets: []Target{
 					{
@@ -6801,7 +6778,7 @@ func TestTargetList(t *testing.T) {
 				Tokens:   tk[1:6],
 			}
 		}},
-		{"(#abc\na,b\n#def\n)", func(t *test, tk Tokens) { // 10
+		{"(#abc\na,b\n#def\n)", func(t *test, tk Tokens) { // 9
 			t.Output = TargetList{
 				Targets: []Target{
 					{
@@ -6829,7 +6806,7 @@ func TestTargetList(t *testing.T) {
 				Tokens:   tk[1:8],
 			}
 		}},
-		{"(#abc\na,#def\n)", func(t *test, tk Tokens) { // 11
+		{"(#abc\na,#def\n)", func(t *test, tk Tokens) { // 10
 			t.Output = TargetList{
 				Targets: []Target{
 					{
@@ -6845,6 +6822,29 @@ func TestTargetList(t *testing.T) {
 				},
 				Comments: [2]Comments{{tk[1]}},
 				Tokens:   tk[1:4],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[0],
+							},
+							Parsing: "Atom",
+							Token:   tk[0],
+						},
+						Parsing: "PrimaryExpression",
+						Token:   tk[0],
+					},
+					Parsing: "Target",
+					Token:   tk[0],
+				},
+				Parsing: "TargetList",
+				Token:   tk[0],
 			}
 		}},
 	}, func(t *test) (Type, error) {
