@@ -1710,6 +1710,11 @@ func (s Suite) printSource(w writer, v bool) {
 }
 
 func (t Target) printSource(w writer, v bool) {
+	if v && w.InMultiline() && len(t.Comments[0]) > 0 {
+		w.WriteString("\n")
+		t.Comments[0].printSource(w, true)
+	}
+
 	if t.PrimaryExpression != nil {
 		t.PrimaryExpression.printSource(w, v)
 	} else if t.Tuple != nil {
@@ -1737,13 +1742,12 @@ func (t Target) printSource(w writer, v bool) {
 		w.WriteString("]")
 	} else if t.Star != nil {
 		w.WriteString("*")
-
-		if v && w.InMultiline() && len(t.Comments) > 0 {
-			w.WriteString(" ")
-			t.Comments.printSource(w, v)
-		}
-
 		t.Star.printSource(w, v)
+	}
+
+	if v && w.InMultiline() && len(t.Comments[1]) > 0 {
+		w.WriteString(" ")
+		t.Comments[1].printSource(w, true)
 	}
 }
 
@@ -1950,16 +1954,10 @@ func (wi WithItem) printSource(w writer, v bool) {
 
 		w.WriteString("as ")
 
-		if v && w.InMultiline() {
-			wi.Comments[2].printSource(w, true)
-		}
-
 		wi.Target.printSource(w, v)
-	}
-
-	if v && w.InMultiline() && len(wi.Comments[3]) > 0 {
+	} else if v && w.InMultiline() && len(wi.Comments[1]) > 0 {
 		w.WriteString(" ")
-		wi.Comments[3].printSource(w, true)
+		wi.Comments[1].printSource(w, true)
 	}
 }
 
