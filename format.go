@@ -15,6 +15,7 @@ type writer interface {
 	io.Writer
 	WriteString(string)
 	Underlying() writer
+	LastChar() byte
 	Indent() writer
 	IndentMultiline() writer
 	InMultiline() bool
@@ -103,6 +104,15 @@ func (i *indentPrinter) InMultiline() bool {
 
 type underlyingWriter struct {
 	io.Writer
+	lastChar byte
+}
+
+func (u *underlyingWriter) Write(p []byte) (int, error) {
+	if len(p) > 0 {
+		u.lastChar = p[len(p)-1]
+	}
+
+	return u.Writer.Write(p)
 }
 
 func (u *underlyingWriter) WriteString(s string) {
@@ -111,6 +121,10 @@ func (u *underlyingWriter) WriteString(s string) {
 
 func (u *underlyingWriter) Underlying() writer {
 	return u
+}
+
+func (u *underlyingWriter) LastChar() byte {
+	return u.lastChar
 }
 
 func (u *underlyingWriter) Indent() writer {
@@ -205,6 +219,12 @@ func (c Comments) printType(w writer, v bool) {
 
 func (c Comments) printSource(w writer, v bool) {
 	if len(c) > 0 {
+		switch w.LastChar() {
+		case 0, ' ', '\n', '\t':
+		default:
+			w.WriteString(" ")
+		}
+
 		printComment(w, c[0].Data)
 
 		line := c[0].Line
