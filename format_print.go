@@ -445,7 +445,7 @@ func (c ComprehensionFor) printSource(w writer, v bool) {
 
 	c.TargetList.printSource(w, v)
 
-	if v && w.InMultiline() && len(c.TargetList.Comments[1]) > 0 {
+	if w.LastChar() == '\n' {
 		w.WriteString("in ")
 	} else {
 		w.WriteString(" in ")
@@ -1675,7 +1675,6 @@ func (s Suite) printSource(w writer, v bool) {
 
 func (t Target) printSource(w writer, v bool) {
 	if v && w.InMultiline() && len(t.Comments[0]) > 0 {
-		w.WriteString("\n")
 		t.Comments[0].printSource(w, true)
 	}
 
