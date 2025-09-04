@@ -6205,6 +6205,29 @@ func TestClassDefinition(t *testing.T) {
 				Token:   tk[4],
 			}
 		}},
+		{"@nonlocal\nclass a:b", func(t *test, tk Tokens) { // 19
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: wrapConditionalExpressionError(Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[1],
+							}),
+							Parsing: "Expression",
+							Token:   tk[1],
+						},
+						Parsing: "AssignmentExpression",
+						Token:   tk[1],
+					},
+					Parsing: "Decorators",
+					Token:   tk[1],
+				},
+				Parsing: "ClassDefinition",
+				Token:   tk[0],
+			}
+		}},
 	}, func(t *test) (Type, error) {
 		var c ClassDefinition
 
