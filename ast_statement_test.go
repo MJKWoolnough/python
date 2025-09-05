@@ -60,16 +60,19 @@ func TestStatement(t *testing.T) {
 				CompoundStatement: &CompoundStatement{
 					Class: &ClassDefinition{
 						Decorators: &Decorators{
-							Decorators: []AssignmentExpression{
+							Decorators: []Decorator{
 								{
-									Expression: Expression{
-										ConditionalExpression: WrapConditional(&Atom{
-											Identifier: &tk[1],
-											Tokens:     tk[1:2],
-										}),
+									Decorator: AssignmentExpression{
+										Expression: Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[1],
+												Tokens:     tk[1:2],
+											}),
+											Tokens: tk[1:2],
+										},
 										Tokens: tk[1:2],
 									},
-									Tokens: tk[1:2],
+									Tokens: tk[:2],
 								},
 							},
 							Tokens: tk[:2],
