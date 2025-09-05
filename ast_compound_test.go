@@ -1093,6 +1093,66 @@ func TestDecorators(t *testing.T) {
 	})
 }
 
+func TestDecorator(t *testing.T) {
+	doTests(t, []sourceFn{
+		{"@a\n", func(t *test, tk Tokens) { // 1
+			t.Output = Decorator{
+				Decorator: AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[1],
+							Tokens:     tk[1:2],
+						}),
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{"@ a\n", func(t *test, tk Tokens) { // 2
+			t.Output = Decorator{
+				Decorator: AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"@nonlocal\n", func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: wrapConditionalExpressionError(Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[1],
+						}),
+						Parsing: "Expression",
+						Token:   tk[1],
+					},
+					Parsing: "AssignmentExpression",
+					Token:   tk[1],
+				},
+				Parsing: "Decorator",
+				Token:   tk[1],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var d Decorator
+
+		err := d.parse(t.Tokens)
+
+		return d, err
+	})
+}
+
 func TestIfStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{"if a:b", func(t *test, tk Tokens) { // 1
