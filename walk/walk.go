@@ -112,6 +112,10 @@ func Walk(t python.Type, fn Handler) error {
 		return walkDecorators(&t, fn)
 	case *python.Decorators:
 		return walkDecorators(t, fn)
+	case python.Decorator:
+		return walkDecorator(&t, fn)
+	case *python.Decorator:
+		return walkDecorator(t, fn)
 	case python.DefParameter:
 		return walkDefParameter(&t, fn)
 	case *python.DefParameter:
@@ -641,6 +645,10 @@ func walkDecorators(t *python.Decorators, fn Handler) error {
 	}
 
 	return nil
+}
+
+func walkDecorator(t *python.Decorator, fn Handler) error {
+	return fn.Handle(&t.Decorator)
 }
 
 func walkDefParameter(t *python.DefParameter, fn Handler) error {
