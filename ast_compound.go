@@ -109,27 +109,27 @@ func (c *CompoundStatement) parse(p *pyParser) error {
 // Decorators as defined in python@3.13.0:
 // https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorators
 type Decorators struct {
-	Decorators []AssignmentExpression
+	Decorators []Decorator
 	Tokens
 }
 
 func (d *Decorators) parse(p *pyParser) error {
 	q := p.NewGoal()
 
+	q.AcceptRunWhitespace()
+
 	for q.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) {
-		q.AcceptRunWhitespace()
-
-		var ae AssignmentExpression
-
-		p.Score(q)
+		p.AcceptRunAllWhitespace()
 
 		q = p.NewGoal()
 
-		if err := ae.parse(q); err != nil {
+		var dc Decorator
+
+		if err := dc.parse(q); err != nil {
 			return p.Error("Decorators", err)
 		}
 
-		d.Decorators = append(d.Decorators, ae)
+		d.Decorators = append(d.Decorators, dc)
 
 		p.Score(q)
 
@@ -140,8 +140,6 @@ func (d *Decorators) parse(p *pyParser) error {
 		if !q.Accept(TokenLineTerminator) {
 			return p.Error("Decorators", ErrMissingNewline)
 		}
-
-		q = p.NewGoal()
 
 		q.AcceptRunAllWhitespace()
 	}
@@ -157,6 +155,28 @@ func skipDecorators(p *pyParser) {
 		skipAssignmentExpression(p)
 		p.AcceptRunAllWhitespace()
 	}
+}
+
+type Decorator struct {
+	Decorator AssignmentExpression
+	Tokens    Tokens
+}
+
+func (d *Decorator) parse(p *pyParser) error {
+	p.Next()
+	p.AcceptRunWhitespace()
+
+	q := p.NewGoal()
+
+	if err := d.Decorator.parse(q); err != nil {
+		return p.Error("Decorator", err)
+	}
+
+	p.Score(q)
+
+	d.Tokens = p.ToTokens()
+
+	return nil
 }
 
 // IfStatement as defined in python@3.13.0:
