@@ -780,6 +780,20 @@ func (f *ConditionalExpression) printType(w writer, v bool) {
 	w.WriteString("\n}")
 }
 
+func (f *Decorator) printType(w writer, v bool) {
+	pp := w.Indent()
+
+	pp.WriteString("Decorator {")
+
+	pp.WriteString("\nDecorator: ")
+	f.Decorator.printType(pp, v)
+
+	pp.WriteString("\nTokens: ")
+	f.Tokens.printType(pp, v)
+
+	w.WriteString("\n}")
+}
+
 func (f *Decorators) printType(w writer, v bool) {
 	pp := w.Indent()
 

@@ -269,6 +269,18 @@ func (f ConditionalExpression) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f Decorator) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = Decorator
+		type Decorator X
+
+		fmt.Fprintf(s, "%#v", (f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f Decorators) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = Decorators

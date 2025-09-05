@@ -56,6 +56,8 @@ func (ComprehensionIterator) pythonType() {}
 
 func (ConditionalExpression) pythonType() {}
 
+func (Decorator) pythonType() {}
+
 func (Decorators) pythonType() {}
 
 func (DefParameter) pythonType() {}
