@@ -1035,7 +1035,8 @@ func TestDecorators(t *testing.T) {
 							},
 							Tokens: tk[1:2],
 						},
-						Tokens: tk[:2],
+						Comments: Comments{tk[3]},
+						Tokens:   tk[:4],
 					},
 					{
 						Decorator: AssignmentExpression{
@@ -1125,7 +1126,23 @@ func TestDecorator(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{"@nonlocal\n", func(t *test, tk Tokens) { // 3
+		{"@a # A\n# B\n\n# C\n", func(t *test, tk Tokens) { // 3
+			t.Output = Decorator{
+				Decorator: AssignmentExpression{
+					Expression: Expression{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[1],
+							Tokens:     tk[1:2],
+						}),
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Comments: Comments{tk[3], tk[5], tk[8]},
+				Tokens:   tk[:9],
+			}
+		}},
+		{"@nonlocal\n", func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
