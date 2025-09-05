@@ -788,6 +788,9 @@ func (f *Decorator) printType(w writer, v bool) {
 	pp.WriteString("\nDecorator: ")
 	f.Decorator.printType(pp, v)
 
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
+
 	pp.WriteString("\nTokens: ")
 	f.Tokens.printType(pp, v)
 
