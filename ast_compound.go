@@ -159,6 +159,7 @@ func skipDecorators(p *pyParser) {
 
 type Decorator struct {
 	Decorator AssignmentExpression
+	Comments  Comments
 	Tokens    Tokens
 }
 
@@ -174,6 +175,7 @@ func (d *Decorator) parse(p *pyParser) error {
 
 	p.Score(q)
 
+	d.Comments = p.AcceptRunWhitespaceComments()
 	d.Tokens = p.ToTokens()
 
 	return nil
