@@ -530,13 +530,17 @@ func (c ConditionalExpression) printSource(w writer, v bool) {
 func (d Decorators) printSource(w writer, v bool) {
 	for _, dc := range d.Decorators {
 		dc.printSource(w, v)
-		w.WriteString("\n")
 	}
 }
 
 func (d Decorator) printSource(w writer, v bool) {
 	w.WriteString("@")
 	d.Decorator.printSource(w, v)
+	w.WriteString("\n")
+
+	if v {
+		d.Comments.printSource(w, true)
+	}
 }
 
 func (d DefParameter) printSource(w writer, v bool) {
