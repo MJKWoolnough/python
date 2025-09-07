@@ -5,7 +5,7 @@ import "vimagination.zapto.org/parser"
 var compounds = [...]string{"if", "while", "for", "try", "with", "func", "class", "async", "def"}
 
 // CompoundStatement as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-compound_stmt
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-compound_stmt
 type CompoundStatement struct {
 	If     *IfStatement
 	While  *WhileStatement
@@ -107,7 +107,7 @@ func (c *CompoundStatement) parse(p *pyParser) error {
 }
 
 // Decorators as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorators
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorators
 type Decorators struct {
 	Decorators []Decorator
 	Tokens
@@ -157,8 +157,8 @@ func skipDecorators(p *pyParser) {
 	}
 }
 
-// Decorator as defined in python@3.13:
-// https://docs.python.org/3.13/reference/compound_stmts.html#grammar-token-python-grammar-decorator
+// Decorator as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorator
 type Decorator struct {
 	Decorator AssignmentExpression
 	Comments  Comments
@@ -184,7 +184,7 @@ func (d *Decorator) parse(p *pyParser) error {
 }
 
 // IfStatement as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-if_stmt
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-if_stmt
 type IfStatement struct {
 	AssignmentExpression AssignmentExpression
 	Suite                Suite
@@ -295,7 +295,7 @@ type AssignmentExpressionAndSuite struct {
 }
 
 // WhileStatement as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-while_stmt
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-while_stmt
 type WhileStatement struct {
 	AssignmentExpression AssignmentExpression
 	Suite                Suite
@@ -360,7 +360,7 @@ func (w *WhileStatement) parse(p *pyParser) error {
 }
 
 // ForStatement as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-for_stmt
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-for_stmt
 type ForStatement struct {
 	Async       bool
 	TargetList  TargetList
@@ -447,7 +447,7 @@ func (f *ForStatement) parse(p *pyParser) error {
 }
 
 // TryStatement as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try_stmt
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try_stmt
 type TryStatement struct {
 	Try     Suite
 	Groups  bool
@@ -565,7 +565,7 @@ func (t *TryStatement) parse(p *pyParser) error {
 }
 
 // Except as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try1_stmt
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try1_stmt
 type Except struct {
 	Expression Expression
 	Identifier *Token
@@ -615,7 +615,7 @@ func (e *Except) parse(p *pyParser) error {
 }
 
 // WithStatement as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt
 type WithStatement struct {
 	Async    bool
 	Contents WithStatementContents
@@ -678,7 +678,7 @@ func (w *WithStatement) parse(p *pyParser) error {
 }
 
 // WithStatementContents as defined in python:3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt_contents
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt_contents
 type WithStatementContents struct {
 	Items    []WithItem
 	Comments [2]Comments
@@ -730,7 +730,7 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 }
 
 // WithItem as defined in python@3.13:
-// https://docs.python.org/3.13/reference/compound_stmts.html#grammar-token-python-grammar-with_item
+// https://docs.python.org/release/3.13/reference/compound_stmts.html#grammar-token-python-grammar-with_item
 type WithItem struct {
 	Expression Expression
 	Target     *Target
@@ -783,7 +783,7 @@ func (w *WithItem) parse(p *pyParser) error {
 }
 
 // FuncDefinition as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-funcdef
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-funcdef
 type FuncDefinition struct {
 	Decorators    *Decorators
 	Async         bool
@@ -911,7 +911,7 @@ func (f *FuncDefinition) parse(p *pyParser) error {
 }
 
 // ClassDefinition as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-classdef
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-classdef
 type ClassDefinition struct {
 	Decorators  *Decorators
 	ClassName   *Token
@@ -1009,7 +1009,7 @@ func (c *ClassDefinition) parse(p *pyParser) error {
 }
 
 // Suite as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-suite
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-suite
 type Suite struct {
 	StatementList *StatementList
 	Statements    []Statement
@@ -1069,7 +1069,7 @@ func (s *Suite) parse(p *pyParser) error {
 }
 
 // TargetList as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
 type TargetList struct {
 	Targets  []Target
 	Comments [2]Comments
@@ -1129,7 +1129,7 @@ Loop:
 }
 
 // Target as defined in python@3.13.0:
-// https://docs.python.org/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
 type Target struct {
 	PrimaryExpression *PrimaryExpression
 	Tuple             *TargetList
