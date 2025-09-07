@@ -151,7 +151,7 @@ func (a ArgumentListOrComprehension) printSource(w writer, v bool) {
 	ip := w.Indent()
 
 	if v && len(a.Comments[0]) > 0 {
-		a.Comments[0].printSource(ip, v)
+		a.Comments[0].printSource(ip, true)
 	}
 
 	if a.ArgumentList != nil {
@@ -162,7 +162,7 @@ func (a ArgumentListOrComprehension) printSource(w writer, v bool) {
 
 	if v && len(a.Comments[1]) > 0 {
 		ip.WriteString("\n")
-		a.Comments[1].printSource(ip, v)
+		a.Comments[1].printSource(ip, true)
 	}
 
 	w.WriteString(")")
@@ -594,14 +594,14 @@ func (d DictDisplay) printSource(w writer, v bool) {
 func (d DictItem) printSource(w writer, v bool) {
 	if v && w.InMultiline() && len(d.Comments[0]) > 0 {
 		w.WriteString("\n")
-		d.Comments[0].printSource(w, v)
+		d.Comments[0].printSource(w, true)
 	}
 
 	if d.OrExpression != nil {
 		w.WriteString("**")
 
 		if v && w.InMultiline() {
-			d.Comments[1].printSource(w, v)
+			d.Comments[1].printSource(w, true)
 		}
 
 		d.OrExpression.printSource(w, v)
@@ -610,13 +610,13 @@ func (d DictItem) printSource(w writer, v bool) {
 
 		if v {
 			if w.InMultiline() {
-				d.Comments[1].printSource(w, v)
+				d.Comments[1].printSource(w, true)
 			}
 
 			w.WriteString(": ")
 
 			if w.InMultiline() {
-				d.Comments[2].printSource(w, v)
+				d.Comments[2].printSource(w, true)
 			}
 		} else {
 			w.WriteString(":")
@@ -626,7 +626,7 @@ func (d DictItem) printSource(w writer, v bool) {
 	}
 
 	if v && w.InMultiline() {
-		d.Comments[3].printSource(w, v)
+		d.Comments[3].printSource(w, true)
 	}
 }
 
@@ -722,7 +722,7 @@ func (f File) printSource(w writer, v bool) {
 
 	if v && len(f.Comments[1]) > 0 {
 		w.WriteString("\n")
-		f.Comments[1].printSource(w, v)
+		f.Comments[1].printSource(w, true)
 	}
 }
 
@@ -839,7 +839,7 @@ func (f FuncDefinition) printSource(w writer, v bool) {
 	w.WriteString("(")
 
 	if v {
-		f.Comments.printSource(w, v)
+		f.Comments.printSource(w, true)
 	}
 
 	f.ParameterList.printSource(w.IndentMultiline(), v)
@@ -999,7 +999,7 @@ func (l LambdaExpression) printSource(w writer, v bool) {
 		w.WriteString(": ")
 
 		if w.InMultiline() {
-			l.Comments[2].printSource(w, v)
+			l.Comments[2].printSource(w, true)
 		}
 	} else {
 		w.WriteString(":")
@@ -1266,7 +1266,7 @@ func (p ParameterList) printSource(w writer, v bool) {
 
 func (p PositionalArgument) printSource(w writer, v bool) {
 	if v {
-		p.Comments[0].printSource(w, v)
+		p.Comments[0].printSource(w, true)
 	}
 
 	if p.AssignmentExpression != nil {
@@ -1275,14 +1275,14 @@ func (p PositionalArgument) printSource(w writer, v bool) {
 		w.WriteString("*")
 
 		if v {
-			p.Comments[1].printSource(w, v)
+			p.Comments[1].printSource(w, true)
 		}
 
 		p.Expression.printSource(w, v)
 	}
 
 	if v {
-		p.Comments[2].printSource(w, v)
+		p.Comments[2].printSource(w, true)
 	}
 }
 
@@ -1291,7 +1291,7 @@ func (p PowerExpression) printSource(w writer, v bool) {
 		w.WriteString("await ")
 
 		if v && w.InMultiline() {
-			p.Comments[0].printSource(w, v)
+			p.Comments[0].printSource(w, true)
 		}
 	}
 
@@ -1302,13 +1302,13 @@ func (p PowerExpression) printSource(w writer, v bool) {
 			w.WriteString(" ")
 
 			if w.InMultiline() {
-				p.Comments[1].printSource(w, v)
+				p.Comments[1].printSource(w, true)
 			}
 
 			w.WriteString("** ")
 
 			if w.InMultiline() {
-				p.Comments[2].printSource(w, v)
+				p.Comments[2].printSource(w, true)
 			}
 		} else {
 			w.WriteString("**")
@@ -1603,7 +1603,7 @@ func (s StarredList) printSource(w writer, v bool) {
 func (s StarredOrKeyword) printSource(w writer, v bool) {
 	if v && len(s.Comments[0]) > 0 {
 		w.WriteString("\n")
-		s.Comments[0].printSource(w, v)
+		s.Comments[0].printSource(w, true)
 	}
 
 	if s.Expression != nil {
@@ -1614,13 +1614,13 @@ func (s StarredOrKeyword) printSource(w writer, v bool) {
 	}
 
 	if v {
-		s.Comments[1].printSource(w, v)
+		s.Comments[1].printSource(w, true)
 	}
 }
 
 func (s Statement) printSource(w writer, v bool) {
 	if v {
-		s.Comments.printSource(w, v)
+		s.Comments.printSource(w, true)
 	}
 
 	if s.StatementList != nil {
@@ -1715,7 +1715,7 @@ func (t Target) printSource(w writer, v bool) {
 
 func (t TargetList) printSource(w writer, v bool) {
 	if v && len(t.Comments[0]) > 0 {
-		t.Comments[0].printSource(w, v)
+		t.Comments[0].printSource(w, true)
 	}
 
 	if len(t.Targets) > 0 {
@@ -1732,7 +1732,7 @@ func (t TargetList) printSource(w writer, v bool) {
 		}
 
 		if v {
-			t.Comments[1].printSource(w, v)
+			t.Comments[1].printSource(w, true)
 		}
 	}
 }
