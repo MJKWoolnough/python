@@ -370,16 +370,12 @@ func (p *pyTokeniser) identifier(t *parser.Tokeniser) (parser.Token, parser.Toke
 	ident := t.Get()
 	typ := TokenIdentifier
 
-	if slices.Contains(booleans[:], ident) {
-		typ = TokenBooleanLiteral
-	}
-
-	if slices.Contains(keywords[:], ident) {
-		typ = TokenKeyword
-	}
-
 	if ident == "None" {
 		typ = TokenNullLiteral
+	} else if slices.Contains(booleans[:], ident) {
+		typ = TokenBooleanLiteral
+	} else if slices.Contains(keywords[:], ident) {
+		typ = TokenKeyword
 	}
 
 	return parser.Token{
