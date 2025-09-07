@@ -1988,6 +1988,7 @@ func (y YieldExpression) printSource(w writer, v bool) {
 			w.WriteString("\n")
 			y.Comments[0].printSource(w, true)
 		}
+
 		w.WriteString("yield ")
 
 		if v && w.InMultiline() {
