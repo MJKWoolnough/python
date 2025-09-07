@@ -157,6 +157,8 @@ func skipDecorators(p *pyParser) {
 	}
 }
 
+// Decorator as defined in python@3.13:
+// https://docs.python.org/3.13/reference/compound_stmts.html#grammar-token-python-grammar-decorator
 type Decorator struct {
 	Decorator AssignmentExpression
 	Comments  Comments
