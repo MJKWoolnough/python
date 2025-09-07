@@ -1,8 +1,472 @@
 package python
 
-import (
-	"vimagination.zapto.org/parser"
-)
+import "vimagination.zapto.org/parser"
+
+// StarredList as defined in python@3.12.6:
+// https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_list
+type StarredList struct {
+	StarredItems  []StarredItem
+	TrailingComma bool
+	Tokens        Tokens
+}
+
+func (s *StarredList) parse(p *pyParser) error {
+Loop:
+	for {
+		q := p.NewGoal()
+
+		var si StarredItem
+
+		if err := si.parse(q); err != nil {
+			return p.Error("StarredList", err)
+		}
+
+		p.Score(q)
+
+		s.StarredItems = append(s.StarredItems, si)
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		hasComma := q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
+
+		r := q.NewGoal()
+
+		if hasComma {
+			r.AcceptRunWhitespace()
+		}
+
+		switch tk := r.Peek(); tk {
+		case parser.Token{Type: TokenDelimiter, Data: "]"}, parser.Token{Type: TokenDelimiter, Data: "}"}, parser.Token{Type: TokenDelimiter, Data: ")"}, parser.Token{Type: TokenDelimiter, Data: ":"}, parser.Token{Type: TokenKeyword, Data: "for"}, parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: parser.TokenDone}:
+			if hasComma {
+				if len(s.StarredItems) == 1 {
+					s.TrailingComma = true
+				}
+
+				p.Score(q)
+			}
+
+			break Loop
+		default:
+			if tk.Type == TokenLineTerminator || tk.Type == TokenDedent {
+				if hasComma {
+					if len(s.StarredItems) == 1 {
+						s.TrailingComma = true
+					}
+
+					p.Score(q)
+				}
+
+				break Loop
+			}
+		}
+
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			return q.Error("StarredList", ErrMissingComma)
+		}
+
+		q.AcceptRunWhitespaceNoComment()
+		p.Score(q)
+	}
+
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+// StarredItem as defined in python@3.12.6:
+// https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_item
+type StarredItem struct {
+	AssignmentExpression *AssignmentExpression
+	OrExpr               *OrExpression
+	Comments             [3]Comments
+	Tokens               Tokens
+}
+
+func (s *StarredItem) parse(p *pyParser) error {
+	s.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		s.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+		p.AcceptRunWhitespace()
+
+		q := p.NewGoal()
+		s.OrExpr = new(OrExpression)
+
+		if err := s.OrExpr.parse(q); err != nil {
+			return p.Error("StarredItem", err)
+		}
+
+		p.Score(q)
+	} else {
+		q := p.NewGoal()
+		s.AssignmentExpression = new(AssignmentExpression)
+
+		if err := s.AssignmentExpression.parse(q); err != nil {
+			return p.Error("StarredItem", err)
+		}
+
+		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunAllWhitespace()
+
+	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ","}) {
+		s.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else {
+		s.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+	}
+
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+type ArgumentList struct {
+	PositionalArguments        []PositionalArgument
+	StarredAndKeywordArguments []StarredOrKeyword
+	KeywordArguments           []KeywordArgument
+	Tokens                     Tokens
+}
+
+// ArgumentList as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-argument_list
+func (a *ArgumentList) parse(p *pyParser) error {
+	var nextIsKeywordItem, nextIsDoubleStarred bool
+
+	for {
+		q := p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) || q.Peek().Type == parser.TokenDone {
+			break
+		} else if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+			nextIsDoubleStarred = true
+
+			break
+		} else if q.Accept(TokenIdentifier) {
+			q.AcceptRunWhitespace()
+
+			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
+				nextIsKeywordItem = true
+
+				break
+			}
+		}
+
+		p.AcceptRunWhitespaceNoComment()
+
+		q = p.NewGoal()
+
+		var pa PositionalArgument
+
+		if err := pa.parse(q); err != nil {
+			return p.Error("ArgumentList", err)
+		}
+
+		p.Score(q)
+
+		a.PositionalArguments = append(a.PositionalArguments, pa)
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
+			break
+		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			return p.Error("ArgumentList", ErrMissingComma)
+		}
+
+		p.Score(q)
+	}
+
+	if nextIsKeywordItem {
+		for {
+			q := p.NewGoal()
+
+			q.AcceptRunWhitespace()
+
+			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+				nextIsDoubleStarred = true
+
+				break
+			}
+
+			p.AcceptRunAllWhitespaceNoComment()
+
+			q = p.NewGoal()
+
+			var sk StarredOrKeyword
+
+			if err := sk.parse(q); err != nil {
+				return p.Error("ArgumentList", err)
+			}
+
+			p.Score(q)
+
+			a.StarredAndKeywordArguments = append(a.StarredAndKeywordArguments, sk)
+			q = p.NewGoal()
+
+			q.AcceptRunWhitespace()
+
+			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
+				break
+			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				return p.Error("ArgumentList", ErrMissingComma)
+			}
+
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.AcceptRunWhitespace()
+
+			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
+				break
+			}
+		}
+	}
+
+	if nextIsDoubleStarred {
+		for {
+			p.AcceptRunAllWhitespaceNoComment()
+
+			q := p.NewGoal()
+
+			var ka KeywordArgument
+
+			if err := ka.parse(q); err != nil {
+				return p.Error("ArgumentList", err)
+			}
+
+			p.Score(q)
+
+			a.KeywordArguments = append(a.KeywordArguments, ka)
+			q = p.NewGoal()
+
+			q.AcceptRunWhitespace()
+
+			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
+				break
+			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				return p.Error("ArgumentList", ErrMissingComma)
+			}
+
+			q.AcceptRunWhitespace()
+
+			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
+				break
+			}
+
+			p.Score(q)
+		}
+	}
+
+	a.Tokens = p.ToTokens()
+
+	return nil
+}
+
+// PositionalArgument as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-positional_arguments
+type PositionalArgument struct {
+	AssignmentExpression *AssignmentExpression
+	Expression           *Expression
+	Comments             [3]Comments
+	Tokens               Tokens
+}
+
+func (pa *PositionalArgument) parse(p *pyParser) error {
+	pa.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		pa.Comments[1] = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunWhitespace()
+
+		q := p.NewGoal()
+		pa.Expression = new(Expression)
+
+		if err := pa.Expression.parse(q); err != nil {
+			return p.Error("PositionalArgument", err)
+		}
+
+		p.Score(q)
+	} else {
+		q := p.NewGoal()
+		pa.AssignmentExpression = new(AssignmentExpression)
+
+		if err := pa.AssignmentExpression.parse(q); err != nil {
+			return p.Error("PositionalArgument", err)
+		}
+
+		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		pa.Comments[2] = p.AcceptRunWhitespaceComments()
+	} else {
+		pa.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewline()
+	}
+
+	pa.Tokens = p.ToTokens()
+
+	return nil
+}
+
+// StarredOrKeyword as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-starred_and_keywords
+type StarredOrKeyword struct {
+	Expression  *Expression
+	KeywordItem *KeywordItem
+	Comments    [2]Comments
+	Tokens      Tokens
+}
+
+func (s *StarredOrKeyword) parse(p *pyParser) error {
+	s.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		p.AcceptRunWhitespaceNoComment()
+
+		q := p.NewGoal()
+		s.Expression = new(Expression)
+
+		if err := s.Expression.parse(q); err != nil {
+			return p.Error("StarredOrKeyword", err)
+		}
+
+		p.Score(q)
+	} else {
+		q := p.NewGoal()
+		s.KeywordItem = new(KeywordItem)
+
+		if err := s.KeywordItem.parse(q); err != nil {
+			return p.Error("StarredOrKeyword", err)
+		}
+
+		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		s.Comments[1] = p.AcceptRunWhitespaceComments()
+	} else {
+		s.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewline()
+	}
+
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+// KeywordItem as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-keyword_item
+type KeywordItem struct {
+	Identifier *Token
+	Expression Expression
+	Tokens     Tokens
+}
+
+func (k *KeywordItem) parse(p *pyParser) error {
+	if !p.Accept(TokenIdentifier) {
+		return p.Error("KeywordItem", ErrMissingIdentifier)
+	}
+
+	k.Identifier = p.GetLastToken()
+
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
+		return p.Error("KeywordItem", ErrMissingEquals)
+	}
+
+	p.AcceptRunWhitespace()
+
+	q := p.NewGoal()
+
+	if err := k.Expression.parse(q); err != nil {
+		return p.Error("KeywordItem", err)
+	}
+
+	p.Score(q)
+
+	k.Tokens = p.ToTokens()
+
+	return nil
+}
+
+// KeywordArgument as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-keywords_arguments
+type KeywordArgument struct {
+	KeywordItem *KeywordItem
+	Expression  *Expression
+	Comments    [3]Comments
+	Tokens      Tokens
+}
+
+func (k *KeywordArgument) parse(p *pyParser) error {
+	k.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
+		k.Comments[1] = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunWhitespace()
+
+		q := p.NewGoal()
+		k.Expression = new(Expression)
+
+		if err := k.Expression.parse(q); err != nil {
+			return p.Error("KeywordArgument", err)
+		}
+
+		p.Score(q)
+	} else {
+		q := p.NewGoal()
+		k.KeywordItem = new(KeywordItem)
+
+		if err := k.KeywordItem.parse(q); err != nil {
+			return p.Error("KeywordArgument", err)
+		}
+
+		p.Score(q)
+	}
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ","}) {
+		k.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else {
+		k.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+	}
+
+	k.Tokens = p.ToTokens()
+
+	return nil
+}
 
 // PrimaryExpression as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-primary
@@ -1607,4 +2071,603 @@ func skipPowerExpression(p *pyParser) {
 		p.AcceptRunWhitespace()
 		skipUnaryExpression(p)
 	}
+}
+
+// StatementType specifies the type of a SimpleStatment.
+type StatementType uint8
+
+const (
+	StatementAssert StatementType = iota
+	StatementAssignment
+	StatementAugmentedAssignment
+	StatementAnnotatedAssignment
+	StatementPass
+	StatementDel
+	StatementReturn
+	StatementYield
+	StatementRaise
+	StatementBreak
+	StatementContinue
+	StatementImport
+	StatementGlobal
+	StatementNonLocal
+	StatementTyp
+)
+
+// StarredExpression as defined in python@3.12.6:
+// https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_expression
+type StarredExpression struct {
+	Expression  *Expression
+	StarredList *StarredList
+	Comments    [2]Comments
+	Tokens      Tokens
+}
+
+func (s *StarredExpression) parse(p *pyParser) error {
+	s.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunAllWhitespace()
+
+	q := p.NewGoal()
+
+	if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) || q.LookaheadLine(parser.Token{Type: TokenDelimiter, Data: ","}) == 0 {
+		s.StarredList = new(StarredList)
+
+		if err := s.StarredList.parse(q); err != nil {
+			return p.Error("StarredExpression", err)
+		}
+	} else {
+		s.Expression = new(Expression)
+
+		if err := s.Expression.parse(q); err != nil {
+			return p.Error("StarredExpression", err)
+		}
+	}
+
+	p.Score(q)
+
+	s.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+	s.Tokens = p.ToTokens()
+
+	return nil
+}
+
+// AssignmentExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-assignment_expression
+type AssignmentExpression struct {
+	Identifier *Token
+	Expression Expression
+	Comments   [2]Comments
+	Tokens
+}
+
+func (a *AssignmentExpression) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if q.Accept(TokenIdentifier) {
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: ":="}) {
+			p.Next()
+			a.Identifier = p.GetLastToken()
+
+			a.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+			p.AcceptRunWhitespace()
+			p.Next()
+
+			a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+			p.AcceptRunWhitespace()
+		}
+
+		q = p.NewGoal()
+	}
+
+	if err := a.Expression.parse(q); err != nil {
+		return p.Error("AssignmentExpression", err)
+	}
+
+	p.Score(q)
+
+	a.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func skipAssignmentExpression(p *pyParser) {
+	p.AcceptRunWhitespace()
+
+	q := p.NewGoal()
+
+	if q.Accept(TokenIdentifier) {
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: ":="}) {
+			q.AcceptRunWhitespace()
+			p.Score(q)
+		}
+	}
+
+	skipExpression(p)
+}
+
+// Expression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-expression
+type Expression struct {
+	ConditionalExpression *ConditionalExpression
+	LambdaExpression      *LambdaExpression
+	Tokens                Tokens
+}
+
+func (e *Expression) parse(p *pyParser) error {
+	if p.Peek() == (parser.Token{Type: TokenKeyword, Data: "lambda"}) {
+		e.LambdaExpression = new(LambdaExpression)
+		q := p.NewGoal()
+
+		if err := e.LambdaExpression.parse(q); err != nil {
+			return p.Error("Expression", err)
+		}
+
+		p.Score(q)
+	} else {
+		e.ConditionalExpression = new(ConditionalExpression)
+		q := p.NewGoal()
+
+		if err := e.ConditionalExpression.parse(q); err != nil {
+			return p.Error("Expression", err)
+		}
+
+		p.Score(q)
+	}
+
+	e.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func skipExpression(p *pyParser) {
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "lambda"}) {
+		skipDepth(p, parser.Token{Type: TokenKeyword, Data: "lambda"}, parser.Token{Type: TokenDelimiter, Data: ":"})
+		p.AcceptRunWhitespace()
+		skipExpression(p)
+	} else {
+		skipConditionalExpression(p)
+	}
+}
+
+// ConditionalExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-conditional_expression
+type ConditionalExpression struct {
+	OrTest   OrTest
+	If       *OrTest
+	Else     *Expression
+	Comments [4]Comments
+	Tokens   Tokens
+}
+
+func (c *ConditionalExpression) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := c.OrTest.parse(q); err != nil {
+		return p.Error("ConditionalExpression", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
+		c.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+
+		q = p.NewGoal()
+		c.If = new(OrTest)
+
+		if err := c.If.parse(q); err != nil {
+			return p.Error("ConditionalExpression", err)
+		}
+
+		p.Score(q)
+
+		c.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+
+		if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
+			return p.Error("ConditionalExpression", ErrMissingElse)
+		}
+
+		c.Comments[3] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+
+		q = p.NewGoal()
+		c.Else = new(Expression)
+
+		if err := c.Else.parse(q); err != nil {
+			return p.Error("ConditionalExpression", err)
+		}
+
+		p.Score(q)
+	}
+
+	c.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func skipConditionalExpression(p *pyParser) {
+	p.AcceptRunWhitespace()
+	skipOrTest(p)
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
+		return
+	}
+
+	skipOrTest(p)
+	p.AcceptRunWhitespace()
+	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"})
+	p.AcceptRunWhitespace()
+	skipExpression(p)
+}
+
+// LambdaExpression as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-lambda_expr
+type LambdaExpression struct {
+	ParameterList *ParameterList
+	Expression    Expression
+	Comments      [3]Comments
+	Tokens        Tokens
+}
+
+func (l *LambdaExpression) parse(p *pyParser) error {
+	p.Next()
+
+	l.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
+	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+		p.AcceptRunWhitespaceNoComment()
+
+		q := p.NewGoal()
+		l.ParameterList = new(ParameterList)
+
+		if err := l.ParameterList.parse(q, false); err != nil {
+			return p.Error("LambdaExpression", err)
+		}
+
+		p.Score(q)
+
+		l.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
+			return p.Error("LambdaExpression", ErrMissingColon)
+		}
+	}
+
+	l.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
+	q := p.NewGoal()
+
+	if err := l.Expression.parse(q); err != nil {
+		return p.Error("LambdaExpression", err)
+	}
+
+	p.Score(q)
+
+	l.Tokens = p.ToTokens()
+
+	return nil
+}
+
+// OrTest as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-or_test
+type OrTest struct {
+	AndTest  AndTest
+	OrTest   *OrTest
+	Comments [2]Comments
+	Tokens   Tokens
+}
+
+func (o *OrTest) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := o.AndTest.parse(q); err != nil {
+		return p.Error("OrTest", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "or"}) {
+		o.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		o.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+
+		q = p.NewGoal()
+		o.OrTest = new(OrTest)
+
+		if err := o.OrTest.parse(q); err != nil {
+			return p.Error("OrTest", err)
+		}
+
+		p.Score(q)
+	}
+
+	o.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func skipOrTest(p *pyParser) {
+	skipAndTest(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "or"}) {
+		p.AcceptRunWhitespace()
+		skipOrTest(p)
+	}
+}
+
+// AndTest as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-and_test
+type AndTest struct {
+	NotTest  NotTest
+	AndTest  *AndTest
+	Comments [2]Comments
+	Tokens   Tokens
+}
+
+func (a *AndTest) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := a.NotTest.parse(q); err != nil {
+		return p.Error("AndTest", err)
+	}
+
+	p.Score(q)
+
+	q = p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "and"}) {
+		a.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+
+		q = p.NewGoal()
+		a.AndTest = new(AndTest)
+
+		if err := a.AndTest.parse(q); err != nil {
+			return p.Error("AndTest", err)
+		}
+
+		p.Score(q)
+	}
+
+	a.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func skipAndTest(p *pyParser) {
+	skipNotTest(p)
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "and"}) {
+		p.AcceptRunWhitespace()
+		skipAndTest(p)
+	}
+}
+
+// NotTest as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-not_test
+type NotTest struct {
+	Nots       []Comments
+	Comparison Comparison
+	Tokens     Tokens
+}
+
+func (n *NotTest) parse(p *pyParser) error {
+	for p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
+		n.Nots = append(n.Nots, p.AcceptRunWhitespaceCommentsIfMultiline())
+		p.AcceptRunWhitespace()
+	}
+
+	q := p.NewGoal()
+
+	if err := n.Comparison.parse(q); err != nil {
+		return p.Error("NotTest", err)
+	}
+
+	p.Score(q)
+
+	n.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func skipNotTest(p *pyParser) {
+	for p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
+		p.AcceptRunWhitespace()
+	}
+
+	skipComparison(p)
+}
+
+// Comparison as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comparison
+type Comparison struct {
+	OrExpression OrExpression
+	Comparisons  []ComparisonExpression
+	Tokens       Tokens
+}
+
+func (c *Comparison) parse(p *pyParser) error {
+	q := p.NewGoal()
+
+	if err := c.OrExpression.parse(q); err != nil {
+		return p.Error("Comparison", err)
+	}
+
+	p.Score(q)
+
+Loop:
+	for {
+		q = p.NewGoal()
+
+		var ce ComparisonExpression
+
+		ce.Comments[0] = q.AcceptRunWhitespaceCommentsIfMultiline()
+
+		q.AcceptRunWhitespace()
+
+		switch q.Peek() {
+		case parser.Token{Type: TokenOperator, Data: "<"},
+			parser.Token{Type: TokenOperator, Data: ">"},
+			parser.Token{Type: TokenOperator, Data: "=="},
+			parser.Token{Type: TokenOperator, Data: ">="},
+			parser.Token{Type: TokenOperator, Data: "<="},
+			parser.Token{Type: TokenOperator, Data: "!="},
+			parser.Token{Type: TokenKeyword, Data: "in"}:
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.Next()
+
+			ce.ComparisonOperator = q.ToTokens()
+
+			p.Score(q)
+		case parser.Token{Type: TokenKeyword, Data: "is"}:
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.Next()
+
+			r := q.NewGoal()
+
+			r.AcceptRunWhitespace()
+
+			if r.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
+				ce.Comments[1] = q.AcceptRunWhitespaceCommentsIfMultiline()
+
+				q.AcceptRunWhitespace()
+				q.Next()
+			}
+
+			ce.ComparisonOperator = q.ToTokens()
+
+			p.Score(q)
+		case parser.Token{Type: TokenKeyword, Data: "not"}:
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.Next()
+
+			ce.Comments[1] = q.AcceptRunWhitespaceCommentsIfMultiline()
+
+			q.AcceptRunWhitespace()
+
+			if !q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
+				return q.Error("Comparison", ErrMissingIn)
+			}
+
+			ce.ComparisonOperator = q.ToTokens()
+
+			p.Score(q)
+		default:
+			break Loop
+		}
+
+		ce.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+
+		q = p.NewGoal()
+
+		if err := ce.OrExpression.parse(q); err != nil {
+			return p.Error("Comparison", err)
+		}
+
+		p.Score(q)
+
+		c.Comparisons = append(c.Comparisons, ce)
+	}
+
+	c.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func skipComparison(p *pyParser) {
+	skipOrExpression(p)
+	p.AcceptRunWhitespace()
+
+	for {
+		switch p.Peek() {
+		default:
+			return
+		case parser.Token{Type: TokenOperator, Data: "<"},
+			parser.Token{Type: TokenOperator, Data: ">"},
+			parser.Token{Type: TokenOperator, Data: "=="},
+			parser.Token{Type: TokenOperator, Data: ">="},
+			parser.Token{Type: TokenOperator, Data: "<="},
+			parser.Token{Type: TokenOperator, Data: "!="},
+			parser.Token{Type: TokenKeyword, Data: "in"}:
+			p.Next()
+		case parser.Token{Type: TokenKeyword, Data: "is"}:
+			p.Next()
+			p.AcceptRunWhitespace()
+			p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"})
+		case parser.Token{Type: TokenKeyword, Data: "not"}:
+			p.Next()
+			p.AcceptRunWhitespace()
+			p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"})
+		}
+
+		p.AcceptRunWhitespace()
+		skipOrExpression(p)
+		p.AcceptRunWhitespace()
+	}
+}
+
+// ComparisonExpression combines combines the operators with an OrExpression.
+type ComparisonExpression struct {
+	ComparisonOperator []Token
+	OrExpression       OrExpression
+	Comments           [3]Comments
 }

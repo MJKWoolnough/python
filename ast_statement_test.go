@@ -2,189 +2,16 @@ package python
 
 import "testing"
 
-func TestStatement(t *testing.T) {
+func TestTargetList(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = Statement{
-				StatementList: &StatementList{
-					Statements: []SimpleStatement{
-						{
-							Type: StatementAssignment,
-							AssignmentStatement: &AssignmentStatement{
-								StarredExpression: &StarredExpression{
-									Expression: &Expression{
-										ConditionalExpression: WrapConditional(&Atom{
-											Identifier: &tk[0],
-											Tokens:     tk[:1],
-										}),
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`class a: pass`, func(t *test, tk Tokens) { // 2
-			t.Output = Statement{
-				CompoundStatement: &CompoundStatement{
-					Class: &ClassDefinition{
-						ClassName: &tk[2],
-						Suite: Suite{
-							StatementList: &StatementList{
-								Statements: []SimpleStatement{
-									{
-										Type:   StatementPass,
-										Tokens: tk[5:6],
-									},
-								},
-								Tokens: tk[5:6],
-							},
-							Tokens: tk[5:6],
-						},
-						Tokens: tk[:6],
-					},
-					Tokens: tk[:6],
-				},
-				Tokens: tk[:6],
-			}
-		}},
-		{"@decorator\nclass a: pass", func(t *test, tk Tokens) { // 3
-			t.Output = Statement{
-				CompoundStatement: &CompoundStatement{
-					Class: &ClassDefinition{
-						Decorators: &Decorators{
-							Decorators: []Decorator{
-								{
-									Decorator: AssignmentExpression{
-										Expression: Expression{
-											ConditionalExpression: WrapConditional(&Atom{
-												Identifier: &tk[1],
-												Tokens:     tk[1:2],
-											}),
-											Tokens: tk[1:2],
-										},
-										Tokens: tk[1:2],
-									},
-									Tokens: tk[:2],
-								},
-							},
-							Tokens: tk[:2],
-						},
-						ClassName: &tk[5],
-						Suite: Suite{
-							StatementList: &StatementList{
-								Statements: []SimpleStatement{
-									{
-										Type:   StatementPass,
-										Tokens: tk[8:9],
-									},
-								},
-								Tokens: tk[8:9],
-							},
-							Tokens: tk[8:9],
-						},
-						Tokens: tk[:9],
-					},
-					Tokens: tk[:9],
-				},
-				Tokens: tk[:9],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err:     ErrMissingIdentifier,
-							Parsing: "NonLocalStatement",
-							Token:   tk[1],
-						},
-						Parsing: "SimpleStatement",
-						Token:   tk[0],
-					},
-					Parsing: "StatementList",
-					Token:   tk[0],
-				},
-				Parsing: "Statement",
-				Token:   tk[0],
-			}
-		}},
-		{`class nonlocal: a`, func(t *test, tk Tokens) { // 5
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err:     ErrMissingIdentifier,
-						Parsing: "ClassDefinition",
-						Token:   tk[2],
-					},
-					Parsing: "CompoundStatement",
-					Token:   tk[0],
-				},
-				Parsing: "Statement",
-				Token:   tk[0],
-			}
-		}},
-		{"#A comment\na", func(t *test, tk Tokens) { // 6
-			t.Output = Statement{
-				StatementList: &StatementList{
-					Statements: []SimpleStatement{
-						{
-							Type: StatementAssignment,
-							AssignmentStatement: &AssignmentStatement{
-								StarredExpression: &StarredExpression{
-									Expression: &Expression{
-										ConditionalExpression: WrapConditional(&Atom{
-											Identifier: &tk[2],
-											Tokens:     tk[2:3],
-										}),
-										Tokens: tk[2:3],
-									},
-									Tokens: tk[2:3],
-								},
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-					},
-					Tokens: tk[2:3],
-				},
-				Comments: Comments{tk[0]},
-				Tokens:   tk[:3],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var s Statement
-
-		err := s.parse(t.Tokens)
-
-		return s, err
-	})
-}
-
-func TestStatementList(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = StatementList{
-				Statements: []SimpleStatement{
+			t.Output = TargetList{
+				Targets: []Target{
 					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
 							},
 							Tokens: tk[:1],
 						},
@@ -194,159 +21,24 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{`a;`, func(t *test, tk Tokens) { // 2
-			t.Output = StatementList{
-				Statements: []SimpleStatement{
+		{`a,b`, func(t *test, tk Tokens) { // 2
+			t.Output = TargetList{
+				Targets: []Target{
 					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`a ; `, func(t *test, tk Tokens) { // 3
-			t.Output = StatementList{
-				Statements: []SimpleStatement{
-					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{"a\n", func(t *test, tk Tokens) { // 4
-			t.Output = StatementList{
-				Statements: []SimpleStatement{
-					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a; #Comment`, func(t *test, tk Tokens) { // 5
-			t.Output = StatementList{
-				Statements: []SimpleStatement{
-					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Comments: Comments{tk[3]},
-				Tokens:   tk[:4],
-			}
-		}},
-		{"a;\n", func(t *test, tk Tokens) { // 6
-			t.Output = StatementList{
-				Statements: []SimpleStatement{
-					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`a;b`, func(t *test, tk Tokens) { // 7
-			t.Output = StatementList{
-				Statements: []SimpleStatement{
-					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
 							},
 							Tokens: tk[:1],
 						},
 						Tokens: tk[:1],
 					},
 					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[2],
-										Tokens:     tk[2:3],
-									}),
-									Tokens: tk[2:3],
-								},
-								Tokens: tk[2:3],
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
 							},
 							Tokens: tk[2:3],
 						},
@@ -356,38 +48,24 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a ; b `, func(t *test, tk Tokens) { // 8
-			t.Output = StatementList{
-				Statements: []SimpleStatement{
+		{`a , b`, func(t *test, tk Tokens) { // 3
+			t.Output = TargetList{
+				Targets: []Target{
 					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[0],
-										Tokens:     tk[:1],
-									}),
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
 							},
 							Tokens: tk[:1],
 						},
 						Tokens: tk[:1],
 					},
 					{
-						Type: StatementAssignment,
-						AssignmentStatement: &AssignmentStatement{
-							StarredExpression: &StarredExpression{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[4],
-										Tokens:     tk[4:5],
-									}),
-									Tokens: tk[4:5],
-								},
-								Tokens: tk[4:5],
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
 							},
 							Tokens: tk[4:5],
 						},
@@ -397,42 +75,498 @@ func TestStatementList(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 9
+		{`a, ;`, func(t *test, tk Tokens) { // 4
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a, in`, func(t *test, tk Tokens) { // 5
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a, =`, func(t *test, tk Tokens) { // 6
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a,`, func(t *test, tk Tokens) { // 7
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[0],
+								Tokens:     tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{"(#abc\na\n#def\n)", func(t *test, tk Tokens) { // 8
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							},
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[5]}},
+				Tokens:   tk[1:6],
+			}
+		}},
+		{"(#abc\na,b\n#def\n)", func(t *test, tk Tokens) { // 9
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							},
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[5],
+								Tokens:     tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[5:6],
+					},
+				},
+				Comments: [2]Comments{{tk[1]}, {tk[7]}},
+				Tokens:   tk[1:8],
+			}
+		}},
+		{"(#abc\na,#def\n)", func(t *test, tk Tokens) { // 10
+			t.Output = TargetList{
+				Targets: []Target{
+					{
+						PrimaryExpression: &PrimaryExpression{
+							Atom: &Atom{
+								Identifier: &tk[3],
+								Tokens:     tk[3:4],
+							},
+							Tokens: tk[3:4],
+						},
+						Tokens: tk[3:4],
+					},
+				},
+				Comments: [2]Comments{{tk[1]}},
+				Tokens:   tk[1:4],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err:     ErrMissingIdentifier,
-						Parsing: "NonLocalStatement",
-						Token:   tk[1],
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[0],
+							},
+							Parsing: "Atom",
+							Token:   tk[0],
+						},
+						Parsing: "PrimaryExpression",
+						Token:   tk[0],
 					},
-					Parsing: "SimpleStatement",
+					Parsing: "Target",
 					Token:   tk[0],
 				},
-				Parsing: "StatementList",
+				Parsing: "TargetList",
 				Token:   tk[0],
 			}
 		}},
-		{`a;nonlocal`, func(t *test, tk Tokens) { // 10
+	}, func(t *test) (Type, error) {
+		var tl TargetList
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
+
+		err := tl.parse(t.Tokens)
+
+		return tl, err
+	})
+}
+
+func TestTarget(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = Target{
+				PrimaryExpression: &PrimaryExpression{
+					Atom: &Atom{
+						Identifier: &tk[0],
+						Tokens:     tk[:1],
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`(a)`, func(t *test, tk Tokens) { // 2
+			t.Output = Target{
+				Tuple: &TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[1],
+									Tokens:     tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`( a )`, func(t *test, tk Tokens) { // 3
+			t.Output = Target{
+				Tuple: &TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`[a]`, func(t *test, tk Tokens) { // 4
+			t.Output = Target{
+				Array: &TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[1],
+									Tokens:     tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Tokens: tk[1:2],
+						},
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`[ a ]`, func(t *test, tk Tokens) { // 5
+			t.Output = Target{
+				Array: &TargetList{
+					Targets: []Target{
+						{
+							PrimaryExpression: &PrimaryExpression{
+								Atom: &Atom{
+									Identifier: &tk[2],
+									Tokens:     tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a.b`, func(t *test, tk Tokens) { // 6
+			t.Output = Target{
+				PrimaryExpression: &PrimaryExpression{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					AttributeRef: &tk[2],
+					Tokens:       tk[:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{`a[b]`, func(t *test, tk Tokens) { // 7
+			t.Output = Target{
+				PrimaryExpression: &PrimaryExpression{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+					Slicing: &SliceList{
+						SliceItems: []SliceItem{
+							{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[2],
+										Tokens:     tk[2:3],
+									}),
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+						},
+						Tokens: tk[1:4],
+					},
+					Tokens: tk[:4],
+				},
+				Tokens: tk[:4],
+			}
+		}},
+		{`*a`, func(t *test, tk Tokens) { // 8
+			t.Output = Target{
+				Star: &Target{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[1],
+							Tokens:     tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					Tokens: tk[1:2],
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`* a`, func(t *test, tk Tokens) { // 9
+			t.Output = Target{
+				Star: &Target{
+					PrimaryExpression: &PrimaryExpression{
+						Atom: &Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"( * # A\na )", func(t *test, tk Tokens) { // 10
+			t.Output = Target{
+				Tuple: &TargetList{
+					Targets: []Target{
+						{
+							Star: &Target{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[6],
+										Tokens:     tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+								Comments: [2]Comments{{tk[4]}},
+								Tokens:   tk[4:7],
+							},
+							Tokens: tk[2:7],
+						},
+					},
+					Tokens: tk[2:7],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 11
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err:     ErrMissingIdentifier,
-						Parsing: "NonLocalStatement",
-						Token:   tk[3],
+						Err: Error{
+							Err:     ErrInvalidEnclosure,
+							Parsing: "Enclosure",
+							Token:   tk[0],
+						},
+						Parsing: "Atom",
+						Token:   tk[0],
 					},
-					Parsing: "SimpleStatement",
-					Token:   tk[2],
+					Parsing: "PrimaryExpression",
+					Token:   tk[0],
 				},
-				Parsing: "StatementList",
-				Token:   tk[2],
+				Parsing: "Target",
+				Token:   tk[0],
+			}
+		}},
+		{`(nonlocal)`, func(t *test, tk Tokens) { // 12
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[1],
+								},
+								Parsing: "Atom",
+								Token:   tk[1],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[1],
+						},
+						Parsing: "Target",
+						Token:   tk[1],
+					},
+					Parsing: "TargetList",
+					Token:   tk[1],
+				},
+				Parsing: "Target",
+				Token:   tk[1],
+			}
+		}},
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 13
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err:     ErrInvalidEnclosure,
+									Parsing: "Enclosure",
+									Token:   tk[1],
+								},
+								Parsing: "Atom",
+								Token:   tk[1],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[1],
+						},
+						Parsing: "Target",
+						Token:   tk[1],
+					},
+					Parsing: "TargetList",
+					Token:   tk[1],
+				},
+				Parsing: "Target",
+				Token:   tk[1],
+			}
+		}},
+		{`*nonlocal`, func(t *test, tk Tokens) { // 14
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err: Error{
+								Err:     ErrInvalidEnclosure,
+								Parsing: "Enclosure",
+								Token:   tk[1],
+							},
+							Parsing: "Atom",
+							Token:   tk[1],
+						},
+						Parsing: "PrimaryExpression",
+						Token:   tk[1],
+					},
+					Parsing: "Target",
+					Token:   tk[1],
+				},
+				Parsing: "Target",
+				Token:   tk[1],
+			}
+		}},
+		{`a()`, func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "Target",
+				Token:   tk[0],
+			}
+		}},
+		{`{a}`, func(t *test, tk Tokens) { // 16
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "Target",
+				Token:   tk[0],
+			}
+		}},
+		{`(a b)`, func(t *test, tk Tokens) { // 17
+			t.Err = Error{
+				Err:     ErrMissingClosingParen,
+				Parsing: "Target",
+				Token:   tk[3],
+			}
+		}},
+		{`[a b]`, func(t *test, tk Tokens) { // 18
+			t.Err = Error{
+				Err:     ErrMissingClosingBracket,
+				Parsing: "Target",
+				Token:   tk[3],
 			}
 		}},
 	}, func(t *test) (Type, error) {
-		var s StatementList
+		var tt Target
 
-		err := s.parse(t.Tokens)
+		err := tt.parse(t.Tokens)
 
-		return s, err
+		return tt, err
 	})
 }
 
@@ -1829,173 +1963,6 @@ func TestAnnotatedAssignmentStatement(t *testing.T) {
 	})
 }
 
-func TestStarredExpression(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = StarredExpression{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`*a`, func(t *test, tk Tokens) { // 2
-			t.Output = StarredExpression{
-				StarredList: &StarredList{
-					StarredItems: []StarredItem{
-						{
-							OrExpr: &WrapConditional(&Atom{
-								Identifier: &tk[1],
-								Tokens:     tk[1:2],
-							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
-							Tokens: tk[:2],
-						},
-					},
-					Tokens: tk[:2],
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`* a`, func(t *test, tk Tokens) { // 3
-			t.Output = StarredExpression{
-				StarredList: &StarredList{
-					StarredItems: []StarredItem{
-						{
-							OrExpr: &WrapConditional(&Atom{
-								Identifier: &tk[2],
-								Tokens:     tk[2:3],
-							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
-							Tokens: tk[:3],
-						},
-					},
-					Tokens: tk[:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{"(# A\na #B\n)", func(t *test, tk Tokens) { // 4
-			t.Output = StarredExpression{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[3],
-						Tokens:     tk[3:4],
-					}),
-					Tokens: tk[3:4],
-				},
-				Comments: [2]Comments{{tk[1]}, {tk[5]}},
-				Tokens:   tk[1:6],
-			}
-		}},
-		{"(# A\n*a, #B\n)", func(t *test, tk Tokens) { // 5
-			t.Output = StarredExpression{
-				StarredList: &StarredList{
-					StarredItems: []StarredItem{
-						{
-							OrExpr: &WrapConditional(&Atom{
-								Identifier: &tk[4],
-								Tokens:     tk[4:5],
-							}).OrTest.AndTest.NotTest.Comparison.OrExpression,
-							Tokens: tk[3:5],
-						},
-					},
-					TrailingComma: true,
-					Tokens:        tk[3:6],
-				},
-				Comments: [2]Comments{{tk[1]}, {tk[7]}},
-				Tokens:   tk[1:8],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 6
-			t.Err = Error{
-				Err: Error{
-					Err: wrapConditionalExpressionError(Error{
-						Err:     ErrInvalidEnclosure,
-						Parsing: "Enclosure",
-						Token:   tk[0],
-					}),
-					Parsing: "Expression",
-					Token:   tk[0],
-				},
-				Parsing: "StarredExpression",
-				Token:   tk[0],
-			}
-		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 7
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err:     ErrInvalidEnclosure,
-																	Parsing: "Enclosure",
-																	Token:   tk[1],
-																},
-																Parsing: "Atom",
-																Token:   tk[1],
-															},
-															Parsing: "PrimaryExpression",
-															Token:   tk[1],
-														},
-														Parsing: "PowerExpression",
-														Token:   tk[1],
-													},
-													Parsing: "UnaryExpression",
-													Token:   tk[1],
-												},
-												Parsing: "MultiplyExpression",
-												Token:   tk[1],
-											},
-											Parsing: "AddExpression",
-											Token:   tk[1],
-										},
-										Parsing: "ShiftExpression",
-										Token:   tk[1],
-									},
-									Parsing: "AndExpression",
-									Token:   tk[1],
-								},
-								Parsing: "XorExpression",
-								Token:   tk[1],
-							},
-							Parsing: "OrExpression",
-							Token:   tk[1],
-						},
-						Parsing: "StarredItem",
-						Token:   tk[1],
-					},
-					Parsing: "StarredList",
-					Token:   tk[0],
-				},
-				Parsing: "StarredExpression",
-				Token:   tk[0],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var s StarredExpression
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := s.parse(t.Tokens)
-
-		return s, err
-	})
-}
-
 func TestDelStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`del a`, func(t *test, tk Tokens) { // 1
@@ -3194,2953 +3161,5 @@ func TestTypeStatement(t *testing.T) {
 		err := ts.parse(t.Tokens)
 
 		return ts, err
-	})
-}
-
-func TestTypeParams(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`[a]`, func(t *test, tk Tokens) { // 1
-			t.Output = TypeParams{
-				TypeParams: []TypeParam{
-					{
-						Identifier: &tk[1],
-						Tokens:     tk[1:2],
-					},
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`[]`, func(t *test, tk Tokens) { // 2
-			t.Output = TypeParams{
-				Tokens: tk[:2],
-			}
-		}},
-		{`[ ]`, func(t *test, tk Tokens) { // 3
-			t.Output = TypeParams{
-				Tokens: tk[:3],
-			}
-		}},
-		{`[ a ]`, func(t *test, tk Tokens) { // 4
-			t.Output = TypeParams{
-				TypeParams: []TypeParam{
-					{
-						Identifier: &tk[2],
-						Tokens:     tk[2:3],
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`[a, b]`, func(t *test, tk Tokens) { // 5
-			t.Output = TypeParams{
-				TypeParams: []TypeParam{
-					{
-						Identifier: &tk[1],
-						Tokens:     tk[1:2],
-					},
-					{
-						Identifier: &tk[4],
-						Tokens:     tk[4:5],
-					},
-				},
-				Tokens: tk[:6],
-			}
-		}},
-		{"[ # A\na, b\n# B\n]", func(t *test, tk Tokens) { // 6
-			t.Output = TypeParams{
-				TypeParams: []TypeParam{
-					{
-						Identifier: &tk[4],
-						Tokens:     tk[4:5],
-					},
-					{
-						Identifier: &tk[7],
-						Tokens:     tk[7:8],
-					},
-				},
-				Comments: [2]Comments{{tk[2]}, {tk[9]}},
-				Tokens:   tk[:12],
-			}
-		}},
-		{"[ # A\n\t# B\n\t\n\t# C\n\ta, b # D\n\t# E\n\t\n\t# F\n\t]", func(t *test, tk Tokens) { // 7
-			t.Output = TypeParams{
-				TypeParams: []TypeParam{
-					{
-						Identifier: &tk[8],
-						Comments:   [4]Comments{{tk[6]}},
-						Tokens:     tk[6:9],
-					},
-					{
-						Identifier: &tk[11],
-						Comments:   [4]Comments{nil, nil, nil, {tk[13], tk[15]}},
-						Tokens:     tk[11:16],
-					},
-				},
-				Comments: [2]Comments{{tk[2], tk[4]}, {tk[17]}},
-				Tokens:   tk[:20],
-			}
-		}},
-		{`[nonlocal]`, func(t *test, tk Tokens) { // 8
-			t.Err = Error{
-				Err: Error{
-					Err:     ErrMissingIdentifier,
-					Parsing: "TypeParam",
-					Token:   tk[1],
-				},
-				Parsing: "TypeParams",
-				Token:   tk[1],
-			}
-		}},
-		{`[a b]`, func(t *test, tk Tokens) { // 9
-			t.Err = Error{
-				Err:     ErrMissingComma,
-				Parsing: "TypeParams",
-				Token:   tk[3],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var tp TypeParams
-
-		err := tp.parse(t.Tokens)
-
-		return tp, err
-	})
-}
-
-func TestAssignmentExpression(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = AssignmentExpression{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a:=b`, func(t *test, tk Tokens) { // 2
-			t.Output = AssignmentExpression{
-				Identifier: &tk[0],
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[2],
-						Tokens:     tk[2:3],
-					}),
-					Tokens: tk[2:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`a := b`, func(t *test, tk Tokens) { // 3
-			t.Output = AssignmentExpression{
-				Identifier: &tk[0],
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[4],
-						Tokens:     tk[4:5],
-					}),
-					Tokens: tk[4:5],
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{"{a # A\n:= # B\nb}", func(t *test, tk Tokens) { // 4
-			t.Output = AssignmentExpression{
-				Identifier: &tk[1],
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[9],
-						Tokens:     tk[9:10],
-					}),
-					Tokens: tk[9:10],
-				},
-				Comments: [2]Comments{{tk[3]}, {tk[7]}},
-				Tokens:   tk[1:10],
-			}
-		}},
-		{`nonlocal := a`, func(t *test, tk Tokens) { // 5
-			t.Err = Error{
-				Err: Error{
-					Err: wrapConditionalExpressionError(Error{
-						Err:     ErrInvalidEnclosure,
-						Parsing: "Enclosure",
-						Token:   tk[0],
-					}),
-					Parsing: "Expression",
-					Token:   tk[0],
-				},
-				Parsing: "AssignmentExpression",
-				Token:   tk[0],
-			}
-		}},
-		{`a := nonlocal`, func(t *test, tk Tokens) { // 6
-			t.Err = Error{
-				Err: Error{
-					Err: wrapConditionalExpressionError(Error{
-						Err:     ErrInvalidEnclosure,
-						Parsing: "Enclosure",
-						Token:   tk[4],
-					}),
-					Parsing: "Expression",
-					Token:   tk[4],
-				},
-				Parsing: "AssignmentExpression",
-				Token:   tk[4],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var a AssignmentExpression
-
-		if t.Tokens.Peek().Data == "{" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := a.parse(t.Tokens)
-
-		return a, err
-	})
-}
-
-func TestExpression(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = Expression{
-				ConditionalExpression: WrapConditional(&Atom{
-					Identifier: &tk[0],
-					Tokens:     tk[:1],
-				}),
-				Tokens: tk[:1],
-			}
-		}},
-		{`lambda:a`, func(t *test, tk Tokens) { // 2
-			t.Output = Expression{
-				LambdaExpression: &LambdaExpression{
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[2],
-							Tokens:     tk[2:3],
-						}),
-						Tokens: tk[2:3],
-					},
-					Tokens: tk[:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 3
-			t.Err = Error{
-				Err: wrapConditionalExpressionError(Error{
-					Err:     ErrInvalidEnclosure,
-					Parsing: "Enclosure",
-					Token:   tk[0],
-				}),
-				Parsing: "Expression",
-				Token:   tk[0],
-			}
-		}},
-		{`lambda:nonlocal`, func(t *test, tk Tokens) { // 4
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: wrapConditionalExpressionError(Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[2],
-						}),
-						Parsing: "Expression",
-						Token:   tk[2],
-					},
-					Parsing: "LambdaExpression",
-					Token:   tk[2],
-				},
-				Parsing: "Expression",
-				Token:   tk[0],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var e Expression
-
-		err := e.parse(t.Tokens)
-
-		return e, err
-	})
-}
-
-func TestConditionalExpression(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = ConditionalExpression{
-				OrTest: OrTest{
-					AndTest: AndTest{
-						NotTest: NotTest{
-							Comparison: Comparison{
-								OrExpression: OrExpression{
-									XorExpression: XorExpression{
-										AndExpression: AndExpression{
-											ShiftExpression: ShiftExpression{
-												AddExpression: AddExpression{
-													MultiplyExpression: MultiplyExpression{
-														UnaryExpression: UnaryExpression{
-															PowerExpression: &PowerExpression{
-																PrimaryExpression: PrimaryExpression{
-																	Atom: &Atom{
-																		Identifier: &tk[0],
-																		Tokens:     tk[:1],
-																	},
-																	Tokens: tk[:1],
-																},
-																Tokens: tk[:1],
-															},
-															Tokens: tk[:1],
-														},
-														Tokens: tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a if b else c`, func(t *test, tk Tokens) { // 2
-			t.Output = ConditionalExpression{
-				OrTest: OrTest{
-					AndTest: AndTest{
-						NotTest: NotTest{
-							Comparison: Comparison{
-								OrExpression: OrExpression{
-									XorExpression: XorExpression{
-										AndExpression: AndExpression{
-											ShiftExpression: ShiftExpression{
-												AddExpression: AddExpression{
-													MultiplyExpression: MultiplyExpression{
-														UnaryExpression: UnaryExpression{
-															PowerExpression: &PowerExpression{
-																PrimaryExpression: PrimaryExpression{
-																	Atom: &Atom{
-																		Identifier: &tk[0],
-																		Tokens:     tk[:1],
-																	},
-																	Tokens: tk[:1],
-																},
-																Tokens: tk[:1],
-															},
-															Tokens: tk[:1],
-														},
-														Tokens: tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				If: &OrTest{
-					AndTest: AndTest{
-						NotTest: NotTest{
-							Comparison: Comparison{
-								OrExpression: OrExpression{
-									XorExpression: XorExpression{
-										AndExpression: AndExpression{
-											ShiftExpression: ShiftExpression{
-												AddExpression: AddExpression{
-													MultiplyExpression: MultiplyExpression{
-														UnaryExpression: UnaryExpression{
-															PowerExpression: &PowerExpression{
-																PrimaryExpression: PrimaryExpression{
-																	Atom: &Atom{
-																		Identifier: &tk[4],
-																		Tokens:     tk[4:5],
-																	},
-																	Tokens: tk[4:5],
-																},
-																Tokens: tk[4:5],
-															},
-															Tokens: tk[4:5],
-														},
-														Tokens: tk[4:5],
-													},
-													Tokens: tk[4:5],
-												},
-												Tokens: tk[4:5],
-											},
-											Tokens: tk[4:5],
-										},
-										Tokens: tk[4:5],
-									},
-									Tokens: tk[4:5],
-								},
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[4:5],
-						},
-						Tokens: tk[4:5],
-					},
-					Tokens: tk[4:5],
-				},
-				Else: &Expression{
-					ConditionalExpression: &ConditionalExpression{
-						OrTest: OrTest{
-							AndTest: AndTest{
-								NotTest: NotTest{
-									Comparison: Comparison{
-										OrExpression: OrExpression{
-											XorExpression: XorExpression{
-												AndExpression: AndExpression{
-													ShiftExpression: ShiftExpression{
-														AddExpression: AddExpression{
-															MultiplyExpression: MultiplyExpression{
-																UnaryExpression: UnaryExpression{
-																	PowerExpression: &PowerExpression{
-																		PrimaryExpression: PrimaryExpression{
-																			Atom: &Atom{
-																				Identifier: &tk[8],
-																				Tokens:     tk[8:9],
-																			},
-																			Tokens: tk[8:9],
-																		},
-																		Tokens: tk[8:9],
-																	},
-																	Tokens: tk[8:9],
-																},
-																Tokens: tk[8:9],
-															},
-															Tokens: tk[8:9],
-														},
-														Tokens: tk[8:9],
-													},
-													Tokens: tk[8:9],
-												},
-												Tokens: tk[8:9],
-											},
-											Tokens: tk[8:9],
-										},
-										Tokens: tk[8:9],
-									},
-									Tokens: tk[8:9],
-								},
-								Tokens: tk[8:9],
-							},
-							Tokens: tk[8:9],
-						},
-						Tokens: tk[8:9],
-					},
-					Tokens: tk[8:9],
-				},
-				Tokens: tk[:9],
-			}
-		}},
-		{"(a # A\nif # B\nb # C\nelse # D\nc)", func(t *test, tk Tokens) { // 3
-			t.Output = ConditionalExpression{
-				OrTest: OrTest{
-					AndTest: AndTest{
-						NotTest: NotTest{
-							Comparison: Comparison{
-								OrExpression: OrExpression{
-									XorExpression: XorExpression{
-										AndExpression: AndExpression{
-											ShiftExpression: ShiftExpression{
-												AddExpression: AddExpression{
-													MultiplyExpression: MultiplyExpression{
-														UnaryExpression: UnaryExpression{
-															PowerExpression: &PowerExpression{
-																PrimaryExpression: PrimaryExpression{
-																	Atom: &Atom{
-																		Identifier: &tk[1],
-																		Tokens:     tk[1:2],
-																	},
-																	Tokens: tk[1:2],
-																},
-																Tokens: tk[1:2],
-															},
-															Tokens: tk[1:2],
-														},
-														Tokens: tk[1:2],
-													},
-													Tokens: tk[1:2],
-												},
-												Tokens: tk[1:2],
-											},
-											Tokens: tk[1:2],
-										},
-										Tokens: tk[1:2],
-									},
-									Tokens: tk[1:2],
-								},
-								Tokens: tk[1:2],
-							},
-							Tokens: tk[1:2],
-						},
-						Tokens: tk[1:2],
-					},
-					Tokens: tk[1:2],
-				},
-				If: &OrTest{
-					AndTest: AndTest{
-						NotTest: NotTest{
-							Comparison: Comparison{
-								OrExpression: OrExpression{
-									XorExpression: XorExpression{
-										AndExpression: AndExpression{
-											ShiftExpression: ShiftExpression{
-												AddExpression: AddExpression{
-													MultiplyExpression: MultiplyExpression{
-														UnaryExpression: UnaryExpression{
-															PowerExpression: &PowerExpression{
-																PrimaryExpression: PrimaryExpression{
-																	Atom: &Atom{
-																		Identifier: &tk[9],
-																		Tokens:     tk[9:10],
-																	},
-																	Tokens: tk[9:10],
-																},
-																Tokens: tk[9:10],
-															},
-															Tokens: tk[9:10],
-														},
-														Tokens: tk[9:10],
-													},
-													Tokens: tk[9:10],
-												},
-												Tokens: tk[9:10],
-											},
-											Tokens: tk[9:10],
-										},
-										Tokens: tk[9:10],
-									},
-									Tokens: tk[9:10],
-								},
-								Tokens: tk[9:10],
-							},
-							Tokens: tk[9:10],
-						},
-						Tokens: tk[9:10],
-					},
-					Tokens: tk[9:10],
-				},
-				Else: &Expression{
-					ConditionalExpression: &ConditionalExpression{
-						OrTest: OrTest{
-							AndTest: AndTest{
-								NotTest: NotTest{
-									Comparison: Comparison{
-										OrExpression: OrExpression{
-											XorExpression: XorExpression{
-												AndExpression: AndExpression{
-													ShiftExpression: ShiftExpression{
-														AddExpression: AddExpression{
-															MultiplyExpression: MultiplyExpression{
-																UnaryExpression: UnaryExpression{
-																	PowerExpression: &PowerExpression{
-																		PrimaryExpression: PrimaryExpression{
-																			Atom: &Atom{
-																				Identifier: &tk[17],
-																				Tokens:     tk[17:18],
-																			},
-																			Tokens: tk[17:18],
-																		},
-																		Tokens: tk[17:18],
-																	},
-																	Tokens: tk[17:18],
-																},
-																Tokens: tk[17:18],
-															},
-															Tokens: tk[17:18],
-														},
-														Tokens: tk[17:18],
-													},
-													Tokens: tk[17:18],
-												},
-												Tokens: tk[17:18],
-											},
-											Tokens: tk[17:18],
-										},
-										Tokens: tk[17:18],
-									},
-									Tokens: tk[17:18],
-								},
-								Tokens: tk[17:18],
-							},
-							Tokens: tk[17:18],
-						},
-						Tokens: tk[17:18],
-					},
-					Tokens: tk[17:18],
-				},
-				Comments: [4]Comments{{tk[3]}, {tk[7]}, {tk[11]}, {tk[15]}},
-				Tokens:   tk[1:18],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err:     ErrInvalidEnclosure,
-																			Parsing: "Enclosure",
-																			Token:   tk[0],
-																		},
-																		Parsing: "Atom",
-																		Token:   tk[0],
-																	},
-																	Parsing: "PrimaryExpression",
-																	Token:   tk[0],
-																},
-																Parsing: "PowerExpression",
-																Token:   tk[0],
-															},
-															Parsing: "UnaryExpression",
-															Token:   tk[0],
-														},
-														Parsing: "MultiplyExpression",
-														Token:   tk[0],
-													},
-													Parsing: "AddExpression",
-													Token:   tk[0],
-												},
-												Parsing: "ShiftExpression",
-												Token:   tk[0],
-											},
-											Parsing: "AndExpression",
-											Token:   tk[0],
-										},
-										Parsing: "XorExpression",
-										Token:   tk[0],
-									},
-									Parsing: "OrExpression",
-									Token:   tk[0],
-								},
-								Parsing: "Comparison",
-								Token:   tk[0],
-							},
-							Parsing: "NotTest",
-							Token:   tk[0],
-						},
-						Parsing: "AndTest",
-						Token:   tk[0],
-					},
-					Parsing: "OrTest",
-					Token:   tk[0],
-				},
-				Parsing: "ConditionalExpression",
-				Token:   tk[0],
-			}
-		}},
-		{`a if nonlocal else c`, func(t *test, tk Tokens) { // 5
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err:     ErrInvalidEnclosure,
-																			Parsing: "Enclosure",
-																			Token:   tk[4],
-																		},
-																		Parsing: "Atom",
-																		Token:   tk[4],
-																	},
-																	Parsing: "PrimaryExpression",
-																	Token:   tk[4],
-																},
-																Parsing: "PowerExpression",
-																Token:   tk[4],
-															},
-															Parsing: "UnaryExpression",
-															Token:   tk[4],
-														},
-														Parsing: "MultiplyExpression",
-														Token:   tk[4],
-													},
-													Parsing: "AddExpression",
-													Token:   tk[4],
-												},
-												Parsing: "ShiftExpression",
-												Token:   tk[4],
-											},
-											Parsing: "AndExpression",
-											Token:   tk[4],
-										},
-										Parsing: "XorExpression",
-										Token:   tk[4],
-									},
-									Parsing: "OrExpression",
-									Token:   tk[4],
-								},
-								Parsing: "Comparison",
-								Token:   tk[4],
-							},
-							Parsing: "NotTest",
-							Token:   tk[4],
-						},
-						Parsing: "AndTest",
-						Token:   tk[4],
-					},
-					Parsing: "OrTest",
-					Token:   tk[4],
-				},
-				Parsing: "ConditionalExpression",
-				Token:   tk[4],
-			}
-		}},
-		{`a if b els c`, func(t *test, tk Tokens) { // 6
-			t.Err = Error{
-				Err:     ErrMissingElse,
-				Parsing: "ConditionalExpression",
-				Token:   tk[6],
-			}
-		}},
-		{`a if b else nonlocal`, func(t *test, tk Tokens) { // 7
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err: Error{
-																				Err: Error{
-																					Err:     ErrInvalidEnclosure,
-																					Parsing: "Enclosure",
-																					Token:   tk[8],
-																				},
-																				Parsing: "Atom",
-																				Token:   tk[8],
-																			},
-																			Parsing: "PrimaryExpression",
-																			Token:   tk[8],
-																		},
-																		Parsing: "PowerExpression",
-																		Token:   tk[8],
-																	},
-																	Parsing: "UnaryExpression",
-																	Token:   tk[8],
-																},
-																Parsing: "MultiplyExpression",
-																Token:   tk[8],
-															},
-															Parsing: "AddExpression",
-															Token:   tk[8],
-														},
-														Parsing: "ShiftExpression",
-														Token:   tk[8],
-													},
-													Parsing: "AndExpression",
-													Token:   tk[8],
-												},
-												Parsing: "XorExpression",
-												Token:   tk[8],
-											},
-											Parsing: "OrExpression",
-											Token:   tk[8],
-										},
-										Parsing: "Comparison",
-										Token:   tk[8],
-									},
-									Parsing: "NotTest",
-									Token:   tk[8],
-								},
-								Parsing: "AndTest",
-								Token:   tk[8],
-							},
-							Parsing: "OrTest",
-							Token:   tk[8],
-						},
-						Parsing: "ConditionalExpression",
-						Token:   tk[8],
-					},
-					Parsing: "Expression",
-					Token:   tk[8],
-				},
-				Parsing: "ConditionalExpression",
-				Token:   tk[8],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var ce ConditionalExpression
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := ce.parse(t.Tokens)
-
-		return ce, err
-	})
-}
-
-func TestLambdaExpression(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`lambda:a`, func(t *test, tk Tokens) { // 1
-			t.Output = LambdaExpression{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[2],
-						Tokens:     tk[2:3],
-					}),
-					Tokens: tk[2:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`lambda : a`, func(t *test, tk Tokens) { // 2
-			t.Output = LambdaExpression{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[4],
-						Tokens:     tk[4:5],
-					}),
-					Tokens: tk[4:5],
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`lambda a: b`, func(t *test, tk Tokens) { // 3
-			t.Output = LambdaExpression{
-				ParameterList: &ParameterList{
-					NoPosOnly: []DefParameter{
-						{
-							Parameter: Parameter{
-								Identifier: &tk[2],
-								Tokens:     tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-					},
-					Tokens: tk[2:3],
-				},
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[5],
-						Tokens:     tk[5:6],
-					}),
-					Tokens: tk[5:6],
-				},
-				Tokens: tk[:6],
-			}
-		}},
-		{`lambda a, b : c`, func(t *test, tk Tokens) { // 4
-			t.Output = LambdaExpression{
-				ParameterList: &ParameterList{
-					NoPosOnly: []DefParameter{
-						{
-							Parameter: Parameter{
-								Identifier: &tk[2],
-								Tokens:     tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-						{
-							Parameter: Parameter{
-								Identifier: &tk[5],
-								Tokens:     tk[5:6],
-							},
-							Tokens: tk[5:6],
-						},
-					},
-					Tokens: tk[2:6],
-				},
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[9],
-						Tokens:     tk[9:10],
-					}),
-					Tokens: tk[9:10],
-				},
-				Tokens: tk[:10],
-			}
-		}},
-		{"(lambda # A\n: # B\na # C\n)", func(t *test, tk Tokens) { // 5
-			t.Output = LambdaExpression{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[9],
-						Tokens:     tk[9:10],
-					}),
-					Tokens: tk[9:10],
-				},
-				Comments: [3]Comments{{tk[3]}, nil, {tk[7]}},
-				Tokens:   tk[1:10],
-			}
-		}},
-		{"(lambda # A\na\n# B\n: # C\nb # D\n)", func(t *test, tk Tokens) { // 6
-			t.Output = LambdaExpression{
-				ParameterList: &ParameterList{
-					NoPosOnly: []DefParameter{
-						{
-							Parameter: Parameter{
-								Identifier: &tk[5],
-								Tokens:     tk[5:6],
-							},
-							Tokens: tk[5:6],
-						},
-					},
-					Tokens: tk[5:6],
-				},
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[13],
-						Tokens:     tk[13:14],
-					}),
-					Tokens: tk[13:14],
-				},
-				Comments: [3]Comments{{tk[3]}, {tk[7]}, {tk[11]}},
-				Tokens:   tk[1:14],
-			}
-		}},
-		{`lambda nonlocal: a`, func(t *test, tk Tokens) { // 7
-			t.Err = Error{
-				Err:     ErrMissingColon,
-				Parsing: "LambdaExpression",
-				Token:   tk[2],
-			}
-		}},
-		{`lambda: nonlocal`, func(t *test, tk Tokens) { // 8
-			t.Err = Error{
-				Err: Error{
-					Err: wrapConditionalExpressionError(Error{
-						Err:     ErrInvalidEnclosure,
-						Parsing: "Enclosure",
-						Token:   tk[3],
-					}),
-					Parsing: "Expression",
-					Token:   tk[3],
-				},
-				Parsing: "LambdaExpression",
-				Token:   tk[3],
-			}
-		}},
-		{`lambda *nonlocal`, func(t *test, tk Tokens) { // 9
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err:     ErrMissingIdentifier,
-						Parsing: "Parameter",
-						Token:   tk[3],
-					},
-					Parsing: "ParameterList",
-					Token:   tk[3],
-				},
-				Parsing: "LambdaExpression",
-				Token:   tk[2],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var le LambdaExpression
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := le.parse(t.Tokens)
-
-		return le, err
-	})
-}
-
-func TestOrTest(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = OrTest{
-				AndTest: AndTest{
-					NotTest: NotTest{
-						Comparison: Comparison{
-							OrExpression: OrExpression{
-								XorExpression: XorExpression{
-									AndExpression: AndExpression{
-										ShiftExpression: ShiftExpression{
-											AddExpression: AddExpression{
-												MultiplyExpression: MultiplyExpression{
-													UnaryExpression: UnaryExpression{
-														PowerExpression: &PowerExpression{
-															PrimaryExpression: PrimaryExpression{
-																Atom: &Atom{
-																	Identifier: &tk[0],
-																	Tokens:     tk[:1],
-																},
-																Tokens: tk[:1],
-															},
-															Tokens: tk[:1],
-														},
-														Tokens: tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a or b`, func(t *test, tk Tokens) { // 2
-			t.Output = OrTest{
-				AndTest: AndTest{
-					NotTest: NotTest{
-						Comparison: Comparison{
-							OrExpression: OrExpression{
-								XorExpression: XorExpression{
-									AndExpression: AndExpression{
-										ShiftExpression: ShiftExpression{
-											AddExpression: AddExpression{
-												MultiplyExpression: MultiplyExpression{
-													UnaryExpression: UnaryExpression{
-														PowerExpression: &PowerExpression{
-															PrimaryExpression: PrimaryExpression{
-																Atom: &Atom{
-																	Identifier: &tk[0],
-																	Tokens:     tk[:1],
-																},
-																Tokens: tk[:1],
-															},
-															Tokens: tk[:1],
-														},
-														Tokens: tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				OrTest: &OrTest{
-					AndTest: AndTest{
-						NotTest: NotTest{
-							Comparison: Comparison{
-								OrExpression: OrExpression{
-									XorExpression: XorExpression{
-										AndExpression: AndExpression{
-											ShiftExpression: ShiftExpression{
-												AddExpression: AddExpression{
-													MultiplyExpression: MultiplyExpression{
-														UnaryExpression: UnaryExpression{
-															PowerExpression: &PowerExpression{
-																PrimaryExpression: PrimaryExpression{
-																	Atom: &Atom{
-																		Identifier: &tk[4],
-																		Tokens:     tk[4:5],
-																	},
-																	Tokens: tk[4:5],
-																},
-																Tokens: tk[4:5],
-															},
-															Tokens: tk[4:5],
-														},
-														Tokens: tk[4:5],
-													},
-													Tokens: tk[4:5],
-												},
-												Tokens: tk[4:5],
-											},
-											Tokens: tk[4:5],
-										},
-										Tokens: tk[4:5],
-									},
-									Tokens: tk[4:5],
-								},
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[4:5],
-						},
-						Tokens: tk[4:5],
-					},
-					Tokens: tk[4:5],
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{"(a # A\nor # B\nb)", func(t *test, tk Tokens) { // 3
-			t.Output = OrTest{
-				AndTest: AndTest{
-					NotTest: NotTest{
-						Comparison: Comparison{
-							OrExpression: OrExpression{
-								XorExpression: XorExpression{
-									AndExpression: AndExpression{
-										ShiftExpression: ShiftExpression{
-											AddExpression: AddExpression{
-												MultiplyExpression: MultiplyExpression{
-													UnaryExpression: UnaryExpression{
-														PowerExpression: &PowerExpression{
-															PrimaryExpression: PrimaryExpression{
-																Atom: &Atom{
-																	Identifier: &tk[1],
-																	Tokens:     tk[1:2],
-																},
-																Tokens: tk[1:2],
-															},
-															Tokens: tk[1:2],
-														},
-														Tokens: tk[1:2],
-													},
-													Tokens: tk[1:2],
-												},
-												Tokens: tk[1:2],
-											},
-											Tokens: tk[1:2],
-										},
-										Tokens: tk[1:2],
-									},
-									Tokens: tk[1:2],
-								},
-								Tokens: tk[1:2],
-							},
-							Tokens: tk[1:2],
-						},
-						Tokens: tk[1:2],
-					},
-					Tokens: tk[1:2],
-				},
-				OrTest: &OrTest{
-					AndTest: AndTest{
-						NotTest: NotTest{
-							Comparison: Comparison{
-								OrExpression: OrExpression{
-									XorExpression: XorExpression{
-										AndExpression: AndExpression{
-											ShiftExpression: ShiftExpression{
-												AddExpression: AddExpression{
-													MultiplyExpression: MultiplyExpression{
-														UnaryExpression: UnaryExpression{
-															PowerExpression: &PowerExpression{
-																PrimaryExpression: PrimaryExpression{
-																	Atom: &Atom{
-																		Identifier: &tk[9],
-																		Tokens:     tk[9:10],
-																	},
-																	Tokens: tk[9:10],
-																},
-																Tokens: tk[9:10],
-															},
-															Tokens: tk[9:10],
-														},
-														Tokens: tk[9:10],
-													},
-													Tokens: tk[9:10],
-												},
-												Tokens: tk[9:10],
-											},
-											Tokens: tk[9:10],
-										},
-										Tokens: tk[9:10],
-									},
-									Tokens: tk[9:10],
-								},
-								Tokens: tk[9:10],
-							},
-							Tokens: tk[9:10],
-						},
-						Tokens: tk[9:10],
-					},
-					Tokens: tk[9:10],
-				},
-				Comments: [2]Comments{{tk[3]}, {tk[7]}},
-				Tokens:   tk[1:10],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err:     ErrInvalidEnclosure,
-																		Parsing: "Enclosure",
-																		Token:   tk[0],
-																	},
-																	Parsing: "Atom",
-																	Token:   tk[0],
-																},
-																Parsing: "PrimaryExpression",
-																Token:   tk[0],
-															},
-															Parsing: "PowerExpression",
-															Token:   tk[0],
-														},
-														Parsing: "UnaryExpression",
-														Token:   tk[0],
-													},
-													Parsing: "MultiplyExpression",
-													Token:   tk[0],
-												},
-												Parsing: "AddExpression",
-												Token:   tk[0],
-											},
-											Parsing: "ShiftExpression",
-											Token:   tk[0],
-										},
-										Parsing: "AndExpression",
-										Token:   tk[0],
-									},
-									Parsing: "XorExpression",
-									Token:   tk[0],
-								},
-								Parsing: "OrExpression",
-								Token:   tk[0],
-							},
-							Parsing: "Comparison",
-							Token:   tk[0],
-						},
-						Parsing: "NotTest",
-						Token:   tk[0],
-					},
-					Parsing: "AndTest",
-					Token:   tk[0],
-				},
-				Parsing: "OrTest",
-				Token:   tk[0],
-			}
-		}},
-		{`a or nonlocal`, func(t *test, tk Tokens) { // 5
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err: Error{
-																			Err:     ErrInvalidEnclosure,
-																			Parsing: "Enclosure",
-																			Token:   tk[4],
-																		},
-																		Parsing: "Atom",
-																		Token:   tk[4],
-																	},
-																	Parsing: "PrimaryExpression",
-																	Token:   tk[4],
-																},
-																Parsing: "PowerExpression",
-																Token:   tk[4],
-															},
-															Parsing: "UnaryExpression",
-															Token:   tk[4],
-														},
-														Parsing: "MultiplyExpression",
-														Token:   tk[4],
-													},
-													Parsing: "AddExpression",
-													Token:   tk[4],
-												},
-												Parsing: "ShiftExpression",
-												Token:   tk[4],
-											},
-											Parsing: "AndExpression",
-											Token:   tk[4],
-										},
-										Parsing: "XorExpression",
-										Token:   tk[4],
-									},
-									Parsing: "OrExpression",
-									Token:   tk[4],
-								},
-								Parsing: "Comparison",
-								Token:   tk[4],
-							},
-							Parsing: "NotTest",
-							Token:   tk[4],
-						},
-						Parsing: "AndTest",
-						Token:   tk[4],
-					},
-					Parsing: "OrTest",
-					Token:   tk[4],
-				},
-				Parsing: "OrTest",
-				Token:   tk[4],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var ot OrTest
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := ot.parse(t.Tokens)
-
-		return ot, err
-	})
-}
-
-func TestAndTest(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = AndTest{
-				NotTest: NotTest{
-					Comparison: Comparison{
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[0],
-																Tokens:     tk[:1],
-															},
-															Tokens: tk[:1],
-														},
-														Tokens: tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a and b`, func(t *test, tk Tokens) { // 2
-			t.Output = AndTest{
-				NotTest: NotTest{
-					Comparison: Comparison{
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[0],
-																Tokens:     tk[:1],
-															},
-															Tokens: tk[:1],
-														},
-														Tokens: tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				AndTest: &AndTest{
-					NotTest: NotTest{
-						Comparison: Comparison{
-							OrExpression: OrExpression{
-								XorExpression: XorExpression{
-									AndExpression: AndExpression{
-										ShiftExpression: ShiftExpression{
-											AddExpression: AddExpression{
-												MultiplyExpression: MultiplyExpression{
-													UnaryExpression: UnaryExpression{
-														PowerExpression: &PowerExpression{
-															PrimaryExpression: PrimaryExpression{
-																Atom: &Atom{
-																	Identifier: &tk[4],
-																	Tokens:     tk[4:5],
-																},
-																Tokens: tk[4:5],
-															},
-															Tokens: tk[4:5],
-														},
-														Tokens: tk[4:5],
-													},
-													Tokens: tk[4:5],
-												},
-												Tokens: tk[4:5],
-											},
-											Tokens: tk[4:5],
-										},
-										Tokens: tk[4:5],
-									},
-									Tokens: tk[4:5],
-								},
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[4:5],
-						},
-						Tokens: tk[4:5],
-					},
-					Tokens: tk[4:5],
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{"(a # A\nand # B\nb)", func(t *test, tk Tokens) { // 3
-			t.Output = AndTest{
-				NotTest: NotTest{
-					Comparison: Comparison{
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[1],
-																Tokens:     tk[1:2],
-															},
-															Tokens: tk[1:2],
-														},
-														Tokens: tk[1:2],
-													},
-													Tokens: tk[1:2],
-												},
-												Tokens: tk[1:2],
-											},
-											Tokens: tk[1:2],
-										},
-										Tokens: tk[1:2],
-									},
-									Tokens: tk[1:2],
-								},
-								Tokens: tk[1:2],
-							},
-							Tokens: tk[1:2],
-						},
-						Tokens: tk[1:2],
-					},
-					Tokens: tk[1:2],
-				},
-				AndTest: &AndTest{
-					NotTest: NotTest{
-						Comparison: Comparison{
-							OrExpression: OrExpression{
-								XorExpression: XorExpression{
-									AndExpression: AndExpression{
-										ShiftExpression: ShiftExpression{
-											AddExpression: AddExpression{
-												MultiplyExpression: MultiplyExpression{
-													UnaryExpression: UnaryExpression{
-														PowerExpression: &PowerExpression{
-															PrimaryExpression: PrimaryExpression{
-																Atom: &Atom{
-																	Identifier: &tk[9],
-																	Tokens:     tk[9:10],
-																},
-																Tokens: tk[9:10],
-															},
-															Tokens: tk[9:10],
-														},
-														Tokens: tk[9:10],
-													},
-													Tokens: tk[9:10],
-												},
-												Tokens: tk[9:10],
-											},
-											Tokens: tk[9:10],
-										},
-										Tokens: tk[9:10],
-									},
-									Tokens: tk[9:10],
-								},
-								Tokens: tk[9:10],
-							},
-							Tokens: tk[9:10],
-						},
-						Tokens: tk[9:10],
-					},
-					Tokens: tk[9:10],
-				},
-				Comments: [2]Comments{{tk[3]}, {tk[7]}},
-				Tokens:   tk[1:10],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err:     ErrInvalidEnclosure,
-																	Parsing: "Enclosure",
-																	Token:   tk[0],
-																},
-																Parsing: "Atom",
-																Token:   tk[0],
-															},
-															Parsing: "PrimaryExpression",
-															Token:   tk[0],
-														},
-														Parsing: "PowerExpression",
-														Token:   tk[0],
-													},
-													Parsing: "UnaryExpression",
-													Token:   tk[0],
-												},
-												Parsing: "MultiplyExpression",
-												Token:   tk[0],
-											},
-											Parsing: "AddExpression",
-											Token:   tk[0],
-										},
-										Parsing: "ShiftExpression",
-										Token:   tk[0],
-									},
-									Parsing: "AndExpression",
-									Token:   tk[0],
-								},
-								Parsing: "XorExpression",
-								Token:   tk[0],
-							},
-							Parsing: "OrExpression",
-							Token:   tk[0],
-						},
-						Parsing: "Comparison",
-						Token:   tk[0],
-					},
-					Parsing: "NotTest",
-					Token:   tk[0],
-				},
-				Parsing: "AndTest",
-				Token:   tk[0],
-			}
-		}},
-		{`a and nonlocal`, func(t *test, tk Tokens) { // 5
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err: Error{
-																	Err: Error{
-																		Err:     ErrInvalidEnclosure,
-																		Parsing: "Enclosure",
-																		Token:   tk[4],
-																	},
-																	Parsing: "Atom",
-																	Token:   tk[4],
-																},
-																Parsing: "PrimaryExpression",
-																Token:   tk[4],
-															},
-															Parsing: "PowerExpression",
-															Token:   tk[4],
-														},
-														Parsing: "UnaryExpression",
-														Token:   tk[4],
-													},
-													Parsing: "MultiplyExpression",
-													Token:   tk[4],
-												},
-												Parsing: "AddExpression",
-												Token:   tk[4],
-											},
-											Parsing: "ShiftExpression",
-											Token:   tk[4],
-										},
-										Parsing: "AndExpression",
-										Token:   tk[4],
-									},
-									Parsing: "XorExpression",
-									Token:   tk[4],
-								},
-								Parsing: "OrExpression",
-								Token:   tk[4],
-							},
-							Parsing: "Comparison",
-							Token:   tk[4],
-						},
-						Parsing: "NotTest",
-						Token:   tk[4],
-					},
-					Parsing: "AndTest",
-					Token:   tk[4],
-				},
-				Parsing: "AndTest",
-				Token:   tk[4],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var at AndTest
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := at.parse(t.Tokens)
-
-		return at, err
-	})
-}
-
-func TestNotTest(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = NotTest{
-				Comparison: Comparison{
-					OrExpression: OrExpression{
-						XorExpression: XorExpression{
-							AndExpression: AndExpression{
-								ShiftExpression: ShiftExpression{
-									AddExpression: AddExpression{
-										MultiplyExpression: MultiplyExpression{
-											UnaryExpression: UnaryExpression{
-												PowerExpression: &PowerExpression{
-													PrimaryExpression: PrimaryExpression{
-														Atom: &Atom{
-															Identifier: &tk[0],
-															Tokens:     tk[:1],
-														},
-														Tokens: tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`not a`, func(t *test, tk Tokens) { // 2
-			t.Output = NotTest{
-				Nots: make([]Comments, 1),
-				Comparison: Comparison{
-					OrExpression: OrExpression{
-						XorExpression: XorExpression{
-							AndExpression: AndExpression{
-								ShiftExpression: ShiftExpression{
-									AddExpression: AddExpression{
-										MultiplyExpression: MultiplyExpression{
-											UnaryExpression: UnaryExpression{
-												PowerExpression: &PowerExpression{
-													PrimaryExpression: PrimaryExpression{
-														Atom: &Atom{
-															Identifier: &tk[2],
-															Tokens:     tk[2:3],
-														},
-														Tokens: tk[2:3],
-													},
-													Tokens: tk[2:3],
-												},
-												Tokens: tk[2:3],
-											},
-											Tokens: tk[2:3],
-										},
-										Tokens: tk[2:3],
-									},
-									Tokens: tk[2:3],
-								},
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-						Tokens: tk[2:3],
-					},
-					Tokens: tk[2:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`not not not not a`, func(t *test, tk Tokens) { // 3
-			t.Output = NotTest{
-				Nots: make([]Comments, 4),
-				Comparison: Comparison{
-					OrExpression: OrExpression{
-						XorExpression: XorExpression{
-							AndExpression: AndExpression{
-								ShiftExpression: ShiftExpression{
-									AddExpression: AddExpression{
-										MultiplyExpression: MultiplyExpression{
-											UnaryExpression: UnaryExpression{
-												PowerExpression: &PowerExpression{
-													PrimaryExpression: PrimaryExpression{
-														Atom: &Atom{
-															Identifier: &tk[8],
-															Tokens:     tk[8:9],
-														},
-														Tokens: tk[8:9],
-													},
-													Tokens: tk[8:9],
-												},
-												Tokens: tk[8:9],
-											},
-											Tokens: tk[8:9],
-										},
-										Tokens: tk[8:9],
-									},
-									Tokens: tk[8:9],
-								},
-								Tokens: tk[8:9],
-							},
-							Tokens: tk[8:9],
-						},
-						Tokens: tk[8:9],
-					},
-					Tokens: tk[8:9],
-				},
-				Tokens: tk[:9],
-			}
-		}},
-		{"(not #A\na)", func(t *test, tk Tokens) { // 4
-			t.Output = NotTest{
-				Nots: []Comments{{tk[3]}},
-				Comparison: Comparison{
-					OrExpression: OrExpression{
-						XorExpression: XorExpression{
-							AndExpression: AndExpression{
-								ShiftExpression: ShiftExpression{
-									AddExpression: AddExpression{
-										MultiplyExpression: MultiplyExpression{
-											UnaryExpression: UnaryExpression{
-												PowerExpression: &PowerExpression{
-													PrimaryExpression: PrimaryExpression{
-														Atom: &Atom{
-															Identifier: &tk[5],
-															Tokens:     tk[5:6],
-														},
-														Tokens: tk[5:6],
-													},
-													Tokens: tk[5:6],
-												},
-												Tokens: tk[5:6],
-											},
-											Tokens: tk[5:6],
-										},
-										Tokens: tk[5:6],
-									},
-									Tokens: tk[5:6],
-								},
-								Tokens: tk[5:6],
-							},
-							Tokens: tk[5:6],
-						},
-						Tokens: tk[5:6],
-					},
-					Tokens: tk[5:6],
-				},
-				Tokens: tk[1:6],
-			}
-		}},
-		{"(not #A\nnot not #B\nnot #C\na)", func(t *test, tk Tokens) { // 5
-			t.Output = NotTest{
-				Nots: []Comments{{tk[3]}, nil, {tk[9]}, {tk[13]}},
-				Comparison: Comparison{
-					OrExpression: OrExpression{
-						XorExpression: XorExpression{
-							AndExpression: AndExpression{
-								ShiftExpression: ShiftExpression{
-									AddExpression: AddExpression{
-										MultiplyExpression: MultiplyExpression{
-											UnaryExpression: UnaryExpression{
-												PowerExpression: &PowerExpression{
-													PrimaryExpression: PrimaryExpression{
-														Atom: &Atom{
-															Identifier: &tk[15],
-															Tokens:     tk[15:16],
-														},
-														Tokens: tk[15:16],
-													},
-													Tokens: tk[15:16],
-												},
-												Tokens: tk[15:16],
-											},
-											Tokens: tk[15:16],
-										},
-										Tokens: tk[15:16],
-									},
-									Tokens: tk[15:16],
-								},
-								Tokens: tk[15:16],
-							},
-							Tokens: tk[15:16],
-						},
-						Tokens: tk[15:16],
-					},
-					Tokens: tk[15:16],
-				},
-				Tokens: tk[1:16],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 6
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err:     ErrInvalidEnclosure,
-																Parsing: "Enclosure",
-																Token:   tk[0],
-															},
-															Parsing: "Atom",
-															Token:   tk[0],
-														},
-														Parsing: "PrimaryExpression",
-														Token:   tk[0],
-													},
-													Parsing: "PowerExpression",
-													Token:   tk[0],
-												},
-												Parsing: "UnaryExpression",
-												Token:   tk[0],
-											},
-											Parsing: "MultiplyExpression",
-											Token:   tk[0],
-										},
-										Parsing: "AddExpression",
-										Token:   tk[0],
-									},
-									Parsing: "ShiftExpression",
-									Token:   tk[0],
-								},
-								Parsing: "AndExpression",
-								Token:   tk[0],
-							},
-							Parsing: "XorExpression",
-							Token:   tk[0],
-						},
-						Parsing: "OrExpression",
-						Token:   tk[0],
-					},
-					Parsing: "Comparison",
-					Token:   tk[0],
-				},
-				Parsing: "NotTest",
-				Token:   tk[0],
-			}
-		}},
-		{`not not not nonlocal`, func(t *test, tk Tokens) { // 7
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err: Error{
-																Err:     ErrInvalidEnclosure,
-																Parsing: "Enclosure",
-																Token:   tk[6],
-															},
-															Parsing: "Atom",
-															Token:   tk[6],
-														},
-														Parsing: "PrimaryExpression",
-														Token:   tk[6],
-													},
-													Parsing: "PowerExpression",
-													Token:   tk[6],
-												},
-												Parsing: "UnaryExpression",
-												Token:   tk[6],
-											},
-											Parsing: "MultiplyExpression",
-											Token:   tk[6],
-										},
-										Parsing: "AddExpression",
-										Token:   tk[6],
-									},
-									Parsing: "ShiftExpression",
-									Token:   tk[6],
-								},
-								Parsing: "AndExpression",
-								Token:   tk[6],
-							},
-							Parsing: "XorExpression",
-							Token:   tk[6],
-						},
-						Parsing: "OrExpression",
-						Token:   tk[6],
-					},
-					Parsing: "Comparison",
-					Token:   tk[6],
-				},
-				Parsing: "NotTest",
-				Token:   tk[6],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var nt NotTest
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := nt.parse(t.Tokens)
-
-		return nt, err
-	})
-}
-
-func TestComparison(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a < b`, func(t *test, tk Tokens) { // 2
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Comparisons: []ComparisonExpression{
-					{
-						ComparisonOperator: []Token{tk[2]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[4],
-																Tokens:     tk[4:5],
-															},
-															Tokens: tk[4:5],
-														},
-														Tokens: tk[4:5],
-													},
-													Tokens: tk[4:5],
-												},
-												Tokens: tk[4:5],
-											},
-											Tokens: tk[4:5],
-										},
-										Tokens: tk[4:5],
-									},
-									Tokens: tk[4:5],
-								},
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[4:5],
-						},
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`a>b`, func(t *test, tk Tokens) { // 3
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Comparisons: []ComparisonExpression{
-					{
-						ComparisonOperator: []Token{tk[1]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[2],
-																Tokens:     tk[2:3],
-															},
-															Tokens: tk[2:3],
-														},
-														Tokens: tk[2:3],
-													},
-													Tokens: tk[2:3],
-												},
-												Tokens: tk[2:3],
-											},
-											Tokens: tk[2:3],
-										},
-										Tokens: tk[2:3],
-									},
-									Tokens: tk[2:3],
-								},
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-					},
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`a==b>=c <= d != e`, func(t *test, tk Tokens) { // 4
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Comparisons: []ComparisonExpression{
-					{
-						ComparisonOperator: []Token{tk[1]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[2],
-																Tokens:     tk[2:3],
-															},
-															Tokens: tk[2:3],
-														},
-														Tokens: tk[2:3],
-													},
-													Tokens: tk[2:3],
-												},
-												Tokens: tk[2:3],
-											},
-											Tokens: tk[2:3],
-										},
-										Tokens: tk[2:3],
-									},
-									Tokens: tk[2:3],
-								},
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-					},
-					{
-						ComparisonOperator: []Token{tk[3]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[4],
-																Tokens:     tk[4:5],
-															},
-															Tokens: tk[4:5],
-														},
-														Tokens: tk[4:5],
-													},
-													Tokens: tk[4:5],
-												},
-												Tokens: tk[4:5],
-											},
-											Tokens: tk[4:5],
-										},
-										Tokens: tk[4:5],
-									},
-									Tokens: tk[4:5],
-								},
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[4:5],
-						},
-					},
-					{
-						ComparisonOperator: []Token{tk[6]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[8],
-																Tokens:     tk[8:9],
-															},
-															Tokens: tk[8:9],
-														},
-														Tokens: tk[8:9],
-													},
-													Tokens: tk[8:9],
-												},
-												Tokens: tk[8:9],
-											},
-											Tokens: tk[8:9],
-										},
-										Tokens: tk[8:9],
-									},
-									Tokens: tk[8:9],
-								},
-								Tokens: tk[8:9],
-							},
-							Tokens: tk[8:9],
-						},
-					},
-					{
-						ComparisonOperator: []Token{tk[10]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[12],
-																Tokens:     tk[12:13],
-															},
-															Tokens: tk[12:13],
-														},
-														Tokens: tk[12:13],
-													},
-													Tokens: tk[12:13],
-												},
-												Tokens: tk[12:13],
-											},
-											Tokens: tk[12:13],
-										},
-										Tokens: tk[12:13],
-									},
-									Tokens: tk[12:13],
-								},
-								Tokens: tk[12:13],
-							},
-							Tokens: tk[12:13],
-						},
-					},
-				},
-				Tokens: tk[:13],
-			}
-		}},
-		{`a is b`, func(t *test, tk Tokens) { // 5
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Comparisons: []ComparisonExpression{
-					{
-						ComparisonOperator: []Token{tk[2]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[4],
-																Tokens:     tk[4:5],
-															},
-															Tokens: tk[4:5],
-														},
-														Tokens: tk[4:5],
-													},
-													Tokens: tk[4:5],
-												},
-												Tokens: tk[4:5],
-											},
-											Tokens: tk[4:5],
-										},
-										Tokens: tk[4:5],
-									},
-									Tokens: tk[4:5],
-								},
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[4:5],
-						},
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`a is not b`, func(t *test, tk Tokens) { // 6
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Comparisons: []ComparisonExpression{
-					{
-						ComparisonOperator: []Token{tk[2], tk[3], tk[4]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[6],
-																Tokens:     tk[6:7],
-															},
-															Tokens: tk[6:7],
-														},
-														Tokens: tk[6:7],
-													},
-													Tokens: tk[6:7],
-												},
-												Tokens: tk[6:7],
-											},
-											Tokens: tk[6:7],
-										},
-										Tokens: tk[6:7],
-									},
-									Tokens: tk[6:7],
-								},
-								Tokens: tk[6:7],
-							},
-							Tokens: tk[6:7],
-						},
-					},
-				},
-				Tokens: tk[:7],
-			}
-		}},
-		{`a not in b`, func(t *test, tk Tokens) { // 7
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Comparisons: []ComparisonExpression{
-					{
-						ComparisonOperator: []Token{tk[2], tk[3], tk[4]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[6],
-																Tokens:     tk[6:7],
-															},
-															Tokens: tk[6:7],
-														},
-														Tokens: tk[6:7],
-													},
-													Tokens: tk[6:7],
-												},
-												Tokens: tk[6:7],
-											},
-											Tokens: tk[6:7],
-										},
-										Tokens: tk[6:7],
-									},
-									Tokens: tk[6:7],
-								},
-								Tokens: tk[6:7],
-							},
-							Tokens: tk[6:7],
-						},
-					},
-				},
-				Tokens: tk[:7],
-			}
-		}},
-		{`a in b`, func(t *test, tk Tokens) { // 8
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[0],
-														Tokens:     tk[:1],
-													},
-													Tokens: tk[:1],
-												},
-												Tokens: tk[:1],
-											},
-											Tokens: tk[:1],
-										},
-										Tokens: tk[:1],
-									},
-									Tokens: tk[:1],
-								},
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Comparisons: []ComparisonExpression{
-					{
-						ComparisonOperator: []Token{tk[2]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[4],
-																Tokens:     tk[4:5],
-															},
-															Tokens: tk[4:5],
-														},
-														Tokens: tk[4:5],
-													},
-													Tokens: tk[4:5],
-												},
-												Tokens: tk[4:5],
-											},
-											Tokens: tk[4:5],
-										},
-										Tokens: tk[4:5],
-									},
-									Tokens: tk[4:5],
-								},
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[4:5],
-						},
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{"(a # A\n> # B\nb)", func(t *test, tk Tokens) { // 9
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[1],
-														Tokens:     tk[1:2],
-													},
-													Tokens: tk[1:2],
-												},
-												Tokens: tk[1:2],
-											},
-											Tokens: tk[1:2],
-										},
-										Tokens: tk[1:2],
-									},
-									Tokens: tk[1:2],
-								},
-								Tokens: tk[1:2],
-							},
-							Tokens: tk[1:2],
-						},
-						Tokens: tk[1:2],
-					},
-					Tokens: tk[1:2],
-				},
-				Comparisons: []ComparisonExpression{
-					{
-						ComparisonOperator: []Token{tk[5]},
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[9],
-																Tokens:     tk[9:10],
-															},
-															Tokens: tk[9:10],
-														},
-														Tokens: tk[9:10],
-													},
-													Tokens: tk[9:10],
-												},
-												Tokens: tk[9:10],
-											},
-											Tokens: tk[9:10],
-										},
-										Tokens: tk[9:10],
-									},
-									Tokens: tk[9:10],
-								},
-								Tokens: tk[9:10],
-							},
-							Tokens: tk[9:10],
-						},
-						Comments: [3]Comments{{tk[3]}, nil, {tk[7]}},
-					},
-				},
-				Tokens: tk[1:10],
-			}
-		}},
-		{"(a # A\nis # B\nnot # C\nb)", func(t *test, tk Tokens) { // 10
-			t.Output = Comparison{
-				OrExpression: OrExpression{
-					XorExpression: XorExpression{
-						AndExpression: AndExpression{
-							ShiftExpression: ShiftExpression{
-								AddExpression: AddExpression{
-									MultiplyExpression: MultiplyExpression{
-										UnaryExpression: UnaryExpression{
-											PowerExpression: &PowerExpression{
-												PrimaryExpression: PrimaryExpression{
-													Atom: &Atom{
-														Identifier: &tk[1],
-														Tokens:     tk[1:2],
-													},
-													Tokens: tk[1:2],
-												},
-												Tokens: tk[1:2],
-											},
-											Tokens: tk[1:2],
-										},
-										Tokens: tk[1:2],
-									},
-									Tokens: tk[1:2],
-								},
-								Tokens: tk[1:2],
-							},
-							Tokens: tk[1:2],
-						},
-						Tokens: tk[1:2],
-					},
-					Tokens: tk[1:2],
-				},
-				Comparisons: []ComparisonExpression{
-					{
-						ComparisonOperator: tk[5:10],
-						OrExpression: OrExpression{
-							XorExpression: XorExpression{
-								AndExpression: AndExpression{
-									ShiftExpression: ShiftExpression{
-										AddExpression: AddExpression{
-											MultiplyExpression: MultiplyExpression{
-												UnaryExpression: UnaryExpression{
-													PowerExpression: &PowerExpression{
-														PrimaryExpression: PrimaryExpression{
-															Atom: &Atom{
-																Identifier: &tk[13],
-																Tokens:     tk[13:14],
-															},
-															Tokens: tk[13:14],
-														},
-														Tokens: tk[13:14],
-													},
-													Tokens: tk[13:14],
-												},
-												Tokens: tk[13:14],
-											},
-											Tokens: tk[13:14],
-										},
-										Tokens: tk[13:14],
-									},
-									Tokens: tk[13:14],
-								},
-								Tokens: tk[13:14],
-							},
-							Tokens: tk[13:14],
-						},
-						Comments: [3]Comments{{tk[3]}, {tk[7]}, {tk[11]}},
-					},
-				},
-				Tokens: tk[1:14],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 11
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err:     ErrInvalidEnclosure,
-															Parsing: "Enclosure",
-															Token:   tk[0],
-														},
-														Parsing: "Atom",
-														Token:   tk[0],
-													},
-													Parsing: "PrimaryExpression",
-													Token:   tk[0],
-												},
-												Parsing: "PowerExpression",
-												Token:   tk[0],
-											},
-											Parsing: "UnaryExpression",
-											Token:   tk[0],
-										},
-										Parsing: "MultiplyExpression",
-										Token:   tk[0],
-									},
-									Parsing: "AddExpression",
-									Token:   tk[0],
-								},
-								Parsing: "ShiftExpression",
-								Token:   tk[0],
-							},
-							Parsing: "AndExpression",
-							Token:   tk[0],
-						},
-						Parsing: "XorExpression",
-						Token:   tk[0],
-					},
-					Parsing: "OrExpression",
-					Token:   tk[0],
-				},
-				Parsing: "Comparison",
-				Token:   tk[0],
-			}
-		}},
-		{`a not a b`, func(t *test, tk Tokens) { // 12
-			t.Err = Error{
-				Err:     ErrMissingIn,
-				Parsing: "Comparison",
-				Token:   tk[4],
-			}
-		}},
-		{`1<nonlocal`, func(t *test, tk Tokens) { // 13
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err:     ErrInvalidEnclosure,
-															Parsing: "Enclosure",
-															Token:   tk[2],
-														},
-														Parsing: "Atom",
-														Token:   tk[2],
-													},
-													Parsing: "PrimaryExpression",
-													Token:   tk[2],
-												},
-												Parsing: "PowerExpression",
-												Token:   tk[2],
-											},
-											Parsing: "UnaryExpression",
-											Token:   tk[2],
-										},
-										Parsing: "MultiplyExpression",
-										Token:   tk[2],
-									},
-									Parsing: "AddExpression",
-									Token:   tk[2],
-								},
-								Parsing: "ShiftExpression",
-								Token:   tk[2],
-							},
-							Parsing: "AndExpression",
-							Token:   tk[2],
-						},
-						Parsing: "XorExpression",
-						Token:   tk[2],
-					},
-					Parsing: "OrExpression",
-					Token:   tk[2],
-				},
-				Parsing: "Comparison",
-				Token:   tk[2],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var c Comparison
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := c.parse(t.Tokens)
-
-		return c, err
 	})
 }

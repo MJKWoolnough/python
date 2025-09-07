@@ -1,6 +1,10 @@
 package python
 
-import "vimagination.zapto.org/parser"
+import (
+	"slices"
+
+	"vimagination.zapto.org/parser"
+)
 
 var compounds = [...]string{"if", "while", "for", "try", "with", "func", "class", "async", "def"}
 
@@ -1068,285 +1072,6 @@ func (s *Suite) parse(p *pyParser) error {
 	return nil
 }
 
-// TargetList as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
-type TargetList struct {
-	Targets  []Target
-	Comments [2]Comments
-	Tokens   Tokens
-}
-
-func (t *TargetList) parse(p *pyParser) error {
-	t.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
-
-	p.AcceptRunAllWhitespace()
-
-Loop:
-	for {
-		q := p.NewGoal()
-
-		var tg Target
-
-		if err := tg.parse(q); err != nil {
-			return p.Error("TargetList", err)
-		}
-
-		t.Targets = append(t.Targets, tg)
-
-		p.Score(q)
-
-		q = p.NewGoal()
-
-		q.AcceptRunWhitespace()
-
-		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			break
-		}
-
-		q.AcceptRunWhitespace()
-
-		switch tk := q.Peek(); tk {
-		case parser.Token{Type: TokenDelimiter, Data: ";"},
-			parser.Token{Type: TokenDelimiter, Data: "="},
-			parser.Token{Type: TokenDelimiter, Data: "]"},
-			parser.Token{Type: TokenDelimiter, Data: ")"},
-			parser.Token{Type: TokenKeyword, Data: "in"}:
-			break Loop
-		default:
-			if tk.Type == TokenLineTerminator || tk.Type == parser.TokenDone {
-				break Loop
-			}
-		}
-
-		q.AcceptRunWhitespace()
-		p.Score(q)
-	}
-
-	t.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-	t.Tokens = p.ToTokens()
-
-	return nil
-}
-
-// Target as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
-type Target struct {
-	PrimaryExpression *PrimaryExpression
-	Tuple             *TargetList
-	Array             *TargetList
-	Star              *Target
-	Comments          [2]Comments
-	Tokens            Tokens
-}
-
-func (t *Target) parse(p *pyParser) error {
-	t.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunWhitespace()
-
-	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
-		p.AcceptRunWhitespaceNoComment()
-
-		q := p.NewGoal()
-
-		t.Tuple = new(TargetList)
-
-		if err := t.Tuple.parse(q); err != nil {
-			return p.Error("Target", err)
-		}
-
-		p.Score(q)
-
-		p.AcceptRunWhitespace()
-
-		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
-			return p.Error("Target", ErrMissingClosingParen)
-		}
-
-	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
-		p.AcceptRunWhitespaceNoComment()
-
-		q := p.NewGoal()
-		t.Array = new(TargetList)
-
-		if err := t.Array.parse(q); err != nil {
-			return p.Error("Target", err)
-		}
-
-		p.Score(q)
-
-		p.AcceptRunWhitespace()
-
-		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-			return p.Error("Target", ErrMissingClosingBracket)
-		}
-
-	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		p.AcceptRunWhitespaceNoComment()
-
-		q := p.NewGoal()
-		t.Star = new(Target)
-
-		if err := t.Star.parse(q); err != nil {
-			return p.Error("Target", err)
-		}
-
-		p.Score(q)
-	} else {
-		t.PrimaryExpression = new(PrimaryExpression)
-		q := p.NewGoal()
-
-		if err := t.PrimaryExpression.parse(q); err != nil {
-			return p.Error("Target", err)
-		} else if t.PrimaryExpression.Call != nil || t.PrimaryExpression.Atom != nil && !t.PrimaryExpression.IsIdentifier() {
-			return p.Error("Target", ErrMissingIdentifier)
-		}
-
-		p.Score(q)
-	}
-
-	q := p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		t.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-	} else {
-		t.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
-	}
-
-	t.Tokens = p.ToTokens()
-
-	return nil
-}
-
-// StarredList as defined in python@3.12.6:
-// https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_list
-type StarredList struct {
-	StarredItems  []StarredItem
-	TrailingComma bool
-	Tokens        Tokens
-}
-
-func (s *StarredList) parse(p *pyParser) error {
-Loop:
-	for {
-		q := p.NewGoal()
-
-		var si StarredItem
-
-		if err := si.parse(q); err != nil {
-			return p.Error("StarredList", err)
-		}
-
-		p.Score(q)
-
-		s.StarredItems = append(s.StarredItems, si)
-		q = p.NewGoal()
-
-		q.AcceptRunWhitespace()
-
-		hasComma := q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
-
-		r := q.NewGoal()
-
-		if hasComma {
-			r.AcceptRunWhitespace()
-		}
-
-		switch tk := r.Peek(); tk {
-		case parser.Token{Type: TokenDelimiter, Data: "]"}, parser.Token{Type: TokenDelimiter, Data: "}"}, parser.Token{Type: TokenDelimiter, Data: ")"}, parser.Token{Type: TokenDelimiter, Data: ":"}, parser.Token{Type: TokenKeyword, Data: "for"}, parser.Token{Type: TokenKeyword, Data: "async"}, parser.Token{Type: parser.TokenDone}:
-			if hasComma {
-				if len(s.StarredItems) == 1 {
-					s.TrailingComma = true
-				}
-
-				p.Score(q)
-			}
-
-			break Loop
-		default:
-			if tk.Type == TokenLineTerminator || tk.Type == TokenDedent {
-				if hasComma {
-					if len(s.StarredItems) == 1 {
-						s.TrailingComma = true
-					}
-
-					p.Score(q)
-				}
-
-				break Loop
-			}
-		}
-
-		q = p.NewGoal()
-
-		q.AcceptRunWhitespace()
-
-		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			return q.Error("StarredList", ErrMissingComma)
-		}
-
-		q.AcceptRunWhitespaceNoComment()
-		p.Score(q)
-	}
-
-	s.Tokens = p.ToTokens()
-
-	return nil
-}
-
-// StarredItem as defined in python@3.12.6:
-// https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_item
-type StarredItem struct {
-	AssignmentExpression *AssignmentExpression
-	OrExpr               *OrExpression
-	Comments             [3]Comments
-	Tokens               Tokens
-}
-
-func (s *StarredItem) parse(p *pyParser) error {
-	s.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-	p.AcceptRunWhitespace()
-
-	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		s.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-		p.AcceptRunWhitespace()
-
-		q := p.NewGoal()
-		s.OrExpr = new(OrExpression)
-
-		if err := s.OrExpr.parse(q); err != nil {
-			return p.Error("StarredItem", err)
-		}
-
-		p.Score(q)
-	} else {
-		q := p.NewGoal()
-		s.AssignmentExpression = new(AssignmentExpression)
-
-		if err := s.AssignmentExpression.parse(q); err != nil {
-			return p.Error("StarredItem", err)
-		}
-
-		p.Score(q)
-	}
-
-	q := p.NewGoal()
-
-	q.AcceptRunAllWhitespace()
-
-	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ","}) {
-		s.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
-	} else {
-		s.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
-	}
-
-	s.Tokens = p.ToTokens()
-
-	return nil
-}
-
 // TypeParamType determines the type of a TypeParam.
 type TypeParamType byte
 
@@ -1730,249 +1455,57 @@ func (pr *Parameter) parse(p *pyParser, allowAnnotations bool) error {
 	return nil
 }
 
-type ArgumentList struct {
-	PositionalArguments        []PositionalArgument
-	StarredAndKeywordArguments []StarredOrKeyword
-	KeywordArguments           []KeywordArgument
-	Tokens                     Tokens
+// Statement as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-statement
+type Statement struct {
+	StatementList     *StatementList
+	CompoundStatement *CompoundStatement
+	Comments          Comments
+	Tokens            Tokens
 }
 
-// ArgumentList as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-argument_list
-func (a *ArgumentList) parse(p *pyParser) error {
-	var nextIsKeywordItem, nextIsDoubleStarred bool
+func (s *Statement) parse(p *pyParser) error {
+	var isCompound, isSoftCompound bool
 
-	for {
-		q := p.NewGoal()
+	s.Comments = p.AcceptRunWhitespaceComments()
 
-		q.AcceptRunWhitespace()
-
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) || q.Peek().Type == parser.TokenDone {
-			break
-		} else if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
-			nextIsDoubleStarred = true
-
-			break
-		} else if q.Accept(TokenIdentifier) {
-			q.AcceptRunWhitespace()
-
-			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
-				nextIsKeywordItem = true
-
-				break
-			}
-		}
-
-		p.AcceptRunWhitespaceNoComment()
-
-		q = p.NewGoal()
-
-		var pa PositionalArgument
-
-		if err := pa.parse(q); err != nil {
-			return p.Error("ArgumentList", err)
-		}
-
-		p.Score(q)
-
-		a.PositionalArguments = append(a.PositionalArguments, pa)
-		q = p.NewGoal()
-
-		q.AcceptRunWhitespace()
-
-		if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
-			break
-		} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			return p.Error("ArgumentList", ErrMissingComma)
-		}
-
-		p.Score(q)
-	}
-
-	if nextIsKeywordItem {
-		for {
-			q := p.NewGoal()
-
-			q.AcceptRunWhitespace()
-
-			if q.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
-				nextIsDoubleStarred = true
-
-				break
-			}
-
-			p.AcceptRunAllWhitespaceNoComment()
-
-			q = p.NewGoal()
-
-			var sk StarredOrKeyword
-
-			if err := sk.parse(q); err != nil {
-				return p.Error("ArgumentList", err)
-			}
-
-			p.Score(q)
-
-			a.StarredAndKeywordArguments = append(a.StarredAndKeywordArguments, sk)
-			q = p.NewGoal()
-
-			q.AcceptRunWhitespace()
-
-			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
-				break
-			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-				return p.Error("ArgumentList", ErrMissingComma)
-			}
-
-			p.Score(q)
-
-			q = p.NewGoal()
-
-			q.AcceptRunWhitespace()
-
-			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
-				break
-			}
-		}
-	}
-
-	if nextIsDoubleStarred {
-		for {
-			p.AcceptRunAllWhitespaceNoComment()
-
-			q := p.NewGoal()
-
-			var ka KeywordArgument
-
-			if err := ka.parse(q); err != nil {
-				return p.Error("ArgumentList", err)
-			}
-
-			p.Score(q)
-
-			a.KeywordArguments = append(a.KeywordArguments, ka)
-			q = p.NewGoal()
-
-			q.AcceptRunWhitespace()
-
-			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
-				break
-			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-				return p.Error("ArgumentList", ErrMissingComma)
-			}
-
-			q.AcceptRunWhitespace()
-
-			if tk := q.Peek(); tk == (parser.Token{Type: TokenDelimiter, Data: ")"}) || tk.Type == parser.TokenDone {
-				break
-			}
-
-			p.Score(q)
-		}
-	}
-
-	a.Tokens = p.ToTokens()
-
-	return nil
-}
-
-// PositionalArgument as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-positional_arguments
-type PositionalArgument struct {
-	AssignmentExpression *AssignmentExpression
-	Expression           *Expression
-	Comments             [3]Comments
-	Tokens               Tokens
-}
-
-func (pa *PositionalArgument) parse(p *pyParser) error {
-	pa.Comments[0] = p.AcceptRunWhitespaceComments()
-
-	p.AcceptRunWhitespace()
-
-	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		pa.Comments[1] = p.AcceptRunWhitespaceComments()
-
-		p.AcceptRunWhitespace()
-
-		q := p.NewGoal()
-		pa.Expression = new(Expression)
-
-		if err := pa.Expression.parse(q); err != nil {
-			return p.Error("PositionalArgument", err)
-		}
-
-		p.Score(q)
-	} else {
-		q := p.NewGoal()
-		pa.AssignmentExpression = new(AssignmentExpression)
-
-		if err := pa.AssignmentExpression.parse(q); err != nil {
-			return p.Error("PositionalArgument", err)
-		}
-
-		p.Score(q)
-	}
+	p.AcceptRunAllWhitespace()
 
 	q := p.NewGoal()
 
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		pa.Comments[2] = p.AcceptRunWhitespaceComments()
-	} else {
-		pa.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewline()
+	switch tk := p.Peek(); tk.Type {
+	case TokenOperator:
+		isCompound = tk.Data == "@"
+	case TokenKeyword:
+		isCompound = slices.Contains(compounds[:], tk.Data)
+	case TokenIdentifier:
+		isCompound = tk.Data == "match"
+		isSoftCompound = isCompound
 	}
 
-	pa.Tokens = p.ToTokens()
+	if isCompound {
+		c := new(CompoundStatement)
 
-	return nil
-}
+		if err := c.parse(q); err != nil {
+			if !isSoftCompound {
+				return p.Error("Statement", err)
+			}
+		} else {
+			p.Score(q)
 
-// StarredOrKeyword as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-starred_and_keywords
-type StarredOrKeyword struct {
-	Expression  *Expression
-	KeywordItem *KeywordItem
-	Comments    [2]Comments
-	Tokens      Tokens
-}
+			s.CompoundStatement = c
+		}
+	}
 
-func (s *StarredOrKeyword) parse(p *pyParser) error {
-	s.Comments[0] = p.AcceptRunWhitespaceComments()
+	if s.CompoundStatement == nil {
+		q = p.NewGoal()
+		s.StatementList = new(StatementList)
 
-	p.AcceptRunWhitespace()
-
-	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		p.AcceptRunWhitespaceNoComment()
-
-		q := p.NewGoal()
-		s.Expression = new(Expression)
-
-		if err := s.Expression.parse(q); err != nil {
-			return p.Error("StarredOrKeyword", err)
+		if err := s.StatementList.parse(q); err != nil {
+			return p.Error("Statement", err)
 		}
 
 		p.Score(q)
-	} else {
-		q := p.NewGoal()
-		s.KeywordItem = new(KeywordItem)
-
-		if err := s.KeywordItem.parse(q); err != nil {
-			return p.Error("StarredOrKeyword", err)
-		}
-
-		p.Score(q)
-	}
-
-	q := p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		s.Comments[1] = p.AcceptRunWhitespaceComments()
-	} else {
-		s.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewline()
 	}
 
 	s.Tokens = p.ToTokens()
@@ -1980,91 +1513,106 @@ func (s *StarredOrKeyword) parse(p *pyParser) error {
 	return nil
 }
 
-// KeywordItem as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-keyword_item
-type KeywordItem struct {
-	Identifier *Token
-	Expression Expression
-	Tokens     Tokens
+// StatementList as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-stmt_list
+type StatementList struct {
+	Statements []SimpleStatement
+	Comments   Comments
+	Tokens
 }
 
-func (k *KeywordItem) parse(p *pyParser) error {
-	if !p.Accept(TokenIdentifier) {
-		return p.Error("KeywordItem", ErrMissingIdentifier)
+func (s *StatementList) parse(p *pyParser) error {
+	for {
+		q := p.NewGoal()
+
+		var ss SimpleStatement
+
+		if err := ss.parse(q); err != nil {
+			return p.Error("StatementList", err)
+		}
+
+		p.Score(q)
+
+		s.Statements = append(s.Statements, ss)
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ";"}) {
+			break
+		}
+
+		p.Score(q)
+
+		q = p.NewGoal()
+
+		if tk := q.AcceptRunWhitespace(); tk == TokenComment || tk == TokenLineTerminator || tk == TokenDedent || tk == parser.TokenDone {
+			break
+		}
+
+		p.Score(q)
 	}
 
-	k.Identifier = p.GetLastToken()
-
-	p.AcceptRunWhitespace()
-
-	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "="}) {
-		return p.Error("KeywordItem", ErrMissingEquals)
-	}
-
-	p.AcceptRunWhitespace()
-
-	q := p.NewGoal()
-
-	if err := k.Expression.parse(q); err != nil {
-		return p.Error("KeywordItem", err)
-	}
-
-	p.Score(q)
-
-	k.Tokens = p.ToTokens()
+	s.Comments = p.AcceptRunWhitespaceCommentsNoNewline()
+	s.Tokens = p.ToTokens()
 
 	return nil
 }
 
-// KeywordArgument as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-keywords_arguments
-type KeywordArgument struct {
-	KeywordItem *KeywordItem
-	Expression  *Expression
-	Comments    [3]Comments
-	Tokens      Tokens
+// TypeParams as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-type_params
+type TypeParams struct {
+	TypeParams []TypeParam
+	Comments   [2]Comments
+	Tokens     Tokens
 }
 
-func (k *KeywordArgument) parse(p *pyParser) error {
-	k.Comments[0] = p.AcceptRunWhitespaceComments()
+func (t *TypeParams) parse(p *pyParser) error {
+	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
 
-	p.AcceptRunWhitespace()
-
-	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "**"}) {
-		k.Comments[1] = p.AcceptRunWhitespaceComments()
-
-		p.AcceptRunWhitespace()
-
-		q := p.NewGoal()
-		k.Expression = new(Expression)
-
-		if err := k.Expression.parse(q); err != nil {
-			return p.Error("KeywordArgument", err)
-		}
-
-		p.Score(q)
-	} else {
-		q := p.NewGoal()
-		k.KeywordItem = new(KeywordItem)
-
-		if err := k.KeywordItem.parse(q); err != nil {
-			return p.Error("KeywordArgument", err)
-		}
-
-		p.Score(q)
-	}
-
+	t.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
 	q := p.NewGoal()
 
-	q.AcceptRunWhitespace()
+	q.AcceptRunAllWhitespace()
 
-	if q.Peek() == (parser.Token{Type: TokenDelimiter, Data: ","}) {
-		k.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
-	} else {
-		k.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+	if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+		for {
+			p.AcceptRunWhitespaceNoComment()
+
+			q := p.NewGoal()
+
+			var tp TypeParam
+
+			if err := tp.parse(q); err != nil {
+				return p.Error("TypeParams", err)
+			}
+
+			t.TypeParams = append(t.TypeParams, tp)
+
+			p.Score(q)
+
+			q = p.NewGoal()
+
+			q.AcceptRunAllWhitespace()
+
+			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+				break
+			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				return q.Error("TypeParams", ErrMissingComma)
+			}
+
+			p.AcceptRunWhitespace()
+			p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
+		}
 	}
 
-	k.Tokens = p.ToTokens()
+	t.Comments[1] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunAllWhitespace()
+
+	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"})
+
+	t.Tokens = p.ToTokens()
 
 	return nil
 }

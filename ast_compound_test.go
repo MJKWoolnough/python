@@ -6753,980 +6753,6 @@ func TestSuite(t *testing.T) {
 	})
 }
 
-func TestTargetList(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a,b`, func(t *test, tk Tokens) { // 2
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[2],
-								Tokens:     tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-						Tokens: tk[2:3],
-					},
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`a , b`, func(t *test, tk Tokens) { // 3
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[4],
-								Tokens:     tk[4:5],
-							},
-							Tokens: tk[4:5],
-						},
-						Tokens: tk[4:5],
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`a, ;`, func(t *test, tk Tokens) { // 4
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a, in`, func(t *test, tk Tokens) { // 5
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a, =`, func(t *test, tk Tokens) { // 6
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a,`, func(t *test, tk Tokens) { // 7
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[0],
-								Tokens:     tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{"(#abc\na\n#def\n)", func(t *test, tk Tokens) { // 8
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[3],
-								Tokens:     tk[3:4],
-							},
-							Tokens: tk[3:4],
-						},
-						Tokens: tk[3:4],
-					},
-				},
-				Comments: [2]Comments{{tk[1]}, {tk[5]}},
-				Tokens:   tk[1:6],
-			}
-		}},
-		{"(#abc\na,b\n#def\n)", func(t *test, tk Tokens) { // 9
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[3],
-								Tokens:     tk[3:4],
-							},
-							Tokens: tk[3:4],
-						},
-						Tokens: tk[3:4],
-					},
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[5],
-								Tokens:     tk[5:6],
-							},
-							Tokens: tk[5:6],
-						},
-						Tokens: tk[5:6],
-					},
-				},
-				Comments: [2]Comments{{tk[1]}, {tk[7]}},
-				Tokens:   tk[1:8],
-			}
-		}},
-		{"(#abc\na,#def\n)", func(t *test, tk Tokens) { // 10
-			t.Output = TargetList{
-				Targets: []Target{
-					{
-						PrimaryExpression: &PrimaryExpression{
-							Atom: &Atom{
-								Identifier: &tk[3],
-								Tokens:     tk[3:4],
-							},
-							Tokens: tk[3:4],
-						},
-						Tokens: tk[3:4],
-					},
-				},
-				Comments: [2]Comments{{tk[1]}},
-				Tokens:   tk[1:4],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 11
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
-								Token:   tk[0],
-							},
-							Parsing: "Atom",
-							Token:   tk[0],
-						},
-						Parsing: "PrimaryExpression",
-						Token:   tk[0],
-					},
-					Parsing: "Target",
-					Token:   tk[0],
-				},
-				Parsing: "TargetList",
-				Token:   tk[0],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var tl TargetList
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := tl.parse(t.Tokens)
-
-		return tl, err
-	})
-}
-
-func TestTarget(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = Target{
-				PrimaryExpression: &PrimaryExpression{
-					Atom: &Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`(a)`, func(t *test, tk Tokens) { // 2
-			t.Output = Target{
-				Tuple: &TargetList{
-					Targets: []Target{
-						{
-							PrimaryExpression: &PrimaryExpression{
-								Atom: &Atom{
-									Identifier: &tk[1],
-									Tokens:     tk[1:2],
-								},
-								Tokens: tk[1:2],
-							},
-							Tokens: tk[1:2],
-						},
-					},
-					Tokens: tk[1:2],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`( a )`, func(t *test, tk Tokens) { // 3
-			t.Output = Target{
-				Tuple: &TargetList{
-					Targets: []Target{
-						{
-							PrimaryExpression: &PrimaryExpression{
-								Atom: &Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
-								},
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-					},
-					Tokens: tk[2:3],
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`[a]`, func(t *test, tk Tokens) { // 4
-			t.Output = Target{
-				Array: &TargetList{
-					Targets: []Target{
-						{
-							PrimaryExpression: &PrimaryExpression{
-								Atom: &Atom{
-									Identifier: &tk[1],
-									Tokens:     tk[1:2],
-								},
-								Tokens: tk[1:2],
-							},
-							Tokens: tk[1:2],
-						},
-					},
-					Tokens: tk[1:2],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`[ a ]`, func(t *test, tk Tokens) { // 5
-			t.Output = Target{
-				Array: &TargetList{
-					Targets: []Target{
-						{
-							PrimaryExpression: &PrimaryExpression{
-								Atom: &Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
-								},
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-					},
-					Tokens: tk[2:3],
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`a.b`, func(t *test, tk Tokens) { // 6
-			t.Output = Target{
-				PrimaryExpression: &PrimaryExpression{
-					PrimaryExpression: &PrimaryExpression{
-						Atom: &Atom{
-							Identifier: &tk[0],
-							Tokens:     tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					AttributeRef: &tk[2],
-					Tokens:       tk[:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`a[b]`, func(t *test, tk Tokens) { // 7
-			t.Output = Target{
-				PrimaryExpression: &PrimaryExpression{
-					PrimaryExpression: &PrimaryExpression{
-						Atom: &Atom{
-							Identifier: &tk[0],
-							Tokens:     tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					Slicing: &SliceList{
-						SliceItems: []SliceItem{
-							{
-								Expression: &Expression{
-									ConditionalExpression: WrapConditional(&Atom{
-										Identifier: &tk[2],
-										Tokens:     tk[2:3],
-									}),
-									Tokens: tk[2:3],
-								},
-								Tokens: tk[2:3],
-							},
-						},
-						Tokens: tk[1:4],
-					},
-					Tokens: tk[:4],
-				},
-				Tokens: tk[:4],
-			}
-		}},
-		{`*a`, func(t *test, tk Tokens) { // 8
-			t.Output = Target{
-				Star: &Target{
-					PrimaryExpression: &PrimaryExpression{
-						Atom: &Atom{
-							Identifier: &tk[1],
-							Tokens:     tk[1:2],
-						},
-						Tokens: tk[1:2],
-					},
-					Tokens: tk[1:2],
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`* a`, func(t *test, tk Tokens) { // 9
-			t.Output = Target{
-				Star: &Target{
-					PrimaryExpression: &PrimaryExpression{
-						Atom: &Atom{
-							Identifier: &tk[2],
-							Tokens:     tk[2:3],
-						},
-						Tokens: tk[2:3],
-					},
-					Tokens: tk[2:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{"( * # A\na )", func(t *test, tk Tokens) { // 10
-			t.Output = Target{
-				Tuple: &TargetList{
-					Targets: []Target{
-						{
-							Star: &Target{
-								PrimaryExpression: &PrimaryExpression{
-									Atom: &Atom{
-										Identifier: &tk[6],
-										Tokens:     tk[6:7],
-									},
-									Tokens: tk[6:7],
-								},
-								Comments: [2]Comments{{tk[4]}},
-								Tokens:   tk[4:7],
-							},
-							Tokens: tk[2:7],
-						},
-					},
-					Tokens: tk[2:7],
-				},
-				Tokens: tk[:9],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 11
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[0],
-						},
-						Parsing: "Atom",
-						Token:   tk[0],
-					},
-					Parsing: "PrimaryExpression",
-					Token:   tk[0],
-				},
-				Parsing: "Target",
-				Token:   tk[0],
-			}
-		}},
-		{`(nonlocal)`, func(t *test, tk Tokens) { // 12
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err:     ErrInvalidEnclosure,
-									Parsing: "Enclosure",
-									Token:   tk[1],
-								},
-								Parsing: "Atom",
-								Token:   tk[1],
-							},
-							Parsing: "PrimaryExpression",
-							Token:   tk[1],
-						},
-						Parsing: "Target",
-						Token:   tk[1],
-					},
-					Parsing: "TargetList",
-					Token:   tk[1],
-				},
-				Parsing: "Target",
-				Token:   tk[1],
-			}
-		}},
-		{`[nonlocal]`, func(t *test, tk Tokens) { // 13
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err:     ErrInvalidEnclosure,
-									Parsing: "Enclosure",
-									Token:   tk[1],
-								},
-								Parsing: "Atom",
-								Token:   tk[1],
-							},
-							Parsing: "PrimaryExpression",
-							Token:   tk[1],
-						},
-						Parsing: "Target",
-						Token:   tk[1],
-					},
-					Parsing: "TargetList",
-					Token:   tk[1],
-				},
-				Parsing: "Target",
-				Token:   tk[1],
-			}
-		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 14
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
-								Token:   tk[1],
-							},
-							Parsing: "Atom",
-							Token:   tk[1],
-						},
-						Parsing: "PrimaryExpression",
-						Token:   tk[1],
-					},
-					Parsing: "Target",
-					Token:   tk[1],
-				},
-				Parsing: "Target",
-				Token:   tk[1],
-			}
-		}},
-		{`a()`, func(t *test, tk Tokens) { // 15
-			t.Err = Error{
-				Err:     ErrMissingIdentifier,
-				Parsing: "Target",
-				Token:   tk[0],
-			}
-		}},
-		{`{a}`, func(t *test, tk Tokens) { // 16
-			t.Err = Error{
-				Err:     ErrMissingIdentifier,
-				Parsing: "Target",
-				Token:   tk[0],
-			}
-		}},
-		{`(a b)`, func(t *test, tk Tokens) { // 17
-			t.Err = Error{
-				Err:     ErrMissingClosingParen,
-				Parsing: "Target",
-				Token:   tk[3],
-			}
-		}},
-		{`[a b]`, func(t *test, tk Tokens) { // 18
-			t.Err = Error{
-				Err:     ErrMissingClosingBracket,
-				Parsing: "Target",
-				Token:   tk[3],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var tt Target
-
-		err := tt.parse(t.Tokens)
-
-		return tt, err
-	})
-}
-
-func TestStarredList(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = StarredList{
-				StarredItems: []StarredItem{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a,b`, func(t *test, tk Tokens) { // 2
-			t.Output = StarredList{
-				StarredItems: []StarredItem{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
-								}),
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-						Tokens: tk[2:3],
-					},
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`a,`, func(t *test, tk Tokens) { // 3
-			t.Output = StarredList{
-				StarredItems: []StarredItem{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				TrailingComma: true,
-				Tokens:        tk[:2],
-			}
-		}},
-		{"a,\n", func(t *test, tk Tokens) { // 4
-			t.Output = StarredList{
-				StarredItems: []StarredItem{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				TrailingComma: true,
-				Tokens:        tk[:2],
-			}
-		}},
-		{`a,b ,`, func(t *test, tk Tokens) { // 5
-			t.Output = StarredList{
-				StarredItems: []StarredItem{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
-								}),
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[2:3],
-						},
-						Tokens: tk[2:3],
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`a , b`, func(t *test, tk Tokens) { // 6
-			t.Output = StarredList{
-				StarredItems: []StarredItem{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[4],
-									Tokens:     tk[4:5],
-								}),
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[4:5],
-						},
-						Tokens: tk[4:5],
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`a : b, c`, func(t *test, tk Tokens) { // 7
-			t.Output = StarredList{
-				StarredItems: []StarredItem{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`a for b in c`, func(t *test, tk Tokens) { // 8
-			t.Output = StarredList{
-				StarredItems: []StarredItem{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{"a\n", func(t *test, tk Tokens) { // 9
-			t.Output = StarredList{
-				StarredItems: []StarredItem{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 10
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: wrapConditionalExpressionError(Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
-								Token:   tk[0],
-							}),
-							Parsing: "Expression",
-							Token:   tk[0],
-						},
-						Parsing: "AssignmentExpression",
-						Token:   tk[0],
-					},
-					Parsing: "StarredItem",
-					Token:   tk[0],
-				},
-				Parsing: "StarredList",
-				Token:   tk[0],
-			}
-		}},
-		{`a b`, func(t *test, tk Tokens) { // 11
-			t.Err = Error{
-				Err:     ErrMissingComma,
-				Parsing: "StarredList",
-				Token:   tk[2],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var s StarredList
-
-		err := s.parse(t.Tokens)
-
-		return s, err
-	})
-}
-
-func TestStarredItem(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = StarredItem{
-				AssignmentExpression: &AssignmentExpression{
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[0],
-							Tokens:     tk[:1],
-						}),
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`*a`, func(t *test, tk Tokens) { // 2
-			t.Output = StarredItem{
-				OrExpr: &WrapConditional(&Atom{
-					Identifier: &tk[1],
-					Tokens:     tk[1:2],
-				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
-				Tokens: tk[:2],
-			}
-		}},
-		{`* a`, func(t *test, tk Tokens) { // 3
-			t.Output = StarredItem{
-				OrExpr: &WrapConditional(&Atom{
-					Identifier: &tk[2],
-					Tokens:     tk[2:3],
-				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
-				Tokens: tk[:3],
-			}
-		}},
-		{"(# A\na #B\n)", func(t *test, tk Tokens) { // 4
-			t.Output = StarredItem{
-				AssignmentExpression: &AssignmentExpression{
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[3],
-							Tokens:     tk[3:4],
-						}),
-						Tokens: tk[3:4],
-					},
-					Tokens: tk[3:4],
-				},
-				Comments: [3]Comments{{tk[1]}, nil, {tk[5]}},
-				Tokens:   tk[1:6],
-			}
-		}},
-		{"(# A\n* # B\na #C \n)", func(t *test, tk Tokens) { // 5
-			t.Output = StarredItem{
-				OrExpr: &WrapConditional(&Atom{
-					Identifier: &tk[7],
-					Tokens:     tk[7:8],
-				}).OrTest.AndTest.NotTest.Comparison.OrExpression,
-				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[9]}},
-				Tokens:   tk[1:10],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 6
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: wrapConditionalExpressionError(Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[0],
-						}),
-						Parsing: "Expression",
-						Token:   tk[0],
-					},
-					Parsing: "AssignmentExpression",
-					Token:   tk[0],
-				},
-				Parsing: "StarredItem",
-				Token:   tk[0],
-			}
-		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 7
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: Error{
-								Err: Error{
-									Err: Error{
-										Err: Error{
-											Err: Error{
-												Err: Error{
-													Err: Error{
-														Err: Error{
-															Err:     ErrInvalidEnclosure,
-															Parsing: "Enclosure",
-															Token:   tk[1],
-														},
-														Parsing: "Atom",
-														Token:   tk[1],
-													},
-													Parsing: "PrimaryExpression",
-													Token:   tk[1],
-												},
-												Parsing: "PowerExpression",
-												Token:   tk[1],
-											},
-											Parsing: "UnaryExpression",
-											Token:   tk[1],
-										},
-										Parsing: "MultiplyExpression",
-										Token:   tk[1],
-									},
-									Parsing: "AddExpression",
-									Token:   tk[1],
-								},
-								Parsing: "ShiftExpression",
-								Token:   tk[1],
-							},
-							Parsing: "AndExpression",
-							Token:   tk[1],
-						},
-						Parsing: "XorExpression",
-						Token:   tk[1],
-					},
-					Parsing: "OrExpression",
-					Token:   tk[1],
-				},
-				Parsing: "StarredItem",
-				Token:   tk[1],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var s StarredItem
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := s.parse(t.Tokens)
-
-		return s, err
-	})
-}
-
 func TestTypeParam(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
@@ -8699,18 +7725,188 @@ func TestParameter(t *testing.T) {
 	})
 }
 
-func TestArgumentList(t *testing.T) {
+func TestStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
+			t.Output = Statement{
+				StatementList: &StatementList{
+					Statements: []SimpleStatement{
+						{
+							Type: StatementAssignment,
+							AssignmentStatement: &AssignmentStatement{
+								StarredExpression: &StarredExpression{
+									Expression: &Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[0],
+											Tokens:     tk[:1],
+										}),
+										Tokens: tk[:1],
+									},
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+					},
+					Tokens: tk[:1],
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`class a: pass`, func(t *test, tk Tokens) { // 2
+			t.Output = Statement{
+				CompoundStatement: &CompoundStatement{
+					Class: &ClassDefinition{
+						ClassName: &tk[2],
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type:   StatementPass,
+										Tokens: tk[5:6],
+									},
+								},
+								Tokens: tk[5:6],
+							},
+							Tokens: tk[5:6],
+						},
+						Tokens: tk[:6],
+					},
+					Tokens: tk[:6],
+				},
+				Tokens: tk[:6],
+			}
+		}},
+		{"@decorator\nclass a: pass", func(t *test, tk Tokens) { // 3
+			t.Output = Statement{
+				CompoundStatement: &CompoundStatement{
+					Class: &ClassDefinition{
+						Decorators: &Decorators{
+							Decorators: []Decorator{
+								{
+									Decorator: AssignmentExpression{
+										Expression: Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[1],
+												Tokens:     tk[1:2],
+											}),
+											Tokens: tk[1:2],
+										},
+										Tokens: tk[1:2],
+									},
+									Tokens: tk[:2],
+								},
+							},
+							Tokens: tk[:2],
+						},
+						ClassName: &tk[5],
+						Suite: Suite{
+							StatementList: &StatementList{
+								Statements: []SimpleStatement{
+									{
+										Type:   StatementPass,
+										Tokens: tk[8:9],
+									},
+								},
+								Tokens: tk[8:9],
+							},
+							Tokens: tk[8:9],
+						},
+						Tokens: tk[:9],
+					},
+					Tokens: tk[:9],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingIdentifier,
+							Parsing: "NonLocalStatement",
+							Token:   tk[1],
+						},
+						Parsing: "SimpleStatement",
+						Token:   tk[0],
+					},
+					Parsing: "StatementList",
+					Token:   tk[0],
+				},
+				Parsing: "Statement",
+				Token:   tk[0],
+			}
+		}},
+		{`class nonlocal: a`, func(t *test, tk Tokens) { // 5
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "ClassDefinition",
+						Token:   tk[2],
+					},
+					Parsing: "CompoundStatement",
+					Token:   tk[0],
+				},
+				Parsing: "Statement",
+				Token:   tk[0],
+			}
+		}},
+		{"#A comment\na", func(t *test, tk Tokens) { // 6
+			t.Output = Statement{
+				StatementList: &StatementList{
+					Statements: []SimpleStatement{
+						{
+							Type: StatementAssignment,
+							AssignmentStatement: &AssignmentStatement{
+								StarredExpression: &StarredExpression{
+									Expression: &Expression{
+										ConditionalExpression: WrapConditional(&Atom{
+											Identifier: &tk[2],
+											Tokens:     tk[2:3],
+										}),
+										Tokens: tk[2:3],
+									},
+									Tokens: tk[2:3],
+								},
+								Tokens: tk[2:3],
+							},
+							Tokens: tk[2:3],
+						},
+					},
+					Tokens: tk[2:3],
+				},
+				Comments: Comments{tk[0]},
+				Tokens:   tk[:3],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var s Statement
+
+		err := s.parse(t.Tokens)
+
+		return s, err
+	})
+}
+
+func TestStatementList(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
 					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									}),
+									Tokens: tk[:1],
+								},
 								Tokens: tk[:1],
 							},
 							Tokens: tk[:1],
@@ -8721,16 +7917,20 @@ func TestArgumentList(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{`a,`, func(t *test, tk Tokens) { // 2
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
+		{`a;`, func(t *test, tk Tokens) { // 2
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
 					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									}),
+									Tokens: tk[:1],
+								},
 								Tokens: tk[:1],
 							},
 							Tokens: tk[:1],
@@ -8741,16 +7941,117 @@ func TestArgumentList(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-		{`a,b`, func(t *test, tk Tokens) { // 3
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
+		{`a ; `, func(t *test, tk Tokens) { // 3
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
 					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									}),
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:3],
+			}
+		}},
+		{"a\n", func(t *test, tk Tokens) { // 4
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									}),
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:1],
+			}
+		}},
+		{`a; #Comment`, func(t *test, tk Tokens) { // 5
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									}),
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Comments: Comments{tk[3]},
+				Tokens:   tk[:4],
+			}
+		}},
+		{"a;\n", func(t *test, tk Tokens) { // 6
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									}),
+									Tokens: tk[:1],
+								},
+								Tokens: tk[:1],
+							},
+							Tokens: tk[:1],
+						},
+						Tokens: tk[:1],
+					},
+				},
+				Tokens: tk[:2],
+			}
+		}},
+		{`a;b`, func(t *test, tk Tokens) { // 7
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
+					{
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									}),
+									Tokens: tk[:1],
+								},
 								Tokens: tk[:1],
 							},
 							Tokens: tk[:1],
@@ -8758,12 +8059,16 @@ func TestArgumentList(t *testing.T) {
 						Tokens: tk[:1],
 					},
 					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
-								}),
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[2],
+										Tokens:     tk[2:3],
+									}),
+									Tokens: tk[2:3],
+								},
 								Tokens: tk[2:3],
 							},
 							Tokens: tk[2:3],
@@ -8774,16 +8079,20 @@ func TestArgumentList(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a , b`, func(t *test, tk Tokens) { // 4
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
+		{`a ; b `, func(t *test, tk Tokens) { // 8
+			t.Output = StatementList{
+				Statements: []SimpleStatement{
 					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[0],
+										Tokens:     tk[:1],
+									}),
+									Tokens: tk[:1],
+								},
 								Tokens: tk[:1],
 							},
 							Tokens: tk[:1],
@@ -8791,12 +8100,16 @@ func TestArgumentList(t *testing.T) {
 						Tokens: tk[:1],
 					},
 					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[4],
-									Tokens:     tk[4:5],
-								}),
+						Type: StatementAssignment,
+						AssignmentStatement: &AssignmentStatement{
+							StarredExpression: &StarredExpression{
+								Expression: &Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[4],
+										Tokens:     tk[4:5],
+									}),
+									Tokens: tk[4:5],
+								},
 								Tokens: tk[4:5],
 							},
 							Tokens: tk[4:5],
@@ -8807,732 +8120,38 @@ func TestArgumentList(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`a,*b`, func(t *test, tk Tokens) { // 5
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[3],
-								Tokens:     tk[3:4],
-							}),
-							Tokens: tk[3:4],
-						},
-						Tokens: tk[2:4],
-					},
-				},
-				Tokens: tk[:4],
-			}
-		}},
-		{`a, *b`, func(t *test, tk Tokens) { // 6
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-					{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[4],
-								Tokens:     tk[4:5],
-							}),
-							Tokens: tk[4:5],
-						},
-						Tokens: tk[3:5],
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`a,b=c`, func(t *test, tk Tokens) { // 7
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				StarredAndKeywordArguments: []StarredOrKeyword{
-					{
-						KeywordItem: &KeywordItem{
-							Identifier: &tk[2],
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[4],
-									Tokens:     tk[4:5],
-								}),
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[2:5],
-						},
-						Tokens: tk[2:5],
-					},
-				},
-				Tokens: tk[:5],
-			}
-		}},
-		{`a, b=c, *d`, func(t *test, tk Tokens) { // 8
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				StarredAndKeywordArguments: []StarredOrKeyword{
-					{
-						KeywordItem: &KeywordItem{
-							Identifier: &tk[3],
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[5],
-									Tokens:     tk[5:6],
-								}),
-								Tokens: tk[5:6],
-							},
-							Tokens: tk[3:6],
-						},
-						Tokens: tk[3:6],
-					},
-					{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[9],
-								Tokens:     tk[9:10],
-							}),
-							Tokens: tk[9:10],
-						},
-						Tokens: tk[8:10],
-					},
-				},
-				Tokens: tk[:10],
-			}
-		}},
-		{`a=b,*c`, func(t *test, tk Tokens) { // 9
-			t.Output = ArgumentList{
-				StarredAndKeywordArguments: []StarredOrKeyword{
-					{
-						KeywordItem: &KeywordItem{
-							Identifier: &tk[0],
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
-								}),
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[:3],
-						},
-						Tokens: tk[:3],
-					},
-					{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[5],
-								Tokens:     tk[5:6],
-							}),
-							Tokens: tk[5:6],
-						},
-						Tokens: tk[4:6],
-					},
-				},
-				Tokens: tk[:6],
-			}
-		}},
-		{`a,b=c,**d`, func(t *test, tk Tokens) { // 10
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				StarredAndKeywordArguments: []StarredOrKeyword{
-					{
-						KeywordItem: &KeywordItem{
-							Identifier: &tk[2],
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[4],
-									Tokens:     tk[4:5],
-								}),
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[2:5],
-						},
-						Tokens: tk[2:5],
-					},
-				},
-				KeywordArguments: []KeywordArgument{
-					{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[7],
-								Tokens:     tk[7:8],
-							}),
-							Tokens: tk[7:8],
-						},
-						Tokens: tk[6:8],
-					},
-				},
-				Tokens: tk[:8],
-			}
-		}},
-		{`a,**b,c=d`, func(t *test, tk Tokens) { // 11
-			t.Output = ArgumentList{
-				PositionalArguments: []PositionalArgument{
-					{
-						AssignmentExpression: &AssignmentExpression{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[0],
-									Tokens:     tk[:1],
-								}),
-								Tokens: tk[:1],
-							},
-							Tokens: tk[:1],
-						},
-						Tokens: tk[:1],
-					},
-				},
-				KeywordArguments: []KeywordArgument{
-					{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[3],
-								Tokens:     tk[3:4],
-							}),
-							Tokens: tk[3:4],
-						},
-						Tokens: tk[2:4],
-					},
-					{
-						KeywordItem: &KeywordItem{
-							Identifier: &tk[5],
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[7],
-									Tokens:     tk[7:8],
-								}),
-								Tokens: tk[7:8],
-							},
-							Tokens: tk[5:8],
-						},
-						Tokens: tk[5:8],
-					},
-				},
-				Tokens: tk[:8],
-			}
-		}},
-		{`**a`, func(t *test, tk Tokens) { // 12
-			t.Output = ArgumentList{
-				KeywordArguments: []KeywordArgument{
-					{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[1],
-								Tokens:     tk[1:2],
-							}),
-							Tokens: tk[1:2],
-						},
-						Tokens: tk[:2],
-					},
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`a=b`, func(t *test, tk Tokens) { // 13
-			t.Output = ArgumentList{
-				StarredAndKeywordArguments: []StarredOrKeyword{
-					{
-						KeywordItem: &KeywordItem{
-							Identifier: &tk[0],
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
-								}),
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[:3],
-						},
-						Tokens: tk[:3],
-					},
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`a = b,`, func(t *test, tk Tokens) { // 14
-			t.Output = ArgumentList{
-				StarredAndKeywordArguments: []StarredOrKeyword{
-					{
-						KeywordItem: &KeywordItem{
-							Identifier: &tk[0],
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[4],
-									Tokens:     tk[4:5],
-								}),
-								Tokens: tk[4:5],
-							},
-							Tokens: tk[:5],
-						},
-						Tokens: tk[:5],
-					},
-				},
-				Tokens: tk[:6],
-			}
-		}},
-		{`a=b,`, func(t *test, tk Tokens) { // 15
-			t.Output = ArgumentList{
-				StarredAndKeywordArguments: []StarredOrKeyword{
-					{
-						KeywordItem: &KeywordItem{
-							Identifier: &tk[0],
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[2],
-									Tokens:     tk[2:3],
-								}),
-								Tokens: tk[2:3],
-							},
-							Tokens: tk[:3],
-						},
-						Tokens: tk[:3],
-					},
-				},
-				Tokens: tk[:4],
-			}
-		}},
-		{`** a`, func(t *test, tk Tokens) { // 16
-			t.Output = ArgumentList{
-				KeywordArguments: []KeywordArgument{
-					{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[2],
-								Tokens:     tk[2:3],
-							}),
-							Tokens: tk[2:3],
-						},
-						Tokens: tk[:3],
-					},
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`**a,`, func(t *test, tk Tokens) { // 17
-			t.Output = ArgumentList{
-				KeywordArguments: []KeywordArgument{
-					{
-						Expression: &Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[1],
-								Tokens:     tk[1:2],
-							}),
-							Tokens: tk[1:2],
-						},
-						Tokens: tk[:2],
-					},
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 18
+		{`nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err: Error{
-							Err: wrapConditionalExpressionError(Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
-								Token:   tk[0],
-							}),
-							Parsing: "Expression",
-							Token:   tk[0],
-						},
-						Parsing: "AssignmentExpression",
-						Token:   tk[0],
-					},
-					Parsing: "PositionalArgument",
-					Token:   tk[0],
-				},
-				Parsing: "ArgumentList",
-				Token:   tk[0],
-			}
-		}},
-		{`a b`, func(t *test, tk Tokens) { // 19
-			t.Err = Error{
-				Err:     ErrMissingComma,
-				Parsing: "ArgumentList",
-				Token:   tk[1],
-			}
-		}},
-		{`a=nonlocal`, func(t *test, tk Tokens) { // 20
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: Error{
-							Err: wrapConditionalExpressionError(Error{
-								Err:     ErrInvalidEnclosure,
-								Parsing: "Enclosure",
-								Token:   tk[2],
-							}),
-							Parsing: "Expression",
-							Token:   tk[2],
-						},
-						Parsing: "KeywordItem",
-						Token:   tk[2],
-					},
-					Parsing: "StarredOrKeyword",
-					Token:   tk[0],
-				},
-				Parsing: "ArgumentList",
-				Token:   tk[0],
-			}
-		}},
-		{`a=b c`, func(t *test, tk Tokens) { // 21
-			t.Err = Error{
-				Err:     ErrMissingComma,
-				Parsing: "ArgumentList",
-				Token:   tk[3],
-			}
-		}},
-		{`**nonlocal`, func(t *test, tk Tokens) { // 22
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: wrapConditionalExpressionError(Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[1],
-						}),
-						Parsing: "Expression",
+						Err:     ErrMissingIdentifier,
+						Parsing: "NonLocalStatement",
 						Token:   tk[1],
 					},
-					Parsing: "KeywordArgument",
-					Token:   tk[1],
+					Parsing: "SimpleStatement",
+					Token:   tk[0],
 				},
-				Parsing: "ArgumentList",
+				Parsing: "StatementList",
 				Token:   tk[0],
 			}
 		}},
-		{`**a b`, func(t *test, tk Tokens) { // 23
+		{`a;nonlocal`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
-				Err:     ErrMissingComma,
-				Parsing: "ArgumentList",
+				Err: Error{
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "NonLocalStatement",
+						Token:   tk[3],
+					},
+					Parsing: "SimpleStatement",
+					Token:   tk[2],
+				},
+				Parsing: "StatementList",
 				Token:   tk[2],
 			}
 		}},
 	}, func(t *test) (Type, error) {
-		var a ArgumentList
-
-		err := a.parse(t.Tokens)
-
-		return a, err
-	})
-}
-
-func TestPositionalArgument(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a`, func(t *test, tk Tokens) { // 1
-			t.Output = PositionalArgument{
-				AssignmentExpression: &AssignmentExpression{
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[0],
-							Tokens:     tk[:1],
-						}),
-						Tokens: tk[:1],
-					},
-					Tokens: tk[:1],
-				},
-				Tokens: tk[:1],
-			}
-		}},
-		{`*a`, func(t *test, tk Tokens) { // 2
-			t.Output = PositionalArgument{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[1],
-						Tokens:     tk[1:2],
-					}),
-					Tokens: tk[1:2],
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`* a`, func(t *test, tk Tokens) { // 3
-			t.Output = PositionalArgument{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[2],
-						Tokens:     tk[2:3],
-					}),
-					Tokens: tk[2:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{"(# A\na # B\n\n# C\n)", func(t *test, tk Tokens) { // 4
-			t.Output = PositionalArgument{
-				AssignmentExpression: &AssignmentExpression{
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[3],
-							Tokens:     tk[3:4],
-						}),
-						Tokens: tk[3:4],
-					},
-					Tokens: tk[3:4],
-				},
-				Comments: [3]Comments{{tk[1]}, nil, {tk[5]}},
-				Tokens:   tk[1:6],
-			}
-		}},
-		{"(# A\na # B\n\n# C\n,)", func(t *test, tk Tokens) { // 5
-			t.Output = PositionalArgument{
-				AssignmentExpression: &AssignmentExpression{
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[3],
-							Tokens:     tk[3:4],
-						}),
-						Tokens: tk[3:4],
-					},
-					Tokens: tk[3:4],
-				},
-				Comments: [3]Comments{{tk[1]}, nil, {tk[5], tk[7]}},
-				Tokens:   tk[1:8],
-			}
-		}},
-		{"(# A\n* # B\na # C\n)", func(t *test, tk Tokens) { // 6
-			t.Output = PositionalArgument{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[7],
-						Tokens:     tk[7:8],
-					}),
-					Tokens: tk[7:8],
-				},
-				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[9]}},
-				Tokens:   tk[1:10],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 7
-			t.Err = Error{
-				Err: Error{
-					Err: Error{
-						Err: wrapConditionalExpressionError(Error{
-							Err:     ErrInvalidEnclosure,
-							Parsing: "Enclosure",
-							Token:   tk[0],
-						}),
-						Parsing: "Expression",
-						Token:   tk[0],
-					},
-					Parsing: "AssignmentExpression",
-					Token:   tk[0],
-				},
-				Parsing: "PositionalArgument",
-				Token:   tk[0],
-			}
-		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 8
-			t.Err = Error{
-				Err: Error{
-					Err: wrapConditionalExpressionError(Error{
-						Err:     ErrInvalidEnclosure,
-						Parsing: "Enclosure",
-						Token:   tk[1],
-					}),
-					Parsing: "Expression",
-					Token:   tk[1],
-				},
-				Parsing: "PositionalArgument",
-				Token:   tk[1],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var p PositionalArgument
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
-
-		err := p.parse(t.Tokens)
-
-		return p, err
-	})
-}
-
-func TestStarredOrKeyword(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`*a`, func(t *test, tk Tokens) { // 1
-			t.Output = StarredOrKeyword{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[1],
-						Tokens:     tk[1:2],
-					}),
-					Tokens: tk[1:2],
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`* a`, func(t *test, tk Tokens) { // 2
-			t.Output = StarredOrKeyword{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[2],
-						Tokens:     tk[2:3],
-					}),
-					Tokens: tk[2:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`a=b`, func(t *test, tk Tokens) { // 3
-			t.Output = StarredOrKeyword{
-				KeywordItem: &KeywordItem{
-					Identifier: &tk[0],
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[2],
-							Tokens:     tk[2:3],
-						}),
-						Tokens: tk[2:3],
-					},
-					Tokens: tk[:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{"(# A\n* a\n# B\n)", func(t *test, tk Tokens) { // 4
-			t.Output = StarredOrKeyword{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[5],
-						Tokens:     tk[5:6],
-					}),
-					Tokens: tk[5:6],
-				},
-				Comments: [2]Comments{{tk[1]}},
-				Tokens:   tk[1:6],
-			}
-		}},
-		{"(# A\n* a\n# B\n,)", func(t *test, tk Tokens) { // 5
-			t.Output = StarredOrKeyword{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[5],
-						Tokens:     tk[5:6],
-					}),
-					Tokens: tk[5:6],
-				},
-				Comments: [2]Comments{{tk[1]}, {tk[7]}},
-				Tokens:   tk[1:8],
-			}
-		}},
-		{"(# A\na=b\n# B\n,)", func(t *test, tk Tokens) { // 6
-			t.Output = StarredOrKeyword{
-				KeywordItem: &KeywordItem{
-					Identifier: &tk[3],
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[5],
-							Tokens:     tk[5:6],
-						}),
-						Tokens: tk[5:6],
-					},
-					Tokens: tk[3:6],
-				},
-				Comments: [2]Comments{{tk[1]}, {tk[7]}},
-				Tokens:   tk[1:8],
-			}
-		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 7
-			t.Err = Error{
-				Err: Error{
-					Err: wrapConditionalExpressionError(Error{
-						Err:     ErrInvalidEnclosure,
-						Parsing: "Enclosure",
-						Token:   tk[1],
-					}),
-					Parsing: "Expression",
-					Token:   tk[1],
-				},
-				Parsing: "StarredOrKeyword",
-				Token:   tk[1],
-			}
-		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 8
-			t.Err = Error{
-				Err: Error{
-					Err:     ErrMissingIdentifier,
-					Parsing: "KeywordItem",
-					Token:   tk[0],
-				},
-				Parsing: "StarredOrKeyword",
-				Token:   tk[0],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var s StarredOrKeyword
-
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
+		var s StatementList
 
 		err := s.parse(t.Tokens)
 
@@ -9540,196 +8159,112 @@ func TestStarredOrKeyword(t *testing.T) {
 	})
 }
 
-func TestKeywordItem(t *testing.T) {
+func TestTypeParams(t *testing.T) {
 	doTests(t, []sourceFn{
-		{`a=b`, func(t *test, tk Tokens) { // 1
-			t.Output = KeywordItem{
-				Identifier: &tk[0],
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[2],
-						Tokens:     tk[2:3],
-					}),
-					Tokens: tk[2:3],
+		{`[a]`, func(t *test, tk Tokens) { // 1
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
+						Identifier: &tk[1],
+						Tokens:     tk[1:2],
+					},
 				},
 				Tokens: tk[:3],
 			}
 		}},
-		{`a = b`, func(t *test, tk Tokens) { // 2
-			t.Output = KeywordItem{
-				Identifier: &tk[0],
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[4],
-						Tokens:     tk[4:5],
-					}),
-					Tokens: tk[4:5],
+		{`[]`, func(t *test, tk Tokens) { // 2
+			t.Output = TypeParams{
+				Tokens: tk[:2],
+			}
+		}},
+		{`[ ]`, func(t *test, tk Tokens) { // 3
+			t.Output = TypeParams{
+				Tokens: tk[:3],
+			}
+		}},
+		{`[ a ]`, func(t *test, tk Tokens) { // 4
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
+						Identifier: &tk[2],
+						Tokens:     tk[2:3],
+					},
 				},
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal=a`, func(t *test, tk Tokens) { // 3
-			t.Err = Error{
-				Err:     ErrMissingIdentifier,
-				Parsing: "KeywordItem",
-				Token:   tk[0],
-			}
-		}},
-		{`a:b`, func(t *test, tk Tokens) { // 4
-			t.Err = Error{
-				Err:     ErrMissingEquals,
-				Parsing: "KeywordItem",
-				Token:   tk[1],
-			}
-		}},
-		{`a=nonlocal`, func(t *test, tk Tokens) { // 5
-			t.Err = Error{
-				Err: Error{
-					Err: wrapConditionalExpressionError(Error{
-						Err:     ErrInvalidEnclosure,
-						Parsing: "Enclosure",
-						Token:   tk[2],
-					}),
-					Parsing: "Expression",
-					Token:   tk[2],
-				},
-				Parsing: "KeywordItem",
-				Token:   tk[2],
-			}
-		}},
-	}, func(t *test) (Type, error) {
-		var k KeywordItem
-
-		err := k.parse(t.Tokens)
-
-		return k, err
-	})
-}
-
-func TestKeywordArgument(t *testing.T) {
-	doTests(t, []sourceFn{
-		{`a=b`, func(t *test, tk Tokens) { // 1
-			t.Output = KeywordArgument{
-				KeywordItem: &KeywordItem{
-					Identifier: &tk[0],
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[2],
-							Tokens:     tk[2:3],
-						}),
-						Tokens: tk[2:3],
-					},
-					Tokens: tk[:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{`**a`, func(t *test, tk Tokens) { // 2
-			t.Output = KeywordArgument{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
+		{`[a, b]`, func(t *test, tk Tokens) { // 5
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
 						Identifier: &tk[1],
 						Tokens:     tk[1:2],
-					}),
-					Tokens: tk[1:2],
-				},
-				Tokens: tk[:2],
-			}
-		}},
-		{`** a`, func(t *test, tk Tokens) { // 3
-			t.Output = KeywordArgument{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[2],
-						Tokens:     tk[2:3],
-					}),
-					Tokens: tk[2:3],
-				},
-				Tokens: tk[:3],
-			}
-		}},
-		{"(# A\na=b\n# B\n)", func(t *test, tk Tokens) { // 4
-			t.Output = KeywordArgument{
-				KeywordItem: &KeywordItem{
-					Identifier: &tk[3],
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[5],
-							Tokens:     tk[5:6],
-						}),
-						Tokens: tk[5:6],
 					},
-					Tokens: tk[3:6],
-				},
-				Comments: [3]Comments{{tk[1]}},
-				Tokens:   tk[1:6],
-			}
-		}},
-		{"(# A\na=b\n# B\n,)", func(t *test, tk Tokens) { // 5
-			t.Output = KeywordArgument{
-				KeywordItem: &KeywordItem{
-					Identifier: &tk[3],
-					Expression: Expression{
-						ConditionalExpression: WrapConditional(&Atom{
-							Identifier: &tk[5],
-							Tokens:     tk[5:6],
-						}),
-						Tokens: tk[5:6],
+					{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
 					},
-					Tokens: tk[3:6],
 				},
-				Comments: [3]Comments{{tk[1]}, nil, {tk[7]}},
-				Tokens:   tk[1:8],
+				Tokens: tk[:6],
 			}
 		}},
-		{"(# A\n** # B\na # C\n)", func(t *test, tk Tokens) { // 6
-			t.Output = KeywordArgument{
-				Expression: &Expression{
-					ConditionalExpression: WrapConditional(&Atom{
+		{"[ # A\na, b\n# B\n]", func(t *test, tk Tokens) { // 6
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
+						Identifier: &tk[4],
+						Tokens:     tk[4:5],
+					},
+					{
 						Identifier: &tk[7],
 						Tokens:     tk[7:8],
-					}),
-					Tokens: tk[7:8],
+					},
 				},
-				Comments: [3]Comments{{tk[1]}, {tk[5]}, {tk[9]}},
-				Tokens:   tk[1:10],
+				Comments: [2]Comments{{tk[2]}, {tk[9]}},
+				Tokens:   tk[:12],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 7
+		{"[ # A\n\t# B\n\t\n\t# C\n\ta, b # D\n\t# E\n\t\n\t# F\n\t]", func(t *test, tk Tokens) { // 7
+			t.Output = TypeParams{
+				TypeParams: []TypeParam{
+					{
+						Identifier: &tk[8],
+						Comments:   [4]Comments{{tk[6]}},
+						Tokens:     tk[6:9],
+					},
+					{
+						Identifier: &tk[11],
+						Comments:   [4]Comments{nil, nil, nil, {tk[13], tk[15]}},
+						Tokens:     tk[11:16],
+					},
+				},
+				Comments: [2]Comments{{tk[2], tk[4]}, {tk[17]}},
+				Tokens:   tk[:20],
+			}
+		}},
+		{`[nonlocal]`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
-					Parsing: "KeywordItem",
-					Token:   tk[0],
-				},
-				Parsing: "KeywordArgument",
-				Token:   tk[0],
-			}
-		}},
-		{`**nonlocal`, func(t *test, tk Tokens) { // 8
-			t.Err = Error{
-				Err: Error{
-					Err: wrapConditionalExpressionError(Error{
-						Err:     ErrInvalidEnclosure,
-						Parsing: "Enclosure",
-						Token:   tk[1],
-					}),
-					Parsing: "Expression",
+					Parsing: "TypeParam",
 					Token:   tk[1],
 				},
-				Parsing: "KeywordArgument",
+				Parsing: "TypeParams",
 				Token:   tk[1],
 			}
 		}},
+		{`[a b]`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrMissingComma,
+				Parsing: "TypeParams",
+				Token:   tk[3],
+			}
+		}},
 	}, func(t *test) (Type, error) {
-		var k KeywordArgument
+		var tp TypeParams
 
-		if t.Tokens.Peek().Data == "(" {
-			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
-		}
+		err := tp.parse(t.Tokens)
 
-		err := k.parse(t.Tokens)
-
-		return k, err
+		return tp, err
 	})
 }

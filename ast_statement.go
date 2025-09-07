@@ -1,135 +1,158 @@
 package python
 
-import (
-	"slices"
+import "vimagination.zapto.org/parser"
 
-	"vimagination.zapto.org/parser"
-)
-
-// Statement as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-statement
-type Statement struct {
-	StatementList     *StatementList
-	CompoundStatement *CompoundStatement
-	Comments          Comments
-	Tokens            Tokens
+// TargetList as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
+type TargetList struct {
+	Targets  []Target
+	Comments [2]Comments
+	Tokens   Tokens
 }
 
-func (s *Statement) parse(p *pyParser) error {
-	var isCompound, isSoftCompound bool
-
-	s.Comments = p.AcceptRunWhitespaceComments()
+func (t *TargetList) parse(p *pyParser) error {
+	t.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
 
 	p.AcceptRunAllWhitespace()
 
-	q := p.NewGoal()
-
-	switch tk := p.Peek(); tk.Type {
-	case TokenOperator:
-		isCompound = tk.Data == "@"
-	case TokenKeyword:
-		isCompound = slices.Contains(compounds[:], tk.Data)
-	case TokenIdentifier:
-		isCompound = tk.Data == "match"
-		isSoftCompound = isCompound
-	}
-
-	if isCompound {
-		c := new(CompoundStatement)
-
-		if err := c.parse(q); err != nil {
-			if !isSoftCompound {
-				return p.Error("Statement", err)
-			}
-		} else {
-			p.Score(q)
-
-			s.CompoundStatement = c
-		}
-	}
-
-	if s.CompoundStatement == nil {
-		q = p.NewGoal()
-		s.StatementList = new(StatementList)
-
-		if err := s.StatementList.parse(q); err != nil {
-			return p.Error("Statement", err)
-		}
-
-		p.Score(q)
-	}
-
-	s.Tokens = p.ToTokens()
-
-	return nil
-}
-
-// StatementList as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-stmt_list
-type StatementList struct {
-	Statements []SimpleStatement
-	Comments   Comments
-	Tokens
-}
-
-func (s *StatementList) parse(p *pyParser) error {
+Loop:
 	for {
 		q := p.NewGoal()
 
-		var ss SimpleStatement
+		var tg Target
 
-		if err := ss.parse(q); err != nil {
-			return p.Error("StatementList", err)
+		if err := tg.parse(q); err != nil {
+			return p.Error("TargetList", err)
 		}
+
+		t.Targets = append(t.Targets, tg)
 
 		p.Score(q)
 
-		s.Statements = append(s.Statements, ss)
 		q = p.NewGoal()
 
 		q.AcceptRunWhitespace()
 
-		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ";"}) {
+		if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 			break
+		}
+
+		q.AcceptRunWhitespace()
+
+		switch tk := q.Peek(); tk {
+		case parser.Token{Type: TokenDelimiter, Data: ";"},
+			parser.Token{Type: TokenDelimiter, Data: "="},
+			parser.Token{Type: TokenDelimiter, Data: "]"},
+			parser.Token{Type: TokenDelimiter, Data: ")"},
+			parser.Token{Type: TokenKeyword, Data: "in"}:
+			break Loop
+		default:
+			if tk.Type == TokenLineTerminator || tk.Type == parser.TokenDone {
+				break Loop
+			}
+		}
+
+		q.AcceptRunWhitespace()
+		p.Score(q)
+	}
+
+	t.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	t.Tokens = p.ToTokens()
+
+	return nil
+}
+
+// Target as defined in python@3.13.0:
+// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
+type Target struct {
+	PrimaryExpression *PrimaryExpression
+	Tuple             *TargetList
+	Array             *TargetList
+	Star              *Target
+	Comments          [2]Comments
+	Tokens            Tokens
+}
+
+func (t *Target) parse(p *pyParser) error {
+	t.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
+	if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("}) {
+		p.AcceptRunWhitespaceNoComment()
+
+		q := p.NewGoal()
+
+		t.Tuple = new(TargetList)
+
+		if err := t.Tuple.parse(q); err != nil {
+			return p.Error("Target", err)
 		}
 
 		p.Score(q)
 
-		q = p.NewGoal()
+		p.AcceptRunWhitespace()
 
-		if tk := q.AcceptRunWhitespace(); tk == TokenComment || tk == TokenLineTerminator || tk == TokenDedent || tk == parser.TokenDone {
-			break
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			return p.Error("Target", ErrMissingClosingParen)
+		}
+
+	} else if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["}) {
+		p.AcceptRunWhitespaceNoComment()
+
+		q := p.NewGoal()
+		t.Array = new(TargetList)
+
+		if err := t.Array.parse(q); err != nil {
+			return p.Error("Target", err)
+		}
+
+		p.Score(q)
+
+		p.AcceptRunWhitespace()
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
+			return p.Error("Target", ErrMissingClosingBracket)
+		}
+
+	} else if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
+		p.AcceptRunWhitespaceNoComment()
+
+		q := p.NewGoal()
+		t.Star = new(Target)
+
+		if err := t.Star.parse(q); err != nil {
+			return p.Error("Target", err)
+		}
+
+		p.Score(q)
+	} else {
+		t.PrimaryExpression = new(PrimaryExpression)
+		q := p.NewGoal()
+
+		if err := t.PrimaryExpression.parse(q); err != nil {
+			return p.Error("Target", err)
+		} else if t.PrimaryExpression.Call != nil || t.PrimaryExpression.Atom != nil && !t.PrimaryExpression.IsIdentifier() {
+			return p.Error("Target", ErrMissingIdentifier)
 		}
 
 		p.Score(q)
 	}
 
-	s.Comments = p.AcceptRunWhitespaceCommentsNoNewline()
-	s.Tokens = p.ToTokens()
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+		t.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	} else {
+		t.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+	}
+
+	t.Tokens = p.ToTokens()
 
 	return nil
 }
-
-// StatementType specifies the type of a SimpleStatment.
-type StatementType uint8
-
-const (
-	StatementAssert StatementType = iota
-	StatementAssignment
-	StatementAugmentedAssignment
-	StatementAnnotatedAssignment
-	StatementPass
-	StatementDel
-	StatementReturn
-	StatementYield
-	StatementRaise
-	StatementBreak
-	StatementContinue
-	StatementImport
-	StatementGlobal
-	StatementNonLocal
-	StatementTyp
-)
 
 // SimpleStatement as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-simple_stmt
@@ -550,44 +573,6 @@ func (a *AnnotatedAssignmentStatement) parse(p *pyParser) error {
 	}
 
 	a.Tokens = p.ToTokens()
-
-	return nil
-}
-
-// StarredExpression as defined in python@3.12.6:
-// https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_expression
-type StarredExpression struct {
-	Expression  *Expression
-	StarredList *StarredList
-	Comments    [2]Comments
-	Tokens      Tokens
-}
-
-func (s *StarredExpression) parse(p *pyParser) error {
-	s.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunAllWhitespace()
-
-	q := p.NewGoal()
-
-	if q.Peek() == (parser.Token{Type: TokenOperator, Data: "*"}) || q.LookaheadLine(parser.Token{Type: TokenDelimiter, Data: ","}) == 0 {
-		s.StarredList = new(StarredList)
-
-		if err := s.StarredList.parse(q); err != nil {
-			return p.Error("StarredExpression", err)
-		}
-	} else {
-		s.Expression = new(Expression)
-
-		if err := s.Expression.parse(q); err != nil {
-			return p.Error("StarredExpression", err)
-		}
-	}
-
-	p.Score(q)
-
-	s.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
-	s.Tokens = p.ToTokens()
 
 	return nil
 }
@@ -1065,602 +1050,4 @@ func (t *TypeStatement) parse(p *pyParser) error {
 	t.Tokens = p.ToTokens()
 
 	return nil
-}
-
-// TypeParams as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-type_params
-type TypeParams struct {
-	TypeParams []TypeParam
-	Comments   [2]Comments
-	Tokens     Tokens
-}
-
-func (t *TypeParams) parse(p *pyParser) error {
-	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
-
-	t.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
-	q := p.NewGoal()
-
-	q.AcceptRunAllWhitespace()
-
-	if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-		for {
-			p.AcceptRunWhitespaceNoComment()
-
-			q := p.NewGoal()
-
-			var tp TypeParam
-
-			if err := tp.parse(q); err != nil {
-				return p.Error("TypeParams", err)
-			}
-
-			t.TypeParams = append(t.TypeParams, tp)
-
-			p.Score(q)
-
-			q = p.NewGoal()
-
-			q.AcceptRunAllWhitespace()
-
-			if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"}) {
-				break
-			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-				return q.Error("TypeParams", ErrMissingComma)
-			}
-
-			p.AcceptRunWhitespace()
-			p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
-		}
-	}
-
-	t.Comments[1] = p.AcceptRunWhitespaceComments()
-
-	p.AcceptRunAllWhitespace()
-
-	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"})
-
-	t.Tokens = p.ToTokens()
-
-	return nil
-}
-
-// AssignmentExpression as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-assignment_expression
-type AssignmentExpression struct {
-	Identifier *Token
-	Expression Expression
-	Comments   [2]Comments
-	Tokens
-}
-
-func (a *AssignmentExpression) parse(p *pyParser) error {
-	q := p.NewGoal()
-
-	if q.Accept(TokenIdentifier) {
-		q.AcceptRunWhitespace()
-
-		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: ":="}) {
-			p.Next()
-			a.Identifier = p.GetLastToken()
-
-			a.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-			p.AcceptRunWhitespace()
-			p.Next()
-
-			a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-			p.AcceptRunWhitespace()
-		}
-
-		q = p.NewGoal()
-	}
-
-	if err := a.Expression.parse(q); err != nil {
-		return p.Error("AssignmentExpression", err)
-	}
-
-	p.Score(q)
-
-	a.Tokens = p.ToTokens()
-
-	return nil
-}
-
-func skipAssignmentExpression(p *pyParser) {
-	p.AcceptRunWhitespace()
-
-	q := p.NewGoal()
-
-	if q.Accept(TokenIdentifier) {
-		q.AcceptRunWhitespace()
-
-		if q.AcceptToken(parser.Token{Type: TokenOperator, Data: ":="}) {
-			q.AcceptRunWhitespace()
-			p.Score(q)
-		}
-	}
-
-	skipExpression(p)
-}
-
-// Expression as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-expression
-type Expression struct {
-	ConditionalExpression *ConditionalExpression
-	LambdaExpression      *LambdaExpression
-	Tokens                Tokens
-}
-
-func (e *Expression) parse(p *pyParser) error {
-	if p.Peek() == (parser.Token{Type: TokenKeyword, Data: "lambda"}) {
-		e.LambdaExpression = new(LambdaExpression)
-		q := p.NewGoal()
-
-		if err := e.LambdaExpression.parse(q); err != nil {
-			return p.Error("Expression", err)
-		}
-
-		p.Score(q)
-	} else {
-		e.ConditionalExpression = new(ConditionalExpression)
-		q := p.NewGoal()
-
-		if err := e.ConditionalExpression.parse(q); err != nil {
-			return p.Error("Expression", err)
-		}
-
-		p.Score(q)
-	}
-
-	e.Tokens = p.ToTokens()
-
-	return nil
-}
-
-func skipExpression(p *pyParser) {
-	p.AcceptRunWhitespace()
-
-	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "lambda"}) {
-		skipDepth(p, parser.Token{Type: TokenKeyword, Data: "lambda"}, parser.Token{Type: TokenDelimiter, Data: ":"})
-		p.AcceptRunWhitespace()
-		skipExpression(p)
-	} else {
-		skipConditionalExpression(p)
-	}
-}
-
-// ConditionalExpression as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-conditional_expression
-type ConditionalExpression struct {
-	OrTest   OrTest
-	If       *OrTest
-	Else     *Expression
-	Comments [4]Comments
-	Tokens   Tokens
-}
-
-func (c *ConditionalExpression) parse(p *pyParser) error {
-	q := p.NewGoal()
-
-	if err := c.OrTest.parse(q); err != nil {
-		return p.Error("ConditionalExpression", err)
-	}
-
-	p.Score(q)
-
-	q = p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
-		c.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-		p.Next()
-
-		c.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-
-		q = p.NewGoal()
-		c.If = new(OrTest)
-
-		if err := c.If.parse(q); err != nil {
-			return p.Error("ConditionalExpression", err)
-		}
-
-		p.Score(q)
-
-		c.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-
-		if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"}) {
-			return p.Error("ConditionalExpression", ErrMissingElse)
-		}
-
-		c.Comments[3] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-
-		q = p.NewGoal()
-		c.Else = new(Expression)
-
-		if err := c.Else.parse(q); err != nil {
-			return p.Error("ConditionalExpression", err)
-		}
-
-		p.Score(q)
-	}
-
-	c.Tokens = p.ToTokens()
-
-	return nil
-}
-
-func skipConditionalExpression(p *pyParser) {
-	p.AcceptRunWhitespace()
-	skipOrTest(p)
-	p.AcceptRunWhitespace()
-
-	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"}) {
-		return
-	}
-
-	skipOrTest(p)
-	p.AcceptRunWhitespace()
-	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "else"})
-	p.AcceptRunWhitespace()
-	skipExpression(p)
-}
-
-// LambdaExpression as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-lambda_expr
-type LambdaExpression struct {
-	ParameterList *ParameterList
-	Expression    Expression
-	Comments      [3]Comments
-	Tokens        Tokens
-}
-
-func (l *LambdaExpression) parse(p *pyParser) error {
-	p.Next()
-
-	l.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunWhitespace()
-
-	if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-		p.AcceptRunWhitespaceNoComment()
-
-		q := p.NewGoal()
-		l.ParameterList = new(ParameterList)
-
-		if err := l.ParameterList.parse(q, false); err != nil {
-			return p.Error("LambdaExpression", err)
-		}
-
-		p.Score(q)
-
-		l.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-
-		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-			return p.Error("LambdaExpression", ErrMissingColon)
-		}
-	}
-
-	l.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-	p.AcceptRunWhitespace()
-
-	q := p.NewGoal()
-
-	if err := l.Expression.parse(q); err != nil {
-		return p.Error("LambdaExpression", err)
-	}
-
-	p.Score(q)
-
-	l.Tokens = p.ToTokens()
-
-	return nil
-}
-
-// OrTest as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-or_test
-type OrTest struct {
-	AndTest  AndTest
-	OrTest   *OrTest
-	Comments [2]Comments
-	Tokens   Tokens
-}
-
-func (o *OrTest) parse(p *pyParser) error {
-	q := p.NewGoal()
-
-	if err := o.AndTest.parse(q); err != nil {
-		return p.Error("OrTest", err)
-	}
-
-	p.Score(q)
-
-	q = p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "or"}) {
-		o.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-		p.Next()
-
-		o.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-
-		q = p.NewGoal()
-		o.OrTest = new(OrTest)
-
-		if err := o.OrTest.parse(q); err != nil {
-			return p.Error("OrTest", err)
-		}
-
-		p.Score(q)
-	}
-
-	o.Tokens = p.ToTokens()
-
-	return nil
-}
-
-func skipOrTest(p *pyParser) {
-	skipAndTest(p)
-	p.AcceptRunWhitespace()
-
-	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "or"}) {
-		p.AcceptRunWhitespace()
-		skipOrTest(p)
-	}
-}
-
-// AndTest as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-and_test
-type AndTest struct {
-	NotTest  NotTest
-	AndTest  *AndTest
-	Comments [2]Comments
-	Tokens   Tokens
-}
-
-func (a *AndTest) parse(p *pyParser) error {
-	q := p.NewGoal()
-
-	if err := a.NotTest.parse(q); err != nil {
-		return p.Error("AndTest", err)
-	}
-
-	p.Score(q)
-
-	q = p.NewGoal()
-
-	q.AcceptRunWhitespace()
-
-	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "and"}) {
-		a.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-		p.Next()
-
-		a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-
-		q = p.NewGoal()
-		a.AndTest = new(AndTest)
-
-		if err := a.AndTest.parse(q); err != nil {
-			return p.Error("AndTest", err)
-		}
-
-		p.Score(q)
-	}
-
-	a.Tokens = p.ToTokens()
-
-	return nil
-}
-
-func skipAndTest(p *pyParser) {
-	skipNotTest(p)
-	p.AcceptRunWhitespace()
-
-	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "and"}) {
-		p.AcceptRunWhitespace()
-		skipAndTest(p)
-	}
-}
-
-// NotTest as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-not_test
-type NotTest struct {
-	Nots       []Comments
-	Comparison Comparison
-	Tokens     Tokens
-}
-
-func (n *NotTest) parse(p *pyParser) error {
-	for p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
-		n.Nots = append(n.Nots, p.AcceptRunWhitespaceCommentsIfMultiline())
-		p.AcceptRunWhitespace()
-	}
-
-	q := p.NewGoal()
-
-	if err := n.Comparison.parse(q); err != nil {
-		return p.Error("NotTest", err)
-	}
-
-	p.Score(q)
-
-	n.Tokens = p.ToTokens()
-
-	return nil
-}
-
-func skipNotTest(p *pyParser) {
-	for p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
-		p.AcceptRunWhitespace()
-	}
-
-	skipComparison(p)
-}
-
-// Comparison as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comparison
-type Comparison struct {
-	OrExpression OrExpression
-	Comparisons  []ComparisonExpression
-	Tokens       Tokens
-}
-
-func (c *Comparison) parse(p *pyParser) error {
-	q := p.NewGoal()
-
-	if err := c.OrExpression.parse(q); err != nil {
-		return p.Error("Comparison", err)
-	}
-
-	p.Score(q)
-
-Loop:
-	for {
-		q = p.NewGoal()
-
-		var ce ComparisonExpression
-
-		ce.Comments[0] = q.AcceptRunWhitespaceCommentsIfMultiline()
-
-		q.AcceptRunWhitespace()
-
-		switch q.Peek() {
-		case parser.Token{Type: TokenOperator, Data: "<"},
-			parser.Token{Type: TokenOperator, Data: ">"},
-			parser.Token{Type: TokenOperator, Data: "=="},
-			parser.Token{Type: TokenOperator, Data: ">="},
-			parser.Token{Type: TokenOperator, Data: "<="},
-			parser.Token{Type: TokenOperator, Data: "!="},
-			parser.Token{Type: TokenKeyword, Data: "in"}:
-			p.Score(q)
-
-			q = p.NewGoal()
-
-			q.Next()
-
-			ce.ComparisonOperator = q.ToTokens()
-
-			p.Score(q)
-		case parser.Token{Type: TokenKeyword, Data: "is"}:
-			p.Score(q)
-
-			q = p.NewGoal()
-
-			q.Next()
-
-			r := q.NewGoal()
-
-			r.AcceptRunWhitespace()
-
-			if r.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"}) {
-				ce.Comments[1] = q.AcceptRunWhitespaceCommentsIfMultiline()
-
-				q.AcceptRunWhitespace()
-				q.Next()
-			}
-
-			ce.ComparisonOperator = q.ToTokens()
-
-			p.Score(q)
-		case parser.Token{Type: TokenKeyword, Data: "not"}:
-			p.Score(q)
-
-			q = p.NewGoal()
-
-			q.Next()
-
-			ce.Comments[1] = q.AcceptRunWhitespaceCommentsIfMultiline()
-
-			q.AcceptRunWhitespace()
-
-			if !q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
-				return q.Error("Comparison", ErrMissingIn)
-			}
-
-			ce.ComparisonOperator = q.ToTokens()
-
-			p.Score(q)
-		default:
-			break Loop
-		}
-
-		ce.Comments[2] = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-		p.AcceptRunWhitespace()
-
-		q = p.NewGoal()
-
-		if err := ce.OrExpression.parse(q); err != nil {
-			return p.Error("Comparison", err)
-		}
-
-		p.Score(q)
-
-		c.Comparisons = append(c.Comparisons, ce)
-	}
-
-	c.Tokens = p.ToTokens()
-
-	return nil
-}
-
-func skipComparison(p *pyParser) {
-	skipOrExpression(p)
-	p.AcceptRunWhitespace()
-
-	for {
-		switch p.Peek() {
-		default:
-			return
-		case parser.Token{Type: TokenOperator, Data: "<"},
-			parser.Token{Type: TokenOperator, Data: ">"},
-			parser.Token{Type: TokenOperator, Data: "=="},
-			parser.Token{Type: TokenOperator, Data: ">="},
-			parser.Token{Type: TokenOperator, Data: "<="},
-			parser.Token{Type: TokenOperator, Data: "!="},
-			parser.Token{Type: TokenKeyword, Data: "in"}:
-			p.Next()
-		case parser.Token{Type: TokenKeyword, Data: "is"}:
-			p.Next()
-			p.AcceptRunWhitespace()
-			p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "not"})
-		case parser.Token{Type: TokenKeyword, Data: "not"}:
-			p.Next()
-			p.AcceptRunWhitespace()
-			p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"})
-		}
-
-		p.AcceptRunWhitespace()
-		skipOrExpression(p)
-		p.AcceptRunWhitespace()
-	}
-}
-
-// ComparisonExpression combines combines the operators with an OrExpression.
-type ComparisonExpression struct {
-	ComparisonOperator []Token
-	OrExpression       OrExpression
-	Comments           [3]Comments
 }
