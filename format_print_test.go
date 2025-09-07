@@ -375,6 +375,11 @@ func TestPrintSource(t *testing.T) {
 			"@a\n@b\nclass c:d\n",
 			"@a\n@b\nclass c: d\n",
 		},
+		{ // 73
+			"@a\n# A\n\n# B\n@b\nclass c:d",
+			"@a\n@b\nclass c:d\n",
+			"@a\n# A\n\n# B\n@b\nclass c: d\n",
+		},
 		{ // 74
 			"a == b",
 			"a==b\n",
