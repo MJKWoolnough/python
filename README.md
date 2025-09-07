@@ -79,6 +79,7 @@ type AddExpression struct {
 	MultiplyExpression MultiplyExpression
 	Add                *Token
 	AddExpression      *AddExpression
+	Comments           [2]Comments
 	Tokens             Tokens
 }
 ```
@@ -99,6 +100,7 @@ Format implements the fmt.Formatter interface
 type AndExpression struct {
 	ShiftExpression ShiftExpression
 	AndExpression   *AndExpression
+	Comments        [2]Comments
 	Tokens          Tokens
 }
 ```
@@ -117,9 +119,10 @@ Format implements the fmt.Formatter interface
 
 ```go
 type AndTest struct {
-	NotTest NotTest
-	AndTest *AndTest
-	Tokens  Tokens
+	NotTest  NotTest
+	AndTest  *AndTest
+	Comments [2]Comments
+	Tokens   Tokens
 }
 ```
 
@@ -180,6 +183,7 @@ Format implements the fmt.Formatter interface
 type ArgumentListOrComprehension struct {
 	ArgumentList  *ArgumentList
 	Comprehension *Comprehension
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 ```
@@ -219,6 +223,7 @@ Format implements the fmt.Formatter interface
 type AssignmentExpression struct {
 	Identifier *Token
 	Expression Expression
+	Comments   [2]Comments
 	Tokens
 }
 ```
@@ -351,12 +356,13 @@ type ClassDefinition struct {
 	TypeParams  *TypeParams
 	Inheritance *ArgumentList
 	Suite       Suite
+	Comments    [2]Comments
 	Tokens      Tokens
 }
 ```
 
 ClassDefinition as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-classdef
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-classdef
 
 #### func (ClassDefinition) Format
 
@@ -398,6 +404,7 @@ Format implements the fmt.Formatter interface
 type ComparisonExpression struct {
 	ComparisonOperator []Token
 	OrExpression       OrExpression
+	Comments           [3]Comments
 }
 ```
 
@@ -426,7 +433,7 @@ type CompoundStatement struct {
 ```
 
 CompoundStatement as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-compound_stmt
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-compound_stmt
 
 #### func (CompoundStatement) Format
 
@@ -441,6 +448,7 @@ Format implements the fmt.Formatter interface
 type Comprehension struct {
 	AssignmentExpression AssignmentExpression
 	ComprehensionFor     ComprehensionFor
+	Comments             [3]Comments
 	Tokens               Tokens
 }
 ```
@@ -463,6 +471,7 @@ type ComprehensionFor struct {
 	TargetList            TargetList
 	OrTest                OrTest
 	ComprehensionIterator *ComprehensionIterator
+	Comments              [2]Comments
 	Tokens                Tokens
 }
 ```
@@ -483,6 +492,7 @@ Format implements the fmt.Formatter interface
 type ComprehensionIf struct {
 	OrTest                OrTest
 	ComprehensionIterator *ComprehensionIterator
+	Comments              Comments
 	Tokens                Tokens
 }
 ```
@@ -503,6 +513,7 @@ Format implements the fmt.Formatter interface
 type ComprehensionIterator struct {
 	ComprehensionFor *ComprehensionFor
 	ComprehensionIf  *ComprehensionIf
+	Comments         [2]Comments
 	Tokens           Tokens
 }
 ```
@@ -521,10 +532,11 @@ Format implements the fmt.Formatter interface
 
 ```go
 type ConditionalExpression struct {
-	OrTest OrTest
-	If     *OrTest
-	Else   *Expression
-	Tokens Tokens
+	OrTest   OrTest
+	If       *OrTest
+	Else     *Expression
+	Comments [4]Comments
+	Tokens   Tokens
 }
 ```
 
@@ -614,17 +626,37 @@ Possible returns types are as follows:
     *PrimaryExpression
     *Atom
 
+#### type Decorator
+
+```go
+type Decorator struct {
+	Decorator AssignmentExpression
+	Comments  Comments
+	Tokens    Tokens
+}
+```
+
+Decorator as defined in python@3.13.0:
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorator
+
+#### func (Decorator) Format
+
+```go
+func (f Decorator) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
 #### type Decorators
 
 ```go
 type Decorators struct {
-	Decorators []AssignmentExpression
+	Decorators []Decorator
 	Tokens
 }
 ```
 
 Decorators as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorators
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorators
 
 #### func (Decorators) Format
 
@@ -639,6 +671,7 @@ Format implements the fmt.Formatter interface
 type DefParameter struct {
 	Parameter Parameter
 	Value     *Expression
+	Comments  [2]Comments
 	Tokens    Tokens
 }
 ```
@@ -699,6 +732,7 @@ type DictItem struct {
 	Key          *Expression
 	Value        *Expression
 	OrExpression *OrExpression
+	Comments     [4]Comments
 	Tokens       Tokens
 }
 ```
@@ -776,7 +810,7 @@ type Except struct {
 ```
 
 Except as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try1_stmt
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try1_stmt
 
 #### func (Except) Format
 
@@ -829,7 +863,7 @@ Format implements the fmt.Formatter interface
 ```go
 type File struct {
 	Statements []Statement
-	Comments   Comments
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 ```
@@ -855,7 +889,8 @@ Format implements the fmt.Formatter interface
 ```go
 type FlexibleExpression struct {
 	AssignmentExpression *AssignmentExpression
-	StarredExpression    *StarredExpression
+	StarredExpression    *OrExpression
+	Comments             [2]Comments
 	Tokens
 }
 ```
@@ -923,7 +958,7 @@ type ForStatement struct {
 ```
 
 ForStatement as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-for_stmt
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-for_stmt
 
 #### func (ForStatement) Format
 
@@ -949,7 +984,7 @@ type FuncDefinition struct {
 ```
 
 FuncDefinition as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-funcdef
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-funcdef
 
 #### func (FuncDefinition) Format
 
@@ -964,6 +999,7 @@ Format implements the fmt.Formatter interface
 type GeneratorExpression struct {
 	Expression       Expression
 	ComprehensionFor ComprehensionFor
+	Comments         [3]Comments
 	Tokens           Tokens
 }
 ```
@@ -1010,7 +1046,7 @@ type IfStatement struct {
 ```
 
 IfStatement as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-if_stmt
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-if_stmt
 
 #### func (IfStatement) Format
 
@@ -1045,6 +1081,7 @@ Format implements the fmt.Formatter interface
 type KeywordArgument struct {
 	KeywordItem *KeywordItem
 	Expression  *Expression
+	Comments    [3]Comments
 	Tokens      Tokens
 }
 ```
@@ -1085,6 +1122,7 @@ Format implements the fmt.Formatter interface
 type LambdaExpression struct {
 	ParameterList *ParameterList
 	Expression    Expression
+	Comments      [3]Comments
 	Tokens        Tokens
 }
 ```
@@ -1145,6 +1183,7 @@ type MultiplyExpression struct {
 	UnaryExpression    UnaryExpression
 	Multiply           *Token
 	MultiplyExpression *MultiplyExpression
+	Comments           [2]Comments
 	Tokens             Tokens
 }
 ```
@@ -1182,7 +1221,7 @@ Format implements the fmt.Formatter interface
 
 ```go
 type NotTest struct {
-	Nots       uint
+	Nots       []Comments
 	Comparison Comparison
 	Tokens     Tokens
 }
@@ -1204,6 +1243,7 @@ Format implements the fmt.Formatter interface
 type OrExpression struct {
 	XorExpression XorExpression
 	OrExpression  *OrExpression
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 ```
@@ -1222,9 +1262,10 @@ Format implements the fmt.Formatter interface
 
 ```go
 type OrTest struct {
-	AndTest AndTest
-	OrTest  *OrTest
-	Tokens  Tokens
+	AndTest  AndTest
+	OrTest   *OrTest
+	Comments [2]Comments
+	Tokens   Tokens
 }
 ```
 
@@ -1267,6 +1308,7 @@ type ParameterList struct {
 	StarArg       *Parameter
 	StarArgs      []DefParameter
 	StarStarArg   *Parameter
+	Comments      [10]Comments
 	Tokens        Tokens
 }
 ```
@@ -1287,6 +1329,7 @@ Format implements the fmt.Formatter interface
 type PositionalArgument struct {
 	AssignmentExpression *AssignmentExpression
 	Expression           *Expression
+	Comments             [3]Comments
 	Tokens               Tokens
 }
 ```
@@ -1308,6 +1351,7 @@ type PowerExpression struct {
 	AwaitExpression   bool
 	PrimaryExpression PrimaryExpression
 	UnaryExpression   *UnaryExpression
+	Comments          [3]Comments
 	Tokens            Tokens
 }
 ```
@@ -1331,6 +1375,7 @@ type PrimaryExpression struct {
 	AttributeRef      *Token
 	Slicing           *SliceList
 	Call              *ArgumentListOrComprehension
+	Comments          [2]Comments
 	Tokens            Tokens
 }
 ```
@@ -1418,6 +1463,7 @@ type ShiftExpression struct {
 	AddExpression   AddExpression
 	Shift           *Token
 	ShiftExpression *ShiftExpression
+	Comments        [2]Comments
 	Tokens          Tokens
 }
 ```
@@ -1449,7 +1495,6 @@ type SimpleStatement struct {
 	GlobalStatement              *GlobalStatement
 	NonLocalStatement            *NonLocalStatement
 	TypeStatement                *TypeStatement
-	Comments                     Comments
 	Tokens                       Tokens
 }
 ```
@@ -1472,6 +1517,7 @@ type SliceItem struct {
 	LowerBound *Expression
 	UpperBound *Expression
 	Stride     *Expression
+	Comments   [6]Comments
 	Tokens     Tokens
 }
 ```
@@ -1491,6 +1537,7 @@ Format implements the fmt.Formatter interface
 ```go
 type SliceList struct {
 	SliceItems []SliceItem
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 ```
@@ -1511,6 +1558,7 @@ Format implements the fmt.Formatter interface
 type StarredExpression struct {
 	Expression  *Expression
 	StarredList *StarredList
+	Comments    [2]Comments
 	Tokens      Tokens
 }
 ```
@@ -1531,6 +1579,7 @@ Format implements the fmt.Formatter interface
 type StarredItem struct {
 	AssignmentExpression *AssignmentExpression
 	OrExpr               *OrExpression
+	Comments             [3]Comments
 	Tokens               Tokens
 }
 ```
@@ -1571,6 +1620,7 @@ Format implements the fmt.Formatter interface
 type StarredOrKeyword struct {
 	Expression  *Expression
 	KeywordItem *KeywordItem
+	Comments    [2]Comments
 	Tokens      Tokens
 }
 ```
@@ -1611,6 +1661,7 @@ Format implements the fmt.Formatter interface
 ```go
 type StatementList struct {
 	Statements []SimpleStatement
+	Comments   Comments
 	Tokens
 }
 ```
@@ -1672,7 +1723,7 @@ type Suite struct {
 ```
 
 Suite as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-suite
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-suite
 
 #### func (Suite) Format
 
@@ -1689,12 +1740,13 @@ type Target struct {
 	Tuple             *TargetList
 	Array             *TargetList
 	Star              *Target
+	Comments          [2]Comments
 	Tokens            Tokens
 }
 ```
 
 Target as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
+https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
 
 #### func (Target) Format
 
@@ -1714,7 +1766,7 @@ type TargetList struct {
 ```
 
 TargetList as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
+https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
 
 #### func (TargetList) Format
 
@@ -1768,7 +1820,7 @@ type TryStatement struct {
 ```
 
 TryStatement as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try_stmt
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try_stmt
 
 #### func (TryStatement) Format
 
@@ -1795,6 +1847,7 @@ type TypeParam struct {
 	Type       TypeParamType
 	Identifier *Token
 	Expression *Expression
+	Comments   [4]Comments
 	Tokens     Tokens
 }
 ```
@@ -1837,6 +1890,7 @@ String implements the fmt.Stringer interface.
 ```go
 type TypeParams struct {
 	TypeParams []TypeParam
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 ```
@@ -1879,7 +1933,8 @@ type UnaryExpression struct {
 	PowerExpression *PowerExpression
 	Unary           *Token
 	UnaryExpression *UnaryExpression
-	Tokens          Tokens
+	Comments
+	Tokens Tokens
 }
 ```
 
@@ -1905,7 +1960,7 @@ type WhileStatement struct {
 ```
 
 WhileStatement as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-while_stmt
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-while_stmt
 
 #### func (WhileStatement) Format
 
@@ -1920,12 +1975,13 @@ Format implements the fmt.Formatter interface
 type WithItem struct {
 	Expression Expression
 	Target     *Target
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 ```
 
 WithItem as defined in python@3.13:
-https://docs.python.org/3.13/reference/compound_stmts.html#grammar-token-python-grammar-with_item
+https://docs.python.org/release/3.13/reference/compound_stmts.html#grammar-token-python-grammar-with_item
 
 #### func (WithItem) Format
 
@@ -1946,7 +2002,7 @@ type WithStatement struct {
 ```
 
 WithStatement as defined in python@3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt
 
 #### func (WithStatement) Format
 
@@ -1959,13 +2015,14 @@ Format implements the fmt.Formatter interface
 
 ```go
 type WithStatementContents struct {
-	Items  []WithItem
-	Tokens Tokens
+	Items    []WithItem
+	Comments [2]Comments
+	Tokens   Tokens
 }
 ```
 
 WithStatementContents as defined in python:3.13.0:
-https://docs.python.org/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt_contents
+https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt_contents
 
 #### func (WithStatementContents) Format
 
@@ -1980,6 +2037,7 @@ Format implements the fmt.Formatter interface
 type XorExpression struct {
 	AndExpression AndExpression
 	XorExpression *XorExpression
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 ```
@@ -2000,6 +2058,7 @@ Format implements the fmt.Formatter interface
 type YieldExpression struct {
 	ExpressionList *ExpressionList
 	From           *Expression
+	Comments       [4]Comments
 	Tokens         Tokens
 }
 ```
