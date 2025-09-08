@@ -1035,8 +1035,7 @@ func TestDecorators(t *testing.T) {
 							},
 							Tokens: tk[1:2],
 						},
-						Comments: Comments{tk[3]},
-						Tokens:   tk[:4],
+						Tokens: tk[:2],
 					},
 					{
 						Decorator: AssignmentExpression{
@@ -1049,7 +1048,8 @@ func TestDecorators(t *testing.T) {
 							},
 							Tokens: tk[6:7],
 						},
-						Tokens: tk[5:7],
+						Comments: [2]Comments{{tk[3]}},
+						Tokens:   tk[3:7],
 					},
 				},
 				Tokens: tk[:7],
@@ -1138,8 +1138,8 @@ func TestDecorator(t *testing.T) {
 					},
 					Tokens: tk[1:2],
 				},
-				Comments: Comments{tk[3], tk[5], tk[8]},
-				Tokens:   tk[:9],
+				Comments: [2]Comments{nil, {tk[3], tk[5]}},
+				Tokens:   tk[:6],
 			}
 		}},
 		{"@nonlocal\n", func(t *test, tk Tokens) { // 4
