@@ -1118,7 +1118,7 @@ func TestPrintSource(t *testing.T) {
 		{ // 222
 			"while a: # A comment\n# B comment\n\t#abc\n\tb #def\n\n#efg",
 			"while a:\n\tb\n",
-			"while a: # A comment\n\t         # B comment\n\t         #abc\n\tb #def\n\n\t#efg\n",
+			"while a: # A comment\n         # B comment\n         #abc\n\tb #def\n\n\t#efg\n",
 		},
 		{ // 223
 			"while a:\n# A comment\n# B comment\n\t#abc\n\tb #def\n\n#efg",
@@ -1153,7 +1153,7 @@ func TestPrintSource(t *testing.T) {
 		{ // 229
 			"[ #abc\na\n#def\n]",
 			"[a]\n",
-			"[ #abc\n\ta\n\t#def\n]\n",
+			"[ #abc\n\ta\n#def\n]\n",
 		},
 		{ // 230
 			"[ #abc\n]",
@@ -1193,7 +1193,7 @@ func TestPrintSource(t *testing.T) {
 		{ // 237
 			"def a[# A\n# B\n\n# C\nb, c # D\n# E\n\n# F\n# G\n\n](): b",
 			"def a[b,c]():b\n",
-			"def a[ # A\n\t       # B\n\n\t# C\n\tb, c # D\n\t     # E\n\n\t# F\n\t# G\n](): b\n",
+			"def a[ # A\n       # B\n\n\t# C\n\tb, c # D\n\t     # E\n\n# F\n# G\n](): b\n",
 		},
 		{ // 238
 			"def a(\n# A\nb = 1 # B\n): c",
@@ -1238,7 +1238,7 @@ func TestPrintSource(t *testing.T) {
 		{ // 246
 			"( # A\n\n # B\nyield # C\nfrom # D\na # E\n\n# F\n)",
 			"(yield from a)\n",
-			"( # A\n\n\t# B\n\tyield # C\n\tfrom # D\n\ta # E\n\n\t# F\n)\n",
+			"( # A\n\n\t# B\n\tyield # C\n\tfrom # D\n\ta # E\n\n# F\n)\n",
 		},
 		{ // 247
 			"( # A\n\n # B\na # C\nfor b in c # D\n\n# E\n)",
@@ -1248,17 +1248,17 @@ func TestPrintSource(t *testing.T) {
 		{ // 248
 			"( # A\n\n # B\na # C\n\n# D\n)",
 			"(a)\n",
-			"( # A\n\n\t# B\n\ta # C\n\n\t# D\n)\n",
+			"( # A\n\n\t# B\n\ta # C\n\n# D\n)\n",
 		},
 		{ // 249
 			"( # A\n\n # B\n*a ,# C\n\n# D\n)",
 			"(*a,)\n",
-			"( # A\n\n\t# B\n\t*a, # C\n\n\t# D\n)\n",
+			"( # A\n\n\t# B\n\t*a, # C\n\n# D\n)\n",
 		},
 		{ // 250
 			"( # A\n\n# B\na # C\n, # D\n* # E\nb # F\n\n# G\n)",
 			"(a,*b)\n",
-			"( # A\n\n\t# B\n\ta # C\n\t, # D\n\t* # E\n\tb # F\n\n\t# G\n)\n",
+			"( # A\n\n\t# B\n\ta # C\n\t, # D\n\t* # E\n\tb # F\n\n# G\n)\n",
 		},
 		{ // 251
 			"( # A\n\n# B\na # C\nfor # D\nb # E\nin # F\nc # G\n\n# H\n)",
@@ -1403,27 +1403,27 @@ func TestPrintSource(t *testing.T) {
 		{ // 279
 			"a[ # A\nb\n# B\n]",
 			"a[b]\n",
-			"a[ # A\n\tb\n\t# B\n]\n",
+			"a[ # A\n\tb\n# B\n]\n",
 		},
 		{ // 280
 			"a[ # A\nb, # B\n]",
 			"a[b]\n",
-			"a[ # A\n\tb\n\t# B\n]\n",
+			"a[ # A\n\tb\n# B\n]\n",
 		},
 		{ // 281
 			"a[ # A\nb, c\n# B\n]",
 			"a[b,c]\n",
-			"a[ # A\n\tb, c\n\t# B\n]\n",
+			"a[ # A\n\tb, c\n# B\n]\n",
 		},
 		{ // 282
 			"a[ # A\n\n# B\n b # C\n: # D\n c # E\n: # F\nd # G\n\n# H\n]",
 			"a[b:c:d]\n",
-			"a[ # A\n\n\t# B\n\tb # C\n\t: # D\n\tc # E\n\t: # F\n\td # G\n\n\t# H\n]\n",
+			"a[ # A\n\n\t# B\n\tb # C\n\t: # D\n\tc # E\n\t: # F\n\td # G\n\n# H\n]\n",
 		},
 		{ // 283
 			"a[ # A\n\n# B\n b # C\n\n# D\n]",
 			"a[b]\n",
-			"a[ # A\n\n\t# B\n\tb # C\n\n\t# D\n]\n",
+			"a[ # A\n\n\t# B\n\tb # C\n\n# D\n]\n",
 		},
 		{ // 284
 			"(a # A\nif # B\nb # C\nelse # D\nc)",
@@ -1433,12 +1433,12 @@ func TestPrintSource(t *testing.T) {
 		{ // 285
 			"(# A\n\n# B\nlambda # C\n: # D\na # E\n\n# F\n)",
 			"(lambda:a)\n",
-			"( # A\n\n\t# B\n\tlambda # C\n\t: # D\n\ta # E\n\n\t# F\n)\n",
+			"( # A\n\n\t# B\n\tlambda # C\n\t: # D\n\ta # E\n\n# F\n)\n",
 		},
 		{ // 286
 			"(# A\n\n# B\nlambda # C\na # D\n\n# E\n: # F\nb # G\n\n# H\n)",
 			"(lambda a:b)\n",
-			"( # A\n\n\t# B\n\tlambda # C\n\ta # D\n\n\t# E\n\t: # F\n\tb # G\n\n\t# H\n)\n",
+			"( # A\n\n\t# B\n\tlambda # C\n\ta # D\n\n\t# E\n\t: # F\n\tb # G\n\n# H\n)\n",
 		},
 		{ // 287
 			"{a # A\n:= # B\nb}",
@@ -1448,37 +1448,37 @@ func TestPrintSource(t *testing.T) {
 		{ // 288
 			"{# A\n\n# B\na # C\n\n# D\n}",
 			"{a}\n",
-			"{ # A\n\n\t# B\n\ta # C\n\n\t# D\n}\n",
+			"{ # A\n\n\t# B\n\ta # C\n\n# D\n}\n",
 		},
 		{ // 289
 			"{# A\n\n# B\n*a # C\n\n# D\n}",
 			"{*a}\n",
-			"{ # A\n\n\t# B\n\t*a # C\n\n\t# D\n}\n",
+			"{ # A\n\n\t# B\n\t*a # C\n\n# D\n}\n",
 		},
 		{ // 290
 			"{# A\n\n# B\na # C\n: # D\nb # E\n\n # F\n}",
 			"{a:b}\n",
-			"{ # A\n\n\t# B\n\ta # C\n\t: # D\n\tb # E\n\n\t# F\n}\n",
+			"{ # A\n\n\t# B\n\ta # C\n\t: # D\n\tb # E\n\n# F\n}\n",
 		},
 		{ // 291
 			"{# A\n\n# B\n** # C\na # D\n\n # F\n}",
 			"{**a}\n",
-			"{ # A\n\n\t# B\n\t** # C\n\ta # D\n\n\t# F\n}\n",
+			"{ # A\n\n\t# B\n\t** # C\n\ta # D\n\n# F\n}\n",
 		},
 		{ // 292
 			"a(# A\nb\n# B\n)",
 			"a(b)\n",
-			"a( # A\n\tb\n\t# B\n)\n",
+			"a( # A\n\tb\n# B\n)\n",
 		},
 		{ // 293
 			"a(# A\n\n# B\nb=c # C\n\n# D\n)",
 			"a(b=c)\n",
-			"a( # A\n\n\t# B\n\tb = c # C\n\n\t# D\n)\n",
+			"a( # A\n\n\t# B\n\tb = c # C\n\n# D\n)\n",
 		},
 		{ // 294
 			"a(# A\n* # B\nb # C\n\n# D\n,)",
 			"a(*b)\n",
-			"a( # A\n\t* # B\n\tb # C\n\n\t# D\n)\n",
+			"a( # A\n\t* # B\n\tb # C\n\n\t# D\n\t,)\n",
 		},
 		{ // 295
 			"def a(# A\n** # B\nb # C\n\n# D\n,): c",
@@ -1488,22 +1488,22 @@ func TestPrintSource(t *testing.T) {
 		{ // 296
 			"{ # A\n\n # B\na # C\nfor b in c # D\n\n# E\n}",
 			"{a for b in c}\n",
-			"{ # A\n\n\t# B\n\ta # C\n\tfor b in c # D\n\n\t# E\n}\n",
+			"{ # A\n\n\t# B\n\ta # C\n\tfor b in c # D\n\n# E\n}\n",
 		},
 		{ // 297
 			"a(# A\n\n# B\n** # C\nb # D\n\n# E\n)",
 			"a(**b)\n",
-			"a( # A\n\n\t# B\n\t** # C\n\tb # D\n\n\t# E\n)\n",
+			"a( # A\n\n\t# B\n\t** # C\n\tb # D\n\n# E\n)\n",
 		},
 		{ // 298
 			"def a[# A\n\n# B\nb # C\n\n# D\n]():c",
 			"def a[b]():c\n",
-			"def a[ # A\n\n\t# B\n\tb # C\n\n\t# D\n](): c\n",
+			"def a[ # A\n\n\t# B\n\tb # C\n\n# D\n](): c\n",
 		},
 		{ // 299
 			"def a[# A\n\n# B\nb # C\n: # D\nc # E\n\n# F\n]():d",
 			"def a[b:c]():d\n",
-			"def a[ # A\n\n\t# B\n\tb # C\n\t: # D\n\tc # E\n\n\t# F\n](): d\n",
+			"def a[ # A\n\n\t# B\n\tb # C\n\t: # D\n\tc # E\n\n# F\n](): d\n",
 		},
 		{ // 300
 			"def a[# A\n\n# B\nb # C\n: # D\nc # E\n\n# F\n, # G\n** # H\nd # I\n]():e",
@@ -1513,27 +1513,27 @@ func TestPrintSource(t *testing.T) {
 		{ // 301
 			"def a[# A\n\n# B\n*b # C\n\n# D\n]():c",
 			"def a[*b]():c\n",
-			"def a[ # A\n\n\t# B\n\t*b # C\n\n\t# D\n](): c\n",
+			"def a[ # A\n\n\t# B\n\t*b # C\n\n# D\n](): c\n",
 		},
 		{ // 302
 			"class a( # A\n\n# B\n):b",
 			"class a():b\n",
-			"class a( # A\n\n\t# B\n): b\n",
+			"class a( # A\n\n# B\n): b\n",
 		},
 		{ // 303
 			"class a( # A\n\nb\n# B\n):c",
 			"class a(b):c\n",
-			"class a( # A\n\tb\n\t# B\n): c\n",
+			"class a( # A\nb\n# B\n): c\n",
 		},
 		{ // 304
 			"with (# A\na,b\n# B\n): c",
 			"with a,b:c\n",
-			"with ( # A\n\ta, b\n\t# B\n): c\n",
+			"with ( # A\na, b\n# B\n): c\n",
 		},
 		{ // 305
 			"with (# A\n\n# B\na # C\n\n# D\n,# E\nb # F\nas # G\nc # H\n\n# I\n): d",
 			"with a,b as c:d\n",
-			"with ( # A\n\n\t# B\n\ta # C\n\n\t# D\n\t, \n\t# E\n\tb # F\n\tas # G\n\tc # H\n\n\t# I\n): d\n",
+			"with ( # A\n\n\t# B\n\ta # C\n\n\t# D\n\t, \n\t# E\n\tb # F\n\tas # G\n\tc # H\n\n# I\n): d\n",
 		},
 	} {
 		for m, input := range test {
