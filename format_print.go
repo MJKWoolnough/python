@@ -558,13 +558,18 @@ func (d Decorators) printSource(w writer, v bool) {
 }
 
 func (d Decorator) printSource(w writer, v bool) {
+	if v {
+		d.Comments[0].printSource(w, true)
+	}
+
 	w.WriteString("@")
 	d.Decorator.printSource(w, v)
-	w.WriteString("\n")
 
 	if v {
-		d.Comments.printSource(w, true)
+		d.Comments[1].printSource(w, true)
 	}
+
+	w.WriteString("\n")
 }
 
 func (d DefParameter) printSource(w writer, v bool) {
