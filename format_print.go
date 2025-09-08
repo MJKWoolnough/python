@@ -102,6 +102,8 @@ func (a AnnotatedAssignmentStatement) printSource(w writer, v bool) {
 func (a ArgumentList) printSource(w writer, v bool) {
 	first := true
 
+	var last Comments
+
 	for _, p := range a.PositionalArguments {
 		if !first {
 			w.WriteString(",")
@@ -114,6 +116,7 @@ func (a ArgumentList) printSource(w writer, v bool) {
 		p.printSource(w, v)
 
 		first = false
+		last = p.Comments[2]
 	}
 
 	for _, s := range a.StarredAndKeywordArguments {
@@ -128,6 +131,7 @@ func (a ArgumentList) printSource(w writer, v bool) {
 		s.printSource(w, v)
 
 		first = false
+		last = s.Comments[1]
 	}
 
 	for _, k := range a.KeywordArguments {
@@ -142,6 +146,26 @@ func (a ArgumentList) printSource(w writer, v bool) {
 		k.printSource(w, v)
 
 		first = false
+		last = k.Comments[2]
+	}
+
+	if v && len(last) > 0 {
+		line := last[0].Line
+		needComma := false
+
+		for _, c := range last[1:] {
+			line++
+
+			if c.Line > line {
+				needComma = true
+
+				break
+			}
+		}
+
+		if needComma {
+			w.WriteString(",")
+		}
 	}
 }
 
@@ -151,7 +175,8 @@ func (a ArgumentListOrComprehension) printSource(w writer, v bool) {
 	ip := w.Indent()
 
 	if v && len(a.Comments[0]) > 0 {
-		a.Comments[0].printSource(ip, true)
+		a.Comments[0].printSource(w, false)
+		ip.WriteString("\n")
 	}
 
 	if a.ArgumentList != nil {
@@ -161,8 +186,8 @@ func (a ArgumentListOrComprehension) printSource(w writer, v bool) {
 	}
 
 	if v && len(a.Comments[1]) > 0 {
-		ip.WriteString("\n")
-		a.Comments[1].printSource(ip, true)
+		w.WriteString("\n")
+		a.Comments[1].printSource(w, true)
 	}
 
 	w.WriteString(")")
@@ -281,19 +306,18 @@ func (c ClassDefinition) printSource(w writer, v bool) {
 	}
 
 	if c.Inheritance != nil {
-		ip := w.IndentMultiline()
 
-		ip.WriteString("(")
+		w.WriteString("(")
 
 		if v && len(c.Comments[0]) > 0 {
-			c.Comments[0].printSource(ip, true)
+			c.Comments[0].printSource(w, true)
 		}
 
-		c.Inheritance.printSource(ip, v)
+		c.Inheritance.printSource(w.IndentMultiline(), v)
 
 		if v && len(c.Comments[1]) > 0 {
-			ip.WriteString("\n")
-			c.Comments[1].printSource(ip, true)
+			w.WriteString("\n")
+			c.Comments[1].printSource(w, true)
 		}
 
 		w.WriteString(")")
@@ -659,17 +683,18 @@ func (e Enclosure) printSource(w writer, v bool) {
 
 		ip := w.IndentMultiline()
 
-		ip.WriteString(oc[:1])
+		w.WriteString(oc[:1])
 
-		if v {
-			e.Comments[0].printSource(ip, true)
+		if v && len(e.Comments[0]) > 0 {
+			e.Comments[0].printSource(w, false)
+			ip.WriteString("\n")
 		}
 
 		t.printSource(ip, v)
 
 		if v && len(e.Comments[1]) > 0 {
-			ip.WriteString("\n")
-			e.Comments[1].printSource(ip, true)
+			w.WriteString("\n")
+			e.Comments[1].printSource(w, true)
 		}
 
 		w.WriteString(oc[1:])
@@ -1511,12 +1536,13 @@ func (s SliceItem) printSource(w writer, v bool) {
 }
 
 func (s SliceList) printSource(w writer, v bool) {
+	w.WriteString("[")
+
 	ip := w.IndentMultiline()
 
-	ip.WriteString("[")
-
-	if v {
-		s.Comments[0].printSource(ip, true)
+	if v && len(s.Comments[0]) > 0 {
+		s.Comments[0].printSource(w, false)
+		ip.WriteString("\n")
 	}
 
 	if len(s.SliceItems) > 0 {
@@ -1534,8 +1560,8 @@ func (s SliceList) printSource(w writer, v bool) {
 	}
 
 	if v && len(s.Comments[1]) > 0 {
-		ip.WriteString("\n")
-		s.Comments[1].printSource(ip, true)
+		w.WriteString("\n")
+		s.Comments[1].printSource(w, true)
 	}
 
 	w.WriteString("]")
@@ -1659,23 +1685,20 @@ func (s Suite) printSource(w writer, v bool) {
 		s.StatementList.printSource(w, v)
 	} else {
 		ip := w.Indent()
-
 		if v && len(s.Comments[0]) > 0 {
 			if len(s.Tokens) > 0 && len(s.Comments[0]) > 0 && s.Comments[0][0].Line > s.Tokens[0].Line {
 				ip.WriteString("\n")
+				s.Comments[0].printSource(ip, false)
 			} else {
-				w.WriteString(" ")
+				s.Comments[0].printSource(w, false)
 			}
-
-			s.Comments[0].printSource(ip, false)
 		}
 
 		ip.WriteString("\n")
 		printStatements(ip, v, s.Statements)
 
 		if v && len(s.Comments[1]) > 0 {
-			w.WriteString("\n")
-			ip.WriteString("\n")
+			ip.WriteString("\n\n")
 			s.Comments[1].printSource(ip, false)
 		}
 	}
@@ -1690,18 +1713,11 @@ func (t Target) printSource(w writer, v bool) {
 		t.PrimaryExpression.printSource(w, v)
 	} else if t.Tuple != nil {
 		w.WriteString("(")
-
-		ip := w.IndentMultiline()
-
-		t.Tuple.printSource(ip, v)
-
+		t.Tuple.printSource(w.IndentMultiline(), v)
 		w.WriteString(")")
 	} else if t.Array != nil {
 		w.WriteString("[")
-
-		ip := w.IndentMultiline()
-
-		t.Array.printSource(ip, v)
+		t.Array.printSource(w.IndentMultiline(), v)
 		w.WriteString("]")
 	} else if t.Star != nil {
 		w.WriteString("*")
@@ -1813,11 +1829,11 @@ func (t TypeParam) printSource(w writer, v bool) {
 func (t TypeParams) printSource(w writer, v bool) {
 	ip := w.Indent()
 
-	ip.WriteString("[")
+	w.WriteString("[")
 
 	if v && len(t.Comments[0]) > 0 {
-		ip.WriteString(" ")
-		t.Comments[0].printSource(ip, true)
+		w.WriteString(" ")
+		t.Comments[0].printSource(w, true)
 
 		if len(t.TypeParams) > 0 && len(t.TypeParams[0].Comments) > 0 {
 			ip.WriteString("\n")
@@ -1839,8 +1855,8 @@ func (t TypeParams) printSource(w writer, v bool) {
 	}
 
 	if v && len(t.Comments[1]) > 0 {
-		ip.WriteString("\n")
-		t.Comments[1].printSource(ip, true)
+		w.WriteString("\n")
+		t.Comments[1].printSource(w, true)
 	}
 
 	w.WriteString("]")
@@ -1928,11 +1944,11 @@ func (wc WithStatementContents) printSource(w writer, v bool) {
 		if parens {
 			w.WriteString("(")
 
-			ip = w.IndentMultiline()
-
 			if v {
-				wc.Comments[0].printSource(ip, true)
+				wc.Comments[0].printSource(w, true)
 			}
+
+			ip = w.IndentMultiline()
 		}
 
 		wc.Items[0].printSource(ip, v)
@@ -1949,8 +1965,8 @@ func (wc WithStatementContents) printSource(w writer, v bool) {
 
 		if parens {
 			if len(wc.Comments[1]) > 0 {
-				ip.WriteString("\n")
-				wc.Comments[1].printSource(ip, true)
+				w.WriteString("\n")
+				wc.Comments[1].printSource(w, true)
 			}
 
 			w.WriteString(")")
