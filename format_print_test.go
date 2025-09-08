@@ -1113,12 +1113,12 @@ func TestPrintSource(t *testing.T) {
 		{ // 221
 			"a # A comment\n# B comment\n\n# EOF Comment",
 			"a\n",
-			"a # A comment\n# B comment\n\n# EOF Comment\n",
+			"a # A comment\n  # B comment\n\n# EOF Comment\n",
 		},
 		{ // 222
 			"while a: # A comment\n# B comment\n\t#abc\n\tb #def\n\n#efg",
 			"while a:\n\tb\n",
-			"while a: # A comment\n\t# B comment\n\t#abc\n\tb #def\n\n\t#efg\n",
+			"while a: # A comment\n\t         # B comment\n\t         #abc\n\tb #def\n\n\t#efg\n",
 		},
 		{ // 223
 			"while a:\n# A comment\n# B comment\n\t#abc\n\tb #def\n\n#efg",
@@ -1193,7 +1193,7 @@ func TestPrintSource(t *testing.T) {
 		{ // 237
 			"def a[# A\n# B\n\n# C\nb, c # D\n# E\n\n# F\n# G\n\n](): b",
 			"def a[b,c]():b\n",
-			"def a[ # A\n\t# B\n\n\t# C\n\tb, c # D\n\t# E\n\n\t# F\n\t# G\n](): b\n",
+			"def a[ # A\n\t       # B\n\n\t# C\n\tb, c # D\n\t     # E\n\n\t# F\n\t# G\n](): b\n",
 		},
 		{ // 238
 			"def a(\n# A\nb = 1 # B\n): c",
@@ -1208,7 +1208,7 @@ func TestPrintSource(t *testing.T) {
 		{ // 240
 			"def a(# A\n# B\n\n# C\n\n#D\nb # E\n\n#F\n, # G\n\n# H\n\n/# I\n\n# J\n, # K\n\n# L\n*# M\n\n# N\nc\n# O\n\n# P\n, # Q\n**# R\n\n# S\nd\n# T\n): e",
 			"def a(b,/,*c,**d):e\n",
-			"def a( # A\n\t# B\n\n\t# C\n\n\t#D\n\tb # E\n\n\t#F\n\t, # G\n\n\t# H\n\t/ # I\n\n\t# J\n\t, # K\n\n\t# L\n\t* # M\n\n\t# N\n\tc # O\n\n\t# P\n\t, # Q\n\t** # R\n\n\t# S\n\td\n\t# T\n): e\n",
+			"def a( # A\n\t       # B\n\n\t# C\n\n\t#D\n\tb # E\n\n\t#F\n\t, # G\n\n\t# H\n\t/ # I\n\n\t# J\n\t, # K\n\n\t# L\n\t* # M\n\n\t# N\n\tc # O\n\n\t# P\n\t, # Q\n\t** # R\n\n\t# S\n\td\n\t# T\n): e\n",
 		},
 		{ // 241
 			"def a( # A\n\n# B\nb = 1): c",

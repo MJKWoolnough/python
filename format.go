@@ -1,6 +1,7 @@
 package python
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -9,13 +10,17 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-var indent = []byte{'\t'}
+var (
+	indent = []byte{'\t'}
+	space  = []byte{' '}
+)
 
 type writer interface {
 	io.Writer
 	WriteString(string)
 	Underlying() writer
 	LastChar() byte
+	Pos() int
 	Indent() writer
 	IndentMultiline() writer
 	InMultiline() bool
@@ -105,11 +110,18 @@ func (i *indentPrinter) InMultiline() bool {
 type underlyingWriter struct {
 	io.Writer
 	lastChar byte
+	pos      int
 }
 
 func (u *underlyingWriter) Write(p []byte) (int, error) {
-	if len(p) > 0 {
-		u.lastChar = p[len(p)-1]
+	for _, b := range p {
+		if b == '\n' {
+			u.pos = 0
+		} else if b != '\t' || u.pos > 0 {
+			u.pos++
+		}
+
+		u.lastChar = b
 	}
 
 	return u.Writer.Write(p)
@@ -125,6 +137,10 @@ func (u *underlyingWriter) Underlying() writer {
 
 func (u *underlyingWriter) LastChar() byte {
 	return u.lastChar
+}
+
+func (u *underlyingWriter) Pos() int {
+	return u.pos
 }
 
 func (u *underlyingWriter) Indent() writer {
@@ -225,9 +241,10 @@ func (c Comments) printSource(w writer, v bool) {
 			w.WriteString(" ")
 		}
 
-		printComment(w, c[0].Data)
-
 		line := c[0].Line
+		pos := w.Pos()
+
+		printComment(w, c[0].Data, 0)
 
 		for _, c := range c[1:] {
 			w.WriteString("\n")
@@ -238,9 +255,10 @@ func (c Comments) printSource(w writer, v bool) {
 				w.WriteString("\n")
 
 				line++
+				pos = 0
 			}
 
-			printComment(w, c.Data)
+			printComment(w, c.Data, pos)
 		}
 
 		if v {
@@ -249,7 +267,9 @@ func (c Comments) printSource(w writer, v bool) {
 	}
 }
 
-func printComment(w writer, c string) {
+func printComment(w writer, c string, pos int) {
+	w.Write(bytes.Repeat(space, pos))
+
 	if !strings.HasPrefix(c, "#") {
 		w.WriteString("#")
 	}
