@@ -123,7 +123,7 @@ func (d *Decorators) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	for q.AcceptToken(parser.Token{Type: TokenOperator, Data: "@"}) {
-		p.AcceptRunAllWhitespace()
+		p.AcceptRunAllWhitespaceNoComment()
 
 		q = p.NewGoal()
 
@@ -165,11 +165,14 @@ func skipDecorators(p *pyParser) {
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorator
 type Decorator struct {
 	Decorator AssignmentExpression
-	Comments  Comments
+	Comments  [2]Comments
 	Tokens    Tokens
 }
 
 func (d *Decorator) parse(p *pyParser) error {
+	d.Comments[0] = p.AcceptRunWhitespaceComments()
+
+	p.AcceptRunAllWhitespace()
 	p.Next()
 	p.AcceptRunWhitespace()
 
@@ -181,7 +184,7 @@ func (d *Decorator) parse(p *pyParser) error {
 
 	p.Score(q)
 
-	d.Comments = p.AcceptRunWhitespaceComments()
+	d.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewline()
 	d.Tokens = p.ToTokens()
 
 	return nil
