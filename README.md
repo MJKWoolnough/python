@@ -356,7 +356,7 @@ type ClassDefinition struct {
 	TypeParams  *TypeParams
 	Inheritance *ArgumentList
 	Suite       Suite
-	Comments    [2]Comments
+	Comments    [3]Comments
 	Tokens      Tokens
 }
 ```
@@ -631,7 +631,7 @@ Possible returns types are as follows:
 ```go
 type Decorator struct {
 	Decorator AssignmentExpression
-	Comments  Comments
+	Comments  [2]Comments
 	Tokens    Tokens
 }
 ```
@@ -978,7 +978,7 @@ type FuncDefinition struct {
 	ParameterList ParameterList
 	Expression    *Expression
 	Suite         Suite
-	Comments      Comments
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 ```
