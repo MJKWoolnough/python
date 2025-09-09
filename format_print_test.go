@@ -1540,6 +1540,11 @@ func TestPrintSource(t *testing.T) {
 			"@a()\n@b()\ndef c():d\n",
 			"# A\n@a() # B\n     # C\n\n# D\n@b()\ndef c(): d\n",
 		},
+		{ // 307
+			"# A\n@a # B\n# C\n\n# D\n@b # E\n\n# F\n\n# G\ndef c(# H\n):d",
+			"@a\n@b\ndef c():d\n",
+			"# A\n@a # B\n   # C\n\n# D\n@b # E\n\n# F\n\n# G\ndef c( # H\n): d\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
