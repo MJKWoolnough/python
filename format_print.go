@@ -851,8 +851,12 @@ func (f ForStatement) printSource(w writer, v bool) {
 }
 
 func (f FuncDefinition) printSource(w writer, v bool) {
-	if f.Decorators != nil {
+	if f.Decorators != nil && len(f.Decorators.Decorators) > 0 {
 		f.Decorators.printSource(w, v)
+
+		if v {
+			f.Comments[0].printSource(w, true)
+		}
 	}
 
 	if f.Async {
@@ -869,7 +873,7 @@ func (f FuncDefinition) printSource(w writer, v bool) {
 	w.WriteString("(")
 
 	if v {
-		f.Comments.printSource(w, true)
+		f.Comments[1].printSource(w, true)
 	}
 
 	f.ParameterList.printSource(w.IndentMultiline(), v)
