@@ -296,6 +296,10 @@ func (a AugTarget) printSource(w writer, v bool) {
 func (c ClassDefinition) printSource(w writer, v bool) {
 	if c.Decorators != nil {
 		c.Decorators.printSource(w, v)
+
+		if v {
+			c.Comments[0].printSource(w, true)
+		}
 	}
 
 	w.WriteString("class ")
@@ -309,15 +313,15 @@ func (c ClassDefinition) printSource(w writer, v bool) {
 
 		w.WriteString("(")
 
-		if v && len(c.Comments[0]) > 0 {
-			c.Comments[0].printSource(w, true)
+		if v {
+			c.Comments[1].printSource(w, true)
 		}
 
 		c.Inheritance.printSource(w.IndentMultiline(), v)
 
-		if v && len(c.Comments[1]) > 0 {
+		if v && len(c.Comments[2]) > 0 {
 			w.WriteString("\n")
-			c.Comments[1].printSource(w, true)
+			c.Comments[2].printSource(w, true)
 		}
 
 		w.WriteString(")")
