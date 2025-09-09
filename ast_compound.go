@@ -799,7 +799,7 @@ type FuncDefinition struct {
 	ParameterList ParameterList
 	Expression    *Expression
 	Suite         Suite
-	Comments      Comments
+	Comments      [2]Comments
 	Tokens        Tokens
 }
 
@@ -813,6 +813,9 @@ func (f *FuncDefinition) parse(p *pyParser) error {
 		}
 
 		p.Score(q)
+
+		f.Comments[0] = p.AcceptRunWhitespaceComments()
+
 		p.AcceptRunAllWhitespace()
 	}
 
@@ -874,7 +877,7 @@ func (f *FuncDefinition) parse(p *pyParser) error {
 		}
 
 	} else {
-		f.Comments = p.AcceptRunWhitespaceComments()
+		f.Comments[1] = p.AcceptRunWhitespaceComments()
 
 		p.AcceptRunAllWhitespace()
 		p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"})
