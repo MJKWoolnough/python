@@ -5595,8 +5595,76 @@ func TestFuncDefinition(t *testing.T) {
 					},
 					Tokens: tk[8:9],
 				},
-				Comments: Comments{tk[4]},
+				Comments: [2]Comments{nil, {tk[4]}},
 				Tokens:   tk[:9],
+			}
+		}},
+		{"@a # A\n# B\n\n# C\n@b # D\n\n# E\n\n# F\ndef c( #G\n):d", func(t *test, tk Tokens) { // 17
+			t.Output = FuncDefinition{
+				Decorators: &Decorators{
+					Decorators: []Decorator{
+						{
+							Decorator: AssignmentExpression{
+								Expression: Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[1],
+										Tokens:     tk[1:2],
+									}),
+									Tokens: tk[1:2],
+								},
+								Tokens: tk[1:2],
+							},
+							Comments: [2]Comments{nil, {tk[3], tk[5]}},
+							Tokens:   tk[:6],
+						},
+						{
+							Decorator: AssignmentExpression{
+								Expression: Expression{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[11],
+										Tokens:     tk[11:12],
+									}),
+									Tokens: tk[11:12],
+								},
+								Tokens: tk[11:12],
+							},
+							Comments: [2]Comments{{tk[8]}, {tk[13]}},
+							Tokens:   tk[8:14],
+						},
+					},
+					Tokens: tk[:14],
+				},
+				ParameterList: ParameterList{
+					Tokens: tk[27:27],
+				},
+				FuncName: &tk[23],
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[30],
+												Tokens:     tk[30:31],
+											}),
+											Tokens: tk[30:31],
+										},
+										Tokens: tk[30:31],
+									},
+									Tokens: tk[30:31],
+								},
+								Tokens: tk[30:31],
+							},
+						},
+						Tokens: tk[30:31],
+					},
+					Tokens: tk[30:31],
+				},
+				Comments: [2]Comments{{tk[16], tk[19]}, {tk[26]}},
+				Tokens:   tk[:31],
 			}
 		}},
 		{"def nonlocal():a", func(t *test, tk Tokens) { // 18
