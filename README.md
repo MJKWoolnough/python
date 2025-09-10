@@ -978,7 +978,7 @@ type FuncDefinition struct {
 	ParameterList ParameterList
 	Expression    *Expression
 	Suite         Suite
-	Comments      [2]Comments
+	Comments      [3]Comments
 	Tokens        Tokens
 }
 ```
