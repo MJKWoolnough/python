@@ -163,6 +163,9 @@ func skipDecorators(p *pyParser) {
 
 // Decorator as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorator
+//
+// The first set of comments are parsed from before the decorator, and the
+// second set are parsed from after, on the same line.
 type Decorator struct {
 	Decorator AssignmentExpression
 	Comments  [2]Comments
@@ -686,6 +689,9 @@ func (w *WithStatement) parse(p *pyParser) error {
 
 // WithStatementContents as defined in python:3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt_contents
+//
+// If in a multiline construct, the first set of comments are parsed from
+// before the contents, the second set are parsed from after.
 type WithStatementContents struct {
 	Items    []WithItem
 	Comments [2]Comments
@@ -738,6 +744,8 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 
 // WithItem as defined in python@3.13:
 // https://docs.python.org/release/3.13/reference/compound_stmts.html#grammar-token-python-grammar-with_item
+//
+// If in a multiline context, the comments are parsed from either side of the Expression.
 type WithItem struct {
 	Expression Expression
 	Target     *Target
@@ -791,6 +799,10 @@ func (w *WithItem) parse(p *pyParser) error {
 
 // FuncDefinition as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-funcdef
+//
+// The first set of comments are parsed after any Decorators, before the 'async' of 'def' keywords.
+//
+// The second and third set of comments are parsed inside of an empty parameter list.
 type FuncDefinition struct {
 	Decorators    *Decorators
 	Async         bool
@@ -923,6 +935,10 @@ func (f *FuncDefinition) parse(p *pyParser) error {
 
 // ClassDefinition as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-classdef
+//
+// The first set of comments are parsed after any Decorators, before the 'class' keyword.
+//
+// The second and third set of comments are parsed inside of an empty Inheritance list.
 type ClassDefinition struct {
 	Decorators  *Decorators
 	ClassName   *Token
@@ -1024,6 +1040,8 @@ func (c *ClassDefinition) parse(p *pyParser) error {
 
 // Suite as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-suite
+//
+// In a multiline Suite, the comments are parsed at the top and bottom.
 type Suite struct {
 	StatementList *StatementList
 	Statements    []Statement
@@ -1093,6 +1111,16 @@ const (
 
 // TypeParam as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-type_param
+//
+// The first set of comments are parsed at the start of the type param.
+//
+// When the type is TypeParamVar or TypeParamVarTuple, the second set of
+// comments are parsed after the '*' or '**' token.
+//
+// When the type is TypeParamIdentifer, the second and third set of comments
+// are parsed on either side of the ':' token.
+//
+// The last set of comments are parsed after the TypeParam.
 type TypeParam struct {
 	Type       TypeParamType
 	Identifier *Token
@@ -1169,6 +1197,18 @@ func (t *TypeParam) parse(p *pyParser) error {
 
 // ParameterList as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-parameter_list
+//
+// The first set of comments are parsed from the beginning of the list.
+//
+// The second and third sets of comments are parsed from before and after the '/' token.
+//
+// The fourth and fifth sets of comments are parsed from before and after the
+// '*' token; the sixth set of comments is parsed from after the StarArg.
+//
+// The seventh and eighth set of comments are parsed from before and after the
+// '**' token; the ninth set of comments are parse from after the StarStarArg.
+//
+// The final set of comments are parsed from after the ParameterList.
 type ParameterList struct {
 	DefParameters []DefParameter
 	NoPosOnly     []DefParameter
@@ -1375,6 +1415,8 @@ func (l *ParameterList) parseStarStar(p, q *pyParser, allowAnnotations bool) err
 
 // DefParameter as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-defparameter
+//
+// The comments are parsed from before and after the DefParameter.
 type DefParameter struct {
 	Parameter Parameter
 	Value     *Expression
@@ -1467,6 +1509,8 @@ func (pr *Parameter) parse(p *pyParser, allowAnnotations bool) error {
 
 // Statement as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-statement
+//
+// The comments are parsed from before the Statement.
 type Statement struct {
 	StatementList     *StatementList
 	CompoundStatement *CompoundStatement
@@ -1525,6 +1569,8 @@ func (s *Statement) parse(p *pyParser) error {
 
 // StatementList as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-stmt_list
+//
+// The comments are parsed from after the StatementList.
 type StatementList struct {
 	Statements []SimpleStatement
 	Comments   Comments
@@ -1571,6 +1617,10 @@ func (s *StatementList) parse(p *pyParser) error {
 
 // TypeParams as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-type_params
+//
+// The first set of comments are parsed from directly after the opening bracket;
+// the second set of comments are parsed from directly before the closing
+// bracket.
 type TypeParams struct {
 	TypeParams []TypeParam
 	Comments   [2]Comments
