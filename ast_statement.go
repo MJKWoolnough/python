@@ -4,6 +4,9 @@ import "vimagination.zapto.org/parser"
 
 // TargetList as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
+//
+// When in a multiline stucture, the comments are parsed from before and after
+// the TargetList.
 type TargetList struct {
 	Targets  []Target
 	Comments [2]Comments
@@ -64,6 +67,9 @@ Loop:
 
 // Target as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
+//
+// When in a multiline stucture, the comments are parsed from before and after
+// the Target.
 type Target struct {
 	PrimaryExpression *PrimaryExpression
 	Tuple             *TargetList
@@ -636,6 +642,14 @@ func (r *ReturnStatement) parse(p *pyParser) error {
 
 // YieldExpression as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-yield_stmt
+//
+// The first and second sets of comments are parsed from before and after the
+// 'yield' keyword.
+//
+// The third set of comments are parsed from after the 'from' keyword, or after
+// the ExpressionList if it's followed by a trailing comma.
+//
+// The final set of comments are parsed from directly after the YieldExpression.
 type YieldExpression struct {
 	ExpressionList *ExpressionList
 	From           *Expression
