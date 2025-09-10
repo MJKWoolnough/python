@@ -87,6 +87,9 @@ type AddExpression struct {
 AddExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-a_expr
 
+When in a multiline structure, comments are parsed on either side of the '+' or
+'-' tokens.
+
 #### func (AddExpression) Format
 
 ```go
@@ -108,6 +111,9 @@ type AndExpression struct {
 AndExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-and_expr
 
+When in a multiline structure, comments are parsed on either side of the '&'
+token.
+
 #### func (AndExpression) Format
 
 ```go
@@ -128,6 +134,9 @@ type AndTest struct {
 
 AndTest as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-and_test
+
+When in a multiline structure, comments are parsed on either side of the 'and'
+operator.
 
 #### func (AndTest) Format
 
@@ -191,6 +200,10 @@ type ArgumentListOrComprehension struct {
 ArgumentListOrComprehension as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-call
 
+The first set of comments are parsed from directly after the opening paren.
+
+The second set of comments are parsed from directly before the closing paren.
+
 #### func (ArgumentListOrComprehension) Format
 
 ```go
@@ -230,6 +243,9 @@ type AssignmentExpression struct {
 
 AssignmentExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-assignment_expression
+
+When in a multiline structure, comments are parsed on either side of the ':='
+operator.
 
 #### func (AssignmentExpression) Format
 
@@ -364,6 +380,12 @@ type ClassDefinition struct {
 ClassDefinition as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-classdef
 
+The first set of comments are parsed after any Decorators, before the 'class'
+keyword.
+
+The second and third set of comments are parsed inside of an empty Inheritance
+list.
+
 #### func (ClassDefinition) Format
 
 ```go
@@ -456,6 +478,15 @@ type Comprehension struct {
 Comprehension as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comprehension
 
+The first set of comments are parsed from before the Comprehension.
+
+The second set of comments are parsed from between the AssignmentExpression and
+he ComprehensionFor.
+
+The final set of comments are parsed from after the Comprehension.
+
+NB: Comments are only parsed when in a multiline structure.
+
 #### func (Comprehension) Format
 
 ```go
@@ -479,6 +510,12 @@ type ComprehensionFor struct {
 ComprehensionFor as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comp_for
 
+The first set of comments are parsed after an 'async' token.
+
+The second set of comments are parsed from after the 'in' token.
+
+NB: Comments are only parsed when in a multiline structure.
+
 #### func (ComprehensionFor) Format
 
 ```go
@@ -499,6 +536,9 @@ type ComprehensionIf struct {
 
 ComprehensionIf as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comp_if
+
+When in a multiline structure, the comments are parsed from after the 'if'
+keyword.
 
 #### func (ComprehensionIf) Format
 
@@ -521,6 +561,9 @@ type ComprehensionIterator struct {
 ComprehensionIterator as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-comp_iter
 
+When in a multiline structure, the comments are parsed from before and after the
+ComprehensionIterator.
+
 #### func (ComprehensionIterator) Format
 
 ```go
@@ -542,6 +585,14 @@ type ConditionalExpression struct {
 
 ConditionalExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-conditional_expression
+
+The first and second sets of comments are parsed from before and after an 'if'
+keyword.
+
+The third and fourth sets of comments are parsed from before and after an 'else'
+keyword.
+
+NB: Comments are only parsed when in a multiline structure.
 
 #### func  WrapConditional
 
@@ -639,6 +690,9 @@ type Decorator struct {
 Decorator as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-decorator
 
+The first set of comments are parsed from before the decorator, and the second
+set are parsed from after, on the same line.
+
 #### func (Decorator) Format
 
 ```go
@@ -678,6 +732,8 @@ type DefParameter struct {
 
 DefParameter as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-defparameter
+
+The comments are parsed from before and after the DefParameter.
 
 #### func (DefParameter) Format
 
@@ -740,6 +796,14 @@ type DictItem struct {
 DictItem as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-dict_item
 
+The first set of comments are parsed from before the DictItem.
+
+In a key/value DictItem, the second and third comments are parsed from before
+and after the ':' token; otherwise, the second comments are parsed from after
+the '**' token.
+
+The final set of comments are parsed from after the DictItem.
+
 #### func (DictItem) Format
 
 ```go
@@ -764,6 +828,10 @@ type Enclosure struct {
 
 Enclosure as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-enclosure
+
+The first set of comments are parsed from directly after the opening paren,
+brace, or bracket; the second set of comments are parsed from directly before
+the closing paren, brace, or bracket.
 
 #### func (Enclosure) Format
 
@@ -870,6 +938,9 @@ type File struct {
 
 File represents a parsed Python file.
 
+The first set of comments are parsed and printed at the top of the file, the
+second set are parsed and printed at the bottom of the file.
+
 #### func  Parse
 
 ```go
@@ -897,6 +968,9 @@ type FlexibleExpression struct {
 
 FlexibleExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-flexible_expression
+
+The first set of comments are parsed from before the FlexibleExpression; the
+second set of comments are parsed from after the FlexibleExpression.
 
 #### func (FlexibleExpression) Format
 
@@ -986,6 +1060,12 @@ type FuncDefinition struct {
 FuncDefinition as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-funcdef
 
+The first set of comments are parsed after any Decorators, before the 'async' of
+'def' keywords.
+
+The second and third set of comments are parsed inside of an empty parameter
+list.
+
 #### func (FuncDefinition) Format
 
 ```go
@@ -1006,6 +1086,12 @@ type GeneratorExpression struct {
 
 GeneratorExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-generator_expression
+
+The first set of comments are parsed from before the GeneratorExpression.
+
+The second set of comments are parsed after the expression.
+
+The third set of comments are parsed from after the GeneratorExpression.
 
 #### func (GeneratorExpression) Format
 
@@ -1089,6 +1175,12 @@ type KeywordArgument struct {
 KeywordArgument as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-keywords_arguments
 
+The first set of comments are parsed from before the KeywordArgument.
+
+The second set of comments are parsed from after any '**' token.
+
+The final set of comments are parsed from after the KeywordArgument.
+
 #### func (KeywordArgument) Format
 
 ```go
@@ -1129,6 +1221,14 @@ type LambdaExpression struct {
 
 LambdaExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-lambda_expr
+
+The first set of comments are parsed after the 'lambda' keyword.
+
+If there are params, the second set of comments are parsed before the ':' token.
+
+The third set of comments are parsed after the ':' token.
+
+NB: Comments are only parsed when in a multiline structure.
 
 #### func (LambdaExpression) Format
 
@@ -1191,6 +1291,9 @@ type MultiplyExpression struct {
 MultiplyExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-m_expr
 
+When in a multiline structure, comments are parsed on either side of the
+operator token.
+
 #### func (MultiplyExpression) Format
 
 ```go
@@ -1230,6 +1333,8 @@ type NotTest struct {
 NotTest as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-not_test
 
+When in a multiline structure, comments are parsed after every 'not' operator
+
 #### func (NotTest) Format
 
 ```go
@@ -1251,6 +1356,9 @@ type OrExpression struct {
 OrExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-or_expr
 
+When in a multiline structure, comments are parsed on either side of the '|'
+token.
+
 #### func (OrExpression) Format
 
 ```go
@@ -1271,6 +1379,9 @@ type OrTest struct {
 
 OrTest as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-or_test
+
+When in a multiline structure, comments are parsed on either side of the 'or'
+operator.
 
 #### func (OrTest) Format
 
@@ -1316,6 +1427,19 @@ type ParameterList struct {
 ParameterList as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-parameter_list
 
+The first set of comments are parsed from the beginning of the list.
+
+The second and third sets of comments are parsed from before and after the '/'
+token.
+
+The fourth and fifth sets of comments are parsed from before and after the '*'
+token; the sixth set of comments is parsed from after the StarArg.
+
+The seventh and eighth set of comments are parsed from before and after the '**'
+token; the ninth set of comments are parse from after the StarStarArg.
+
+The final set of comments are parsed from after the ParameterList.
+
 #### func (ParameterList) Format
 
 ```go
@@ -1336,6 +1460,12 @@ type PositionalArgument struct {
 
 PositionalArgument as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-positional_arguments
+
+The first set of comments are parsed from before the PositionalArgument.
+
+The second set of comments are parsed from after any '*' token.
+
+The final set of comments are parsed from after the PositionalArgument.
 
 #### func (PositionalArgument) Format
 
@@ -1358,6 +1488,13 @@ type PowerExpression struct {
 
 PowerExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-power
+
+The first set of comments are parsed after an 'await' keyword.
+
+The second and third set of comments are parsed from before and after the '**'
+token.
+
+NB: Comments are only parsed when in a multiline structure.
 
 #### func (PowerExpression) Format
 
@@ -1382,6 +1519,14 @@ type PrimaryExpression struct {
 
 PrimaryExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-primary
+
+For an AttributeRef, the comments are parsed from before and after the '.'
+token.
+
+For a Slice or a Call, the comments are parsed from before the opening '[' or
+'('.
+
+NB: Comments are only parsed when in a multiline structure.
 
 #### func (PrimaryExpression) Format
 
@@ -1471,6 +1616,9 @@ type ShiftExpression struct {
 ShiftExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-shift_expr
 
+When in a multiline structure, comments are parsed on either side of the '<<' or
+'>>' tokens.
+
 #### func (ShiftExpression) Format
 
 ```go
@@ -1525,6 +1673,16 @@ type SliceItem struct {
 SliceItem as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-slice_item
 
+The first set of comments are parsed from directly after the opening bracket.
+
+The second and third set of comments are parsed from either side of the first
+':' token.
+
+The fourth and fifth set of comments are parsed from either side of the second
+':' token, if it exists.
+
+The final set of comments are parsed from directly before the closing bracket.
+
 #### func (SliceItem) Format
 
 ```go
@@ -1544,6 +1702,10 @@ type SliceList struct {
 
 SliceList as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-slice_list
+
+The first set of comments are parsed from directly after the opening brace.
+
+The second set of comments are parsed from directly before the closing brace.
 
 #### func (SliceList) Format
 
@@ -1566,6 +1728,9 @@ type StarredExpression struct {
 StarredExpression as defined in python@3.12.6:
 https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_expression
 
+When in a multiline structure, the comments are parsed before and after the
+StarredExpression.
+
 #### func (StarredExpression) Format
 
 ```go
@@ -1586,6 +1751,12 @@ type StarredItem struct {
 
 StarredItem as defined in python@3.12.6:
 https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_item
+
+The first set of comments are parsed from before the StarredItem.
+
+The second set of comments are parsed from after any '*' token.
+
+The final set of comments are parsed from after the StarredItem.
 
 #### func (StarredItem) Format
 
@@ -1628,6 +1799,10 @@ type StarredOrKeyword struct {
 StarredOrKeyword as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-starred_and_keywords
 
+The first set of comments are parsed from before the StarredOrKeyword item.
+
+The final set of comments are parsed from after the StarredOrKeyword item.
+
 #### func (StarredOrKeyword) Format
 
 ```go
@@ -1649,6 +1824,8 @@ type Statement struct {
 Statement as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-statement
 
+The comments are parsed from before the Statement.
+
 #### func (Statement) Format
 
 ```go
@@ -1668,6 +1845,8 @@ type StatementList struct {
 
 StatementList as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-stmt_list
+
+The comments are parsed from after the StatementList.
 
 #### func (StatementList) Format
 
@@ -1725,6 +1904,8 @@ type Suite struct {
 Suite as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-suite
 
+In a multiline Suite, the comments are parsed at the top and bottom.
+
 #### func (Suite) Format
 
 ```go
@@ -1748,6 +1929,9 @@ type Target struct {
 Target as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
 
+When in a multiline stucture, the comments are parsed from before and after the
+Target.
+
 #### func (Target) Format
 
 ```go
@@ -1767,6 +1951,9 @@ type TargetList struct {
 
 TargetList as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
+
+When in a multiline stucture, the comments are parsed from before and after the
+TargetList.
 
 #### func (TargetList) Format
 
@@ -1855,6 +2042,16 @@ type TypeParam struct {
 TypeParam as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-type_param
 
+The first set of comments are parsed at the start of the type param.
+
+When the type is TypeParamVar or TypeParamVarTuple, the second set of comments
+are parsed after the '*' or '**' token.
+
+When the type is TypeParamIdentifer, the second and third set of comments are
+parsed on either side of the ':' token.
+
+The last set of comments are parsed after the TypeParam.
+
 #### func (TypeParam) Format
 
 ```go
@@ -1897,6 +2094,9 @@ type TypeParams struct {
 
 TypeParams as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-type_params
+
+The first set of comments are parsed from directly after the opening bracket;
+the second set of comments are parsed from directly before the closing bracket.
 
 #### func (TypeParams) Format
 
@@ -1941,6 +2141,9 @@ type UnaryExpression struct {
 UnaryExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-u_expr
 
+When in a multiline structure, comments are parsed on either side of the
+operator token.
+
 #### func (UnaryExpression) Format
 
 ```go
@@ -1983,6 +2186,9 @@ type WithItem struct {
 WithItem as defined in python@3.13:
 https://docs.python.org/release/3.13/reference/compound_stmts.html#grammar-token-python-grammar-with_item
 
+If in a multiline context, the comments are parsed from either side of the
+Expression.
+
 #### func (WithItem) Format
 
 ```go
@@ -2024,6 +2230,9 @@ type WithStatementContents struct {
 WithStatementContents as defined in python:3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-with_stmt_contents
 
+If in a multiline construct, the first set of comments are parsed from before
+the contents, the second set are parsed from after.
+
 #### func (WithStatementContents) Format
 
 ```go
@@ -2045,6 +2254,9 @@ type XorExpression struct {
 XorExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-xor_expr
 
+When in a multiline structure, comments are parsed on either side of the '^'
+token.
+
 #### func (XorExpression) Format
 
 ```go
@@ -2065,6 +2277,14 @@ type YieldExpression struct {
 
 YieldExpression as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-yield_stmt
+
+The first and second sets of comments are parsed from before and after the
+'yield' keyword.
+
+The third set of comments are parsed from after the 'from' keyword, or after the
+ExpressionList if it's followed by a trailing comma.
+
+The final set of comments are parsed from directly after the YieldExpression.
 
 #### func (YieldExpression) Format
 
