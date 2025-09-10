@@ -4,6 +4,9 @@ package python // import "vimagination.zapto.org/python"
 import "vimagination.zapto.org/parser"
 
 // File represents a parsed Python file.
+//
+// The first set of comments are parsed and printed at the top of the file, the
+// second set are parsed and printed at the bottom of the file.
 type File struct {
 	Statements []Statement
 	Comments   [2]Comments
