@@ -5595,7 +5595,7 @@ func TestFuncDefinition(t *testing.T) {
 					},
 					Tokens: tk[8:9],
 				},
-				Comments: [2]Comments{nil, {tk[4]}},
+				Comments: [3]Comments{nil, {tk[4]}},
 				Tokens:   tk[:9],
 			}
 		}},
@@ -5663,7 +5663,7 @@ func TestFuncDefinition(t *testing.T) {
 					},
 					Tokens: tk[30:31],
 				},
-				Comments: [2]Comments{{tk[16], tk[19]}, {tk[26]}},
+				Comments: [3]Comments{{tk[16], tk[19]}, {tk[26]}},
 				Tokens:   tk[:31],
 			}
 		}},
