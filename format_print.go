@@ -878,6 +878,13 @@ func (f FuncDefinition) printSource(w writer, v bool) {
 
 	if v {
 		f.Comments[1].printSource(w, true)
+
+		if len(f.Comments[2]) > 0 {
+			ip := w.Indent()
+
+			ip.WriteString("\n")
+			f.Comments[2].printSource(ip, true)
+		}
 	}
 
 	f.ParameterList.printSource(w.IndentMultiline(), v)
