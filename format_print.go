@@ -594,7 +594,7 @@ func (d DefParameter) printSource(w writer, v bool) {
 	}
 
 	if v {
-		d.Comments[1].printSource(w, true)
+		d.Comments[3].printSource(w, true)
 	}
 }
 

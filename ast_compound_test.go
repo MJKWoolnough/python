@@ -7618,7 +7618,7 @@ func TestParameterList(t *testing.T) {
 							Identifier: &tk[9],
 							Tokens:     tk[9:10],
 						},
-						Comments: [2]Comments{{tk[5], tk[7]}, {tk[11], tk[13]}},
+						Comments: [4]Comments{{tk[5], tk[7]}, nil, nil, {tk[11], tk[13]}},
 						Tokens:   tk[5:14],
 					},
 				},
@@ -7807,7 +7807,7 @@ func TestDefParameter(t *testing.T) {
 					Identifier: &tk[3],
 					Tokens:     tk[3:4],
 				},
-				Comments: [2]Comments{{tk[1]}, {tk[5]}},
+				Comments: [4]Comments{{tk[1]}, nil, nil, {tk[5]}},
 				Tokens:   tk[1:6],
 			}
 		}},
