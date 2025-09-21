@@ -1176,7 +1176,9 @@ func (p Parameter) printSource(w writer, v bool) {
 
 	if p.Type != nil {
 		if v {
+			p.Comments[0].printSource(w, true)
 			w.WriteString(": ")
+			p.Comments[1].printSource(w, true)
 		} else {
 			w.WriteString(":")
 		}
