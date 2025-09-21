@@ -585,7 +585,10 @@ func (d DefParameter) printSource(w writer, v bool) {
 
 	if d.Value != nil {
 		if v {
-			w.WriteString(" = ")
+			w.WriteString(" ")
+			d.Comments[1].printSource(w, true)
+			w.WriteString("= ")
+			d.Comments[2].printSource(w, true)
 		} else {
 			w.WriteString("=")
 		}
