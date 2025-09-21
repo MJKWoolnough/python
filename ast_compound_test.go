@@ -7811,7 +7811,25 @@ func TestDefParameter(t *testing.T) {
 				Tokens:   tk[1:6],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 7
+		{"(# A\na # B\n= # C\nb # D\n)", func(t *test, tk Tokens) { // 7
+			t.AllowTypeAnnotations = true
+			t.Output = DefParameter{
+				Parameter: Parameter{
+					Identifier: &tk[3],
+					Tokens:     tk[3:4],
+				},
+				Value: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}),
+					Tokens: tk[11:12],
+				},
+				Comments: [4]Comments{{tk[1]}, {tk[5]}, {tk[9]}, {tk[13]}},
+				Tokens:   tk[1:14],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -7822,7 +7840,7 @@ func TestDefParameter(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a=nonlocal`, func(t *test, tk Tokens) { // 8
+		{`a=nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
