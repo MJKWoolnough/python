@@ -1472,6 +1472,8 @@ func (d *DefParameter) parse(p *pyParser, allowAnnotations bool) error {
 
 // Parameter as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-parameter
+//
+// The comments are parsed on either side of the ':' token.
 type Parameter struct {
 	Identifier *Token
 	Type       *Expression
