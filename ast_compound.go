@@ -1475,6 +1475,7 @@ func (d *DefParameter) parse(p *pyParser, allowAnnotations bool) error {
 type Parameter struct {
 	Identifier *Token
 	Type       *Expression
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 
@@ -1489,8 +1490,14 @@ func (pr *Parameter) parse(p *pyParser, allowAnnotations bool) error {
 	q.AcceptRunWhitespace()
 
 	if allowAnnotations && q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ":"}) {
-		q.AcceptRunWhitespace()
-		p.Score(q)
+		pr.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
+		p.Next()
+
+		pr.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		q = p.NewGoal()
 		pr.Type = new(Expression)
