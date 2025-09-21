@@ -7899,14 +7899,29 @@ func TestParameter(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 6
+		{"(a # A\n: # B\nb)", func(t *test, tk Tokens) { // 6
+			t.AllowTypeAnnotations = true
+			t.Output = Parameter{
+				Identifier: &tk[1],
+				Type: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[9],
+						Tokens:     tk[9:10],
+					}),
+					Tokens: tk[9:10],
+				},
+				Comments: [2]Comments{{tk[3]}, {tk[7]}},
+				Tokens:   tk[1:10],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "Parameter",
 				Token:   tk[0],
 			}
 		}},
-		{`a:nonlocal`, func(t *test, tk Tokens) { // 7
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 8
 			t.AllowTypeAnnotations = true
 			t.Err = Error{
 				Err: Error{
@@ -7924,6 +7939,10 @@ func TestParameter(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var p Parameter
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := p.parse(t.Tokens, t.AllowTypeAnnotations)
 
