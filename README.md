@@ -725,7 +725,7 @@ Format implements the fmt.Formatter interface
 type DefParameter struct {
 	Parameter Parameter
 	Value     *Expression
-	Comments  [2]Comments
+	Comments  [4]Comments
 	Tokens    Tokens
 }
 ```
@@ -733,7 +733,11 @@ type DefParameter struct {
 DefParameter as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-defparameter
 
-The comments are parsed from before and after the DefParameter.
+The first set of comments are parsed from before the DefParameter.
+
+The second and thrid set of comments are parsed from either side of a '=' token.
+
+The final set of comments are parsed from after the DefParameter.
 
 #### func (DefParameter) Format
 
@@ -1396,12 +1400,15 @@ Format implements the fmt.Formatter interface
 type Parameter struct {
 	Identifier *Token
 	Type       *Expression
+	Comments   [2]Comments
 	Tokens     Tokens
 }
 ```
 
 Parameter as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-parameter
+
+The comments are parsed on either side of the ':' token.
 
 #### func (Parameter) Format
 
