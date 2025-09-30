@@ -349,7 +349,7 @@ func (pa *PositionalArgument) parse(p *pyParser) error {
 type StarredOrKeyword struct {
 	Expression  *Expression
 	KeywordItem *KeywordItem
-	Comments    [2]Comments
+	Comments    [3]Comments
 	Tokens      Tokens
 }
 
@@ -359,7 +359,9 @@ func (s *StarredOrKeyword) parse(p *pyParser) error {
 	p.AcceptRunWhitespace()
 
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
-		p.AcceptRunWhitespaceNoComment()
+		s.Comments[1] = p.AcceptRunWhitespaceComments()
+
+		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
 		s.Expression = new(Expression)
@@ -385,9 +387,9 @@ func (s *StarredOrKeyword) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-		s.Comments[1] = p.AcceptRunWhitespaceComments()
+		s.Comments[2] = p.AcceptRunWhitespaceComments()
 	} else {
-		s.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewline()
+		s.Comments[2] = p.AcceptRunWhitespaceCommentsNoNewline()
 	}
 
 	s.Tokens = p.ToTokens()

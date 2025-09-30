@@ -1176,7 +1176,7 @@ func TestStarredOrKeyword(t *testing.T) {
 					}),
 					Tokens: tk[5:6],
 				},
-				Comments: [2]Comments{{tk[1]}},
+				Comments: [3]Comments{{tk[1]}},
 				Tokens:   tk[1:6],
 			}
 		}},
@@ -1189,7 +1189,7 @@ func TestStarredOrKeyword(t *testing.T) {
 					}),
 					Tokens: tk[5:6],
 				},
-				Comments: [2]Comments{{tk[1]}, {tk[7]}},
+				Comments: [3]Comments{{tk[1]}, nil, {tk[7]}},
 				Tokens:   tk[1:8],
 			}
 		}},
@@ -1206,7 +1206,7 @@ func TestStarredOrKeyword(t *testing.T) {
 					},
 					Tokens: tk[3:6],
 				},
-				Comments: [2]Comments{{tk[1]}, {tk[7]}},
+				Comments: [3]Comments{{tk[1]}, nil, {tk[7]}},
 				Tokens:   tk[1:8],
 			}
 		}},

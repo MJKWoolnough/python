@@ -1659,13 +1659,18 @@ func (s StarredOrKeyword) printSource(w writer, v bool) {
 
 	if s.Expression != nil {
 		w.WriteString("*")
+
+		if v {
+			s.Comments[1].printSource(w, true)
+		}
+
 		s.Expression.printSource(w, v)
 	} else if s.KeywordItem != nil {
 		s.KeywordItem.printSource(w, v)
 	}
 
 	if v {
-		s.Comments[1].printSource(w, true)
+		s.Comments[2].printSource(w, true)
 	}
 }
 
