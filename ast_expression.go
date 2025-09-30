@@ -345,6 +345,8 @@ func (pa *PositionalArgument) parse(p *pyParser) error {
 //
 // The first set of comments are parsed from before the StarredOrKeyword item.
 //
+// The second set of comments are parsed from after any '*' token.
+//
 // The final set of comments are parsed from after the StarredOrKeyword item.
 type StarredOrKeyword struct {
 	Expression  *Expression
