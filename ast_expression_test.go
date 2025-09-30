@@ -1193,7 +1193,20 @@ func TestStarredOrKeyword(t *testing.T) {
 				Tokens:   tk[1:8],
 			}
 		}},
-		{"(# A\na=b\n# B\n,)", func(t *test, tk Tokens) { // 6
+		{"(# A\n*# B\na\n# C\n,)", func(t *test, tk Tokens) { // 6
+			t.Output = StarredOrKeyword{
+				Expression: &Expression{
+					ConditionalExpression: WrapConditional(&Atom{
+						Identifier: &tk[6],
+						Tokens:     tk[6:7],
+					}),
+					Tokens: tk[6:7],
+				},
+				Comments: [3]Comments{{tk[1]}, {tk[4]}, {tk[8]}},
+				Tokens:   tk[1:9],
+			}
+		}},
+		{"(# A\na=b\n# B\n,)", func(t *test, tk Tokens) { // 7
 			t.Output = StarredOrKeyword{
 				KeywordItem: &KeywordItem{
 					Identifier: &tk[3],
@@ -1210,7 +1223,7 @@ func TestStarredOrKeyword(t *testing.T) {
 				Tokens:   tk[1:8],
 			}
 		}},
-		{`*nonlocal`, func(t *test, tk Tokens) { // 7
+		{`*nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -1225,7 +1238,7 @@ func TestStarredOrKeyword(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 8
+		{`nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
