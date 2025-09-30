@@ -1798,7 +1798,7 @@ Format implements the fmt.Formatter interface
 type StarredOrKeyword struct {
 	Expression  *Expression
 	KeywordItem *KeywordItem
-	Comments    [2]Comments
+	Comments    [3]Comments
 	Tokens      Tokens
 }
 ```
@@ -1807,6 +1807,8 @@ StarredOrKeyword as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-starred_and_keywords
 
 The first set of comments are parsed from before the StarredOrKeyword item.
+
+The second set of comments are parsed from after any '*' token.
 
 The final set of comments are parsed from after the StarredOrKeyword item.
 
