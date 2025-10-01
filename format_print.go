@@ -943,6 +943,9 @@ func (g GlobalStatement) printSource(w writer, v bool) {
 	}
 }
 
+func (i IdentifierComments) printSource(w writer, v bool) {
+}
+
 func (i IfStatement) printSource(w writer, v bool) {
 	w.WriteString("if ")
 	i.AssignmentExpression.printSource(w, v)
@@ -1087,11 +1090,11 @@ func (m ModuleAs) printSource(w writer, v bool) {
 
 func (m Module) printSource(w writer, v bool) {
 	if len(m.Identifiers) > 0 {
-		w.WriteString(m.Identifiers[0].Data)
+		w.WriteString(m.Identifiers[0].Identifier.Data)
 
 		for _, i := range m.Identifiers[1:] {
 			w.WriteString(".")
-			w.WriteString(i.Data)
+			w.WriteString(i.Identifier.Data)
 		}
 	}
 }

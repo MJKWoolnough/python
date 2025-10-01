@@ -935,7 +935,7 @@ func (m *ModuleAs) parse(p *pyParser) error {
 // Module as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-module
 type Module struct {
-	Identifiers []*Token
+	Identifiers []IdentifierComments
 	Tokens      Tokens
 }
 
@@ -945,8 +945,23 @@ func (m *Module) parse(p *pyParser) error {
 			return p.Error("Module", ErrMissingIdentifier)
 		}
 
-		m.Identifiers = append(m.Identifiers, p.GetLastToken())
+		pos := len(m.Identifiers)
+		m.Identifiers = append(m.Identifiers, IdentifierComments{
+			Identifier: p.GetLastToken(),
+		})
 		q := p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			m.Identifiers[pos].Comments = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+			break
+		}
+
+		m.Identifiers[pos].Comments = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+
+		q = p.NewGoal()
 
 		q.AcceptRunWhitespace()
 
@@ -954,13 +969,18 @@ func (m *Module) parse(p *pyParser) error {
 			break
 		}
 
-		q.AcceptRunWhitespace()
 		p.Score(q)
+		p.AcceptRunWhitespaceNoComment()
 	}
 
 	m.Tokens = p.ToTokens()
 
 	return nil
+}
+
+type IdentifierComments struct {
+	Identifier *Token
+	Comments   Comments
 }
 
 // GlobalStatement as defined in python@3.13.0:

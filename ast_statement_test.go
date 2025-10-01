@@ -692,8 +692,10 @@ func TestSimpleStatement(t *testing.T) {
 					Modules: []ModuleAs{
 						{
 							Module: Module{
-								Identifiers: []*Token{
-									&tk[2],
+								Identifiers: []IdentifierComments{
+									{
+										Identifier: &tk[2],
+									},
 								},
 								Tokens: tk[2:3],
 							},
@@ -711,8 +713,10 @@ func TestSimpleStatement(t *testing.T) {
 				ImportStatement: &ImportStatement{
 					RelativeModule: &RelativeModule{
 						Module: &Module{
-							Identifiers: []*Token{
-								&tk[2],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[2],
+								},
 							},
 							Tokens: tk[2:3],
 						},
@@ -721,8 +725,10 @@ func TestSimpleStatement(t *testing.T) {
 					Modules: []ModuleAs{
 						{
 							Module: Module{
-								Identifiers: []*Token{
-									&tk[6],
+								Identifiers: []IdentifierComments{
+									{
+										Identifier: &tk[6],
+									},
 								},
 								Tokens: tk[6:7],
 							},
@@ -2380,8 +2386,10 @@ func TestImportStatement(t *testing.T) {
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
-						Identifiers: []*Token{
-							&tk[2],
+						Identifiers: []IdentifierComments{
+							{
+								Identifier: &tk[2],
+							},
 						},
 						Tokens: tk[2:3],
 					},
@@ -2394,8 +2402,10 @@ func TestImportStatement(t *testing.T) {
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
-						Identifiers: []*Token{
-							&tk[2],
+						Identifiers: []IdentifierComments{
+							{
+								Identifier: &tk[2],
+							},
 						},
 						Tokens: tk[2:3],
 					},
@@ -2404,8 +2414,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[6],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[6],
+								},
 							},
 							Tokens: tk[6:7],
 						},
@@ -2419,8 +2431,10 @@ func TestImportStatement(t *testing.T) {
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
-						Identifiers: []*Token{
-							&tk[2],
+						Identifiers: []IdentifierComments{
+							{
+								Identifier: &tk[2],
+							},
 						},
 						Tokens: tk[2:3],
 					},
@@ -2429,8 +2443,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[6],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[6],
+								},
 							},
 							Tokens: tk[6:7],
 						},
@@ -2438,8 +2454,10 @@ func TestImportStatement(t *testing.T) {
 					},
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[8],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[8],
+								},
 							},
 							Tokens: tk[8:9],
 						},
@@ -2453,8 +2471,10 @@ func TestImportStatement(t *testing.T) {
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
-						Identifiers: []*Token{
-							&tk[2],
+						Identifiers: []IdentifierComments{
+							{
+								Identifier: &tk[2],
+							},
 						},
 						Tokens: tk[2:3],
 					},
@@ -2463,8 +2483,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[6],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[6],
+								},
 							},
 							Tokens: tk[6:7],
 						},
@@ -2472,8 +2494,10 @@ func TestImportStatement(t *testing.T) {
 					},
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[9],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[9],
+								},
 							},
 							Tokens: tk[9:10],
 						},
@@ -2487,8 +2511,10 @@ func TestImportStatement(t *testing.T) {
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
-						Identifiers: []*Token{
-							&tk[2],
+						Identifiers: []IdentifierComments{
+							{
+								Identifier: &tk[2],
+							},
 						},
 						Tokens: tk[2:3],
 					},
@@ -2497,8 +2523,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[7],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[7],
+								},
 							},
 							Tokens: tk[7:8],
 						},
@@ -2512,8 +2540,10 @@ func TestImportStatement(t *testing.T) {
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
-						Identifiers: []*Token{
-							&tk[2],
+						Identifiers: []IdentifierComments{
+							{
+								Identifier: &tk[2],
+							},
 						},
 						Tokens: tk[2:3],
 					},
@@ -2522,8 +2552,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[7],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[7],
+								},
 							},
 							Tokens: tk[7:8],
 						},
@@ -2531,8 +2563,10 @@ func TestImportStatement(t *testing.T) {
 					},
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[9],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[9],
+								},
 							},
 							Tokens: tk[9:10],
 						},
@@ -2546,8 +2580,10 @@ func TestImportStatement(t *testing.T) {
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
-						Identifiers: []*Token{
-							&tk[2],
+						Identifiers: []IdentifierComments{
+							{
+								Identifier: &tk[2],
+							},
 						},
 						Tokens: tk[2:3],
 					},
@@ -2556,8 +2592,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[7],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[7],
+								},
 							},
 							Tokens: tk[7:8],
 						},
@@ -2565,8 +2603,10 @@ func TestImportStatement(t *testing.T) {
 					},
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[10],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[10],
+								},
 							},
 							Tokens: tk[10:11],
 						},
@@ -2581,8 +2621,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[2],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[2],
+								},
 							},
 							Tokens: tk[2:3],
 						},
@@ -2597,8 +2639,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[2],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[2],
+								},
 							},
 							Tokens: tk[2:3],
 						},
@@ -2606,8 +2650,10 @@ func TestImportStatement(t *testing.T) {
 					},
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[4],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[4],
+								},
 							},
 							Tokens: tk[4:5],
 						},
@@ -2622,8 +2668,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[2],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[2],
+								},
 							},
 							Tokens: tk[2:3],
 						},
@@ -2631,8 +2679,10 @@ func TestImportStatement(t *testing.T) {
 					},
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[5],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[5],
+								},
 							},
 							Tokens: tk[5:6],
 						},
@@ -2640,8 +2690,10 @@ func TestImportStatement(t *testing.T) {
 					},
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[8],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[8],
+								},
 							},
 							Tokens: tk[8:9],
 						},
@@ -2655,8 +2707,10 @@ func TestImportStatement(t *testing.T) {
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
-						Identifiers: []*Token{
-							&tk[2],
+						Identifiers: []IdentifierComments{
+							{
+								Identifier: &tk[2],
+							},
 						},
 						Tokens: tk[2:3],
 					},
@@ -2665,8 +2719,10 @@ func TestImportStatement(t *testing.T) {
 				Modules: []ModuleAs{
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[10],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[10],
+								},
 							},
 							Tokens: tk[10:11],
 						},
@@ -2674,8 +2730,10 @@ func TestImportStatement(t *testing.T) {
 					},
 					{
 						Module: Module{
-							Identifiers: []*Token{
-								&tk[12],
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[12],
+								},
 							},
 							Tokens: tk[12:13],
 						},
@@ -2770,8 +2828,10 @@ func TestRelativeModule(t *testing.T) {
 		{`a`, func(t *test, tk Tokens) { // 1
 			t.Output = RelativeModule{
 				Module: &Module{
-					Identifiers: []*Token{
-						&tk[0],
+					Identifiers: []IdentifierComments{
+						{
+							Identifier: &tk[0],
+						},
 					},
 					Tokens: tk[:1],
 				},
@@ -2782,8 +2842,10 @@ func TestRelativeModule(t *testing.T) {
 			t.Output = RelativeModule{
 				Dots: 1,
 				Module: &Module{
-					Identifiers: []*Token{
-						&tk[1],
+					Identifiers: []IdentifierComments{
+						{
+							Identifier: &tk[1],
+						},
 					},
 					Tokens: tk[1:2],
 				},
@@ -2794,8 +2856,10 @@ func TestRelativeModule(t *testing.T) {
 			t.Output = RelativeModule{
 				Dots: 2,
 				Module: &Module{
-					Identifiers: []*Token{
-						&tk[2],
+					Identifiers: []IdentifierComments{
+						{
+							Identifier: &tk[2],
+						},
 					},
 					Tokens: tk[2:3],
 				},
@@ -2806,8 +2870,10 @@ func TestRelativeModule(t *testing.T) {
 			t.Output = RelativeModule{
 				Dots: 2,
 				Module: &Module{
-					Identifiers: []*Token{
-						&tk[4],
+					Identifiers: []IdentifierComments{
+						{
+							Identifier: &tk[4],
+						},
 					},
 					Tokens: tk[4:5],
 				},
@@ -2818,9 +2884,13 @@ func TestRelativeModule(t *testing.T) {
 			t.Output = RelativeModule{
 				Dots: 1,
 				Module: &Module{
-					Identifiers: []*Token{
-						&tk[1],
-						&tk[3],
+					Identifiers: []IdentifierComments{
+						{
+							Identifier: &tk[1],
+						},
+						{
+							Identifier: &tk[3],
+						},
 					},
 					Tokens: tk[1:4],
 				},
@@ -2871,8 +2941,10 @@ func TestModuleAs(t *testing.T) {
 		{`a`, func(t *test, tk Tokens) { // 1
 			t.Output = ModuleAs{
 				Module: Module{
-					Identifiers: []*Token{
-						&tk[0],
+					Identifiers: []IdentifierComments{
+						{
+							Identifier: &tk[0],
+						},
 					},
 					Tokens: tk[:1],
 				},
@@ -2882,8 +2954,10 @@ func TestModuleAs(t *testing.T) {
 		{`a as b`, func(t *test, tk Tokens) { // 2
 			t.Output = ModuleAs{
 				Module: Module{
-					Identifiers: []*Token{
-						&tk[0],
+					Identifiers: []IdentifierComments{
+						{
+							Identifier: &tk[0],
+						},
 					},
 					Tokens: tk[:1],
 				},
@@ -2922,27 +2996,39 @@ func TestModule(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a`, func(t *test, tk Tokens) { // 1
 			t.Output = Module{
-				Identifiers: []*Token{
-					&tk[0],
+				Identifiers: []IdentifierComments{
+					{
+						Identifier: &tk[0],
+					},
 				},
 				Tokens: tk[:1],
 			}
 		}},
 		{`a.b`, func(t *test, tk Tokens) { // 2
 			t.Output = Module{
-				Identifiers: []*Token{
-					&tk[0],
-					&tk[2],
+				Identifiers: []IdentifierComments{
+					{
+						Identifier: &tk[0],
+					},
+					{
+						Identifier: &tk[2],
+					},
 				},
 				Tokens: tk[:3],
 			}
 		}},
 		{`a . b . c`, func(t *test, tk Tokens) { // 3
 			t.Output = Module{
-				Identifiers: []*Token{
-					&tk[0],
-					&tk[4],
-					&tk[8],
+				Identifiers: []IdentifierComments{
+					{
+						Identifier: &tk[0],
+					},
+					{
+						Identifier: &tk[4],
+					},
+					{
+						Identifier: &tk[8],
+					},
 				},
 				Tokens: tk[:9],
 			}
