@@ -1,6 +1,8 @@
 package python
 
-import "vimagination.zapto.org/parser"
+import (
+	"vimagination.zapto.org/parser"
+)
 
 // TargetList as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
@@ -765,6 +767,7 @@ func (r *RaiseStatement) parse(p *pyParser) error {
 type ImportStatement struct {
 	RelativeModule *RelativeModule
 	Modules        []ModuleAs
+	Comments       [2]Comments
 	Tokens         Tokens
 }
 
@@ -795,7 +798,9 @@ func (i *ImportStatement) parse(p *pyParser) error {
 		parens := i.RelativeModule != nil && p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
 
 		if parens {
-			p.AcceptRunWhitespace()
+			i.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
+
+			p.AcceptRunAllWhitespaceNoComment()
 		}
 
 		for {
@@ -811,21 +816,30 @@ func (i *ImportStatement) parse(p *pyParser) error {
 
 			i.Modules = append(i.Modules, module)
 
-			p.AcceptRunWhitespace()
+			q = p.NewGoal()
+
+			q.AcceptRunWhitespace()
 
 			if parens {
-				if p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+				if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+					i.Comments[1] = p.AcceptRunWhitespaceComments()
+
+					p.AcceptRunWhitespace()
+					p.Next()
+
 					break
 				}
 
-				if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+				if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 					return p.Error("ImportStatement", ErrMissingComma)
 				}
-			} else if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			} else if !q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
 				break
 			}
 
-			p.AcceptRunWhitespace()
+			q.AcceptRunWhitespace()
+
+			p.Score(q)
 		}
 	}
 

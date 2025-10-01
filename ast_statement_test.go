@@ -2688,7 +2688,7 @@ func TestImportStatement(t *testing.T) {
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "ImportStatement",
-				Token:   tk[9],
+				Token:   tk[8],
 			}
 		}},
 		{`import nonlocal`, func(t *test, tk Tokens) { // 15
