@@ -944,6 +944,11 @@ func (g GlobalStatement) printSource(w writer, v bool) {
 }
 
 func (i IdentifierComments) printSource(w writer, v bool) {
+	w.WriteString(i.Identifier.Data)
+
+	if v && w.InMultiline() {
+		i.Comments.printSource(w, true)
+	}
 }
 
 func (i IfStatement) printSource(w writer, v bool) {
@@ -1090,11 +1095,11 @@ func (m ModuleAs) printSource(w writer, v bool) {
 
 func (m Module) printSource(w writer, v bool) {
 	if len(m.Identifiers) > 0 {
-		w.WriteString(m.Identifiers[0].Identifier.Data)
+		m.Identifiers[0].printSource(w, v)
 
 		for _, i := range m.Identifiers[1:] {
 			w.WriteString(".")
-			w.WriteString(i.Identifier.Data)
+			i.printSource(w, v)
 		}
 	}
 }

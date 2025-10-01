@@ -849,6 +849,18 @@ func (i *ImportStatement) parse(p *pyParser) error {
 }
 
 func (i *ImportStatement) hasComments() bool {
+	for n := range i.Modules {
+		if i.Modules[n].hasComments() {
+			return true
+		}
+	}
+
+	if i.RelativeModule != nil {
+		if i.RelativeModule.hasComments() {
+			return true
+		}
+	}
+
 	return len(i.Comments[0]) > 0 || len(i.Comments[1]) > 0
 }
 
@@ -895,6 +907,14 @@ func (r *RelativeModule) parse(p *pyParser) error {
 	return nil
 }
 
+func (r *RelativeModule) hasComments() bool {
+	if r.Module != nil {
+		return r.Module.hasComments()
+	}
+
+	return false
+}
+
 // ModuleAs as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-import_stmt
 type ModuleAs struct {
@@ -930,6 +950,10 @@ func (m *ModuleAs) parse(p *pyParser) error {
 	m.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func (m *ModuleAs) hasComments() bool {
+	return m.Module.hasComments()
 }
 
 // Module as defined in python@3.13.0:
@@ -976,6 +1000,16 @@ func (m *Module) parse(p *pyParser) error {
 	m.Tokens = p.ToTokens()
 
 	return nil
+}
+
+func (m *Module) hasComments() bool {
+	for n := range m.Identifiers {
+		if len(m.Identifiers[n].Comments) > 0 {
+			return true
+		}
+	}
+
+	return false
 }
 
 type IdentifierComments struct {
