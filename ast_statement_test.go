@@ -3033,6 +3033,25 @@ func TestModule(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{"(a # A\n. b # B\n. c # C\n)", func(t *test, tk Tokens) { // 3
+			t.Output = Module{
+				Identifiers: []IdentifierComments{
+					{
+						Identifier: &tk[1],
+						Comments:   Comments{tk[3]},
+					},
+					{
+						Identifier: &tk[7],
+						Comments:   Comments{tk[9]},
+					},
+					{
+						Identifier: &tk[13],
+						Comments:   Comments{tk[15]},
+					},
+				},
+				Tokens: tk[1:16],
+			}
+		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
@@ -3049,6 +3068,10 @@ func TestModule(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var m Module
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := m.parse(t.Tokens)
 
