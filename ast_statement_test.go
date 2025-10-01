@@ -2651,7 +2651,42 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`from nonlocal import a`, func(t *test, tk Tokens) { // 11
+		{"from a import ( # A\nb,c\n# B\n)", func(t *test, tk Tokens) { // 11
+			t.Output = ImportStatement{
+				RelativeModule: &RelativeModule{
+					Module: &Module{
+						Identifiers: []*Token{
+							&tk[2],
+						},
+						Tokens: tk[2:3],
+					},
+					Tokens: tk[2:3],
+				},
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[10],
+							},
+							Tokens: tk[10:11],
+						},
+						Tokens: tk[10:11],
+					},
+					{
+						Module: Module{
+							Identifiers: []*Token{
+								&tk[12],
+							},
+							Tokens: tk[12:13],
+						},
+						Tokens: tk[12:13],
+					},
+				},
+				Comments: [2]Comments{{tk[8]}, {tk[14]}},
+				Tokens:   tk[:17],
+			}
+		}},
+		{`from nonlocal import a`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingModule,
@@ -2662,14 +2697,14 @@ func TestImportStatement(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`from a b`, func(t *test, tk Tokens) { // 12
+		{`from a b`, func(t *test, tk Tokens) { // 13
 			t.Err = Error{
 				Err:     ErrMissingImport,
 				Parsing: "ImportStatement",
 				Token:   tk[4],
 			}
 		}},
-		{`from a import nonlocal`, func(t *test, tk Tokens) { // 13
+		{`from a import nonlocal`, func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2684,14 +2719,14 @@ func TestImportStatement(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{`from a import (b c)`, func(t *test, tk Tokens) { // 14
+		{`from a import (b c)`, func(t *test, tk Tokens) { // 15
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "ImportStatement",
 				Token:   tk[8],
 			}
 		}},
-		{`import nonlocal`, func(t *test, tk Tokens) { // 15
+		{`import nonlocal`, func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2706,7 +2741,7 @@ func TestImportStatement(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`import (b)`, func(t *test, tk Tokens) { // 16
+		{`import (b)`, func(t *test, tk Tokens) { // 17
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
