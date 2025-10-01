@@ -92,6 +92,8 @@ func (GeneratorExpression) pythonType() {}
 
 func (GlobalStatement) pythonType() {}
 
+func (IdentifierComments) pythonType() {}
+
 func (IfStatement) pythonType() {}
 
 func (ImportStatement) pythonType() {}

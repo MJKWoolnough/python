@@ -485,6 +485,18 @@ func (f GlobalStatement) Format(s fmt.State, v rune) {
 }
 
 // Format implements the fmt.Formatter interface
+func (f IdentifierComments) Format(s fmt.State, v rune) {
+	if v == 'v' && s.Flag('#') {
+		type X = IdentifierComments
+		type IdentifierComments X
+
+		fmt.Fprintf(s, "%#v", (f))
+	} else {
+		format(&f, s, v)
+	}
+}
+
+// Format implements the fmt.Formatter interface
 func (f IfStatement) Format(s fmt.State, v rune) {
 	if v == 'v' && s.Flag('#') {
 		type X = IfStatement

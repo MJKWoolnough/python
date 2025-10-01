@@ -1373,6 +1373,24 @@ func (f *GlobalStatement) printType(w writer, v bool) {
 	w.WriteString("\n}")
 }
 
+func (f *IdentifierComments) printType(w writer, v bool) {
+	pp := w.Indent()
+
+	pp.WriteString("IdentifierComments {")
+
+	if f.Identifier != nil {
+		pp.WriteString("\nIdentifier: ")
+		f.Identifier.printType(pp, v)
+	} else if v {
+		pp.WriteString("\nIdentifier: nil")
+	}
+
+	pp.WriteString("\nComments: ")
+	f.Comments.printType(pp, v)
+
+	w.WriteString("\n}")
+}
+
 func (f *IfStatement) printType(w writer, v bool) {
 	pp := w.Indent()
 
