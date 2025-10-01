@@ -961,26 +961,46 @@ func (i IfStatement) printSource(w writer, v bool) {
 }
 
 func (i ImportStatement) printSource(w writer, v bool) {
+	parens := false
+	iw := w
+
 	if i.RelativeModule != nil {
 		w.WriteString("from ")
 		i.RelativeModule.printSource(w, v)
 		w.WriteString(" import ")
+
+		if parens = v && i.hasComments(); parens {
+			w.WriteString("(")
+			i.Comments[0].printSource(w, false)
+
+			iw = w.IndentMultiline()
+			iw.WriteString("\n")
+		}
 	} else {
 		w.WriteString("import ")
 	}
 
 	if len(i.Modules) > 0 {
-		i.Modules[0].printSource(w, v)
+		i.Modules[0].printSource(iw, v)
 
 		for _, m := range i.Modules[1:] {
 			if v {
-				w.WriteString(", ")
+				iw.WriteString(", ")
 			} else {
-				w.WriteString(",")
+				iw.WriteString(",")
 			}
 
-			m.printSource(w, v)
+			m.printSource(iw, v)
 		}
+	}
+
+	if parens {
+		if v && len(i.Comments[1]) > 0 {
+			w.WriteString("\n")
+			i.Comments[1].printSource(w, true)
+		}
+
+		w.WriteString(")")
 	}
 }
 

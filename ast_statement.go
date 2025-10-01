@@ -848,6 +848,10 @@ func (i *ImportStatement) parse(p *pyParser) error {
 	return nil
 }
 
+func (i *ImportStatement) hasComments() bool {
+	return len(i.Comments[0]) > 0 || len(i.Comments[1]) > 0
+}
+
 // RelativeModule as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-relative_module
 type RelativeModule struct {
