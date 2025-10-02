@@ -944,6 +944,10 @@ func (g GlobalStatement) printSource(w writer, v bool) {
 }
 
 func (i IdentifierComments) printSource(w writer, v bool) {
+	if v && w.InMultiline() {
+		i.Comments[0].printSource(w, true)
+	}
+
 	w.WriteString(i.Identifier.Data)
 
 	if v && w.InMultiline() {
