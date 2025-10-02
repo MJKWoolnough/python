@@ -918,9 +918,10 @@ func (r *RelativeModule) hasComments() bool {
 // ModuleAs as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-import_stmt
 type ModuleAs struct {
-	Module Module
-	As     *Token
-	Tokens Tokens
+	Module   Module
+	As       *Token
+	Comments [2]Comments
+	Tokens   Tokens
 }
 
 func (m *ModuleAs) parse(p *pyParser) error {
@@ -937,14 +938,27 @@ func (m *ModuleAs) parse(p *pyParser) error {
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
-		q.AcceptRunWhitespace()
 		p.Score(q)
+
+		m.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+		p.AcceptRunWhitespace()
 
 		if !p.Accept(TokenIdentifier) {
 			return p.Error("ModuleAs", ErrMissingIdentifier)
 		}
 
 		m.As = p.GetLastToken()
+
+		q = p.NewGoal()
+
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+			m.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+		} else {
+			m.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+		}
 	}
 
 	m.Tokens = p.ToTokens()
