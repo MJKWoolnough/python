@@ -3022,7 +3022,23 @@ func TestModuleAs(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 3
+		{"(a as # A\nb # B\n)", func(t *test, tk Tokens) { // 3
+			t.Output = ModuleAs{
+				Module: Module{
+					Identifiers: []IdentifierComments{
+						{
+							Identifier: &tk[1],
+							Tokens:     tk[1:2],
+						},
+					},
+					Tokens: tk[1:2],
+				},
+				As:       &tk[7],
+				Comments: [2]Comments{{tk[5]}, {tk[9]}},
+				Tokens:   tk[1:10],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -3037,7 +3053,7 @@ func TestModuleAs(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a as nonlocal`, func(t *test, tk Tokens) { // 4
+		{`a as nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "ModuleAs",
@@ -3046,6 +3062,10 @@ func TestModuleAs(t *testing.T) {
 		}},
 	}, func(t *test) (Type, error) {
 		var m ModuleAs
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
 
 		err := m.parse(t.Tokens)
 
