@@ -965,26 +965,17 @@ type Module struct {
 
 func (m *Module) parse(p *pyParser) error {
 	for {
-		if !p.Accept(TokenIdentifier) {
-			return p.Error("Module", ErrMissingIdentifier)
-		}
-
-		pos := len(m.Identifiers)
-		m.Identifiers = append(m.Identifiers, IdentifierComments{
-			Identifier: p.GetLastToken(),
-		})
 		q := p.NewGoal()
 
-		q.AcceptRunWhitespace()
+		var i IdentifierComments
 
-		if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
-			m.Identifiers[pos].Comments = p.AcceptRunWhitespaceCommentsIfMultiline()
-
-			break
+		if err := i.parse(q); err != nil {
+			return p.Error("Module", err)
 		}
 
-		m.Identifiers[pos].Comments = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+		p.Score(q)
 
+		m.Identifiers = append(m.Identifiers, i)
 		q = p.NewGoal()
 
 		q.AcceptRunWhitespace()
@@ -1004,7 +995,7 @@ func (m *Module) parse(p *pyParser) error {
 
 func (m *Module) hasComments() bool {
 	for n := range m.Identifiers {
-		if len(m.Identifiers[n].Comments) > 0 {
+		if m.Identifiers[n].hasComments() {
 			return true
 		}
 	}
@@ -1014,7 +1005,38 @@ func (m *Module) hasComments() bool {
 
 type IdentifierComments struct {
 	Identifier *Token
-	Comments   Comments
+	Comments   [2]Comments
+	Tokens     Tokens
+}
+
+func (i *IdentifierComments) parse(p *pyParser) error {
+	i.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
+	p.AcceptRunWhitespace()
+
+	if !p.Accept(TokenIdentifier) {
+		return p.Error("IdentifierComments", ErrMissingIdentifier)
+	}
+
+	i.Identifier = p.GetLastToken()
+
+	q := p.NewGoal()
+
+	q.AcceptRunWhitespace()
+
+	if q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ")"}) {
+		i.Comments[1] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
+	} else {
+		i.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+	}
+
+	i.Tokens = p.ToTokens()
+
+	return nil
+}
+
+func (i *IdentifierComments) hasComments() bool {
+	return len(i.Comments[0]) > 0 || len(i.Comments[1]) > 0
 }
 
 // GlobalStatement as defined in python@3.13.0:

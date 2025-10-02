@@ -695,6 +695,7 @@ func TestSimpleStatement(t *testing.T) {
 								Identifiers: []IdentifierComments{
 									{
 										Identifier: &tk[2],
+										Tokens:     tk[2:3],
 									},
 								},
 								Tokens: tk[2:3],
@@ -716,6 +717,7 @@ func TestSimpleStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[2],
+									Tokens:     tk[2:3],
 								},
 							},
 							Tokens: tk[2:3],
@@ -728,6 +730,7 @@ func TestSimpleStatement(t *testing.T) {
 								Identifiers: []IdentifierComments{
 									{
 										Identifier: &tk[6],
+										Tokens:     tk[6:7],
 									},
 								},
 								Tokens: tk[6:7],
@@ -974,7 +977,11 @@ func TestSimpleStatement(t *testing.T) {
 				Err: Error{
 					Err: Error{
 						Err: Error{
-							Err:     ErrMissingIdentifier,
+							Err: Error{
+								Err:     ErrMissingIdentifier,
+								Parsing: "IdentifierComments",
+								Token:   tk[2],
+							},
 							Parsing: "Module",
 							Token:   tk[2],
 						},
@@ -2389,6 +2396,7 @@ func TestImportStatement(t *testing.T) {
 						Identifiers: []IdentifierComments{
 							{
 								Identifier: &tk[2],
+								Tokens:     tk[2:3],
 							},
 						},
 						Tokens: tk[2:3],
@@ -2405,6 +2413,7 @@ func TestImportStatement(t *testing.T) {
 						Identifiers: []IdentifierComments{
 							{
 								Identifier: &tk[2],
+								Tokens:     tk[2:3],
 							},
 						},
 						Tokens: tk[2:3],
@@ -2417,6 +2426,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[6],
+									Tokens:     tk[6:7],
 								},
 							},
 							Tokens: tk[6:7],
@@ -2434,6 +2444,7 @@ func TestImportStatement(t *testing.T) {
 						Identifiers: []IdentifierComments{
 							{
 								Identifier: &tk[2],
+								Tokens:     tk[2:3],
 							},
 						},
 						Tokens: tk[2:3],
@@ -2446,6 +2457,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[6],
+									Tokens:     tk[6:7],
 								},
 							},
 							Tokens: tk[6:7],
@@ -2457,6 +2469,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[8],
+									Tokens:     tk[8:9],
 								},
 							},
 							Tokens: tk[8:9],
@@ -2474,6 +2487,7 @@ func TestImportStatement(t *testing.T) {
 						Identifiers: []IdentifierComments{
 							{
 								Identifier: &tk[2],
+								Tokens:     tk[2:3],
 							},
 						},
 						Tokens: tk[2:3],
@@ -2486,6 +2500,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[6],
+									Tokens:     tk[6:7],
 								},
 							},
 							Tokens: tk[6:7],
@@ -2497,6 +2512,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[9],
+									Tokens:     tk[9:10],
 								},
 							},
 							Tokens: tk[9:10],
@@ -2514,6 +2530,7 @@ func TestImportStatement(t *testing.T) {
 						Identifiers: []IdentifierComments{
 							{
 								Identifier: &tk[2],
+								Tokens:     tk[2:3],
 							},
 						},
 						Tokens: tk[2:3],
@@ -2526,6 +2543,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[7],
+									Tokens:     tk[7:8],
 								},
 							},
 							Tokens: tk[7:8],
@@ -2543,6 +2561,7 @@ func TestImportStatement(t *testing.T) {
 						Identifiers: []IdentifierComments{
 							{
 								Identifier: &tk[2],
+								Tokens:     tk[2:3],
 							},
 						},
 						Tokens: tk[2:3],
@@ -2555,6 +2574,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[7],
+									Tokens:     tk[7:8],
 								},
 							},
 							Tokens: tk[7:8],
@@ -2566,6 +2586,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[9],
+									Tokens:     tk[9:10],
 								},
 							},
 							Tokens: tk[9:10],
@@ -2583,6 +2604,7 @@ func TestImportStatement(t *testing.T) {
 						Identifiers: []IdentifierComments{
 							{
 								Identifier: &tk[2],
+								Tokens:     tk[2:3],
 							},
 						},
 						Tokens: tk[2:3],
@@ -2595,6 +2617,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[7],
+									Tokens:     tk[7:8],
 								},
 							},
 							Tokens: tk[7:8],
@@ -2606,6 +2629,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[10],
+									Tokens:     tk[10:11],
 								},
 							},
 							Tokens: tk[10:11],
@@ -2624,6 +2648,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[2],
+									Tokens:     tk[2:3],
 								},
 							},
 							Tokens: tk[2:3],
@@ -2642,6 +2667,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[2],
+									Tokens:     tk[2:3],
 								},
 							},
 							Tokens: tk[2:3],
@@ -2653,6 +2679,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[4],
+									Tokens:     tk[4:5],
 								},
 							},
 							Tokens: tk[4:5],
@@ -2671,6 +2698,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[2],
+									Tokens:     tk[2:3],
 								},
 							},
 							Tokens: tk[2:3],
@@ -2682,6 +2710,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[5],
+									Tokens:     tk[5:6],
 								},
 							},
 							Tokens: tk[5:6],
@@ -2693,6 +2722,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[8],
+									Tokens:     tk[8:9],
 								},
 							},
 							Tokens: tk[8:9],
@@ -2710,6 +2740,7 @@ func TestImportStatement(t *testing.T) {
 						Identifiers: []IdentifierComments{
 							{
 								Identifier: &tk[2],
+								Tokens:     tk[2:3],
 							},
 						},
 						Tokens: tk[2:3],
@@ -2722,6 +2753,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[10],
+									Tokens:     tk[10:11],
 								},
 							},
 							Tokens: tk[10:11],
@@ -2733,6 +2765,7 @@ func TestImportStatement(t *testing.T) {
 							Identifiers: []IdentifierComments{
 								{
 									Identifier: &tk[12],
+									Tokens:     tk[12:13],
 								},
 							},
 							Tokens: tk[12:13],
@@ -2766,7 +2799,11 @@ func TestImportStatement(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err:     ErrMissingIdentifier,
+						Err: Error{
+							Err:     ErrMissingIdentifier,
+							Parsing: "IdentifierComments",
+							Token:   tk[6],
+						},
 						Parsing: "Module",
 						Token:   tk[6],
 					},
@@ -2788,7 +2825,11 @@ func TestImportStatement(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err:     ErrMissingIdentifier,
+						Err: Error{
+							Err:     ErrMissingIdentifier,
+							Parsing: "IdentifierComments",
+							Token:   tk[2],
+						},
 						Parsing: "Module",
 						Token:   tk[2],
 					},
@@ -2803,7 +2844,11 @@ func TestImportStatement(t *testing.T) {
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
-						Err:     ErrMissingIdentifier,
+						Err: Error{
+							Err:     ErrMissingIdentifier,
+							Parsing: "IdentifierComments",
+							Token:   tk[2],
+						},
 						Parsing: "Module",
 						Token:   tk[2],
 					},
@@ -2831,6 +2876,7 @@ func TestRelativeModule(t *testing.T) {
 					Identifiers: []IdentifierComments{
 						{
 							Identifier: &tk[0],
+							Tokens:     tk[:1],
 						},
 					},
 					Tokens: tk[:1],
@@ -2845,6 +2891,7 @@ func TestRelativeModule(t *testing.T) {
 					Identifiers: []IdentifierComments{
 						{
 							Identifier: &tk[1],
+							Tokens:     tk[1:2],
 						},
 					},
 					Tokens: tk[1:2],
@@ -2859,6 +2906,7 @@ func TestRelativeModule(t *testing.T) {
 					Identifiers: []IdentifierComments{
 						{
 							Identifier: &tk[2],
+							Tokens:     tk[2:3],
 						},
 					},
 					Tokens: tk[2:3],
@@ -2873,6 +2921,7 @@ func TestRelativeModule(t *testing.T) {
 					Identifiers: []IdentifierComments{
 						{
 							Identifier: &tk[4],
+							Tokens:     tk[4:5],
 						},
 					},
 					Tokens: tk[4:5],
@@ -2887,9 +2936,11 @@ func TestRelativeModule(t *testing.T) {
 					Identifiers: []IdentifierComments{
 						{
 							Identifier: &tk[1],
+							Tokens:     tk[1:2],
 						},
 						{
 							Identifier: &tk[3],
+							Tokens:     tk[3:4],
 						},
 					},
 					Tokens: tk[1:4],
@@ -2919,7 +2970,11 @@ func TestRelativeModule(t *testing.T) {
 		{`.a.nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
-					Err:     ErrMissingIdentifier,
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "IdentifierComments",
+						Token:   tk[3],
+					},
 					Parsing: "Module",
 					Token:   tk[3],
 				},
@@ -2944,6 +2999,7 @@ func TestModuleAs(t *testing.T) {
 					Identifiers: []IdentifierComments{
 						{
 							Identifier: &tk[0],
+							Tokens:     tk[:1],
 						},
 					},
 					Tokens: tk[:1],
@@ -2957,6 +3013,7 @@ func TestModuleAs(t *testing.T) {
 					Identifiers: []IdentifierComments{
 						{
 							Identifier: &tk[0],
+							Tokens:     tk[:1],
 						},
 					},
 					Tokens: tk[:1],
@@ -2968,7 +3025,11 @@ func TestModuleAs(t *testing.T) {
 		{`nonlocal`, func(t *test, tk Tokens) { // 3
 			t.Err = Error{
 				Err: Error{
-					Err:     ErrMissingIdentifier,
+					Err: Error{
+						Err:     ErrMissingIdentifier,
+						Parsing: "IdentifierComments",
+						Token:   tk[0],
+					},
 					Parsing: "Module",
 					Token:   tk[0],
 				},
@@ -2999,6 +3060,7 @@ func TestModule(t *testing.T) {
 				Identifiers: []IdentifierComments{
 					{
 						Identifier: &tk[0],
+						Tokens:     tk[:1],
 					},
 				},
 				Tokens: tk[:1],
@@ -3009,9 +3071,11 @@ func TestModule(t *testing.T) {
 				Identifiers: []IdentifierComments{
 					{
 						Identifier: &tk[0],
+						Tokens:     tk[:1],
 					},
 					{
 						Identifier: &tk[2],
+						Tokens:     tk[2:3],
 					},
 				},
 				Tokens: tk[:3],
@@ -3022,46 +3086,60 @@ func TestModule(t *testing.T) {
 				Identifiers: []IdentifierComments{
 					{
 						Identifier: &tk[0],
+						Tokens:     tk[:1],
 					},
 					{
 						Identifier: &tk[4],
+						Tokens:     tk[4:5],
 					},
 					{
 						Identifier: &tk[8],
+						Tokens:     tk[8:9],
 					},
 				},
 				Tokens: tk[:9],
 			}
 		}},
-		{"(a # A\n. b # B\n. c # C\n)", func(t *test, tk Tokens) { // 3
+		{"(a # A\n. b # B\n. c # C\n)", func(t *test, tk Tokens) { // 4
 			t.Output = Module{
 				Identifiers: []IdentifierComments{
 					{
 						Identifier: &tk[1],
-						Comments:   Comments{tk[3]},
+						Comments:   [2]Comments{nil, {tk[3]}},
+						Tokens:     tk[1:4],
 					},
 					{
 						Identifier: &tk[7],
-						Comments:   Comments{tk[9]},
+						Comments:   [2]Comments{nil, {tk[9]}},
+						Tokens:     tk[7:10],
 					},
 					{
 						Identifier: &tk[13],
-						Comments:   Comments{tk[15]},
+						Comments:   [2]Comments{nil, {tk[15]}},
+						Tokens:     tk[13:16],
 					},
 				},
 				Tokens: tk[1:16],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 4
+		{`nonlocal`, func(t *test, tk Tokens) { // 5
 			t.Err = Error{
-				Err:     ErrMissingIdentifier,
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "IdentifierComments",
+					Token:   tk[0],
+				},
 				Parsing: "Module",
 				Token:   tk[0],
 			}
 		}},
-		{`a.nonlocal`, func(t *test, tk Tokens) { // 5
+		{`a.nonlocal`, func(t *test, tk Tokens) { // 6
 			t.Err = Error{
-				Err:     ErrMissingIdentifier,
+				Err: Error{
+					Err:     ErrMissingIdentifier,
+					Parsing: "IdentifierComments",
+					Token:   tk[2],
+				},
 				Parsing: "Module",
 				Token:   tk[2],
 			}

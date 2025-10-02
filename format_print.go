@@ -947,7 +947,7 @@ func (i IdentifierComments) printSource(w writer, v bool) {
 	w.WriteString(i.Identifier.Data)
 
 	if v && w.InMultiline() {
-		i.Comments.printSource(w, true)
+		i.Comments[1].printSource(w, true)
 	}
 }
 
