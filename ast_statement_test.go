@@ -3157,6 +3157,41 @@ func TestModule(t *testing.T) {
 	})
 }
 
+func TestIdentifierComments(t *testing.T) {
+	doTests(t, []sourceFn{
+		{`a`, func(t *test, tk Tokens) { // 1
+			t.Output = IdentifierComments{
+				Identifier: &tk[0],
+				Tokens:     tk[:1],
+			}
+		}},
+		{"(# A\na # B\n)", func(t *test, tk Tokens) { // 2
+			t.Output = IdentifierComments{
+				Identifier: &tk[3],
+				Comments:   [2]Comments{{tk[1]}, {tk[5]}},
+				Tokens:     tk[1:6],
+			}
+		}},
+		{`nonlocal`, func(t *test, tk Tokens) { // 3
+			t.Err = Error{
+				Err:     ErrMissingIdentifier,
+				Parsing: "IdentifierComments",
+				Token:   tk[0],
+			}
+		}},
+	}, func(t *test) (Type, error) {
+		var i IdentifierComments
+
+		if t.Tokens.Peek().Data == "(" {
+			t.Tokens.Tokens = t.Tokens.Tokens[1:1]
+		}
+
+		err := i.parse(t.Tokens)
+
+		return i, err
+	})
+}
+
 func TestGlobalStatement(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`global a`, func(t *test, tk Tokens) { // 1
