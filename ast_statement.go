@@ -967,7 +967,7 @@ func (m *ModuleAs) parse(p *pyParser) error {
 }
 
 func (m *ModuleAs) hasComments() bool {
-	return m.Module.hasComments()
+	return len(m.Comments[0]) > 0 || len(m.Comments[1]) > 0 || m.Module.hasComments()
 }
 
 // Module as defined in python@3.13.0:

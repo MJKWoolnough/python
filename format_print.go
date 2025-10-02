@@ -1093,7 +1093,16 @@ func (m ModuleAs) printSource(w writer, v bool) {
 
 	if m.As != nil {
 		w.WriteString(" as ")
+
+		if v && w.InMultiline() {
+			m.Comments[0].printSource(w, true)
+		}
+
 		w.WriteString(m.As.Data)
+
+		if v && w.InMultiline() {
+			m.Comments[1].printSource(w, true)
+		}
 	}
 }
 
