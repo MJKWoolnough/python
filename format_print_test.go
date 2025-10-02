@@ -1580,6 +1580,11 @@ func TestPrintSource(t *testing.T) {
 			"from a import b.c\n",
 			"from a import ( # A\n\tb # B\n\t.c # C\n\n# D\n)\n",
 		},
+		{ // 314
+			"from a import ( # A\nb # B\n. # C\nc # D\n\n# E\n)",
+			"from a import b.c\n",
+			"from a import ( # A\n\tb # B\n\t. # C\n\tc # D\n\n# E\n)\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
