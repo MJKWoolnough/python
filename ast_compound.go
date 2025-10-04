@@ -1418,7 +1418,7 @@ func (l *ParameterList) parseStarStar(p, q *pyParser, allowAnnotations bool) err
 //
 // The first set of comments are parsed from before the DefParameter.
 //
-// The second and thrid set of comments are parsed from either side of a '='
+// The second and third set of comments are parsed from either side of a '='
 // token.
 //
 // The final set of comments are parsed from after the DefParameter.
