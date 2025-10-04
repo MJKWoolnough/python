@@ -7,7 +7,7 @@ import (
 // TargetList as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
 //
-// When in a multiline stucture, the comments are parsed from before and after
+// When in a multiline structure, the comments are parsed from before and after
 // the TargetList.
 type TargetList struct {
 	Targets  []Target
@@ -70,7 +70,7 @@ Loop:
 // Target as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
 //
-// When in a multiline stucture, the comments are parsed from before and after
+// When in a multiline structure, the comments are parsed from before and after
 // the Target.
 type Target struct {
 	PrimaryExpression *PrimaryExpression
