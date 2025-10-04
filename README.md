@@ -735,7 +735,7 @@ https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-tok
 
 The first set of comments are parsed from before the DefParameter.
 
-The second and thrid set of comments are parsed from either side of a '=' token.
+The second and third set of comments are parsed from either side of a '=' token.
 
 The final set of comments are parsed from after the DefParameter.
 
@@ -1123,6 +1123,24 @@ func (f GlobalStatement) Format(s fmt.State, v rune)
 ```
 Format implements the fmt.Formatter interface
 
+#### type IdentifierComments
+
+```go
+type IdentifierComments struct {
+	Identifier *Token
+	Comments   [2]Comments
+	Tokens     Tokens
+}
+```
+
+
+#### func (IdentifierComments) Format
+
+```go
+func (f IdentifierComments) Format(s fmt.State, v rune)
+```
+Format implements the fmt.Formatter interface
+
 #### type IfStatement
 
 ```go
@@ -1151,6 +1169,7 @@ Format implements the fmt.Formatter interface
 type ImportStatement struct {
 	RelativeModule *RelativeModule
 	Modules        []ModuleAs
+	Comments       [2]Comments
 	Tokens         Tokens
 }
 ```
@@ -1245,7 +1264,7 @@ Format implements the fmt.Formatter interface
 
 ```go
 type Module struct {
-	Identifiers []*Token
+	Identifiers []IdentifierComments
 	Tokens      Tokens
 }
 ```
@@ -1264,9 +1283,10 @@ Format implements the fmt.Formatter interface
 
 ```go
 type ModuleAs struct {
-	Module Module
-	As     *Token
-	Tokens Tokens
+	Module   Module
+	As       *Token
+	Comments [2]Comments
+	Tokens   Tokens
 }
 ```
 
@@ -1938,7 +1958,7 @@ type Target struct {
 Target as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target
 
-When in a multiline stucture, the comments are parsed from before and after the
+When in a multiline structure, the comments are parsed from before and after the
 Target.
 
 #### func (Target) Format
@@ -1961,7 +1981,7 @@ type TargetList struct {
 TargetList as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-target_list
 
-When in a multiline stucture, the comments are parsed from before and after the
+When in a multiline structure, the comments are parsed from before and after the
 TargetList.
 
 #### func (TargetList) Format
