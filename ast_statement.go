@@ -1043,6 +1043,9 @@ func (m *Module) hasComments() bool {
 	return false
 }
 
+// IdentifierComments is a module identifier.
+//
+// Parsed comments are from before and after the identifier.
 type IdentifierComments struct {
 	Identifier *Token
 	Comments   [2]Comments
