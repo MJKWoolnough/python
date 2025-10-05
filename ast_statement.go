@@ -941,6 +941,8 @@ func (r *RelativeModule) hasComments() bool {
 
 // ModuleAs as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-import_stmt
+//
+// Comments are parsed after an 'as' token, and after the 'as' identifier.
 type ModuleAs struct {
 	Module   Module
 	As       *Token
