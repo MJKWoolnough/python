@@ -2195,27 +2195,6 @@ func skipPowerExpression(p *pyParser) {
 	}
 }
 
-// StatementType specifies the type of a SimpleStatment.
-type StatementType uint8
-
-const (
-	StatementAssert StatementType = iota
-	StatementAssignment
-	StatementAugmentedAssignment
-	StatementAnnotatedAssignment
-	StatementPass
-	StatementDel
-	StatementReturn
-	StatementYield
-	StatementRaise
-	StatementBreak
-	StatementContinue
-	StatementImport
-	StatementGlobal
-	StatementNonLocal
-	StatementTyp
-)
-
 // StarredExpression as defined in python@3.12.6:
 // https://docs.python.org/release/3.12.6/reference/expressions.html#grammar-token-python-grammar-starred_expression
 //

@@ -162,6 +162,27 @@ func (t *Target) parse(p *pyParser) error {
 	return nil
 }
 
+// StatementType specifies the type of a SimpleStatment.
+type StatementType uint8
+
+const (
+	StatementAssert StatementType = iota
+	StatementAssignment
+	StatementAugmentedAssignment
+	StatementAnnotatedAssignment
+	StatementPass
+	StatementDel
+	StatementReturn
+	StatementYield
+	StatementRaise
+	StatementBreak
+	StatementContinue
+	StatementImport
+	StatementGlobal
+	StatementNonLocal
+	StatementTyp
+)
+
 // SimpleStatement as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-simple_stmt
 type SimpleStatement struct {
