@@ -785,6 +785,9 @@ func (r *RaiseStatement) parse(p *pyParser) error {
 
 // ImportStatement as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-import_stmt
+//
+// Comments are parsed after the opening paren of a ModuleAs list, and before
+// the closing paren of the same.
 type ImportStatement struct {
 	RelativeModule *RelativeModule
 	Modules        []ModuleAs
