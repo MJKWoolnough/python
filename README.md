@@ -1133,6 +1133,9 @@ type IdentifierComments struct {
 }
 ```
 
+IdentifierComments is a module identifier.
+
+Parsed comments are from before and after the identifier.
 
 #### func (IdentifierComments) Format
 
@@ -1176,6 +1179,9 @@ type ImportStatement struct {
 
 ImportStatement as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-import_stmt
+
+Comments are parsed after the opening paren of a ModuleAs list, and before the
+closing paren of the same.
 
 #### func (ImportStatement) Format
 
@@ -1292,6 +1298,8 @@ type ModuleAs struct {
 
 ModuleAs as defined in python@3.13.0:
 https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-import_stmt
+
+Comments are parsed after an 'as' token, and after the 'as' identifier.
 
 #### func (ModuleAs) Format
 
