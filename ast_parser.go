@@ -16,6 +16,7 @@ type Token struct {
 // Tokens represents a list of tokens that have been parsed.
 type Tokens []Token
 
+// Comments is a collection of Comment Tokens.
 type Comments []Token
 
 type pyParser struct {
