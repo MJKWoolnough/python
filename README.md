@@ -13,7 +13,7 @@ Package python implements a python tokeniser and parser.
 
  - Parse python code into AST.
  - Modify parsed code.
- - Consistant python formatting.
+ - Consistent python formatting.
 
 ## Usage
 
