@@ -188,6 +188,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "IfStatement", "Suite", "Statement"},
 		},
+		{ // 22
+			"if a:\n\tb\nelif c: d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.If.Elif[0].AssignmentExpression
+			},
+			[]string{"File", "Statement", "CompoundStatement", "IfStatement", "AssignmentExpressionAndSuite", "AssignmentExpression"},
+		},
+		{ // 23
+			"if a:\n\tb\nelif c: d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.If.Elif[0].Suite
+			},
+			[]string{"File", "Statement", "CompoundStatement", "IfStatement", "AssignmentExpressionAndSuite", "Suite"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
