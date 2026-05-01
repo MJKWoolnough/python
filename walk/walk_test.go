@@ -261,6 +261,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "ForStatement", "Suite"},
 		},
+		{ // 33
+			"for a, b in c: d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.For.TargetList.Targets[0]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "ForStatement", "TargetList", "Target"},
+		},
+		{ // 34
+			"for a, b in c: d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.For.TargetList.Targets[1]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "ForStatement", "TargetList", "Target"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
