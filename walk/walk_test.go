@@ -64,6 +64,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement"},
 		},
+		{ // 4
+			"if a:\n\tb",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement
+			},
+			[]string{"File", "Statement", "CompoundStatement"},
+		},
+		{ // 5
+			"a",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList
+			},
+			[]string{"File", "Statement", "StatementList"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
