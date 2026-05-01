@@ -78,6 +78,55 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList"},
 		},
+		{ // 6
+			"if a:\n\tb",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.If
+			},
+			[]string{"File", "Statement", "CompoundStatement", "IfStatement"},
+		},
+		{ // 7
+			"while a:\n\tb",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.While
+			},
+			[]string{"File", "Statement", "CompoundStatement", "WhileStatement"},
+		},
+		{ // 8
+			"for a in b:\n\tc",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.For
+			},
+			[]string{"File", "Statement", "CompoundStatement", "ForStatement"},
+		},
+		{ // 9
+			"try:\n\ta\nexcept b as c:\n\td",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Try
+			},
+			[]string{"File", "Statement", "CompoundStatement", "TryStatement"},
+		},
+		{ // 10
+			"with a:\n\tb",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.With
+			},
+			[]string{"File", "Statement", "CompoundStatement", "WithStatement"},
+		},
+		{ // 11
+			"def a():\n\tb",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition"},
+		},
+		{ // 12
+			"class a():\n\tb",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Class
+			},
+			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
