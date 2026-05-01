@@ -127,6 +127,46 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition"},
 		},
+		{ // 13
+			"if a:\n\tb\nelif c: d\nelif e: f\nelse: g",
+			nilRet,
+			nil,
+		},
+		{ // 14
+			"if a:\n\tb\nelif c: d\nelif e: f\nelse: g",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.If.AssignmentExpression
+			},
+			[]string{"File", "Statement", "CompoundStatement", "IfStatement", "AssignmentExpression"},
+		},
+		{ // 15
+			"if a:\n\tb\nelif c: d\nelif e: f\nelse: g",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.If.Suite
+			},
+			[]string{"File", "Statement", "CompoundStatement", "IfStatement", "Suite"},
+		},
+		{ // 16
+			"if a:\n\tb\nelif c: d\nelif e: f\nelse: g",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.If.Elif[0]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "IfStatement", "AssignmentExpressionAndSuite"},
+		},
+		{ // 17
+			"if a:\n\tb\nelif c: d\nelif e: f\nelse: g",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.If.Elif[1]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "IfStatement", "AssignmentExpressionAndSuite"},
+		},
+		{ // 18
+			"if a:\n\tb\nelif c: d\nelif e: f\nelse: g",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.If.Else
+			},
+			[]string{"File", "Statement", "CompoundStatement", "IfStatement", "Suite"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
