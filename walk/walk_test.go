@@ -202,6 +202,32 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "IfStatement", "AssignmentExpressionAndSuite", "Suite"},
 		},
+		{ // 24
+			"while a:\n\tb",
+			nilRet,
+			nil,
+		},
+		{ // 25
+			"while a:\n\tb\nelse: c",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.While.AssignmentExpression
+			},
+			[]string{"File", "Statement", "CompoundStatement", "WhileStatement", "AssignmentExpression"},
+		},
+		{ // 26
+			"while a:\n\tb\nelse: c",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.While.Suite
+			},
+			[]string{"File", "Statement", "CompoundStatement", "WhileStatement", "Suite"},
+		},
+		{ // 27
+			"while a:\n\tb\nelse: c",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.While.Else
+			},
+			[]string{"File", "Statement", "CompoundStatement", "WhileStatement", "Suite"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
