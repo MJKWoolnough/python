@@ -289,6 +289,46 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "ForStatement", "StarredList", "StarredItem"},
 		},
+		{ // 37
+			"try:\n\ta\nexcept b as c:\n\td\nexcept e as f: g\nelse: h",
+			nilRet,
+			nil,
+		},
+		{ // 38
+			"try:\n\ta\nexcept b as c:\n\td\nexcept e as f: g\nelse: h\nfinally: i",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Try.Try
+			},
+			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Suite"},
+		},
+		{ // 39
+			"try:\n\ta\nexcept b as c:\n\td\nexcept e as f: g\nelse: h\nfinally: i",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Try.Except[0]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Except"},
+		},
+		{ // 40
+			"try:\n\ta\nexcept b as c:\n\td\nexcept e as f: g\nelse: h\nfinally: i",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Try.Except[1]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Except"},
+		},
+		{ // 41
+			"try:\n\ta\nexcept b as c:\n\td\nexcept e as f: g\nelse: h\nfinally: i",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Try.Else
+			},
+			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Suite"},
+		},
+		{ // 42
+			"try:\n\ta\nexcept b as c:\n\td\nexcept e as f: g\nelse: h\nfinally: i",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Try.Finally
+			},
+			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Suite"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
