@@ -329,6 +329,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Suite"},
 		},
+		{ // 43
+			"try:\n\ta\nexcept b as c: d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Try.Except[0].Expression
+			},
+			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Except", "Expression"},
+		},
+		{ // 44
+			"try:\n\ta\nexcept b as c: d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Try.Except[0].Suite
+			},
+			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Except", "Suite"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
