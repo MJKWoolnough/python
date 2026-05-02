@@ -420,6 +420,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite"},
 		},
+		{ // 56
+			"@a\n@b\ndef c(): d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.Decorators.Decorators[0]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Decorators", "Decorator"},
+		},
+		{ // 57
+			"@a\n@b\ndef c(): d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.Decorators.Decorators[1]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Decorators", "Decorator"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
