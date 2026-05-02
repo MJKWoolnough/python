@@ -434,6 +434,13 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Decorators", "Decorator"},
 		},
+		{ // 58
+			"@a\ndef b(): c",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.Decorators.Decorators[0].Decorator
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Decorators", "Decorator", "AssignmentExpression"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
