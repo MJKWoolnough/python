@@ -385,6 +385,41 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "WithStatement", "WithStatementContents", "WithItem", "Target"},
 		},
+		{ // 51
+			"@a\ndef b[c]() -> d: e",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.Decorators
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Decorators"},
+		},
+		{ // 52
+			"@a\ndef b[c]() -> d: e",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.TypeParams
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "TypeParams"},
+		},
+		{ // 53
+			"@a\ndef b[c]() -> d: e",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.ParameterList
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList"},
+		},
+		{ // 54
+			"@a\ndef b[c]() -> d: e",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.Expression
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Expression"},
+		},
+		{ // 55
+			"@a\ndef b[c]() -> d: e",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.Suite
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
