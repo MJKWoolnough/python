@@ -539,6 +539,34 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter", "Parameter", "Expression"},
 		},
+		{ // 73
+			"@a\nclass b[c](d): e",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Class.Decorators
+			},
+			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition", "Decorators"},
+		},
+		{ // 74
+			"@a\nclass b[c](d): e",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Class.TypeParams
+			},
+			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition", "TypeParams"},
+		},
+		{ // 75
+			"@a\nclass b[c](d): e",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Class.Inheritance
+			},
+			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition", "ArgumentList"},
+		},
+		{ // 76
+			"@a\nclass b[c](d): e",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Class.Suite
+			},
+			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition", "Suite"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
