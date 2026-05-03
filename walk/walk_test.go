@@ -462,6 +462,62 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "TypeParams", "TypeParam", "Expression"},
 		},
+		{ // 62
+			"def a(b, c, /, d, e, *f, g, h, **i): j",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.ParameterList.DefParameters[0]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
+		},
+		{ // 63
+			"def a(b, c, /, d, e, *f, g, h, **i): j",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.ParameterList.DefParameters[1]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
+		},
+		{ // 64
+			"def a(b, c, /, d, e, *f, g, h, **i): j",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.ParameterList.NoPosOnly[0]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
+		},
+		{ // 65
+			"def a(b, c, /, d, e, *f, g, h, **i): j",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.ParameterList.NoPosOnly[1]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
+		},
+		{ // 66
+			"def a(b, c, /, d, e, *f, g, h, **i): j",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.ParameterList.StarArg
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "Parameter"},
+		},
+		{ // 67
+			"def a(b, c, /, d, e, *f, g, h, **i): j",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.ParameterList.StarArgs[0]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
+		},
+		{ // 68
+			"def a(b, c, /, d, e, *f, g, h, **i): j",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.ParameterList.StarArgs[1]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
+		},
+		{ // 69
+			"def a(b, c, /, d, e, *f, g, h, **i): j",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.ParameterList.StarStarArg
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "Parameter"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
