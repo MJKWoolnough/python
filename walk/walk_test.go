@@ -532,6 +532,13 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter", "Expression"},
 		},
+		{ // 72
+			"def a(b: c): d",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.ParameterList.NoPosOnly[0].Parameter.Type
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter", "Parameter", "Expression"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
