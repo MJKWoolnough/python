@@ -10,6 +10,7 @@ var (
 	ErrInvalidIndent         = errors.New("invalid indent")
 	ErrInvalidKeyword        = errors.New("unexpected keyword")
 	ErrInvalidNumber         = errors.New("invalid number")
+	ErrInvalidReturn         = errors.New("invalid statement")
 	ErrMismatchedGroups      = errors.New("mismatched groups in except")
 	ErrMissingClosingBrace   = errors.New("missing closing brace")
 	ErrMissingClosingBracket = errors.New("missing closing bracket")
