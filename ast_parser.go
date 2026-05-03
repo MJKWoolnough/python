@@ -2,6 +2,7 @@ package python
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"vimagination.zapto.org/parser"
@@ -105,10 +106,8 @@ func (p *pyParser) Peek() parser.Token {
 func (p *pyParser) Accept(ts ...parser.TokenType) bool {
 	tt := p.next().Type
 
-	for _, pt := range ts {
-		if pt == tt {
-			return true
-		}
+	if slices.Contains(ts, tt) {
+		return true
 	}
 
 	p.backup()
