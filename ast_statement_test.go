@@ -621,6 +621,7 @@ func TestSimpleStatement(t *testing.T) {
 			}
 		}},
 		{`return a`, func(t *test, tk Tokens) { // 4
+			t.InReturnable = true
 			t.Output = SimpleStatement{
 				Type: StatementReturn,
 				ReturnStatement: &ReturnStatement{
@@ -912,6 +913,7 @@ func TestSimpleStatement(t *testing.T) {
 			}
 		}},
 		{`return nonlocal`, func(t *test, tk Tokens) { // 19
+			t.InReturnable = true
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1100,7 +1102,7 @@ func TestSimpleStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var s SimpleStatement
 
-		err := s.parse(t.Tokens)
+		err := s.parse(t.Tokens, t.InReturnable)
 
 		return s, err
 	})

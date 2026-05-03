@@ -202,7 +202,7 @@ type SimpleStatement struct {
 	Tokens                       Tokens
 }
 
-func (s *SimpleStatement) parse(p *pyParser) error {
+func (s *SimpleStatement) parse(p *pyParser, inReturnable bool) error {
 	switch p.Peek() {
 	case parser.Token{Type: TokenKeyword, Data: "assert"}:
 		s.AssertStatement = new(AssertStatement)
@@ -229,6 +229,10 @@ func (s *SimpleStatement) parse(p *pyParser) error {
 
 		p.Score(q)
 	case parser.Token{Type: TokenKeyword, Data: "return"}:
+		if !inReturnable {
+			return ErrInvalidReturn
+		}
+
 		s.ReturnStatement = new(ReturnStatement)
 		s.Type = StatementReturn
 		q := p.NewGoal()

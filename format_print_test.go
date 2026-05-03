@@ -701,9 +701,9 @@ func TestPrintSource(t *testing.T) {
 			"del b\n",
 		},
 		{ // 139
-			"return a",
-			"return a\n",
-			"return a\n",
+			"def a():\n\treturn a",
+			"def a():\n\treturn a\n",
+			"def a():\n\treturn a\n",
 		},
 		{ // 140
 			"yield a",

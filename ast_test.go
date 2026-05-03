@@ -18,6 +18,7 @@ type test struct {
 	Tokens               *pyParser
 	Output               Type
 	AllowTypeAnnotations bool
+	InReturnable         bool
 	Err                  error
 }
 

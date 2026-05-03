@@ -42,7 +42,7 @@ func (f *File) parse(p *pyParser) error {
 
 		q = p.NewGoal()
 
-		if err := s.parse(q); err != nil {
+		if err := s.parse(q, false); err != nil {
 			return p.Error("File", err)
 		}
 
