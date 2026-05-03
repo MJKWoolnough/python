@@ -230,7 +230,7 @@ func (s *SimpleStatement) parse(p *pyParser, inReturnable bool) error {
 		p.Score(q)
 	case parser.Token{Type: TokenKeyword, Data: "return"}:
 		if !inReturnable {
-			return ErrInvalidReturn
+			return p.Error("SimpleStatement", ErrInvalidReturn)
 		}
 
 		s.ReturnStatement = new(ReturnStatement)
