@@ -581,6 +581,97 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement"},
 		},
+		{ // 79
+			"a",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0]
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement"},
+		},
+		{ // 80
+			"assert a",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssertStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssertStatement"},
+		},
+		{ // 81
+			"a = b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssignmentStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement"},
+		},
+		{ // 82
+			"a += b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AugmentedAssignmentStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AugmentedAssignmentStatement"},
+		},
+		{ // 83
+			"a: b = c",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement"},
+		},
+		{ // 84
+			"del a",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].DelStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "DelStatement"},
+		},
+		{ // 85
+			"def a(): return b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].ReturnStatement
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "ReturnStatement"},
+		},
+		{ // 86
+			"def a(): yield b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].YieldStatement
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "YieldExpression"},
+		},
+		{ // 87
+			"raise a",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].RaiseStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "RaiseStatement"},
+		},
+		{ // 88
+			"import a",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].ImportStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement"},
+		},
+		{ // 89
+			"global a",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].GlobalStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "GlobalStatement"},
+		},
+		{ // 90
+			"nonlocal a",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].NonLocalStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "NonLocalStatement"},
+		},
+		{ // 91
+			"type a = b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].TypeStatement
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "TypeStatement"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
