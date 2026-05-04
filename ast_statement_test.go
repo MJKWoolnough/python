@@ -690,20 +690,34 @@ func TestSimpleStatement(t *testing.T) {
 			}
 		}},
 		{`break`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err:     ErrInvalidStatement,
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`break`, func(t *test, tk Tokens) { // 10
 			t.IsBreakable = true
 			t.Output = SimpleStatement{
 				Type:   StatementBreak,
 				Tokens: tk[:1],
 			}
 		}},
-		{`continue`, func(t *test, tk Tokens) { // 10
+		{`continue`, func(t *test, tk Tokens) { // 11
+			t.Err = Error{
+				Err:     ErrInvalidStatement,
+				Parsing: "SimpleStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`continue`, func(t *test, tk Tokens) { // 12
 			t.IsBreakable = true
 			t.Output = SimpleStatement{
 				Type:   StatementContinue,
 				Tokens: tk[:1],
 			}
 		}},
-		{`import a`, func(t *test, tk Tokens) { // 11
+		{`import a`, func(t *test, tk Tokens) { // 13
 			t.Output = SimpleStatement{
 				Type: StatementImport,
 				ImportStatement: &ImportStatement{
@@ -726,7 +740,7 @@ func TestSimpleStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`from a import b`, func(t *test, tk Tokens) { // 12
+		{`from a import b`, func(t *test, tk Tokens) { // 14
 			t.Output = SimpleStatement{
 				Type: StatementImport,
 				ImportStatement: &ImportStatement{
@@ -761,7 +775,7 @@ func TestSimpleStatement(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`global a`, func(t *test, tk Tokens) { // 13
+		{`global a`, func(t *test, tk Tokens) { // 15
 			t.Output = SimpleStatement{
 				Type: StatementGlobal,
 				GlobalStatement: &GlobalStatement{
@@ -773,7 +787,7 @@ func TestSimpleStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`nonlocal a`, func(t *test, tk Tokens) { // 14
+		{`nonlocal a`, func(t *test, tk Tokens) { // 16
 			t.Output = SimpleStatement{
 				Type: StatementNonLocal,
 				NonLocalStatement: &NonLocalStatement{
@@ -785,7 +799,7 @@ func TestSimpleStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`type a=b`, func(t *test, tk Tokens) { // 15
+		{`type a=b`, func(t *test, tk Tokens) { // 17
 			t.Output = SimpleStatement{
 				Type: StatementTyp,
 				TypeStatement: &TypeStatement{
@@ -802,7 +816,7 @@ func TestSimpleStatement(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`a`, func(t *test, tk Tokens) { // 16
+		{`a`, func(t *test, tk Tokens) { // 18
 			t.Output = SimpleStatement{
 				Type: StatementAssignment,
 				AssignmentStatement: &AssignmentStatement{
@@ -821,7 +835,7 @@ func TestSimpleStatement(t *testing.T) {
 				Tokens: tk[:1],
 			}
 		}},
-		{`a:b`, func(t *test, tk Tokens) { // 17
+		{`a:b`, func(t *test, tk Tokens) { // 19
 			t.Output = SimpleStatement{
 				Type: StatementAnnotatedAssignment,
 				AnnotatedAssignmentStatement: &AnnotatedAssignmentStatement{
@@ -847,7 +861,7 @@ func TestSimpleStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a+=b`, func(t *test, tk Tokens) { // 18
+		{`a+=b`, func(t *test, tk Tokens) { // 20
 			t.Output = SimpleStatement{
 				Type: StatementAugmentedAssignment,
 				AugmentedAssignmentStatement: &AugmentedAssignmentStatement{
@@ -879,7 +893,7 @@ func TestSimpleStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`assert nonlocal`, func(t *test, tk Tokens) { // 19
+		{`assert nonlocal`, func(t *test, tk Tokens) { // 21
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -898,7 +912,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`del nonlocal`, func(t *test, tk Tokens) { // 20
+		{`del nonlocal`, func(t *test, tk Tokens) { // 22
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -929,7 +943,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`return nonlocal`, func(t *test, tk Tokens) { // 21
+		{`return nonlocal`, func(t *test, tk Tokens) { // 23
 			t.InReturnable = true
 			t.Err = Error{
 				Err: Error{
@@ -949,7 +963,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`yield nonlocal`, func(t *test, tk Tokens) { // 22
+		{`yield nonlocal`, func(t *test, tk Tokens) { // 24
 			t.InReturnable = true
 			t.Err = Error{
 				Err: Error{
@@ -973,7 +987,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`raise nonlocal from a`, func(t *test, tk Tokens) { // 23
+		{`raise nonlocal from a`, func(t *test, tk Tokens) { // 25
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -992,7 +1006,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`import nonlocal`, func(t *test, tk Tokens) { // 24
+		{`import nonlocal`, func(t *test, tk Tokens) { // 26
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1015,7 +1029,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`global nonlocal`, func(t *test, tk Tokens) { // 25
+		{`global nonlocal`, func(t *test, tk Tokens) { // 27
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -1026,7 +1040,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`nonlocal nonlocal`, func(t *test, tk Tokens) { // 26
+		{`nonlocal nonlocal`, func(t *test, tk Tokens) { // 28
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -1037,7 +1051,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`type nonlocal[a] = b`, func(t *test, tk Tokens) { // 27
+		{`type nonlocal[a] = b`, func(t *test, tk Tokens) { // 29
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingIdentifier,
@@ -1048,7 +1062,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 28
+		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 30
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1075,7 +1089,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a:nonlocal`, func(t *test, tk Tokens) { // 29
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 31
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1094,7 +1108,7 @@ func TestSimpleStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a/=nonlocal`, func(t *test, tk Tokens) { // 30
+		{`a/=nonlocal`, func(t *test, tk Tokens) { // 32
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
