@@ -86,9 +86,9 @@ func TestPrintSource(t *testing.T) {
 			"a: b = c\n",
 		},
 		{ // 16
-			"a : b = yield c",
-			"a:b=yield c\n",
-			"a: b = yield c\n",
+			"def a(): b : c = yield d",
+			"def a():b:c=yield d\n",
+			"def a(): b: c = yield d\n",
 		},
 		{ // 17
 			"a()",
@@ -161,9 +161,9 @@ func TestPrintSource(t *testing.T) {
 			"a = b\n",
 		},
 		{ // 31
-			"a=yield b",
-			"a=yield b\n",
-			"a = yield b\n",
+			"def a(): b=yield c",
+			"def a():b=yield c\n",
+			"def a(): b = yield c\n",
 		},
 		{ // 32
 			"a=b=c",
@@ -201,14 +201,14 @@ func TestPrintSource(t *testing.T) {
 			"assert lambda: a\n",
 		},
 		{ // 39
-			"yield a",
-			"yield a\n",
-			"yield a\n",
+			"def a(): yield b",
+			"def a():yield b\n",
+			"def a(): yield b\n",
 		},
 		{ // 40
-			"yield a,b",
-			"yield a,b\n",
-			"yield a, b\n",
+			"def a(): yield b,c",
+			"def a():yield b,c\n",
+			"def a(): yield b, c\n",
 		},
 		{ // 41
 			"a\nb\nc",
@@ -246,9 +246,9 @@ func TestPrintSource(t *testing.T) {
 			"a += b\n",
 		},
 		{ // 48
-			"a -= yield b",
-			"a-=yield b\n",
-			"a -= yield b\n",
+			"def a(): b -= yield c",
+			"def a():b-=yield c\n",
+			"def a(): b -= yield c\n",
 		},
 		{ // 49
 			"try:a\nexcept b:c",
@@ -706,9 +706,9 @@ func TestPrintSource(t *testing.T) {
 			"def a():\n\treturn a\n",
 		},
 		{ // 140
-			"yield a",
-			"yield a\n",
-			"yield a\n",
+			"def a(): yield b",
+			"def a():yield b\n",
+			"def a(): yield b\n",
 		},
 		{ // 141
 			"raise a",
@@ -1046,14 +1046,14 @@ func TestPrintSource(t *testing.T) {
 			"a ^ b\n",
 		},
 		{ // 208
-			"yield a",
-			"yield a\n",
-			"yield a\n",
+			"def a(): yield b",
+			"def a():yield b\n",
+			"def a(): yield b\n",
 		},
 		{ // 209
-			"yield from a",
-			"yield from a\n",
-			"yield from a\n",
+			"def a(): yield from b",
+			"def a():yield from b\n",
+			"def a(): yield from b\n",
 		},
 		{ // 210
 			"(a for b in c if d)",
@@ -1071,9 +1071,9 @@ func TestPrintSource(t *testing.T) {
 			"(a for b in c if d for e in f)\n",
 		},
 		{ // 213
-			"(yield a)",
-			"(yield a)\n",
-			"(yield a)\n",
+			"def a(): (yield b)",
+			"def a():(yield b)\n",
+			"def a(): (yield b)\n",
 		},
 		{ // 214
 			"{a for b in c}",
@@ -1231,19 +1231,19 @@ func TestPrintSource(t *testing.T) {
 			"def a( # A\n\n\t# B\n\t**b # C\n\n\t# D\n): d\n",
 		},
 		{ // 245
-			"( # A\n\n #B\nyield # C\na #D\n)",
-			"(yield a)\n",
-			"( # A\n\n\t#B\n\tyield # C\n\ta #D\n)\n",
+			"def a(): ( # A\n\n #B\nyield # C\nb #D\n)",
+			"def a():(yield b)\n",
+			"def a(): ( # A\n\n\t#B\n\tyield # C\n\tb #D\n)\n",
 		},
 		{ // 246
-			"( # A\n\n # B\nyield # C\na # D\n, # E\n)",
-			"(yield a)\n",
-			"( # A\n\n\t# B\n\tyield # C\n\ta # D\n\t, # E\n)\n",
+			"def a(): ( # A\n\n # B\nyield # C\nb # D\n, # E\n)",
+			"def a():(yield b)\n",
+			"def a(): ( # A\n\n\t# B\n\tyield # C\n\tb # D\n\t, # E\n)\n",
 		},
 		{ // 247
-			"( # A\n\n # B\nyield # C\nfrom # D\na # E\n\n# F\n)",
-			"(yield from a)\n",
-			"( # A\n\n\t# B\n\tyield # C\n\tfrom # D\n\ta # E\n\n# F\n)\n",
+			"def a(): ( # A\n\n # B\nyield # C\nfrom # D\nb # E\n\n# F\n)",
+			"def a():(yield from b)\n",
+			"def a(): ( # A\n\n\t# B\n\tyield # C\n\tfrom # D\n\tb # E\n\n# F\n)\n",
 		},
 		{ // 248
 			"( # A\n\n # B\na # C\nfor b in c # D\n\n# E\n)",

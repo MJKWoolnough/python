@@ -243,6 +243,10 @@ func (s *SimpleStatement) parse(p *pyParser, inReturnable bool) error {
 
 		p.Score(q)
 	case parser.Token{Type: TokenKeyword, Data: "yield"}:
+		if !inReturnable {
+			return p.Error("SimpleStatement", ErrInvalidStatement)
+		}
+
 		s.YieldStatement = new(YieldExpression)
 		s.Type = StatementYield
 		q := p.NewGoal()

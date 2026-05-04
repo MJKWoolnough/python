@@ -622,7 +622,7 @@ func TestSimpleStatement(t *testing.T) {
 		}},
 		{`return a`, func(t *test, tk Tokens) { // 4
 			t.Err = Error{
-				Err:     ErrInvalidReturn,
+				Err:     ErrInvalidStatement,
 				Parsing: "SimpleStatement",
 				Token:   tk[0],
 			}
@@ -645,6 +645,7 @@ func TestSimpleStatement(t *testing.T) {
 			}
 		}},
 		{`yield a`, func(t *test, tk Tokens) { // 6
+			t.InReturnable = true
 			t.Output = SimpleStatement{
 				Type: StatementYield,
 				YieldStatement: &YieldExpression{
@@ -940,6 +941,7 @@ func TestSimpleStatement(t *testing.T) {
 			}
 		}},
 		{`yield nonlocal`, func(t *test, tk Tokens) { // 21
+			t.InReturnable = true
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
