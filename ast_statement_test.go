@@ -690,12 +690,14 @@ func TestSimpleStatement(t *testing.T) {
 			}
 		}},
 		{`break`, func(t *test, tk Tokens) { // 9
+			t.IsBreakable = true
 			t.Output = SimpleStatement{
 				Type:   StatementBreak,
 				Tokens: tk[:1],
 			}
 		}},
 		{`continue`, func(t *test, tk Tokens) { // 10
+			t.IsBreakable = true
 			t.Output = SimpleStatement{
 				Type:   StatementContinue,
 				Tokens: tk[:1],
@@ -1118,7 +1120,7 @@ func TestSimpleStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var s SimpleStatement
 
-		err := s.parse(t.Tokens, t.InReturnable)
+		err := s.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return s, err
 	})

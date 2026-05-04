@@ -756,14 +756,14 @@ func TestPrintSource(t *testing.T) {
 			"pass\n",
 		},
 		{ // 150
-			"break",
-			"break\n",
-			"break\n",
+			"while a: break",
+			"while a:break\n",
+			"while a: break\n",
 		},
 		{ // 151
-			"continue",
-			"continue\n",
-			"continue\n",
+			"while a: continue",
+			"while a:continue\n",
+			"while a: continue\n",
 		},
 		{ // 152
 			"a[b]",

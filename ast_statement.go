@@ -202,7 +202,7 @@ type SimpleStatement struct {
 	Tokens                       Tokens
 }
 
-func (s *SimpleStatement) parse(p *pyParser, inReturnable bool) error {
+func (s *SimpleStatement) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	switch p.Peek() {
 	case parser.Token{Type: TokenKeyword, Data: "assert"}:
 		s.AssertStatement = new(AssertStatement)
@@ -267,10 +267,18 @@ func (s *SimpleStatement) parse(p *pyParser, inReturnable bool) error {
 
 		p.Score(q)
 	case parser.Token{Type: TokenKeyword, Data: "break"}:
+		if !isBreakable {
+			return p.Error("SimpleStatement", ErrInvalidStatement)
+		}
+
 		p.Next()
 
 		s.Type = StatementBreak
 	case parser.Token{Type: TokenKeyword, Data: "continue"}:
+		if !isBreakable {
+			return p.Error("SimpleStatement", ErrInvalidStatement)
+		}
+
 		p.Next()
 
 		s.Type = StatementContinue

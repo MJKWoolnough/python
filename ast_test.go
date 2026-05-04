@@ -19,6 +19,7 @@ type test struct {
 	Output               Type
 	AllowTypeAnnotations bool
 	InReturnable         bool
+	IsBreakable          bool
 	Err                  error
 }
 

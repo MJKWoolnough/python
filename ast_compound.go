@@ -21,7 +21,7 @@ type CompoundStatement struct {
 	Tokens Tokens
 }
 
-func (c *CompoundStatement) parse(p *pyParser, inReturnable bool) error {
+func (c *CompoundStatement) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	var err error
 
 	q := p.NewGoal()
@@ -56,19 +56,19 @@ func (c *CompoundStatement) parse(p *pyParser, inReturnable bool) error {
 		switch tk := q.Peek(); tk.Data {
 		case "if":
 			c.If = new(IfStatement)
-			err = c.If.parse(q, inReturnable)
+			err = c.If.parse(q, inReturnable, isBreakable)
 		case "while":
 			c.While = new(WhileStatement)
-			err = c.While.parse(q, inReturnable)
+			err = c.While.parse(q, inReturnable, isBreakable)
 		case "for":
 			c.For = new(ForStatement)
-			err = c.For.parse(q, inReturnable)
+			err = c.For.parse(q, inReturnable, isBreakable)
 		case "try":
 			c.Try = new(TryStatement)
-			err = c.Try.parse(q, inReturnable)
+			err = c.Try.parse(q, inReturnable, isBreakable)
 		case "with":
 			c.With = new(WithStatement)
-			err = c.With.parse(q, inReturnable)
+			err = c.With.parse(q, inReturnable, isBreakable)
 		case "def":
 			c.Func = new(FuncDefinition)
 			err = c.Func.parse(q)
@@ -84,10 +84,10 @@ func (c *CompoundStatement) parse(p *pyParser, inReturnable bool) error {
 			switch tk := r.Peek(); tk.Data {
 			case "for":
 				c.For = new(ForStatement)
-				err = c.For.parse(q, inReturnable)
+				err = c.For.parse(q, inReturnable, isBreakable)
 			case "with":
 				c.With = new(WithStatement)
-				err = c.With.parse(q, inReturnable)
+				err = c.With.parse(q, inReturnable, isBreakable)
 			case "def":
 				c.Func = new(FuncDefinition)
 				err = c.Func.parse(q)
@@ -203,7 +203,7 @@ type IfStatement struct {
 	Tokens               Tokens
 }
 
-func (i *IfStatement) parse(p *pyParser, inReturnable bool) error {
+func (i *IfStatement) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "if"})
 	p.AcceptRunWhitespace()
 
@@ -224,7 +224,7 @@ func (i *IfStatement) parse(p *pyParser, inReturnable bool) error {
 
 	q = p.NewGoal()
 
-	if err := i.Suite.parse(q, inReturnable); err != nil {
+	if err := i.Suite.parse(q, inReturnable, isBreakable); err != nil {
 		return p.Error("IfStatement", err)
 	}
 
@@ -257,7 +257,7 @@ func (i *IfStatement) parse(p *pyParser, inReturnable bool) error {
 
 		q = p.NewGoal()
 
-		if err := as.Suite.parse(q, inReturnable); err != nil {
+		if err := as.Suite.parse(q, inReturnable, isBreakable); err != nil {
 			return p.Error("IfStatement", err)
 		}
 
@@ -286,7 +286,7 @@ func (i *IfStatement) parse(p *pyParser, inReturnable bool) error {
 		i.Else = new(Suite)
 		q = p.NewGoal()
 
-		if err := i.Else.parse(q, inReturnable); err != nil {
+		if err := i.Else.parse(q, inReturnable, isBreakable); err != nil {
 			return p.Error("IfStatement", err)
 		}
 
@@ -313,7 +313,7 @@ type WhileStatement struct {
 	Tokens               Tokens
 }
 
-func (w *WhileStatement) parse(p *pyParser, inReturnable bool) error {
+func (w *WhileStatement) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "while"})
 	p.AcceptRunWhitespace()
 
@@ -334,7 +334,7 @@ func (w *WhileStatement) parse(p *pyParser, inReturnable bool) error {
 
 	q = p.NewGoal()
 
-	if err := w.Suite.parse(q, inReturnable); err != nil {
+	if err := w.Suite.parse(q, inReturnable, true); err != nil {
 		return p.Error("WhileStatement", err)
 	}
 
@@ -357,7 +357,7 @@ func (w *WhileStatement) parse(p *pyParser, inReturnable bool) error {
 		w.Else = new(Suite)
 		q = p.NewGoal()
 
-		if err := w.Else.parse(q, inReturnable); err != nil {
+		if err := w.Else.parse(q, inReturnable, isBreakable); err != nil {
 			return p.Error("WhileStatement", err)
 		}
 
@@ -380,7 +380,7 @@ type ForStatement struct {
 	Tokens
 }
 
-func (f *ForStatement) parse(p *pyParser, inReturnable bool) error {
+func (f *ForStatement) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	if f.Async = p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"}); f.Async {
 		p.AcceptRunWhitespace()
 	}
@@ -421,7 +421,7 @@ func (f *ForStatement) parse(p *pyParser, inReturnable bool) error {
 
 	q = p.NewGoal()
 
-	if err := f.Suite.parse(q, inReturnable); err != nil {
+	if err := f.Suite.parse(q, inReturnable, true); err != nil {
 		return p.Error("ForStatement", err)
 	}
 
@@ -444,7 +444,7 @@ func (f *ForStatement) parse(p *pyParser, inReturnable bool) error {
 		f.Else = new(Suite)
 		q = p.NewGoal()
 
-		if err := f.Else.parse(q, inReturnable); err != nil {
+		if err := f.Else.parse(q, inReturnable, isBreakable); err != nil {
 			return p.Error("ForStatement", err)
 		}
 
@@ -467,7 +467,7 @@ type TryStatement struct {
 	Tokens  Tokens
 }
 
-func (t *TryStatement) parse(p *pyParser, inReturnable bool) error {
+func (t *TryStatement) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "try"})
 	p.AcceptRunWhitespace()
 
@@ -479,7 +479,7 @@ func (t *TryStatement) parse(p *pyParser, inReturnable bool) error {
 
 	q := p.NewGoal()
 
-	if err := t.Try.parse(q, inReturnable); err != nil {
+	if err := t.Try.parse(q, inReturnable, isBreakable); err != nil {
 		return p.Error("TryStatement", err)
 	}
 
@@ -506,7 +506,7 @@ func (t *TryStatement) parse(p *pyParser, inReturnable bool) error {
 
 		var except Except
 
-		if err := except.parse(q, inReturnable); err != nil {
+		if err := except.parse(q, inReturnable, isBreakable); err != nil {
 			return p.Error("TryStatement", err)
 		}
 
@@ -536,7 +536,7 @@ func (t *TryStatement) parse(p *pyParser, inReturnable bool) error {
 		t.Else = new(Suite)
 		q := p.NewGoal()
 
-		if err := t.Else.parse(q, inReturnable); err != nil {
+		if err := t.Else.parse(q, inReturnable, isBreakable); err != nil {
 			return p.Error("TryStatement", err)
 		}
 
@@ -560,7 +560,7 @@ func (t *TryStatement) parse(p *pyParser, inReturnable bool) error {
 		t.Finally = new(Suite)
 		q := p.NewGoal()
 
-		if err := t.Finally.parse(q, inReturnable); err != nil {
+		if err := t.Finally.parse(q, inReturnable, isBreakable); err != nil {
 			return p.Error("TryStatement", err)
 		}
 
@@ -583,7 +583,7 @@ type Except struct {
 	Tokens     Tokens
 }
 
-func (e *Except) parse(p *pyParser, inReturnable bool) error {
+func (e *Except) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	q := p.NewGoal()
 
 	if err := e.Expression.parse(q); err != nil {
@@ -613,7 +613,7 @@ func (e *Except) parse(p *pyParser, inReturnable bool) error {
 
 	q = p.NewGoal()
 
-	if err := e.Suite.parse(q, inReturnable); err != nil {
+	if err := e.Suite.parse(q, inReturnable, isBreakable); err != nil {
 		return p.Error("Except", err)
 	}
 
@@ -633,7 +633,7 @@ type WithStatement struct {
 	Tokens   Tokens
 }
 
-func (w *WithStatement) parse(p *pyParser, inReturnable bool) error {
+func (w *WithStatement) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	if w.Async = p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"}); w.Async {
 		p.AcceptRunWhitespace()
 	}
@@ -676,7 +676,7 @@ func (w *WithStatement) parse(p *pyParser, inReturnable bool) error {
 
 	q = p.NewGoal()
 
-	if err := w.Suite.parse(q, inReturnable); err != nil {
+	if err := w.Suite.parse(q, inReturnable, isBreakable); err != nil {
 		return p.Error("WithStatement", err)
 	}
 
@@ -922,7 +922,7 @@ func (f *FuncDefinition) parse(p *pyParser) error {
 
 	q = p.NewGoal()
 
-	if err := f.Suite.parse(q, true); err != nil {
+	if err := f.Suite.parse(q, true, false); err != nil {
 		return p.Error("FuncDefinition", err)
 	}
 
@@ -1027,7 +1027,7 @@ func (c *ClassDefinition) parse(p *pyParser) error {
 
 	q := p.NewGoal()
 
-	if err := c.Suite.parse(q, false); err != nil {
+	if err := c.Suite.parse(q, false, false); err != nil {
 		return p.Error("ClassDefinition", err)
 	}
 
@@ -1049,7 +1049,7 @@ type Suite struct {
 	Tokens        Tokens
 }
 
-func (s *Suite) parse(p *pyParser, inReturnable bool) error {
+func (s *Suite) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	if tk := p.Peek(); tk.Type == TokenLineTerminator || tk.Type == TokenComment {
 		s.Comments[0] = p.AcceptRunWhitespaceComments()
 
@@ -1066,7 +1066,7 @@ func (s *Suite) parse(p *pyParser, inReturnable bool) error {
 
 			var stmt Statement
 
-			if err := stmt.parse(q, inReturnable); err != nil {
+			if err := stmt.parse(q, inReturnable, isBreakable); err != nil {
 				return p.Error("Suite", err)
 			}
 
@@ -1090,7 +1090,7 @@ func (s *Suite) parse(p *pyParser, inReturnable bool) error {
 	} else {
 		s.StatementList = new(StatementList)
 
-		if err := s.StatementList.parse(p, true); err != nil {
+		if err := s.StatementList.parse(p, inReturnable, isBreakable); err != nil {
 			return p.Error("Suite", err)
 		}
 	}
@@ -1538,7 +1538,7 @@ type Statement struct {
 	Tokens            Tokens
 }
 
-func (s *Statement) parse(p *pyParser, inReturnable bool) error {
+func (s *Statement) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	var isCompound, isSoftCompound bool
 
 	s.Comments = p.AcceptRunWhitespaceComments()
@@ -1560,7 +1560,7 @@ func (s *Statement) parse(p *pyParser, inReturnable bool) error {
 	if isCompound {
 		c := new(CompoundStatement)
 
-		if err := c.parse(q, inReturnable); err != nil {
+		if err := c.parse(q, inReturnable, isBreakable); err != nil {
 			if !isSoftCompound {
 				return p.Error("Statement", err)
 			}
@@ -1575,7 +1575,7 @@ func (s *Statement) parse(p *pyParser, inReturnable bool) error {
 		q = p.NewGoal()
 		s.StatementList = new(StatementList)
 
-		if err := s.StatementList.parse(q, inReturnable); err != nil {
+		if err := s.StatementList.parse(q, inReturnable, isBreakable); err != nil {
 			return p.Error("Statement", err)
 		}
 
@@ -1597,13 +1597,13 @@ type StatementList struct {
 	Tokens
 }
 
-func (s *StatementList) parse(p *pyParser, inReturnable bool) error {
+func (s *StatementList) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	for {
 		q := p.NewGoal()
 
 		var ss SimpleStatement
 
-		if err := ss.parse(q, inReturnable); err != nil {
+		if err := ss.parse(q, inReturnable, isBreakable); err != nil {
 			return p.Error("StatementList", err)
 		}
 

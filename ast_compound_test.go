@@ -940,7 +940,7 @@ func TestCompoundStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var c CompoundStatement
 
-		err := c.parse(t.Tokens, t.InReturnable)
+		err := c.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return c, err
 	})
@@ -1926,7 +1926,7 @@ func TestIfStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var i IfStatement
 
-		err := i.parse(t.Tokens, t.InReturnable)
+		err := i.parse(t.Tokens, t.InReturnable, false)
 
 		return i, err
 	})
@@ -2364,7 +2364,7 @@ func TestWhileStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var w WhileStatement
 
-		err := w.parse(t.Tokens, t.InReturnable)
+		err := w.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return w, err
 	})
@@ -2862,7 +2862,7 @@ func TestForStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var f ForStatement
 
-		err := f.parse(t.Tokens, t.InReturnable)
+		err := f.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return f, err
 	})
@@ -3981,7 +3981,7 @@ func TestTryStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var ts TryStatement
 
-		err := ts.parse(t.Tokens, t.InReturnable)
+		err := ts.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return ts, err
 	})
@@ -4156,7 +4156,7 @@ func TestExcept(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var w Except
 
-		err := w.parse(t.Tokens, t.InReturnable)
+		err := w.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return w, err
 	})
@@ -4584,7 +4584,7 @@ func TestWithStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var w WithStatement
 
-		err := w.parse(t.Tokens, t.InReturnable)
+		err := w.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return w, err
 	})
@@ -6953,7 +6953,7 @@ func TestSuite(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var s Suite
 
-		err := s.parse(t.Tokens, t.InReturnable)
+		err := s.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return s, err
 	})
@@ -8128,7 +8128,7 @@ func TestStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var s Statement
 
-		err := s.parse(t.Tokens, t.InReturnable)
+		err := s.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return s, err
 	})
@@ -8396,7 +8396,7 @@ func TestStatementList(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var s StatementList
 
-		err := s.parse(t.Tokens, t.InReturnable)
+		err := s.parse(t.Tokens, t.InReturnable, t.IsBreakable)
 
 		return s, err
 	})
