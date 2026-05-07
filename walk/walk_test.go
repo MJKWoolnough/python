@@ -1238,6 +1238,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "FlexibleExpressionList", "FlexibleExpression", "OrExpression"},
 		},
+		{ // 174
+			"[a for b in c]",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.Comprehension.AssignmentExpression
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "Comprehension", "AssignmentExpression"},
+		},
+		{ // 175
+			"[a for b in c]",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.Comprehension.ComprehensionFor
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "Comprehension", "ComprehensionFor"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
