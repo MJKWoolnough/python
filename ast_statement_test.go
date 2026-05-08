@@ -1241,6 +1241,13 @@ func TestAssignmentStatement(t *testing.T) {
 			}
 		}},
 		{`yield a`, func(t *test, tk Tokens) { // 2
+			t.Err = Error{
+				Err:     ErrInvalidStatement,
+				Parsing: "AssignmentStatement",
+				Token:   tk[0],
+			}
+		}},
+		{`yield a`, func(t *test, tk Tokens) { // 3
 			t.InReturnable = true
 			t.Output = AssignmentStatement{
 				YieldExpression: &YieldExpression{
@@ -1261,7 +1268,7 @@ func TestAssignmentStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a=b`, func(t *test, tk Tokens) { // 3
+		{`a=b`, func(t *test, tk Tokens) { // 4
 			t.Output = AssignmentStatement{
 				TargetLists: []TargetList{
 					{
@@ -1293,7 +1300,7 @@ func TestAssignmentStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a,=b`, func(t *test, tk Tokens) { // 4
+		{`a,=b`, func(t *test, tk Tokens) { // 5
 			t.Output = AssignmentStatement{
 				TargetLists: []TargetList{
 					{
@@ -1325,7 +1332,7 @@ func TestAssignmentStatement(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{`a = b`, func(t *test, tk Tokens) { // 5
+		{`a = b`, func(t *test, tk Tokens) { // 6
 			t.Output = AssignmentStatement{
 				TargetLists: []TargetList{
 					{
@@ -1357,7 +1364,7 @@ func TestAssignmentStatement(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`a=b=c`, func(t *test, tk Tokens) { // 6
+		{`a=b=c`, func(t *test, tk Tokens) { // 7
 			t.Output = AssignmentStatement{
 				TargetLists: []TargetList{
 					{
@@ -1404,7 +1411,7 @@ func TestAssignmentStatement(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`nonlocal`, func(t *test, tk Tokens) { // 7
+		{`nonlocal`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1423,7 +1430,7 @@ func TestAssignmentStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`nonlocal=a`, func(t *test, tk Tokens) { // 8
+		{`nonlocal=a`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1450,7 +1457,7 @@ func TestAssignmentStatement(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 9
+		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 10
 			t.InReturnable = true
 			t.Err = Error{
 				Err: Error{
