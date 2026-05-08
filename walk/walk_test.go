@@ -1320,26 +1320,45 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "LambdaExpression", "ParameterList"},
 		},
-		{ // 185
+		{ // 186
 			"lambda b: c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.LambdaExpression.Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "LambdaExpression", "Expression"},
 		},
-		{ // 186
+		{ // 187
 			"a = yield from b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.YieldExpression.From
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "Expression"},
 		},
-		{ // 187
+		{ // 188
 			"a = yield b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList"},
+		},
+		{ // 189
+			"a = yield b, c",
+			nilRet,
+			nil,
+		},
+		{ // 190
+			"a = yield b, c",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList.Expressions[0]
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList", "Expression"},
+		},
+		{ // 191
+			"a = yield b, c",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList.Expressions[1]
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList", "Expression"},
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
