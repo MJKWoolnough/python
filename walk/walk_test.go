@@ -713,11 +713,11 @@ func TestWalk(t *testing.T) {
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression"},
 		},
 		{ // 98
-			"a = yield b",
+			"def a(): b = yield c",
 			func(f *python.File) python.Type {
-				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.YieldExpression
+				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression
 			},
-			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression"},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression"},
 		},
 		{ // 99
 			"a",
@@ -1328,37 +1328,37 @@ func TestWalk(t *testing.T) {
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "LambdaExpression", "Expression"},
 		},
 		{ // 187
-			"a = yield from b",
+			"def a(): b = yield from c",
 			func(f *python.File) python.Type {
-				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.YieldExpression.From
+				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression.From
 			},
-			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "Expression"},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "Expression"},
 		},
 		{ // 188
-			"a = yield b",
+			"def a(): b = yield c",
 			func(f *python.File) python.Type {
-				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList
+				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList
 			},
-			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList"},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList"},
 		},
 		{ // 189
-			"a = yield b, c",
+			"def a(): b = yield c, d",
 			nilRet,
 			nil,
 		},
 		{ // 190
-			"a = yield b, c",
+			"def a(): b = yield c, d",
 			func(f *python.File) python.Type {
-				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList.Expressions[0]
+				return &f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList.Expressions[1]
 			},
-			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList", "Expression"},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList", "Expression"},
 		},
 		{ // 191
-			"a = yield b, c",
+			"def a(): b = yield c, d",
 			func(f *python.File) python.Type {
-				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList.Expressions[1]
+				return &f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList.Expressions[1]
 			},
-			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList", "Expression"},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList", "Expression"},
 		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)

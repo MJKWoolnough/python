@@ -1063,6 +1063,7 @@ func TestSimpleStatement(t *testing.T) {
 			}
 		}},
 		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 30
+			t.InReturnable = true
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1240,6 +1241,7 @@ func TestAssignmentStatement(t *testing.T) {
 			}
 		}},
 		{`yield a`, func(t *test, tk Tokens) { // 2
+			t.InReturnable = true
 			t.Output = AssignmentStatement{
 				YieldExpression: &YieldExpression{
 					ExpressionList: &ExpressionList{
@@ -1449,6 +1451,7 @@ func TestAssignmentStatement(t *testing.T) {
 			}
 		}},
 		{`a=yield nonlocal`, func(t *test, tk Tokens) { // 9
+			t.InReturnable = true
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -1474,7 +1477,7 @@ func TestAssignmentStatement(t *testing.T) {
 	}, func(t *test) (Type, error) {
 		var a AssignmentStatement
 
-		err := a.parse(t.Tokens)
+		err := a.parse(t.Tokens, t.InReturnable)
 
 		return a, err
 	})

@@ -345,7 +345,7 @@ func (s *SimpleStatement) parse(p *pyParser, inReturnable, isBreakable bool) err
 			s.Type = StatementAssignment
 			s.AssignmentStatement = new(AssignmentStatement)
 
-			if err := s.AssignmentStatement.parse(q); err != nil {
+			if err := s.AssignmentStatement.parse(q, inReturnable); err != nil {
 				return p.Error("SimpleStatement", err)
 			}
 		} else if n == 1 {
@@ -422,7 +422,7 @@ type AssignmentStatement struct {
 	Tokens            Tokens
 }
 
-func (a *AssignmentStatement) parse(p *pyParser) error {
+func (a *AssignmentStatement) parse(p *pyParser, inReturnable bool) error {
 	q := p.NewGoal()
 
 	for {
@@ -451,6 +451,10 @@ func (a *AssignmentStatement) parse(p *pyParser) error {
 	}
 
 	if p.Peek() == (parser.Token{Type: TokenKeyword, Data: "yield"}) {
+		if !inReturnable {
+			return p.Error("AssignmentStatement", ErrInvalidStatement)
+		}
+
 		a.YieldExpression = new(YieldExpression)
 
 		if err := a.YieldExpression.parse(q); err != nil {
