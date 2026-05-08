@@ -1367,6 +1367,20 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "DelStatement", "TargetList"},
 		},
+		{ // 193
+			"def a(): return b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].ReturnStatement.Expression
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "ReturnStatement", "Expression"},
+		},
+		{ // 194
+			"def a(): return",
+			func(f *python.File) python.Type {
+				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].ReturnStatement.Expression
+			},
+			nil,
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
