@@ -683,9 +683,7 @@ func walkDictDisplay(t *python.DictDisplay, fn Handler) error {
 
 func walkDictItem(t *python.DictItem, fn Handler) error {
 	if t.OrExpression != nil {
-		if err := fn.Handle(t.OrExpression); err != nil {
-			return err
-		}
+		return fn.Handle(t.OrExpression)
 	} else if t.Key != nil && t.Value != nil {
 		if err := fn.Handle(t.Key); err != nil {
 			return err
