@@ -1451,6 +1451,13 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs", "Module"},
 		},
+		{ // 205
+			"import a",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0].Module.Identifiers[0]
+			},
+			nil,
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
