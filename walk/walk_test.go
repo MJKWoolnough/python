@@ -1381,6 +1381,27 @@ func TestWalk(t *testing.T) {
 			},
 			nil,
 		},
+		{ // 195
+			"raise",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].RaiseStatement.Expression
+			},
+			nil,
+		},
+		{ // 196
+			"raise a",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].RaiseStatement.Expression
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "RaiseStatement", "Expression"},
+		},
+		{ // 197
+			"raise a from b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].RaiseStatement.From
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "RaiseStatement", "Expression"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
