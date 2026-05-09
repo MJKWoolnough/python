@@ -1468,6 +1468,20 @@ func TestWalk(t *testing.T) {
 			nilRet,
 			nil,
 		},
+		{ // 208
+			"type a[b, c] = d",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].TypeStatement.TypeParams
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "TypeStatement", "TypeParams"},
+		},
+		{ // 209
+			"type a[b, c] = d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].TypeStatement.Expression
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "TypeStatement", "Expression"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
