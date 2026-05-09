@@ -1458,6 +1458,11 @@ func TestWalk(t *testing.T) {
 			},
 			nil,
 		},
+		{ // 206
+			"global a",
+			nilRet,
+			nil,
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
