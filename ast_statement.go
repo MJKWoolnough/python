@@ -928,6 +928,7 @@ func (r *RelativeModule) parse(p *pyParser) error {
 
 		q.AcceptRunWhitespace()
 	}
+
 	switch q.Peek().Type {
 	case TokenIdentifier:
 		p.Score(q)
