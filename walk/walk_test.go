@@ -1402,6 +1402,48 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "RaiseStatement", "Expression"},
 		},
+		{ // 198
+			"import a, b",
+			nilRet,
+			nil,
+		},
+		{ // 199
+			"import a, b",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0]
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
+		},
+		{ // 200
+			"import a, b",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[1]
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
+		},
+		{ // 201
+
+			"from a import b, c",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].ImportStatement.RelativeModule
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "RelativeModule"},
+		},
+		{ // 202
+
+			"from a import b, c",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0]
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
+		},
+		{ // 203
+			"from a import b, c",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[1]
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
