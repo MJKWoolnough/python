@@ -1408,20 +1408,27 @@ func TestWalk(t *testing.T) {
 			nil,
 		},
 		{ // 199
+			"import a.b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0]
+			},
+			nil,
+		},
+		{ // 200
 			"import a, b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
 		},
-		{ // 200
+		{ // 201
 			"import a, b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
 		},
-		{ // 201
+		{ // 202
 
 			"from a import b, c",
 			func(f *python.File) python.Type {
@@ -1429,7 +1436,7 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "RelativeModule"},
 		},
-		{ // 202
+		{ // 203
 
 			"from a import b, c",
 			func(f *python.File) python.Type {
@@ -1437,45 +1444,61 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
 		},
-		{ // 203
+		{ // 204
 			"from a import b, c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
 		},
-		{ // 204
+		{ // 205
 			"import a",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0].Module
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs", "Module"},
 		},
-		{ // 205
+		{ // 206
 			"import a",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0].Module.Identifiers[0]
 			},
 			nil,
 		},
-		{ // 206
+		{ // 207
+
+			"from . import a",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].ImportStatement.RelativeModule.Module
+			},
+			nil,
+		},
+		{ // 208
+
+			"from a import b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].ImportStatement.RelativeModule.Module
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "RelativeModule", "Module"},
+		},
+		{ // 209
 			"global a",
 			nilRet,
 			nil,
 		},
-		{ // 207
+		{ // 210
 			"nonlocal a",
 			nilRet,
 			nil,
 		},
-		{ // 208
+		{ // 211
 			"type a[b, c] = d",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].TypeStatement.TypeParams
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "TypeStatement", "TypeParams"},
 		},
-		{ // 209
+		{ // 212
 			"type a[b, c] = d",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].TypeStatement.Expression
