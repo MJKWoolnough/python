@@ -1463,6 +1463,11 @@ func TestWalk(t *testing.T) {
 			nilRet,
 			nil,
 		},
+		{ // 207
+			"nonlocal a",
+			nilRet,
+			nil,
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
