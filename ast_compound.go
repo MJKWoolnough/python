@@ -700,7 +700,6 @@ type WithStatementContents struct {
 
 func (w *WithStatementContents) parse(p *pyParser) error {
 	w.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewlineIfMultiline()
-
 	another := true
 
 	for another {
