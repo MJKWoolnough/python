@@ -610,9 +610,7 @@ func walkComprehensionIf(t *python.ComprehensionIf, fn Handler) error {
 func walkComprehensionIterator(t *python.ComprehensionIterator, fn Handler) error {
 	if t.ComprehensionFor != nil {
 		return fn.Handle(t.ComprehensionFor)
-	}
-
-	if t.ComprehensionIf != nil {
+	} else if t.ComprehensionIf != nil {
 		return fn.Handle(t.ComprehensionIf)
 	}
 
