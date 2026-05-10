@@ -1519,6 +1519,34 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "StarredList", "StarredItem", "OrExpression"},
 		},
+		{ // 215
+			"a = b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[0].Targets[0].PrimaryExpression
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList", "Target", "PrimaryExpression"},
+		},
+		{ // 216
+			"[a] = b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[0].Targets[0].Array
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList", "Target", "TargetList"},
+		},
+		{ // 217
+			"(a) = b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[0].Targets[0].Tuple
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList", "Target", "TargetList"},
+		},
+		{ // 218
+			"*a = b",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[0].Targets[0].Star
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList", "Target", "Target"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
