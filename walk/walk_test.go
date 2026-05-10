@@ -1638,6 +1638,27 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator", "ComprehensionFor"},
 		},
+		{ // 232
+			"(a for b in c if d for e in f)",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionIf.OrTest
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator", "ComprehensionIf", "OrTest"},
+		},
+		{ // 233
+			"(a for b in c if d for e in f)",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionIf.ComprehensionIterator
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator", "ComprehensionIf", "ComprehensionIterator"},
+		},
+		{ // 234
+			"(a for b in c if d)",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionIf.ComprehensionIterator
+			},
+			nil,
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
