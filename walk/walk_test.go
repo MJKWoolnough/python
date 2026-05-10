@@ -1568,6 +1568,34 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AugmentedAssignmentStatement", "YieldExpression"},
 		},
+		{ // 222
+			"a: b = c",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement.AugTarget
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement", "AugTarget"},
+		},
+		{ // 223
+			"a: b = c",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement.Expression
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement", "Expression"},
+		},
+		{ // 224
+			"a: b = c",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement.StarredExpression
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement", "StarredExpression"},
+		},
+		{ // 225
+			"a: b = yield c",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement.YieldExpression
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement", "YieldExpression"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
