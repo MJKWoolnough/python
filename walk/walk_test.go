@@ -1624,6 +1624,20 @@ func TestWalk(t *testing.T) {
 			},
 			nil,
 		},
+		{ // 230
+			"(a for b in c if d)",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionIf
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator", "ComprehensionIf"},
+		},
+		{ // 231
+			"(a for b in c for d in e)",
+			func(f *python.File) python.Type {
+				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionFor
+			},
+			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator", "ComprehensionFor"},
+		},
 	} {
 		tk := parser.NewStringTokeniser(test.Input)
 
