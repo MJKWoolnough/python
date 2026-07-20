@@ -1448,6 +1448,10 @@ func (f *ImportStatement) printType(w writer, v bool) {
 
 	pp.WriteString("ImportStatement {")
 
+	if f.Lazy || v {
+		pp.Printf("\nLazy: %v", f.Lazy)
+	}
+
 	if f.RelativeModule != nil {
 		pp.WriteString("\nRelativeModule: ")
 		f.RelativeModule.printType(pp, v)
