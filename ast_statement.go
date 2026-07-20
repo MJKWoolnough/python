@@ -282,6 +282,30 @@ func (s *SimpleStatement) parse(p *pyParser, inReturnable, isBreakable bool) err
 		p.Next()
 
 		s.Type = StatementContinue
+	case parser.Token{Type: TokenIdentifier, Data: "lazy"}:
+		q := p.NewGoal()
+
+		q.Next()
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "import"}) || q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
+			s.ImportStatement = new(ImportStatement)
+			s.Type = StatementImport
+			q = p.NewGoal()
+
+			if err := s.ImportStatement.parse(q); err != nil {
+				return p.Error("SimpleStatement", err)
+			}
+		} else {
+			s.Type = StatementAugmentedAssignment
+			s.AugmentedAssignmentStatement = new(AugmentedAssignmentStatement)
+
+			if err := s.AugmentedAssignmentStatement.parse(q); err != nil {
+				return p.Error("SimpleStatement", err)
+			}
+		}
+
+		p.Score(q)
 	case parser.Token{Type: TokenKeyword, Data: "import"}, parser.Token{Type: TokenKeyword, Data: "from"}:
 		s.ImportStatement = new(ImportStatement)
 		s.Type = StatementImport
@@ -809,6 +833,7 @@ func (r *RaiseStatement) parse(p *pyParser) error {
 // Comments are parsed after the opening paren of a ModuleAs list, and before
 // the closing paren of the same.
 type ImportStatement struct {
+	Lazy           bool
 	RelativeModule *RelativeModule
 	Modules        []ModuleAs
 	Comments       [2]Comments
@@ -816,6 +841,12 @@ type ImportStatement struct {
 }
 
 func (i *ImportStatement) parse(p *pyParser) error {
+	if p.AcceptToken(parser.Token{Type: TokenIdentifier, Data: "lazy"}) {
+		i.Lazy = true
+
+		p.AcceptRunAllWhitespace()
+	}
+
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "from"}) {
 		p.AcceptRunWhitespace()
 
