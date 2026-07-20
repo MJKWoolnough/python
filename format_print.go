@@ -976,6 +976,10 @@ func (i ImportStatement) printSource(w writer, v bool) {
 	parens := false
 	iw := w
 
+	if i.Lazy {
+		w.WriteString("lazy ")
+	}
+
 	if i.RelativeModule != nil {
 		w.WriteString("from ")
 		i.RelativeModule.printSource(w, v)
