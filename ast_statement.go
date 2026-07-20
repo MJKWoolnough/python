@@ -823,8 +823,8 @@ func (r *RaiseStatement) parse(p *pyParser) error {
 	return nil
 }
 
-// ImportStatement as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/simple_stmts.html#grammar-token-python-grammar-import_stmt
+// ImportStatement as defined in python@3.15.0:
+// https://docs.python.org/3.15/reference/simple_stmts.html#the-import-statement
 //
 // Comments are parsed after the opening paren of a ModuleAs list, and before
 // the closing paren of the same.
