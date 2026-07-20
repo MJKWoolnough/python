@@ -2450,7 +2450,25 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`from a import b`, func(t *test, tk Tokens) { // 2
+		{`lazy from a import *`, func(t *test, tk Tokens) { // 2
+			t.Output = ImportStatement{
+				Lazy: true,
+				RelativeModule: &RelativeModule{
+					Module: &Module{
+						Identifiers: []IdentifierComments{
+							{
+								Identifier: &tk[4],
+								Tokens:     tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:9],
+			}
+		}},
+		{`from a import b`, func(t *test, tk Tokens) { // 3
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
@@ -2481,7 +2499,7 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`from a import b,c`, func(t *test, tk Tokens) { // 3
+		{`from a import b,c`, func(t *test, tk Tokens) { // 4
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
@@ -2524,7 +2542,7 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`from a import b, c`, func(t *test, tk Tokens) { // 4
+		{`from a import b, c`, func(t *test, tk Tokens) { // 5
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
@@ -2567,7 +2585,7 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:10],
 			}
 		}},
-		{`from a import (b)`, func(t *test, tk Tokens) { // 5
+		{`from a import (b)`, func(t *test, tk Tokens) { // 6
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
@@ -2598,7 +2616,7 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`from a import (b,c)`, func(t *test, tk Tokens) { // 6
+		{`from a import (b,c)`, func(t *test, tk Tokens) { // 7
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
@@ -2641,7 +2659,7 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:11],
 			}
 		}},
-		{`from a import (b, c)`, func(t *test, tk Tokens) { // 7
+		{`from a import (b, c)`, func(t *test, tk Tokens) { // 8
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
@@ -2684,7 +2702,7 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:12],
 			}
 		}},
-		{`import a`, func(t *test, tk Tokens) { // 8
+		{`import a`, func(t *test, tk Tokens) { // 9
 			t.Output = ImportStatement{
 				Modules: []ModuleAs{
 					{
@@ -2703,7 +2721,27 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`import a,b`, func(t *test, tk Tokens) { // 9
+		{`lazy import a`, func(t *test, tk Tokens) { // 10
+			t.Output = ImportStatement{
+				Lazy: true,
+				Modules: []ModuleAs{
+					{
+						Module: Module{
+							Identifiers: []IdentifierComments{
+								{
+									Identifier: &tk[4],
+									Tokens:     tk[4:5],
+								},
+							},
+							Tokens: tk[4:5],
+						},
+						Tokens: tk[4:5],
+					},
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`import a,b`, func(t *test, tk Tokens) { // 11
 			t.Output = ImportStatement{
 				Modules: []ModuleAs{
 					{
@@ -2734,7 +2772,7 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:5],
 			}
 		}},
-		{`import a, b, c`, func(t *test, tk Tokens) { // 10
+		{`import a, b, c`, func(t *test, tk Tokens) { // 12
 			t.Output = ImportStatement{
 				Modules: []ModuleAs{
 					{
@@ -2777,7 +2815,7 @@ func TestImportStatement(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{"from a import ( # A\nb,c\n# B\n)", func(t *test, tk Tokens) { // 11
+		{"from a import ( # A\nb,c\n# B\n)", func(t *test, tk Tokens) { // 13
 			t.Output = ImportStatement{
 				RelativeModule: &RelativeModule{
 					Module: &Module{
@@ -2821,7 +2859,7 @@ func TestImportStatement(t *testing.T) {
 				Tokens:   tk[:17],
 			}
 		}},
-		{`from nonlocal import a`, func(t *test, tk Tokens) { // 12
+		{`from nonlocal import a`, func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err: Error{
 					Err:     ErrMissingModule,
@@ -2832,14 +2870,25 @@ func TestImportStatement(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`from a b`, func(t *test, tk Tokens) { // 13
+		{`lazy from nonlocal import a`, func(t *test, tk Tokens) { // 15
+			t.Err = Error{
+				Err: Error{
+					Err:     ErrMissingModule,
+					Parsing: "RelativeModule",
+					Token:   tk[4],
+				},
+				Parsing: "ImportStatement",
+				Token:   tk[4],
+			}
+		}},
+		{`from a b`, func(t *test, tk Tokens) { // 16
 			t.Err = Error{
 				Err:     ErrMissingImport,
 				Parsing: "ImportStatement",
 				Token:   tk[4],
 			}
 		}},
-		{`from a import nonlocal`, func(t *test, tk Tokens) { // 14
+		{`from a import nonlocal`, func(t *test, tk Tokens) { // 17
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2858,14 +2907,14 @@ func TestImportStatement(t *testing.T) {
 				Token:   tk[6],
 			}
 		}},
-		{`from a import (b c)`, func(t *test, tk Tokens) { // 15
+		{`from a import (b c)`, func(t *test, tk Tokens) { // 18
 			t.Err = Error{
 				Err:     ErrMissingComma,
 				Parsing: "ImportStatement",
 				Token:   tk[8],
 			}
 		}},
-		{`import nonlocal`, func(t *test, tk Tokens) { // 16
+		{`import nonlocal`, func(t *test, tk Tokens) { // 19
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -2884,7 +2933,26 @@ func TestImportStatement(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`import (b)`, func(t *test, tk Tokens) { // 17
+		{`lazy import nonlocal`, func(t *test, tk Tokens) { // 20
+			t.Err = Error{
+				Err: Error{
+					Err: Error{
+						Err: Error{
+							Err:     ErrMissingIdentifier,
+							Parsing: "IdentifierComments",
+							Token:   tk[4],
+						},
+						Parsing: "Module",
+						Token:   tk[4],
+					},
+					Parsing: "ModuleAs",
+					Token:   tk[4],
+				},
+				Parsing: "ImportStatement",
+				Token:   tk[4],
+			}
+		}},
+		{`import (b)`, func(t *test, tk Tokens) { // 21
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
