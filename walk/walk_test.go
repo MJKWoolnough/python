@@ -337,1021 +337,1021 @@ func TestWalk(t *testing.T) {
 			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Except", "Expression"},
 		},
 		{ // 44
+			"try:\n\ta\nexcept b, c as d: e",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Try.Except[0].Expression[1]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Except", "Expression"},
+		},
+		{ // 45
 			"try:\n\ta\nexcept b as c: d",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Try.Except[0].Suite
 			},
 			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Except", "Suite"},
 		},
-		{ // 45
+		{ // 46
 			"with a:\n\tb",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.With.Contents
 			},
 			[]string{"File", "Statement", "CompoundStatement", "WithStatement", "WithStatementContents"},
 		},
-		{ // 46
+		{ // 47
 			"with a:\n\tb",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.With.Suite
 			},
 			[]string{"File", "Statement", "CompoundStatement", "WithStatement", "Suite"},
 		},
-		{ // 47
+		{ // 48
 			"with a, b:\n\tc",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.With.Contents.Items[0]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "WithStatement", "WithStatementContents", "WithItem"},
 		},
-		{ // 48
+		{ // 49
 			"with a, b:\n\tc",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.With.Contents.Items[1]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "WithStatement", "WithStatementContents", "WithItem"},
 		},
-		{ // 49
+		{ // 50
 			"with a as b:\n\tc",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.With.Contents.Items[0].Expression
 			},
 			[]string{"File", "Statement", "CompoundStatement", "WithStatement", "WithStatementContents", "WithItem", "Expression"},
 		},
-		{ // 50
+		{ // 51
 			"with a as b:\n\tc",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.With.Contents.Items[0].Target
 			},
 			[]string{"File", "Statement", "CompoundStatement", "WithStatement", "WithStatementContents", "WithItem", "Target"},
 		},
-		{ // 51
+		{ // 52
 			"@a\ndef b[c]() -> d: e",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.Decorators
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Decorators"},
 		},
-		{ // 52
+		{ // 53
 			"@a\ndef b[c]() -> d: e",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.TypeParams
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "TypeParams"},
 		},
-		{ // 53
+		{ // 54
 			"@a\ndef b[c]() -> d: e",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.ParameterList
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList"},
 		},
-		{ // 54
+		{ // 55
 			"@a\ndef b[c]() -> d: e",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.Expression
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Expression"},
 		},
-		{ // 55
+		{ // 56
 			"@a\ndef b[c]() -> d: e",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.Suite
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite"},
 		},
-		{ // 56
+		{ // 57
 			"@a\n@b\ndef c(): d",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.Decorators.Decorators[0]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Decorators", "Decorator"},
 		},
-		{ // 57
+		{ // 58
 			"@a\n@b\ndef c(): d",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.Decorators.Decorators[1]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Decorators", "Decorator"},
 		},
-		{ // 58
+		{ // 59
 			"@a\ndef b(): c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.Decorators.Decorators[0].Decorator
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Decorators", "Decorator", "AssignmentExpression"},
 		},
-		{ // 59
+		{ // 60
 			"def a[b, c]() -> d: e",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.TypeParams.TypeParams[0]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "TypeParams", "TypeParam"},
 		},
-		{ // 60
+		{ // 61
 			"def a[b, c]() -> d: e",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.TypeParams.TypeParams[1]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "TypeParams", "TypeParam"},
 		},
-		{ // 61
+		{ // 62
 			"def a[b: c]() -> d: e",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.TypeParams.TypeParams[0].Expression
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "TypeParams", "TypeParam", "Expression"},
 		},
-		{ // 62
+		{ // 63
 			"def a(b, c, /, d, e, *f, g, h, **i): j",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.ParameterList.DefParameters[0]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
 		},
-		{ // 63
+		{ // 64
 			"def a(b, c, /, d, e, *f, g, h, **i): j",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.ParameterList.DefParameters[1]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
 		},
-		{ // 64
+		{ // 65
 			"def a(b, c, /, d, e, *f, g, h, **i): j",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.ParameterList.NoPosOnly[0]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
 		},
-		{ // 65
+		{ // 66
 			"def a(b, c, /, d, e, *f, g, h, **i): j",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.ParameterList.NoPosOnly[1]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
 		},
-		{ // 66
+		{ // 67
 			"def a(b, c, /, d, e, *f, g, h, **i): j",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.ParameterList.StarArg
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "Parameter"},
 		},
-		{ // 67
+		{ // 68
 			"def a(b, c, /, d, e, *f, g, h, **i): j",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.ParameterList.StarArgs[0]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
 		},
-		{ // 68
+		{ // 69
 			"def a(b, c, /, d, e, *f, g, h, **i): j",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.ParameterList.StarArgs[1]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter"},
 		},
-		{ // 69
+		{ // 70
 			"def a(b, c, /, d, e, *f, g, h, **i): j",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.ParameterList.StarStarArg
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "Parameter"},
 		},
-		{ // 70
+		{ // 71
 			"def a(b = c): d",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Func.ParameterList.NoPosOnly[0].Parameter
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter", "Parameter"},
 		},
-		{ // 71
+		{ // 72
 			"def a(b = c): d",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.ParameterList.NoPosOnly[0].Value
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter", "Expression"},
 		},
-		{ // 72
+		{ // 73
 			"def a(b: c): d",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.ParameterList.NoPosOnly[0].Parameter.Type
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "ParameterList", "DefParameter", "Parameter", "Expression"},
 		},
-		{ // 73
+		{ // 74
 			"@a\nclass b[c](d): e",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Class.Decorators
 			},
 			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition", "Decorators"},
 		},
-		{ // 74
+		{ // 75
 			"@a\nclass b[c](d): e",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Class.TypeParams
 			},
 			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition", "TypeParams"},
 		},
-		{ // 75
+		{ // 76
 			"@a\nclass b[c](d): e",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Class.Inheritance
 			},
 			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition", "ArgumentList"},
 		},
-		{ // 76
+		{ // 77
 			"@a\nclass b[c](d): e",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].CompoundStatement.Class.Suite
 			},
 			[]string{"File", "Statement", "CompoundStatement", "ClassDefinition", "Suite"},
 		},
-		{ // 77
+		{ // 78
 			"a; b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement"},
 		},
-		{ // 78
+		{ // 79
 			"a; b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement"},
 		},
-		{ // 79
+		{ // 80
 			"a",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement"},
 		},
-		{ // 80
+		{ // 81
 			"assert a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssertStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssertStatement"},
 		},
-		{ // 81
+		{ // 82
 			"a = b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement"},
 		},
-		{ // 82
+		{ // 83
 			"a += b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AugmentedAssignmentStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AugmentedAssignmentStatement"},
 		},
-		{ // 83
+		{ // 84
 			"a: b = c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement"},
 		},
-		{ // 84
+		{ // 85
 			"del a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].DelStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "DelStatement"},
 		},
-		{ // 85
+		{ // 86
 			"def a(): return b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].ReturnStatement
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "ReturnStatement"},
 		},
-		{ // 86
+		{ // 87
 			"def a(): yield b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].YieldStatement
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "YieldExpression"},
 		},
-		{ // 87
+		{ // 88
 			"raise a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].RaiseStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "RaiseStatement"},
 		},
-		{ // 88
+		{ // 89
 			"import a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].ImportStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement"},
 		},
-		{ // 89
+		{ // 90
 			"global a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].GlobalStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "GlobalStatement"},
 		},
-		{ // 90
+		{ // 91
 			"nonlocal a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].NonLocalStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "NonLocalStatement"},
 		},
-		{ // 91
+		{ // 92
 			"type a = b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].TypeStatement
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "TypeStatement"},
 		},
-		{ // 92
+		{ // 93
 			"assert a, b",
 			nilRet,
 			nil,
 		},
-		{ // 93
+		{ // 94
 			"assert a, b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssertStatement.Expressions[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssertStatement", "Expression"},
 		},
-		{ // 94
+		{ // 95
 			"assert a, b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssertStatement.Expressions[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssertStatement", "Expression"},
 		},
-		{ // 95
+		{ // 96
 			"a = b = c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList"},
 		},
-		{ // 96
+		{ // 97
 			"a = b = c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList"},
 		},
-		{ // 97
+		{ // 98
 			"a = b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression"},
 		},
-		{ // 98
+		{ // 99
 			"def a(): b = yield c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression"},
 		},
-		{ // 99
+		{ // 100
 			"a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression"},
 		},
-		{ // 100
+		{ // 101
 			"*a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.StarredList
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "StarredList"},
 		},
-		{ // 101
+		{ // 102
 			"a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression"},
 		},
-		{ // 102
+		{ // 103
 			"lambda b: c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.LambdaExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "LambdaExpression"},
 		},
-		{ // 103
+		{ // 104
 			"a if b else c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest"},
 		},
-		{ // 104
+		{ // 105
 			"a if b else c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.If
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest"},
 		},
-		{ // 105
+		{ // 106
 			"a if b else c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.Else
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "Expression"},
 		},
-		{ // 106
+		{ // 107
 			"a or b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest"},
 		},
-		{ // 107
+		{ // 108
 			"a or b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.OrTest
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "OrTest"},
 		},
-		{ // 108
+		{ // 109
 			"a and b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest"},
 		},
-		{ // 109
+		{ // 110
 			"a and b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.AndTest
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "AndTest"},
 		},
-		{ // 110
+		{ // 111
 			"not a",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison"},
 		},
-		{ // 111
+		{ // 112
 			"a in b == c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression"},
 		},
-		{ // 112
+		{ // 113
 			"a in b == c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.Comparisons[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "ComparisonExpression"},
 		},
-		{ // 113
+		{ // 114
 			"a in b == c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.Comparisons[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "ComparisonExpression"},
 		},
-		{ // 114
+		{ // 115
 			"a in b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.Comparisons[0].OrExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "ComparisonExpression", "OrExpression"},
 		},
-		{ // 115
+		{ // 116
 			"a | b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression"},
 		},
-		{ // 116
+		{ // 117
 			"a | b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.OrExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "OrExpression"},
 		},
-		{ // 117
+		{ // 118
 			"a ^ b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression"},
 		},
-		{ // 118
+		{ // 119
 			"a ^ b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.XorExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "XorExpression"},
 		},
-		{ // 119
+		{ // 120
 			"a & b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression"},
 		},
-		{ // 120
+		{ // 121
 			"a & b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.AndExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "AndExpression"},
 		},
-		{ // 121
+		{ // 122
 			"a << b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression"},
 		},
-		{ // 122
+		{ // 123
 			"a << b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.ShiftExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "ShiftExpression"},
 		},
-		{ // 123
+		{ // 124
 			"a + b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression"},
 		},
-		{ // 124
+		{ // 125
 			"a + b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.AddExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "AddExpression"},
 		},
-		{ // 125
+		{ // 126
 			"a * b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression"},
 		},
-		{ // 126
+		{ // 127
 			"a * b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.MultiplyExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "MultiplyExpression"},
 		},
-		{ // 127
+		{ // 128
 			"a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression"},
 		},
-		{ // 128
+		{ // 129
 			"+a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.UnaryExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "UnaryExpression"},
 		},
-		{ // 129
+		{ // 130
 			"a ** b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression"},
 		},
-		{ // 130
+		{ // 131
 			"a ** b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.UnaryExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "UnaryExpression"},
 		},
-		{ // 131
+		{ // 132
 			"a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom"},
 		},
-		{ // 132
+		{ // 133
 			"a()",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.PrimaryExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "PrimaryExpression"},
 		},
-		{ // 133
+		{ // 134
 			"a()",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension"},
 		},
-		{ // 134
+		{ // 135
 			"a[]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.PrimaryExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "PrimaryExpression"},
 		},
-		{ // 135
+		{ // 136
 			"a[]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Slicing
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "SliceList"},
 		},
-		{ // 136
+		{ // 137
 			"a(b)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList"},
 		},
-		{ // 137
+		{ // 138
 			"a(b for c in d)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.Comprehension
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "Comprehension"},
 		},
-		{ // 138
+		{ // 139
 			"a(b, c, d=e, f=g, **h, **i)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.PositionalArguments[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "PositionalArgument"},
 		},
-		{ // 139
+		{ // 140
 			"a(b, c, d=e, f=g, **h, **i)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.PositionalArguments[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "PositionalArgument"},
 		},
-		{ // 140
+		{ // 141
 			"a(b, c, d=e, f=g, **h, **i)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.StarredAndKeywordArguments[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "StarredOrKeyword"},
 		},
-		{ // 141
+		{ // 142
 			"a(b, c, d=e, f=g, **h, **i)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.StarredAndKeywordArguments[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "StarredOrKeyword"},
 		},
-		{ // 142
+		{ // 143
 			"a(b, c, d=e, f=g, **h, **i)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.KeywordArguments[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "KeywordArgument"},
 		},
-		{ // 143
+		{ // 144
 			"a(b, c, d=e, f=g, **h, **i)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.KeywordArguments[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "KeywordArgument"},
 		},
-		{ // 144
+		{ // 145
 			"a(b)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.PositionalArguments[0].AssignmentExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "PositionalArgument", "AssignmentExpression"},
 		},
-		{ // 145
+		{ // 146
 			"a(*b)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.PositionalArguments[0].Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "PositionalArgument", "Expression"},
 		},
-		{ // 146
+		{ // 147
 			"a(b=c)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.StarredAndKeywordArguments[0].KeywordItem
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "StarredOrKeyword", "KeywordItem"},
 		},
-		{ // 147
+		{ // 148
 			"a(b=c, *d)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.StarredAndKeywordArguments[1].Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "StarredOrKeyword", "Expression"},
 		},
-		{ // 148
+		{ // 149
 			"a(b=c)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.StarredAndKeywordArguments[0].KeywordItem.Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "StarredOrKeyword", "KeywordItem", "Expression"},
 		},
-		{ // 149
+		{ // 150
 			"a(**b, c=d)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.KeywordArguments[1].KeywordItem
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "KeywordArgument", "KeywordItem"},
 		},
-		{ // 150
+		{ // 151
 			"a(**b, c=d)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Call.ArgumentList.KeywordArguments[0].Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "ArgumentListOrComprehension", "ArgumentList", "KeywordArgument", "Expression"},
 		},
-		{ // 151
+		{ // 152
 			"a[b,c]",
 			nilRet,
 			nil,
 		},
-		{ // 152
+		{ // 153
 			"a[b,c]",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Slicing.SliceItems[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "SliceList", "SliceItem"},
 		},
-		{ // 153
+		{ // 154
 			"a[b,c]",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Slicing.SliceItems[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "SliceList", "SliceItem"},
 		},
-		{ // 154
+		{ // 155
 			"a[b]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Slicing.SliceItems[0].Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "SliceList", "SliceItem", "Expression"},
 		},
-		{ // 155
+		{ // 156
 			"a[b:c:d]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Slicing.SliceItems[0].LowerBound
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "SliceList", "SliceItem", "Expression"},
 		},
-		{ // 156
+		{ // 157
 			"a[b:c:d]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Slicing.SliceItems[0].UpperBound
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "SliceList", "SliceItem", "Expression"},
 		},
-		{ // 157
+		{ // 158
 			"a[b:c:d]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Slicing.SliceItems[0].Stride
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "SliceList", "SliceItem", "Expression"},
 		},
-		{ // 158
+		{ // 159
 			"a[b:c]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Slicing.SliceItems[0].Stride
 			},
 			nil,
 		},
-		{ // 159
+		{ // 160
 			"[]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure"},
 		},
-		{ // 160
+		{ // 161
 			"()",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ParenthForm
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "StarredExpression"},
 		},
-		{ // 161
+		{ // 162
 			"[]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension"},
 		},
-		{ // 162
+		{ // 163
 			"{}",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.DictDisplay
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "DictDisplay"},
 		},
-		{ // 163
+		{ // 164
 			"{a}",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.SetDisplay
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension"},
 		},
-		{ // 164
+		{ // 165
 			"(a for b in c)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression"},
 		},
-		{ // 165
+		{ // 166
 			"(yield a)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.YieldAtom
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "YieldExpression"},
 		},
-		{ // 166
+		{ // 167
 			"[]",
 			nilRet,
 			nil,
 		},
-		{ // 167
+		{ // 168
 			"[a]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.FlexibleExpressionList
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "FlexibleExpressionList"},
 		},
-		{ // 168
+		{ // 169
 			"[a for b in c]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.Comprehension
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "Comprehension"},
 		},
-		{ // 169
+		{ // 170
 			"[a, b]",
 			nilRet,
 			nil,
 		},
-		{ // 170
+		{ // 171
 			"[a, b]",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.FlexibleExpressionList.FlexibleExpressions[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "FlexibleExpressionList", "FlexibleExpression"},
 		},
-		{ // 171
+		{ // 172
 			"[a, b]",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.FlexibleExpressionList.FlexibleExpressions[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "FlexibleExpressionList", "FlexibleExpression"},
 		},
-		{ // 172
+		{ // 173
 			"[a]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.FlexibleExpressionList.FlexibleExpressions[0].AssignmentExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "FlexibleExpressionList", "FlexibleExpression", "AssignmentExpression"},
 		},
-		{ // 173
+		{ // 174
 			"[*a]",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.FlexibleExpressionList.FlexibleExpressions[0].StarredExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "FlexibleExpressionList", "FlexibleExpression", "OrExpression"},
 		},
-		{ // 174
+		{ // 175
 			"[a for b in c]",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.Comprehension.AssignmentExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "Comprehension", "AssignmentExpression"},
 		},
-		{ // 175
+		{ // 176
 			"[a for b in c]",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.ListDisplay.Comprehension.ComprehensionFor
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "FlexibleExpressionListOrComprehension", "Comprehension", "ComprehensionFor"},
 		},
-		{ // 176
+		{ // 177
 			"{**a}",
 			nilRet,
 			nil,
 		},
-		{ // 177
+		{ // 178
 			"{**a, b: c}",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.DictDisplay.DictItems[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "DictDisplay", "DictItem"},
 		},
-		{ // 178
+		{ // 179
 			"{**a, b: c}",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.DictDisplay.DictItems[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "DictDisplay", "DictItem"},
 		},
-		{ // 179
+		{ // 180
 			"{a: b for c in d}",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.DictDisplay.DictComprehension
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "DictDisplay", "ComprehensionFor"},
 		},
-		{ // 180
+		{ // 181
 			"{**a}",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.DictDisplay.DictItems[0].OrExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "DictDisplay", "DictItem", "OrExpression"},
 		},
-		{ // 181
+		{ // 182
 			"{a: b}",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.DictDisplay.DictItems[0].Key
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "DictDisplay", "DictItem", "Expression"},
 		},
-		{ // 182
+		{ // 183
 			"{a: b}",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.DictDisplay.DictItems[0].Value
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "DictDisplay", "DictItem", "Expression"},
 		},
-		{ // 183
+		{ // 184
 			"(a for b in c)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "Expression"},
 		},
-		{ // 184
+		{ // 185
 			"(a for b in c)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor"},
 		},
-		{ // 185
+		{ // 186
 			"lambda b: c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.LambdaExpression.ParameterList
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "LambdaExpression", "ParameterList"},
 		},
-		{ // 186
+		{ // 187
 			"lambda b: c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.LambdaExpression.Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "LambdaExpression", "Expression"},
 		},
-		{ // 187
+		{ // 188
 			"def a(): b = yield from c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression.From
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "Expression"},
 		},
-		{ // 188
+		{ // 189
 			"def a(): b = yield c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList"},
 		},
-		{ // 189
+		{ // 190
 			"def a(): b = yield c, d",
 			nilRet,
 			nil,
-		},
-		{ // 190
-			"def a(): b = yield c, d",
-			func(f *python.File) python.Type {
-				return &f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList.Expressions[1]
-			},
-			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList", "Expression"},
 		},
 		{ // 191
 			"def a(): b = yield c, d",
@@ -1361,74 +1361,81 @@ func TestWalk(t *testing.T) {
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList", "Expression"},
 		},
 		{ // 192
+			"def a(): b = yield c, d",
+			func(f *python.File) python.Type {
+				return &f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].AssignmentStatement.YieldExpression.ExpressionList.Expressions[1]
+			},
+			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "AssignmentStatement", "YieldExpression", "ExpressionList", "Expression"},
+		},
+		{ // 193
 			"del a",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].DelStatement.TargetList
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "DelStatement", "TargetList"},
 		},
-		{ // 193
+		{ // 194
 			"def a(): return b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].ReturnStatement.Expression
 			},
 			[]string{"File", "Statement", "CompoundStatement", "FuncDefinition", "Suite", "StatementList", "SimpleStatement", "ReturnStatement", "Expression"},
 		},
-		{ // 194
+		{ // 195
 			"def a(): return",
 			func(f *python.File) python.Type {
 				return f.Statements[0].CompoundStatement.Func.Suite.StatementList.Statements[0].ReturnStatement.Expression
 			},
 			nil,
 		},
-		{ // 195
+		{ // 196
 			"raise",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].RaiseStatement.Expression
 			},
 			nil,
 		},
-		{ // 196
+		{ // 197
 			"raise a",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].RaiseStatement.Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "RaiseStatement", "Expression"},
 		},
-		{ // 197
+		{ // 198
 			"raise a from b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].RaiseStatement.From
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "RaiseStatement", "Expression"},
 		},
-		{ // 198
+		{ // 199
 			"import a, b",
 			nilRet,
 			nil,
 		},
-		{ // 199
+		{ // 200
 			"import a.b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0]
 			},
 			nil,
 		},
-		{ // 200
+		{ // 201
 			"import a, b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
 		},
-		{ // 201
+		{ // 202
 			"import a, b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
 		},
-		{ // 202
+		{ // 203
 
 			"from a import b, c",
 			func(f *python.File) python.Type {
@@ -1436,7 +1443,7 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "RelativeModule"},
 		},
-		{ // 203
+		{ // 204
 
 			"from a import b, c",
 			func(f *python.File) python.Type {
@@ -1444,28 +1451,28 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
 		},
-		{ // 204
+		{ // 205
 			"from a import b, c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[1]
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs"},
 		},
-		{ // 205
+		{ // 206
 			"import a",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0].Module
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "ModuleAs", "Module"},
 		},
-		{ // 206
+		{ // 207
 			"import a",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].ImportStatement.Modules[0].Module.Identifiers[0]
 			},
 			nil,
 		},
-		{ // 207
+		{ // 208
 
 			"from . import a",
 			func(f *python.File) python.Type {
@@ -1473,7 +1480,7 @@ func TestWalk(t *testing.T) {
 			},
 			nil,
 		},
-		{ // 208
+		{ // 209
 
 			"from a import b",
 			func(f *python.File) python.Type {
@@ -1481,178 +1488,178 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "ImportStatement", "RelativeModule", "Module"},
 		},
-		{ // 209
+		{ // 210
 			"global a",
 			nilRet,
 			nil,
 		},
-		{ // 210
+		{ // 211
 			"nonlocal a",
 			nilRet,
 			nil,
 		},
-		{ // 211
+		{ // 212
 			"type a[b, c] = d",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].TypeStatement.TypeParams
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "TypeStatement", "TypeParams"},
 		},
-		{ // 212
+		{ // 213
 			"type a[b, c] = d",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].TypeStatement.Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "TypeStatement", "Expression"},
 		},
-		{ // 213
+		{ // 214
 			"a, *b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.StarredList.StarredItems[0].AssignmentExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "StarredList", "StarredItem", "AssignmentExpression"},
 		},
-		{ // 214
+		{ // 215
 			"a, *b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.StarredList.StarredItems[1].OrExpr
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "StarredList", "StarredItem", "OrExpression"},
 		},
-		{ // 215
+		{ // 216
 			"a = b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[0].Targets[0].PrimaryExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList", "Target", "PrimaryExpression"},
 		},
-		{ // 216
+		{ // 217
 			"[a] = b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[0].Targets[0].Array
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList", "Target", "TargetList"},
 		},
-		{ // 217
+		{ // 218
 			"(a) = b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[0].Targets[0].Tuple
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList", "Target", "TargetList"},
 		},
-		{ // 218
+		{ // 219
 			"*a = b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.TargetLists[0].Targets[0].Star
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "TargetList", "Target", "Target"},
 		},
-		{ // 219
+		{ // 220
 			"a += b",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AugmentedAssignmentStatement.AugTarget
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AugmentedAssignmentStatement", "AugTarget"},
 		},
-		{ // 220
+		{ // 221
 			"a += b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AugmentedAssignmentStatement.ExpressionList
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AugmentedAssignmentStatement", "ExpressionList"},
 		},
-		{ // 221
+		{ // 222
 			"a += yield b",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AugmentedAssignmentStatement.YieldExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AugmentedAssignmentStatement", "YieldExpression"},
 		},
-		{ // 222
+		{ // 223
 			"a: b = c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement.AugTarget
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement", "AugTarget"},
 		},
-		{ // 223
+		{ // 224
 			"a: b = c",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement.Expression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement", "Expression"},
 		},
-		{ // 224
+		{ // 225
 			"a: b = c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement.StarredExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement", "StarredExpression"},
 		},
-		{ // 225
+		{ // 226
 			"a: b = yield c",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AnnotatedAssignmentStatement.YieldExpression
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AnnotatedAssignmentStatement", "YieldExpression"},
 		},
-		{ // 226
+		{ // 227
 			"(a for b in c if d)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.TargetList
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "TargetList"},
 		},
-		{ // 227
+		{ // 228
 			"(a for b in c if d)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.OrTest
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "OrTest"},
 		},
-		{ // 228
+		{ // 229
 			"(a for b in c if d)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator"},
 		},
-		{ // 229
+		{ // 230
 			"(a for b in c)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator
 			},
 			nil,
 		},
-		{ // 230
+		{ // 231
 			"(a for b in c if d)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionIf
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator", "ComprehensionIf"},
 		},
-		{ // 231
+		{ // 232
 			"(a for b in c for d in e)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionFor
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator", "ComprehensionFor"},
 		},
-		{ // 232
+		{ // 233
 			"(a for b in c if d for e in f)",
 			func(f *python.File) python.Type {
 				return &f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionIf.OrTest
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator", "ComprehensionIf", "OrTest"},
 		},
-		{ // 233
+		{ // 234
 			"(a for b in c if d for e in f)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionIf.ComprehensionIterator
 			},
 			[]string{"File", "Statement", "StatementList", "SimpleStatement", "AssignmentStatement", "StarredExpression", "Expression", "ConditionalExpression", "OrTest", "AndTest", "NotTest", "Comparison", "OrExpression", "XorExpression", "AndExpression", "ShiftExpression", "AddExpression", "MultiplyExpression", "UnaryExpression", "PowerExpression", "PrimaryExpression", "Atom", "Enclosure", "GeneratorExpression", "ComprehensionFor", "ComprehensionIterator", "ComprehensionIf", "ComprehensionIterator"},
 		},
-		{ // 234
+		{ // 235
 			"(a for b in c if d)",
 			func(f *python.File) python.Type {
 				return f.Statements[0].StatementList.Statements[0].AssignmentStatement.StarredExpression.Expression.ConditionalExpression.OrTest.AndTest.NotTest.Comparison.OrExpression.XorExpression.AndExpression.ShiftExpression.AddExpression.MultiplyExpression.UnaryExpression.PowerExpression.PrimaryExpression.Atom.Enclosure.GeneratorExpression.ComprehensionFor.ComprehensionIterator.ComprehensionIf.ComprehensionIterator
