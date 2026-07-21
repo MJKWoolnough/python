@@ -352,12 +352,14 @@ func TestCompoundStatement(t *testing.T) {
 					},
 					Except: []Except{
 						{
-							Expression: Expression{
-								ConditionalExpression: WrapConditional(&Atom{
-									Identifier: &tk[6],
-									Tokens:     tk[6:7],
-								}),
-								Tokens: tk[6:7],
+							Expression: []Expression{
+								{
+									ConditionalExpression: WrapConditional(&Atom{
+										Identifier: &tk[6],
+										Tokens:     tk[6:7],
+									}),
+									Tokens: tk[6:7],
+								},
 							},
 							Suite: Suite{
 								StatementList: &StatementList{
@@ -2899,12 +2901,14 @@ func TestTryStatement(t *testing.T) {
 				},
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[6],
-								Tokens:     tk[6:7],
-							}),
-							Tokens: tk[6:7],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -2966,12 +2970,14 @@ func TestTryStatement(t *testing.T) {
 				},
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[7],
-								Tokens:     tk[7:8],
-							}),
-							Tokens: tk[7:8],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[7],
+									Tokens:     tk[7:8],
+								}),
+								Tokens: tk[7:8],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3033,12 +3039,14 @@ func TestTryStatement(t *testing.T) {
 				},
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[6],
-								Tokens:     tk[6:7],
-							}),
-							Tokens: tk[6:7],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3068,12 +3076,14 @@ func TestTryStatement(t *testing.T) {
 						Tokens: tk[6:9],
 					},
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[12],
-								Tokens:     tk[12:13],
-							}),
-							Tokens: tk[12:13],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[12],
+									Tokens:     tk[12:13],
+								}),
+								Tokens: tk[12:13],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3136,12 +3146,14 @@ func TestTryStatement(t *testing.T) {
 				Groups: true,
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[7],
-								Tokens:     tk[7:8],
-							}),
-							Tokens: tk[7:8],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[7],
+									Tokens:     tk[7:8],
+								}),
+								Tokens: tk[7:8],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3204,12 +3216,14 @@ func TestTryStatement(t *testing.T) {
 				Groups: true,
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[8],
-								Tokens:     tk[8:9],
-							}),
-							Tokens: tk[8:9],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[8],
+									Tokens:     tk[8:9],
+								}),
+								Tokens: tk[8:9],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3272,12 +3286,14 @@ func TestTryStatement(t *testing.T) {
 				Groups: true,
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[7],
-								Tokens:     tk[7:8],
-							}),
-							Tokens: tk[7:8],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[7],
+									Tokens:     tk[7:8],
+								}),
+								Tokens: tk[7:8],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3307,12 +3323,14 @@ func TestTryStatement(t *testing.T) {
 						Tokens: tk[7:10],
 					},
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[14],
-								Tokens:     tk[14:15],
-							}),
-							Tokens: tk[14:15],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[14],
+									Tokens:     tk[14:15],
+								}),
+								Tokens: tk[14:15],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3374,12 +3392,14 @@ func TestTryStatement(t *testing.T) {
 				},
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[6],
-								Tokens:     tk[6:7],
-							}),
-							Tokens: tk[6:7],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3466,12 +3486,14 @@ func TestTryStatement(t *testing.T) {
 				},
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[6],
-								Tokens:     tk[6:7],
-							}),
-							Tokens: tk[6:7],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3558,12 +3580,14 @@ func TestTryStatement(t *testing.T) {
 				},
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[6],
-								Tokens:     tk[6:7],
-							}),
-							Tokens: tk[6:7],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3675,12 +3699,14 @@ func TestTryStatement(t *testing.T) {
 				},
 				Except: []Except{
 					{
-						Expression: Expression{
-							ConditionalExpression: WrapConditional(&Atom{
-								Identifier: &tk[6],
-								Tokens:     tk[6:7],
-							}),
-							Tokens: tk[6:7],
+						Expression: []Expression{
+							{
+								ConditionalExpression: WrapConditional(&Atom{
+									Identifier: &tk[6],
+									Tokens:     tk[6:7],
+								}),
+								Tokens: tk[6:7],
+							},
 						},
 						Suite: Suite{
 							StatementList: &StatementList{
@@ -3991,12 +4017,14 @@ func TestExcept(t *testing.T) {
 	doTests(t, []sourceFn{
 		{`a:b`, func(t *test, tk Tokens) { // 1
 			t.Output = Except{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
+				Expression: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}),
+						Tokens: tk[:1],
+					},
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -4028,12 +4056,14 @@ func TestExcept(t *testing.T) {
 		}},
 		{`a :b`, func(t *test, tk Tokens) { // 2
 			t.Output = Except{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
+				Expression: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}),
+						Tokens: tk[:1],
+					},
 				},
 				Suite: Suite{
 					StatementList: &StatementList{
@@ -4065,12 +4095,14 @@ func TestExcept(t *testing.T) {
 		}},
 		{`a as b:c`, func(t *test, tk Tokens) { // 3
 			t.Output = Except{
-				Expression: Expression{
-					ConditionalExpression: WrapConditional(&Atom{
-						Identifier: &tk[0],
-						Tokens:     tk[:1],
-					}),
-					Tokens: tk[:1],
+				Expression: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}),
+						Tokens: tk[:1],
+					},
 				},
 				Identifier: &tk[4],
 				Suite: Suite{
