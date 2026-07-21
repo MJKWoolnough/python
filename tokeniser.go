@@ -266,9 +266,10 @@ const (
 )
 
 func (s stringOpening) Quote() string {
-	if s == stringSingle || s == stringTripleSingle {
+	switch s {
+	case stringSingle, stringTripleSingle:
 		return "'"
-	} else if s == stringDouble || s == stringTripleDouble {
+	case stringDouble, stringTripleDouble:
 		return "\""
 	}
 
