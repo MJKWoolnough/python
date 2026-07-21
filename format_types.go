@@ -1026,8 +1026,22 @@ func (f *Except) printType(w writer, v bool) {
 
 	pp.WriteString("Except {")
 
-	pp.WriteString("\nExpression: ")
-	f.Expression.printType(pp, v)
+	if f.Expression == nil {
+		pp.WriteString("\nExpression: nil")
+	} else if len(f.Expression) > 0 {
+		pp.WriteString("\nExpression: [")
+
+		ipp := pp.Indent()
+
+		for n, e := range f.Expression {
+			ipp.Printf("\n%d: ", n)
+			e.printType(ipp, v)
+		}
+
+		pp.WriteString("\n]")
+	} else if v {
+		pp.WriteString("\nExpression: []")
+	}
 
 	if f.Identifier != nil {
 		pp.WriteString("\nIdentifier: ")
