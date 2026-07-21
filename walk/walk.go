@@ -712,8 +712,10 @@ func walkEnclosure(t *python.Enclosure, fn Handler) error {
 }
 
 func walkExcept(t *python.Except, fn Handler) error {
-	if err := fn.Handle(&t.Expression); err != nil {
-		return err
+	for n := range t.Expression {
+		if err := fn.Handle(&t.Expression[n]); err != nil {
+			return err
+		}
 	}
 
 	return fn.Handle(&t.Suite)

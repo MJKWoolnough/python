@@ -332,7 +332,7 @@ func TestWalk(t *testing.T) {
 		{ // 43
 			"try:\n\ta\nexcept b as c: d",
 			func(f *python.File) python.Type {
-				return &f.Statements[0].CompoundStatement.Try.Except[0].Expression
+				return &f.Statements[0].CompoundStatement.Try.Except[0].Expression[0]
 			},
 			[]string{"File", "Statement", "CompoundStatement", "TryStatement", "Except", "Expression"},
 		},
