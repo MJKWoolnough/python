@@ -577,7 +577,7 @@ func (t *TryStatement) parse(p *pyParser, inReturnable, isBreakable bool) error 
 // Except as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try1_stmt
 type Except struct {
-	Expression Expression
+	Expression []Expression
 	Identifier *Token
 	Suite      Suite
 	Tokens     Tokens
@@ -586,12 +586,27 @@ type Except struct {
 func (e *Except) parse(p *pyParser, inReturnable, isBreakable bool) error {
 	q := p.NewGoal()
 
-	if err := e.Expression.parse(q); err != nil {
-		return p.Error("Except", err)
-	}
+	for {
 
-	p.Score(q)
-	p.AcceptRunWhitespace()
+		var ee Expression
+
+		if err := ee.parse(q); err != nil {
+			return p.Error("Except", err)
+		}
+
+		e.Expression = append(e.Expression, ee)
+
+		p.Score(q)
+		p.AcceptRunWhitespace()
+
+		if !p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","}) {
+			break
+		}
+
+		p.AcceptRunWhitespace()
+
+		q = p.NewGoal()
+	}
 
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "as"}) {
 		p.AcceptRunWhitespace()
