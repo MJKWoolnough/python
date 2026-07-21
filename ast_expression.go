@@ -29,7 +29,6 @@ Loop:
 		q.AcceptRunWhitespace()
 
 		hasComma := q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
-
 		r := q.NewGoal()
 
 		if hasComma {
@@ -95,10 +94,12 @@ type StarredItem struct {
 
 func (s *StarredItem) parse(p *pyParser) error {
 	s.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 	p.AcceptRunWhitespace()
 
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"}) {
 		s.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
@@ -525,7 +526,6 @@ func (pr *PrimaryExpression) parse(p *pyParser) error {
 
 	for {
 		q := p.NewGoal()
-
 		aComments := q.AcceptRunWhitespaceCommentsIfMultiline()
 
 		q.AcceptRunWhitespace()
@@ -1099,7 +1099,6 @@ func (c *ComprehensionFor) parse(p *pyParser) error {
 	}
 
 	p.Score(q)
-
 	p.AcceptRunWhitespace()
 
 	if !p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "in"}) {
@@ -1402,6 +1401,7 @@ type GeneratorExpression struct {
 
 func (g *GeneratorExpression) parse(p *pyParser) error {
 	g.Comments[0] = p.AcceptRunWhitespaceComments()
+
 	p.AcceptRunWhitespace()
 
 	q := p.NewGoal()
@@ -1545,7 +1545,6 @@ func (s *SliceList) parse(p *pyParser) error {
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "["})
 
 	s.Comments[0] = p.AcceptRunWhitespaceCommentsNoNewline()
-
 	q := p.NewGoal()
 
 	q.AcceptRunWhitespace()
@@ -1966,8 +1965,8 @@ func (a *AddExpression) parse(p *pyParser) error {
 
 		p.AcceptRunWhitespace()
 		p.Next()
-		a.Add = q.GetLastToken()
 
+		a.Add = q.GetLastToken()
 		a.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 		p.AcceptRunWhitespace()
@@ -2030,8 +2029,8 @@ func (m *MultiplyExpression) parse(p *pyParser) error {
 
 		p.AcceptRunWhitespace()
 		p.Next()
-		m.Multiply = q.GetLastToken()
 
+		m.Multiply = q.GetLastToken()
 		m.Comments[1] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 		p.AcceptRunWhitespace()
@@ -2080,9 +2079,10 @@ func (u *UnaryExpression) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenOperator, Data: "-"}) ||
 		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "+"}) ||
 		p.AcceptToken(parser.Token{Type: TokenOperator, Data: "~"}) {
-		u.Unary = p.GetLastToken()
 
+		u.Unary = p.GetLastToken()
 		u.Comments = p.AcceptRunWhitespaceCommentsIfMultiline()
+
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
@@ -2140,7 +2140,6 @@ type PowerExpression struct {
 func (pe *PowerExpression) parse(p *pyParser) error {
 	if p.AcceptToken(parser.Token{Type: TokenKeyword, Data: "await"}) {
 		pe.AwaitExpression = true
-
 		pe.Comments[0] = p.AcceptRunWhitespaceCommentsIfMultiline()
 
 		p.AcceptRunWhitespace()
