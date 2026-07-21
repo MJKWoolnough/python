@@ -714,15 +714,22 @@ func (e Enclosure) printSource(w writer, v bool) {
 }
 
 func (e Except) printSource(w writer, v bool) {
-	e.Expression.printSource(w, v)
+	if len(e.Expression) > 0 {
+		e.Expression[0].printSource(w, v)
 
-	if e.Identifier != nil {
-		w.WriteString(" as ")
-		w.WriteString(e.Identifier.Data)
+		for _, ee := range e.Expression[1:] {
+			w.WriteString(", ")
+			ee.printSource(w, v)
+		}
+
+		if e.Identifier != nil {
+			w.WriteString(" as ")
+			w.WriteString(e.Identifier.Data)
+		}
+
+		w.WriteString(":")
+		e.Suite.printSource(w, v)
 	}
-
-	w.WriteString(":")
-	e.Suite.printSource(w, v)
 }
 
 func (e Expression) printSource(w writer, v bool) {
