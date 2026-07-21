@@ -574,8 +574,8 @@ func (t *TryStatement) parse(p *pyParser, inReturnable, isBreakable bool) error 
 	return nil
 }
 
-// Except as defined in python@3.13.0:
-// https://docs.python.org/release/3.13.0/reference/compound_stmts.html#grammar-token-python-grammar-try1_stmt
+// Except as defined in python@3.15.0:
+// https://docs.python.org/3.15/reference/compound_stmts.html#grammar-token-python-grammar-try1_stmt
 type Except struct {
 	Expression []Expression
 	Identifier *Token
