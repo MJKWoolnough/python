@@ -657,7 +657,6 @@ func (w *WithStatement) parse(p *pyParser, inReturnable, isBreakable bool) error
 	p.AcceptRunWhitespace()
 
 	parens := p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "("})
-
 	if parens {
 		p.AcceptRunWhitespaceNoComment()
 	}
@@ -736,7 +735,6 @@ func (w *WithStatementContents) parse(p *pyParser) error {
 		q.AcceptRunWhitespace()
 
 		another = q.AcceptToken(parser.Token{Type: TokenDelimiter, Data: ","})
-
 		r := q.NewGoal()
 
 		r.AcceptRunWhitespace()
@@ -1008,7 +1006,6 @@ func (c *ClassDefinition) parse(p *pyParser) error {
 		p.AcceptRunAllWhitespaceNoComment()
 
 		c.Inheritance = new(ArgumentList)
-
 		q := p.NewGoal()
 
 		q.AcceptRunWhitespace()
@@ -1301,9 +1298,9 @@ func (l *ParameterList) parse(p *pyParser, allowAnnotations bool) error {
 				p.Next()
 
 				q = p.NewGoal()
-				q.AcceptRunAllWhitespace()
-
 				target = &l.NoPosOnly
+
+				q.AcceptRunAllWhitespace()
 			}
 
 			fallthrough
@@ -1703,7 +1700,6 @@ func (t *TypeParams) parse(p *pyParser) error {
 	t.Comments[1] = p.AcceptRunWhitespaceComments()
 
 	p.AcceptRunAllWhitespace()
-
 	p.AcceptToken(parser.Token{Type: TokenDelimiter, Data: "]"})
 
 	t.Tokens = p.ToTokens()
