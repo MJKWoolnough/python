@@ -4054,7 +4054,106 @@ func TestExcept(t *testing.T) {
 				Tokens: tk[:3],
 			}
 		}},
-		{`a :b`, func(t *test, tk Tokens) { // 2
+		{`a,b:c`, func(t *test, tk Tokens) { // 2
+			t.Output = Except{
+				Expression: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}),
+						Tokens: tk[:1],
+					},
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[2],
+							Tokens:     tk[2:3],
+						}),
+						Tokens: tk[2:3],
+					},
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[4],
+												Tokens:     tk[4:5],
+											}),
+											Tokens: tk[4:5],
+										},
+										Tokens: tk[4:5],
+									},
+									Tokens: tk[4:5],
+								},
+								Tokens: tk[4:5],
+							},
+						},
+						Tokens: tk[4:5],
+					},
+					Tokens: tk[4:5],
+				},
+				Tokens: tk[:5],
+			}
+		}},
+		{`a , b, c :d`, func(t *test, tk Tokens) { // 3
+			t.Output = Except{
+				Expression: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}),
+						Tokens: tk[:1],
+					},
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[4],
+							Tokens:     tk[4:5],
+						}),
+						Tokens: tk[4:5],
+					},
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[7],
+							Tokens:     tk[7:8],
+						}),
+						Tokens: tk[7:8],
+					},
+				},
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[10],
+												Tokens:     tk[10:11],
+											}),
+											Tokens: tk[10:11],
+										},
+										Tokens: tk[10:11],
+									},
+									Tokens: tk[10:11],
+								},
+								Tokens: tk[10:11],
+							},
+						},
+						Tokens: tk[10:11],
+					},
+					Tokens: tk[10:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`a :b`, func(t *test, tk Tokens) { // 4
 			t.Output = Except{
 				Expression: []Expression{
 					{
@@ -4093,7 +4192,7 @@ func TestExcept(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{`a as b:c`, func(t *test, tk Tokens) { // 3
+		{`a as b:c`, func(t *test, tk Tokens) { // 5
 			t.Output = Except{
 				Expression: []Expression{
 					{
@@ -4133,7 +4232,54 @@ func TestExcept(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`nonlocal:a`, func(t *test, tk Tokens) { // 4
+		{`a , b as c:d`, func(t *test, tk Tokens) { // 6
+			t.Output = Except{
+				Expression: []Expression{
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[0],
+							Tokens:     tk[:1],
+						}),
+						Tokens: tk[:1],
+					},
+					{
+						ConditionalExpression: WrapConditional(&Atom{
+							Identifier: &tk[4],
+							Tokens:     tk[4:5],
+						}),
+						Tokens: tk[4:5],
+					},
+				},
+				Identifier: &tk[8],
+				Suite: Suite{
+					StatementList: &StatementList{
+						Statements: []SimpleStatement{
+							{
+								Type: StatementAssignment,
+								AssignmentStatement: &AssignmentStatement{
+									StarredExpression: &StarredExpression{
+										Expression: &Expression{
+											ConditionalExpression: WrapConditional(&Atom{
+												Identifier: &tk[10],
+												Tokens:     tk[10:11],
+											}),
+											Tokens: tk[10:11],
+										},
+										Tokens: tk[10:11],
+									},
+									Tokens: tk[10:11],
+								},
+								Tokens: tk[10:11],
+							},
+						},
+						Tokens: tk[10:11],
+					},
+					Tokens: tk[10:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
+		{`nonlocal:a`, func(t *test, tk Tokens) { // 7
 			t.Err = Error{
 				Err: Error{
 					Err: wrapConditionalExpressionError(Error{
@@ -4148,14 +4294,14 @@ func TestExcept(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a as nonlocal:b`, func(t *test, tk Tokens) { // 5
+		{`a as nonlocal:b`, func(t *test, tk Tokens) { // 8
 			t.Err = Error{
 				Err:     ErrMissingIdentifier,
 				Parsing: "Except",
 				Token:   tk[4],
 			}
 		}},
-		{`a:nonlocal`, func(t *test, tk Tokens) { // 6
+		{`a:nonlocal`, func(t *test, tk Tokens) { // 9
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -4178,7 +4324,7 @@ func TestExcept(t *testing.T) {
 				Token:   tk[2],
 			}
 		}},
-		{`a b`, func(t *test, tk Tokens) { // 7
+		{`a b`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "Except",
