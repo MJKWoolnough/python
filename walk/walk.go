@@ -688,6 +688,8 @@ func walkDictItem(t *python.DictItem, fn Handler) error {
 		}
 
 		return fn.Handle(t.Value)
+	} else if t.Value != nil {
+		return fn.Handle(t.Value)
 	}
 
 	return nil
