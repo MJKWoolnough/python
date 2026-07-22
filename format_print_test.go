@@ -1630,6 +1630,16 @@ func TestPrintSource(t *testing.T) {
 			"a={**b async for c in d}\n",
 			"a = {**b async for c in d}\n",
 		},
+		{ // 325
+			"a = {*b for c in d}",
+			"a={*b for c in d}\n",
+			"a = {*b for c in d}\n",
+		},
+		{ // 326
+			"a = {*b async for c in d}",
+			"a={*b async for c in d}\n",
+			"a = {*b async for c in d}\n",
+		},
 	} {
 		for m, input := range test {
 			tk := parser.NewStringTokeniser(input)
