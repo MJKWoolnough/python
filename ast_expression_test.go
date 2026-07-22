@@ -4399,6 +4399,47 @@ func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
+		{`* a for b in c`, func(t *test, tk Tokens) { // 2
+			t.Output = FlexibleExpressionListOrComprehension{
+				SetComp: true,
+				Comprehension: &Comprehension{
+					AssignmentExpression: AssignmentExpression{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[2],
+								Tokens:     tk[2:3],
+							}),
+							Tokens: tk[2:3],
+						},
+						Tokens: tk[2:3],
+					},
+					ComprehensionFor: ComprehensionFor{
+						TargetList: TargetList{
+							Targets: []Target{
+								{
+									PrimaryExpression: &PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[6],
+											Tokens:     tk[6:7],
+										},
+										Tokens: tk[6:7],
+									},
+									Tokens: tk[6:7],
+								},
+							},
+							Tokens: tk[6:7],
+						},
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[10],
+							Tokens:     tk[10:11],
+						}).OrTest,
+						Tokens: tk[4:11],
+					},
+					Tokens: tk[2:11],
+				},
+				Tokens: tk[:11],
+			}
+		}},
 		{`a async for b in c`, func(t *test, tk Tokens) { // 3
 			t.Output = FlexibleExpressionListOrComprehension{
 				Comprehension: &Comprehension{
@@ -4438,6 +4479,48 @@ func TestFlexibleExpressionListOrComprehension(t *testing.T) {
 					Tokens: tk[:11],
 				},
 				Tokens: tk[:11],
+			}
+		}},
+		{`*a async for b in c`, func(t *test, tk Tokens) { // 3
+			t.Output = FlexibleExpressionListOrComprehension{
+				SetComp: true,
+				Comprehension: &Comprehension{
+					AssignmentExpression: AssignmentExpression{
+						Expression: Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							}),
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[1:2],
+					},
+					ComprehensionFor: ComprehensionFor{
+						Async: true,
+						TargetList: TargetList{
+							Targets: []Target{
+								{
+									PrimaryExpression: &PrimaryExpression{
+										Atom: &Atom{
+											Identifier: &tk[7],
+											Tokens:     tk[7:8],
+										},
+										Tokens: tk[7:8],
+									},
+									Tokens: tk[7:8],
+								},
+							},
+							Tokens: tk[7:8],
+						},
+						OrTest: WrapConditional(&Atom{
+							Identifier: &tk[11],
+							Tokens:     tk[11:12],
+						}).OrTest,
+						Tokens: tk[3:12],
+					},
+					Tokens: tk[1:12],
+				},
+				Tokens: tk[:12],
 			}
 		}},
 		{`nonlocal`, func(t *test, tk Tokens) { // 4
