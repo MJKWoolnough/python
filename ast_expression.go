@@ -878,6 +878,7 @@ func skipEnclosure(p *pyParser) {
 // FlexibleExpressionListOrComprehension as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-list_display
 type FlexibleExpressionListOrComprehension struct {
+	SetComp                bool
 	FlexibleExpressionList *FlexibleExpressionList
 	Comprehension          *Comprehension
 	Tokens                 Tokens
@@ -886,11 +887,23 @@ type FlexibleExpressionListOrComprehension struct {
 func (f *FlexibleExpressionListOrComprehension) parse(p *pyParser) error {
 	q := p.NewGoal()
 
+	comp := q.AcceptToken(parser.Token{Type: TokenOperator, Data: "*"})
+	if comp {
+		q.AcceptRunAllWhitespace()
+	}
+
 	skipAssignmentExpression(q)
 
 	q.AcceptRunWhitespace()
 
 	if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"}) || q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "for"}) {
+		if comp {
+			p.Next()
+			p.AcceptRunWhitespace()
+
+			f.SetComp = true
+		}
+
 		q = p.NewGoal()
 		f.Comprehension = new(Comprehension)
 
