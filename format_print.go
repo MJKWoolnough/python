@@ -659,6 +659,14 @@ func (d DictItem) printSource(w writer, v bool) {
 		}
 
 		d.Value.printSource(w, v)
+	} else if d.Value != nil {
+		w.WriteString("**")
+
+		if v && w.InMultiline() {
+			d.Comments[1].printSource(w, true)
+		}
+
+		d.Value.printSource(w, v)
 	}
 
 	if v && w.InMultiline() {
