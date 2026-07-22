@@ -1304,6 +1304,11 @@ Loop:
 // DictItem as defined in python@3.13.0:
 // https://docs.python.org/release/3.13.0/reference/expressions.html#grammar-token-python-grammar-dict_item
 //
+// Amended to allow for dictcomp:
+// https://docs.python.org/3.15/reference/expressions.html#grammar-token-python-grammar-dictcomp
+//
+// For a Dictionary Comprehension, only the Value field is set.
+//
 // The first set of comments are parsed from before the DictItem.
 //
 // In a key/value DictItem, the second and third comments are parsed from before
