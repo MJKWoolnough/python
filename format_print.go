@@ -817,6 +817,10 @@ func (f FlexibleExpressionListOrComprehension) printSource(w writer, v bool) {
 	if f.FlexibleExpressionList != nil {
 		f.FlexibleExpressionList.printSource(w, v)
 	} else if f.Comprehension != nil {
+		if f.SetComp {
+			w.WriteString("*")
+		}
+
 		f.Comprehension.printSource(w, v)
 	}
 }
