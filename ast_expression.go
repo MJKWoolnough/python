@@ -1330,13 +1330,29 @@ func (d *DictItem) parse(p *pyParser) error {
 		p.AcceptRunWhitespace()
 
 		q := p.NewGoal()
-		d.OrExpression = new(OrExpression)
 
-		if err := d.OrExpression.parse(q); err != nil {
-			return p.Error("DictItem", err)
+		skipExpression(q)
+		q.AcceptRunWhitespace()
+
+		if q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "async"}) || q.AcceptToken(parser.Token{Type: TokenKeyword, Data: "for"}) {
+			q := p.NewGoal()
+			d.Value = new(Expression)
+
+			if err := d.Value.parse(q); err != nil {
+				return p.Error("DictItem", err)
+			}
+
+			p.Score(q)
+		} else {
+			q := p.NewGoal()
+			d.OrExpression = new(OrExpression)
+
+			if err := d.OrExpression.parse(q); err != nil {
+				return p.Error("DictItem", err)
+			}
+
+			p.Score(q)
 		}
-
-		p.Score(q)
 	} else {
 		q := p.NewGoal()
 		d.Key = new(Expression)

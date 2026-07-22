@@ -5931,11 +5931,11 @@ func TestDictDisplay(t *testing.T) {
 				Token:   tk[11],
 			}
 		}},
-		{`**a for e in f`, func(t *test, tk Tokens) { // 12
+		{`a: b, **c for d in e`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err:     ErrInvalidKeyword,
 				Parsing: "DictDisplay",
-				Token:   tk[3],
+				Token:   tk[9],
 			}
 		}},
 		{`a: b for nonlocal in f`, func(t *test, tk Tokens) { // 13
