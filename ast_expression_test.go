@@ -5795,7 +5795,86 @@ func TestDictDisplay(t *testing.T) {
 				Tokens: tk[:2],
 			}
 		}},
-		{`a: b, ** c`, func(t *test, tk Tokens) { // 6
+		{`**a for b in c`, func(t *test, tk Tokens) { // 6
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							}),
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[:2],
+					},
+				},
+				DictComprehension: &ComprehensionFor{
+					TargetList: TargetList{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[5],
+										Tokens:     tk[5:6],
+									},
+									Tokens: tk[5:6],
+								},
+								Tokens: tk[5:6],
+							},
+						},
+						Tokens: tk[5:6],
+					},
+					OrTest: WrapConditional(&Atom{
+						Identifier: &tk[9],
+						Tokens:     tk[9:10],
+					}).OrTest,
+					Tokens: tk[3:10],
+				},
+				Tokens: tk[:10],
+			}
+		}},
+		{`**a async for b in c`, func(t *test, tk Tokens) { // 7
+			t.Output = DictDisplay{
+				DictItems: []DictItem{
+					{
+						Value: &Expression{
+							ConditionalExpression: WrapConditional(&Atom{
+								Identifier: &tk[1],
+								Tokens:     tk[1:2],
+							}),
+							Tokens: tk[1:2],
+						},
+						Tokens: tk[:2],
+					},
+				},
+				DictComprehension: &ComprehensionFor{
+					Async: true,
+					TargetList: TargetList{
+						Targets: []Target{
+							{
+								PrimaryExpression: &PrimaryExpression{
+									Atom: &Atom{
+										Identifier: &tk[7],
+										Tokens:     tk[7:8],
+									},
+									Tokens: tk[7:8],
+								},
+								Tokens: tk[7:8],
+							},
+						},
+						Tokens: tk[7:8],
+					},
+					OrTest: WrapConditional(&Atom{
+						Identifier: &tk[11],
+						Tokens:     tk[11:12],
+					}).OrTest,
+					Tokens: tk[3:12],
+				},
+				Tokens: tk[:12],
+			}
+		}},
+		{`a: b, ** c`, func(t *test, tk Tokens) { // 8
 			t.Output = DictDisplay{
 				DictItems: []DictItem{
 					{
@@ -5826,7 +5905,7 @@ func TestDictDisplay(t *testing.T) {
 				Tokens: tk[:9],
 			}
 		}},
-		{`**a, b:c`, func(t *test, tk Tokens) { // 7
+		{`**a, b:c`, func(t *test, tk Tokens) { // 9
 			t.Output = DictDisplay{
 				DictItems: []DictItem{
 					{
@@ -5857,7 +5936,7 @@ func TestDictDisplay(t *testing.T) {
 				Tokens: tk[:7],
 			}
 		}},
-		{`a: b`, func(t *test, tk Tokens) { // 8
+		{`a: b`, func(t *test, tk Tokens) { // 10
 			t.Output = DictDisplay{
 				DictItems: []DictItem{
 					{
@@ -5881,7 +5960,7 @@ func TestDictDisplay(t *testing.T) {
 				Tokens: tk[:4],
 			}
 		}},
-		{`{a: b,}`, func(t *test, tk Tokens) { // 9
+		{`{a: b,}`, func(t *test, tk Tokens) { // 11
 			t.Output = DictDisplay{
 				DictItems: []DictItem{
 					{
@@ -5905,7 +5984,7 @@ func TestDictDisplay(t *testing.T) {
 				Tokens: tk[1:5],
 			}
 		}},
-		{`a: nonlocal`, func(t *test, tk Tokens) { // 10
+		{`a: nonlocal`, func(t *test, tk Tokens) { // 12
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
@@ -5924,21 +6003,21 @@ func TestDictDisplay(t *testing.T) {
 				Token:   tk[0],
 			}
 		}},
-		{`a: b, c: d for e in f`, func(t *test, tk Tokens) { // 11
+		{`a: b, c: d for e in f`, func(t *test, tk Tokens) { // 13
 			t.Err = Error{
 				Err:     ErrInvalidKeyword,
 				Parsing: "DictDisplay",
 				Token:   tk[11],
 			}
 		}},
-		{`a: b, **c for d in e`, func(t *test, tk Tokens) { // 12
+		{`a: b, **c for d in e`, func(t *test, tk Tokens) { // 14
 			t.Err = Error{
 				Err:     ErrInvalidKeyword,
 				Parsing: "DictDisplay",
 				Token:   tk[9],
 			}
 		}},
-		{`a: b for nonlocal in f`, func(t *test, tk Tokens) { // 13
+		{`a: b for nonlocal in f`, func(t *test, tk Tokens) { // 15
 			t.Err = Error{
 				Err: Error{
 					Err: Error{
