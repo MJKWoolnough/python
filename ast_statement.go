@@ -926,12 +926,6 @@ func (i *ImportStatement) hasComments() bool {
 		}
 	}
 
-	if i.RelativeModule != nil {
-		if i.RelativeModule.hasComments() {
-			return true
-		}
-	}
-
 	return len(i.Comments[0]) > 0 || len(i.Comments[1]) > 0
 }
 
