@@ -6305,7 +6305,42 @@ func TestDictItem(t *testing.T) {
 				Token:   tk[1],
 			}
 		}},
-		{`a`, func(t *test, tk Tokens) { // 9
+		{`**a[nonlocal] for`, func(t *test, tk Tokens) { // 9
+			t.Err = Error{
+				Err: Error{
+					Err: wrapConditionalExpressionError(Error{
+						Err: Error{
+							Err: Error{
+								Err: Error{
+									Err: Error{
+										Err: wrapConditionalExpressionError(Error{
+											Err:     ErrInvalidEnclosure,
+											Parsing: "Enclosure",
+											Token:   tk[3],
+										}),
+										Parsing: "Expression",
+										Token:   tk[3],
+									},
+									Parsing: "SliceItem",
+									Token:   tk[3],
+								},
+								Parsing: "SliceList",
+								Token:   tk[3],
+							},
+							Parsing: "PrimaryExpression",
+							Token:   tk[2],
+						},
+						Parsing: "PowerExpression",
+						Token:   tk[1],
+					}),
+					Parsing: "Expression",
+					Token:   tk[1],
+				},
+				Parsing: "DictItem",
+				Token:   tk[1],
+			}
+		}},
+		{`a`, func(t *test, tk Tokens) { // 10
 			t.Err = Error{
 				Err:     ErrMissingColon,
 				Parsing: "DictItem",
